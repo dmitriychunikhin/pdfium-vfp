@@ -6,5 +6,6 @@ pdfium-vfp is a PDF viewer control for Visual Fox Pro 9 SP2 based on [PDFium](ht
 pdfium-vfp includes [pdfium.dll](https://github.com/bblanchon/pdfium-binaries) and [system.app](https://github.com/VFPX/GDIPlusX)
 
 
-
+### Screenshots
+<img alt="Sample screen shot" src="Sample/pdfium-vfp-screen01.png" />
 
