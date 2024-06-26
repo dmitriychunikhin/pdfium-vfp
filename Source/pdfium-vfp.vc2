@@ -307,13 +307,11 @@ DEFINE CLASS pdfiumviewer AS control
 	ENDPROC
 
 	HIDDEN PROCEDURE contextmenu
-		LOCAL lcWindow
-		lcWindow = Thisform.Name
 		
 		LOCAL lcMenuName
 		lcMenuName = "_context_menu"
 		
-		DEFINE POPUP (lcMenuName) FROM MROW(lcWindow)+0.5, MCOL(lcWindow) IN &lcWindow MARGIN RELATIVE SHORTCUT
+		DEFINE POPUP (lcMenuName) FROM MROW(), MCOL() MARGIN RELATIVE SHORTCUT
 		
 		LOCAL lcSelectCopy, lcSelectAll
 		lcSelectCopy = "SKIP FOR .T."
