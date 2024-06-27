@@ -30,11 +30,14 @@ DEFINE CLASS pdfiumviewer AS control
 		*m: redraw
 		*m: renderpagefromcache
 		*m: renderpages
+		*m: rendersearch
 		*m: renderselection
 		*m: scale_assign
 		*m: scrollbars_assign
 		*m: scrollhorz
 		*m: scrollvert
+		*m: searchclose
+		*m: searchtext		&& Text searching. SearchClose must be called to stop search results rendering
 		*m: selectioncopy		&& Copy selected text to clipboard
 		*m: selecttext
 		*m: selecttextall
@@ -62,6 +65,14 @@ DEFINE CLASS pdfiumviewer AS control
 		*p: screendpix
 		*p: screendpiy
 		*p: scrollbars		&& Specifies the type of scroll bars that an EditBox control, Form object, or Grid control has. 0 - None (Default); 1 - Horizontal; 2 - Vertical; 3 - Both vertical and horizontal
+		*p: searchbrush
+		*p: searchstate_dir
+		*p: searchstate_findwhat
+		*p: searchstate_flags
+		*p: searchstate_rescount
+		*p: searchstate_resindex
+		*p: searchstate_respage
+		*p: searchstate_resrect
 		*p: selectionbrush
 		*p: selectioncharindexprev
 		*p: selectioncharindexstart
@@ -79,13 +90,14 @@ DEFINE CLASS pdfiumviewer AS control
 		*a: fpdf_pages[1,0]
 		*a: fpdf_pages_pos[1,4]
 		*a: fpdf_pages_render_cache[1,4]
-		*a: fpdf_pages_selection[3,0]
+		*a: fpdf_pages_search[1,0]
+		*a: fpdf_pages_selection[1,3]
 		*a: fpdf_pages_size[1,4]
 		*a: fpdf_text_pages[1,0]
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
-	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,ClassLibrary,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,declaredll_ok,DragDrop,DragIcon,DragMode,DragOver,Drag,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,fpdf_doc,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_render_cache,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Moved,Objects,OLECompleteDrag,OLEDragDrop,OLEDragMode,OLEDragOver,OLEDragPicture,OLEDrag,OLEDropEffects,OLEDropHasData,OLEDropMode,OLEGiveFeedback,OLESetData,OLEStartDrag,ParentClass,pdfdpi,pdfium_dll_path,Picture,ReadExpression,ReadMethod,Refresh,ResetToDefault,Resize,RightClick,SaveAsClass,screendpix,screendpiy,selectionbrush,selectioncharindexprev,selectioncharindexstart,SetFocus,ShowWhatsThis,SpecialEffect,Style,system,Tag,tplclickbegin,UIEnable,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,WriteExpression,WriteMethod,ZOrder
+	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,ClassLibrary,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,declaredll_ok,DragDrop,DragIcon,DragMode,DragOver,Drag,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,fpdf_doc,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_render_cache,fpdf_pages_search,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Moved,Objects,OLECompleteDrag,OLEDragDrop,OLEDragMode,OLEDragOver,OLEDragPicture,OLEDrag,OLEDropEffects,OLEDropHasData,OLEDropMode,OLEGiveFeedback,OLESetData,OLEStartDrag,ParentClass,pdfdpi,pdfium_dll_path,Picture,ReadExpression,ReadMethod,Refresh,ResetToDefault,Resize,RightClick,SaveAsClass,screendpix,screendpiy,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_flags,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,SetFocus,ShowWhatsThis,SpecialEffect,Style,system,Tag,tplclickbegin,UIEnable,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,WriteExpression,WriteMethod,ZOrder
 	*<PropValue>
 		backcolorbrush = .F.
 		BackStyle = 1
@@ -107,6 +119,14 @@ DEFINE CLASS pdfiumviewer AS control
 		screendpix = 96
 		screendpiy = 96
 		scrollbars = 0
+		searchbrush = .F.
+		searchstate_dir = 0
+		searchstate_findwhat = ("")
+		searchstate_flags = 0
+		searchstate_rescount = 0
+		searchstate_resindex = 0
+		searchstate_respage = 0
+		searchstate_resrect = ("")
 		selectionbrush = .F.
 		selectioncharindexprev = -1
 		selectioncharindexstart = 0
@@ -193,6 +213,17 @@ DEFINE CLASS pdfiumviewer AS control
 			<memberdata name="selecttextall" type="method" display="SelectTextAll"/>
 			<memberdata name="dblclickbegin" type="property" display="DblClickBegin"/>
 			<memberdata name="tplclickbegin" type="property" display="TplClickBegin"/>
+			<memberdata name="rendersearch" type="method" display="RenderSearch"/>
+			<memberdata name="searchbrush" type="property" display="SearchBrush"/>
+			<memberdata name="searchclose" type="method" display="SearchClose"/>
+			<memberdata name="searchstate_findwhat" type="property" display="SearchState_FindWhat"/>
+			<memberdata name="searchstate_flags" type="property" display="SearchState_Flags"/>
+			<memberdata name="searchstate_rescount" type="property" display="SearchState_ResCount"/>
+			<memberdata name="searchstate_resindex" type="property" display="SearchState_ResIndex"/>
+			<memberdata name="searchstate_respage" type="property" display="SearchState_ResPage"/>
+			<memberdata name="searchstate_resrect" type="property" display="SearchState_ResRect"/>
+			<memberdata name="searchtext" type="method" display="SearchText"/>
+			<memberdata name="searchstate_dir" type="property" display="SearchState_Dir"/>
 		</VFPData>
 	*</PropValue>
 
@@ -238,6 +269,8 @@ DEFINE CLASS pdfiumviewer AS control
 		
 		This.fpdf_opened = .F.
 		
+		This.SearchClose()
+		
 		LOCAL lnPage, lnPageCount
 		lnPageCount = This.fpdf_pagecount
 		
@@ -277,9 +310,10 @@ DEFINE CLASS pdfiumviewer AS control
 		DIMENSION This.fpdf_pages_selection(1,3)
 		DIMENSION This.fpdf_pages_pos(1,4)
 		DIMENSION This.fpdf_pages_size(1,2)
+		DIMENSION This.fpdf_pages_search(1)
 		DIMENSION This.fpdf_pages_render_cache(1, ALEN(This.fpdf_pages_render_cache,2))
 		
-		STORE 0 TO This.fpdf_pages_pos, This.fpdf_pages_size
+		STORE 0 TO This.fpdf_pages_pos, This.fpdf_pages_size, This.fpdf_pages_search
 		
 		IF EMPTY(This.fpdf_doc)=.F.
 		    FPDF_CloseDocument(This.fpdf_doc)
@@ -397,9 +431,13 @@ DEFINE CLASS pdfiumviewer AS control
 		DECLARE LONG FPDFBitmap_Create IN (lcPdfiumDll) integer width, integer height, integer alpha
 		DECLARE LONG FPDFBitmap_CreateEx IN (lcPdfiumDll) integer width, integer height, integer format, LONG first_scan, integer stride
 		DECLARE FPDFBitmap_Destroy IN (lcPdfiumDll) LONG bitmap
-		    
-		    
 		
+		DECLARE LONG FPDFText_FindStart IN (lcPdfiumDll) LONG text_page, STRING@ findwhat, LONG flags, INTEGER start_index
+		DECLARE LONG FPDFText_FindNext IN (lcPdfiumDll) LONG handle
+		DECLARE LONG FPDFText_FindPrev IN (lcPdfiumDll) LONG handle
+		DECLARE INTEGER FPDFText_GetSchResultIndex IN (lcPdfiumDll) LONG handle
+		DECLARE INTEGER FPDFText_GetSchCount IN (lcPdfiumDll) LONG handle
+		DECLARE FPDFText_FindClose IN (lcPdfiumDll) LONG handle
 		
 		************************************************************************
 		DECLARE INTEGER GetModuleHandle IN kernel32 AS WinApi_GetModuleHandle LONG lpModuleName
@@ -494,8 +532,10 @@ DEFINE CLASS pdfiumviewer AS control
 		
 		This.ClosePdf()
 		
-		This.SelectionBrush = .F.
 		This.BackColorBrush = .F.
+		This.SelectionBrush = .F.
+		This.SearchBrush = .F.
+		
 		
 		This.DrawBufRelease()
 		
@@ -728,14 +768,20 @@ DEFINE CLASS pdfiumviewer AS control
 		    RETURN
 		ENDIF
 		
+		LOCAL loBackColor
+		loBackColor = This.System.Drawing.Color.FromRgb(This.BackColor)
+		This.BackColorBrush = This.System.Drawing.SolidBrush.New(loBackColor)
+		
 		LOCAL loSelectionColor
 		loSelectionColor = This.System.Drawing.Color.New(This.System.Drawing.Color.SteelBlue.ToArgb())
 		loSelectionColor.A = 72
 		This.SelectionBrush = This.System.Drawing.SolidBrush.New(loSelectionColor)
 		
-		LOCAL loBackColor
-		loBackColor = This.System.Drawing.Color.FromRgb(This.BackColor)
-		This.BackColorBrush = This.System.Drawing.SolidBrush.New(loBackColor)
+		LOCAL loSearchColor
+		loSearchColor = This.System.Drawing.Color.New(This.System.Drawing.Color.Yellow.ToArgb())
+		loSearchColor.A = 72
+		This.SearchBrush = This.System.Drawing.SolidBrush.New(loSearchColor)
+		
 		
 		*********************************************************
 		This.Resize()
@@ -754,7 +800,6 @@ DEFINE CLASS pdfiumviewer AS control
 		#define KEY_PAGE_DOWN 3
 		#define KEY_HOME 1
 		#define KEY_END 6
-		
 		
 		DO CASE
 		
@@ -878,7 +923,7 @@ DEFINE CLASS pdfiumviewer AS control
 		LOCAL lnPageX as Double, lnPageY as Double
 		STORE 0 TO lnPageX, lnPageY
 		
-		IF FPDF_DeviceToPage(lnFPDF_Page, This.fpdf_pages_pos[lnPage,1], This.fpdf_pages_pos[lnPage,2], This.fpdf_pages_pos[lnPage,3], This.fpdf_pages_pos[lnPage,4], 0, lnMouseX, lnMouseY, @lnPageX, @lnPageY) <> 1
+		IF FPDF_DeviceToPage(lnFPDF_Page, This.fpdf_pages_pos[lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[lnPage,3], This.fpdf_pages_pos[lnPage,4], 0, lnMouseX, lnMouseY, @lnPageX, @lnPageY) <> 1
 		    RETURN
 		ENDIF
 		
@@ -983,7 +1028,7 @@ DEFINE CLASS pdfiumviewer AS control
 		LOCAL lnPageX as Double, lnPageY as Double
 		STORE 0 TO lnPageX, lnPageY
 		
-		IF FPDF_DeviceToPage(lnFPDF_Page, This.fpdf_pages_pos[lnPage,1], This.fpdf_pages_pos[lnPage,2], This.fpdf_pages_pos[lnPage,3], This.fpdf_pages_pos[lnPage,4], 0, lnMouseX, lnMouseY, @lnPageX, @lnPageY) <> 1
+		IF FPDF_DeviceToPage(lnFPDF_Page, This.fpdf_pages_pos[lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[lnPage,3], This.fpdf_pages_pos[lnPage,4], 0, lnMouseX, lnMouseY, @lnPageX, @lnPageY) <> 1
 		    RETURN
 		ENDIF
 		
@@ -1073,7 +1118,8 @@ DEFINE CLASS pdfiumviewer AS control
 		    DIMENSION This.fpdf_pages_selection(This.fpdf_pagecount,3)
 		    DIMENSION This.fpdf_pages_pos(This.fpdf_pagecount,4)
 		    DIMENSION This.fpdf_pages_size(This.fpdf_pagecount,2)
-		    STORE 0 TO This.fpdf_pages, This.fpdf_text_pages, This.fpdf_pages_pos, This.fpdf_pages_size
+		    DIMENSION This.fpdf_pages_search(This.fpdf_pagecount)
+		    STORE 0 TO This.fpdf_pages, This.fpdf_text_pages, This.fpdf_pages_pos, This.fpdf_pages_size, This.fpdf_pages_search
 		    
 		    DIMENSION This.fpdf_pages_render_cache(This.fpdf_pagecount,4) && Max 4 rendered samples for page
 		    STORE .F. TO This.fpdf_pages_render_cache
@@ -1089,7 +1135,6 @@ DEFINE CLASS pdfiumviewer AS control
 		    This.fpdf_pages_selection[lnPage,2] = 0
 		    This.fpdf_pages_selection[lnPage,3] = 0
 		    
-		    
 		    This.fpdf_pages_size[lnPage,1] = FPDF_GetPageWidthF(This.fpdf_pages[lnPage])
 		    This.fpdf_pages_size[lnPage,2] = FPDF_GetPageHeightF(This.fpdf_pages[lnPage])
 		ENDFOR
@@ -1099,7 +1144,6 @@ DEFINE CLASS pdfiumviewer AS control
 		This.fpdf_opened = .T.
 		
 		This.WndRedraw()
-		
 		
 	ENDPROC
 
@@ -1121,9 +1165,9 @@ DEFINE CLASS pdfiumviewer AS control
 		lnPageFound = 0
 		FOR lnPage = This.fpdf_page_first_visible TO This.fpdf_page_last_visible
 		    DO CASE
-		     CASE BETWEEN(lnCoordX, This.fpdf_pages_pos[lnPage,1], This.fpdf_pages_pos[lnPage,1] + This.fpdf_pages_pos[lnPage,3]) = .F.
+		     CASE BETWEEN(lnCoordX, This.fpdf_pages_pos[lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[lnPage,1]-This.ViewPortX + This.fpdf_pages_pos[lnPage,3]) = .F.
 		         LOOP
-		     CASE BETWEEN(lnCoordY, This.fpdf_pages_pos[lnPage,2], This.fpdf_pages_pos[lnPage,2] + This.fpdf_pages_pos[lnPage,4]) = .F.
+		     CASE BETWEEN(lnCoordY, This.fpdf_pages_pos[lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[lnPage,2]-This.ViewPortY + This.fpdf_pages_pos[lnPage,4]) = .F.
 		         LOOP
 		     OTHERWISE
 		        lnPageFound = lnPage
@@ -1295,8 +1339,8 @@ DEFINE CLASS pdfiumviewer AS control
 		    lnPageWidthUnscaled = This.GetPageSize(lnPage,3)
 		    lnPageHeightUnscaled = This.GetPageSize(lnPage,4)
 		
-		    lnPageX = This.fpdf_pages_pos[lnPage,1]
-		    lnPageY = This.fpdf_pages_pos[lnPage,2]
+		    lnPageX = This.fpdf_pages_pos[lnPage,1] - This.ViewPortX
+		    lnPageY = This.fpdf_pages_pos[lnPage,2] - This.ViewPortY
 		    lnPageWidth = This.fpdf_pages_pos[lnPage,3]
 		    lnPageHeight = This.fpdf_pages_pos[lnPage,4]
 		
@@ -1309,11 +1353,54 @@ DEFINE CLASS pdfiumviewer AS control
 		    
 		    IF VARTYPE(loPng)="O"
 		        This.DrawBufGfx.DrawImage(loPng, lnPageX, lnPageY, lnPageWidth, lnPageHeight)
+		        This.RenderSearch(lnPage)
 		        This.RenderSelection(lnPage)
 		    ENDIF
 		    
 		ENDFOR
 		
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE rendersearch
+		LPARAMETERS lnPage
+		
+		IF lnPage <> This.SearchState_ResPage
+		    RETURN
+		ENDIF
+		
+		
+		LOCAL loGfx
+		loGfx = This.DrawBufGfx
+		
+		LOCAL lnRectCount
+		lnRectCount = LEN(This.SearchState_ResRect)/32
+		
+		LOCAL lnRect, lcRect
+		FOR lnRect = 1 TO lnRectCount
+		    
+		    lcRect = SUBSTR(This.SearchState_ResRect, 32*(lnRect-1) + 1, 32)
+		    
+		    LOCAL lnPageLeft,lnPageTop,lnPageRight,lnPageBottom
+		    lnPageLeft = CTOBIN(SUBSTR(lcRect,1,8),"B")
+		    lnPageTop = CTOBIN(SUBSTR(lcRect,9,8),"B")
+		    lnPageRight = CTOBIN(SUBSTR(lcRect,17,8),"B")
+		    lnPageBottom = CTOBIN(SUBSTR(lcRect,25,8),"B")
+		    
+		       
+		    LOCAL lnLeft, lnTop, lnRight, lnBottom
+		    STORE 0 TO lnLeft, lnTop, lnRight, lnBottom
+		    
+		    IF FPDF_PageToDevice(This.FPDF_PAGES[lnPage], This.fpdf_pages_pos[lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[lnPage,3], This.fpdf_pages_pos[lnPage,4], 0, lnPageLeft, lnPageTop, @lnLeft, @lnTop) = 0
+		        LOOP
+		    ENDIF
+		    
+		    IF FPDF_PageToDevice(This.FPDF_PAGES[lnPage], This.fpdf_pages_pos[lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[lnPage,3], This.fpdf_pages_pos[lnPage,4], 0, lnPageRight, lnPageBottom, @lnRight, @lnBottom) = 0
+		        LOOP
+		    ENDIF
+		    
+		    loGfx.FillRectangle(This.SearchBrush, lnLeft, lnTop, lnRight - lnLeft, lnBottom - lnTop)
+		ENDFOR
 		
 	ENDPROC
 
@@ -1341,11 +1428,11 @@ DEFINE CLASS pdfiumviewer AS control
 		    LOCAL lnLeft, lnTop, lnRight, lnBottom
 		    STORE 0 TO lnLeft, lnTop, lnRight, lnBottom
 		    
-		    IF FPDF_PageToDevice(This.FPDF_PAGES[lnPage], This.fpdf_pages_pos[lnPage,1], This.fpdf_pages_pos[lnPage,2], This.fpdf_pages_pos[lnPage,3], This.fpdf_pages_pos[lnPage,4], 0, lnPageLeft, lnPageTop, @lnLeft, @lnTop) = 0
+		    IF FPDF_PageToDevice(This.FPDF_PAGES[lnPage], This.fpdf_pages_pos[lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[lnPage,3], This.fpdf_pages_pos[lnPage,4], 0, lnPageLeft, lnPageTop, @lnLeft, @lnTop) = 0
 		        LOOP
 		    ENDIF
 		    
-		    IF FPDF_PageToDevice(This.FPDF_PAGES[lnPage], This.fpdf_pages_pos[lnPage,1], This.fpdf_pages_pos[lnPage,2], This.fpdf_pages_pos[lnPage,3], This.fpdf_pages_pos[lnPage,4], 0, lnPageRight, lnPageBottom, @lnRight, @lnBottom) = 0
+		    IF FPDF_PageToDevice(This.FPDF_PAGES[lnPage], This.fpdf_pages_pos[lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[lnPage,3], This.fpdf_pages_pos[lnPage,4], 0, lnPageRight, lnPageBottom, @lnRight, @lnBottom) = 0
 		        LOOP
 		    ENDIF
 		    
@@ -1362,11 +1449,8 @@ DEFINE CLASS pdfiumviewer AS control
 	HIDDEN PROCEDURE scale_assign
 		LPARAMETERS vNewVal
 		
-		This.scale = MIN(MAX(EVL(NVL(m.vNewVal,0),0),0.2),4)
 		
-		IF This.scale <= 1
-		    This.ViewPortX = 0
-		ENDIF    
+		This.Scale = MIN(MAX(EVL(NVL(m.vNewVal,0),0),0.2),4)
 		
 		IF This.fpdf_opened = .T.
 		    This.ViewPortUpdate()
@@ -1384,6 +1468,7 @@ DEFINE CLASS pdfiumviewer AS control
 		    This.ViewPortUpdate()
 		    This.WndRedraw()
 		ENDIF
+		
 	ENDPROC
 
 	HIDDEN PROCEDURE scrollhorz
@@ -1429,13 +1514,13 @@ DEFINE CLASS pdfiumviewer AS control
 		    This.ViewPortY = This.ViewPortY + m.tnScroll
 		
 		 CASE m.tlPage=.T. AND m.tlRelative = .T.
-		    This.ViewPortY = This.ViewPortY + This.fpdf_pages_pos[MIN(MAX(This.fpdf_page_first_visible + m.tnScroll,1), This.fpdf_pagecount), 2]
+		    This.ViewPortY = This.fpdf_pages_pos[MIN(MAX(This.fpdf_page_first_visible + m.tnScroll,1), This.fpdf_pagecount), 2]
 		    
 		 CASE  m.tlPage=.F. AND m.tlRelative = .F.
 		    This.ViewPortY = m.tnScroll
 		
 		 CASE m.tlPage=.T. AND m.tlRelative = .F.
-		    This.ViewPortY = This.ViewPortY + This.fpdf_pages_pos[MIN(MAX(m.tnScroll,1), This.fpdf_pagecount), 2]
+		    This.ViewPortY = This.fpdf_pages_pos[MIN(MAX(m.tnScroll,1), This.fpdf_pagecount), 2]
 		
 		ENDCASE
 		
@@ -1444,6 +1529,229 @@ DEFINE CLASS pdfiumviewer AS control
 		This.ViewPortUpdate()
 		
 		This.WndRedraw()
+		
+	ENDPROC
+
+	PROCEDURE searchclose
+		IF This.declaredll_ok = .F.
+		    RETURN
+		ENDIF
+		
+		This.SearchState_FindWhat = ""
+		This.SearchState_Flags = 0
+		This.SearchState_Dir = 0
+		
+		This.SearchState_ResPage = 0
+		This.SearchState_ResIndex = 0
+		This.SearchState_ResCount = 0
+		This.SearchState_ResRect = ""
+		
+		LOCAL lnPage
+		FOR lnPage = 1 TO This.fpdf_pagecount
+		    IF EMPTY(This.fpdf_pages_search[lnPage]) = .F.
+		        FPDFText_FindClose(This.fpdf_pages_search[lnPage])
+		    ENDIF
+		    
+		    This.fpdf_pages_search[lnPage] = 0
+		ENDFOR
+		
+		This.WndRedraw()
+		
+	ENDPROC
+
+	PROCEDURE searchtext		&& Text searching. SearchClose must be called to stop search results rendering
+		LPARAMETERS tcFindWhat, tnDirection, tlMatchCase, tlMatchWholeWorld
+		
+		* tcFindWhat - text to find
+		* tnDirection - search direction: 1 - forward (default), 2 - backward
+		* tlMatchCase - .T. - case sensitive, .F. - case insensitive (default)
+		* tlMatchWholeWorld - .T. match whole word, .F. - not match whole word (default)
+		
+		* return value: -1 - error, 0 - not found, 1 - found, 2 - search ended
+		
+		#define SCH_ERROR -1
+		#define SCH_NOT_FOUND 0
+		#define SCH_FOUND 1
+		#define SCH_ENDED 2
+		
+		#define SCH_FWD 1
+		#define SCH_BCK 2
+		
+		
+		IF This.fpdf_opened = .F.
+		    RETURN SCH_ERROR
+		ENDIF
+		
+		
+		LOCAL lcFindWhat, lnDirection, llMatchCase, llMatchWholeWorld
+		
+		lcFindWhat = CHRTRAN(ALLTRIM(EVL(NVL(m.tcFindWhat,""),"")), CHR(10)+CHR(13)+CHR(9),"")
+		lnDirection = EVL(NVL(m.tnDirection,0), SCH_FWD)
+		llMatchCase = EMPTY(NVL(m.tlMatchCase,.F.))=.F.
+		llMatchWholeWorld = EMPTY(NVL(m.tlMatchWholeWorld,.F.))=.F.
+		
+		
+		* Flags used by FPDFText_FindStart function.
+		*
+		* If not set, it will not match case by default.
+		#define FPDF_MATCHCASE 0x00000001
+		* If not set, it will not match the whole word by default.
+		#define FPDF_MATCHWHOLEWORD 0x00000002
+		* If not set, it will skip past the current match to look for the next match.
+		#define FPDF_CONSECUTIVE 0x00000004
+		
+		
+		LOCAL lnSearchFlags
+		lnSearchFlags = 0
+		lnSearchFlags = lnSearchFlags + IIF(llMatchCase=.T., FPDF_MATCHCASE, 0)
+		lnSearchFlags = lnSearchFlags + IIF(llMatchWholeWorld=.T., FPDF_MATCHWHOLEWORD, 0)
+		
+		LOCAL lnSearchStartIndex
+		lnSearchStartIndex = IIF(lnDirection = SCH_BCK,-1,0)
+		
+		LOCAL llNewSearch
+		llNewSearch = .F.
+		DO CASE
+		 CASE lnDirection <> This.SearchState_Dir
+		    llNewSearch = .T.
+		 CASE lnSearchFlags <> This.SearchState_Flags
+		    llNewSearch = .T.
+		 CASE NOT lcFindWhat == This.SearchState_FindWhat
+		    llNewSearch = .T.
+		ENDCASE
+		
+		IF llNewSearch = .T.
+		    LOCAL lnSearchState_ResPage
+		    lnSearchState_ResPage = 0
+		
+		    IF lcFindWhat == This.SearchState_FindWhat AND BETWEEN(This.SearchState_ResPage, This.fpdf_page_first_visible, This.fpdf_page_last_visible)
+		        lnSearchState_ResPage = This.SearchState_ResPage
+		        lnSearchStartIndex = MAX(This.SearchState_ResIndex + IIF(lnDirection = SCH_BCK,-1,0),0)
+		    ENDIF
+		
+		    This.SearchClose()
+		    This.SearchState_ResPage = lnSearchState_ResPage
+		ENDIF
+		
+		
+		This.SearchState_FindWhat = lcFindWhat
+		This.SearchState_Flags = lnSearchFlags
+		This.SearchState_Dir = lnDirection
+		
+		
+		
+		IF EMPTY(lcFindWhat)
+		    RETURN SCH_NOT_FOUND
+		ENDIF
+		
+		
+		
+		LOCAL lnLocaleId
+		lnLocaleId = This.i18n.GetLocaleID()
+		
+		LOCAL lcFindWhatUnicode
+		lcFindWhatUnicode = ""
+		
+		LOCAL loErr
+		loErr = .F.
+		TRY
+		    lcFindWhatUnicode = STRCONV(lcFindWhat, 5, lnLocaleId) + CHR(0)
+		CATCH TO loErr
+		    This.ErrMsg(loErr)
+		ENDTRY
+		
+		IF LEN(lcFindWhatUnicode) = 0
+		    RETURN SCH_ERROR
+		ENDIF
+		
+		
+		LOCAL lnPageIndex
+		lnPageIndex = EVL(This.SearchState_ResPage, EVL(This.fpdf_page_first_visible,1))
+		
+		DO WHILE lnPageIndex > 0 AND lnPageIndex <= This.fpdf_pagecount
+		
+		    LOCAL lnFPDF_Text_Page
+		    lnFPDF_Text_Page = This.fpdf_text_pages[lnPageIndex]
+		    
+		    LOCAL lnSearchHandle
+		    lnSearchHandle = This.fpdf_pages_search[lnPageIndex]
+		
+		    IF EMPTY(lnSearchHandle)
+		        lnSearchHandle = FPDFText_FindStart(lnFPDF_Text_Page, @lcFindWhatUnicode, lnSearchFlags, lnSearchStartIndex)
+		
+		        IF EMPTY(lnSearchHandle)
+		            RETURN SCH_ERROR
+		        ENDIF
+		
+		        This.fpdf_pages_search[lnPageIndex] = lnSearchHandle
+		    ENDIF
+		
+		
+		    LOCAL lnFindRes
+		    lnFindRes = 0
+		    DO CASE
+		     CASE lnDirection = SCH_FWD
+		        lnFindRes = FPDFText_FindNext(lnSearchHandle)
+		     CASE lnDirection = SCH_BCK
+		        lnFindRes = FPDFText_FindPrev(lnSearchHandle)
+		    ENDCASE
+		
+		
+		    IF lnFindRes = 1
+		        This.SearchState_ResPage = lnPageIndex
+		        This.SearchState_ResIndex = MAX(FPDFText_GetSchResultIndex(lnSearchHandle),0)
+		        This.SearchState_ResCount = MAX(FPDFText_GetSchCount(lnSearchHandle),0)
+		
+		
+		        LOCAL lnRectCount
+		        IF This.SearchState_ResCount > 0
+		            lnRectCount = FPDFText_CountRects(lnFPDF_Text_Page, This.SearchState_ResIndex, This.SearchState_ResCount)
+		        ELSE
+		            lnRectCount = 0
+		        ENDIF
+		
+		        This.SearchState_ResRect = ""
+		        
+		        LOCAL lnPageLeft as Double, lnPageRight as Double, lnPageBottom as Double, lnPageTop as Double
+		        STORE 0 TO lnPageLeft, lnPageRight, lnPageBottom, lnPageTop
+		
+		        LOCAL lnRect
+		        FOR lnRect=1 TO lnRectCount
+		            IF FPDFText_GetRect(lnFPDF_Text_Page, lnRect-1, @lnPageLeft, @lnPageTop, @lnPageRight, @lnPageBottom) > 0
+		                This.SearchState_ResRect = This.SearchState_ResRect + BINTOC(lnPageLeft,"8")+BINTOC(lnPageTop,"8")+BINTOC(lnPageRight,"8")+BINTOC(lnPageBottom,"8")
+		                
+		                IF lnRect = 1
+		                    LOCAL lnLeft, lnTop
+		                    STORE 0 TO lnLeft, lnTop
+		                    
+		                    IF FPDF_PageToDevice(This.FPDF_PAGES[lnPageIndex], 0, 0, This.fpdf_pages_pos[lnPageIndex,3], This.fpdf_pages_pos[lnPageIndex,4], 0, lnPageLeft, lnPageTop, @lnLeft, @lnTop) > 0
+		                        LOCAL lnScrollVert
+		                        lnScrollVert = This.fpdf_pages_pos[lnPageIndex,2] + lnTop
+		                        
+		                        lnScrollVert = lnScrollVert - This.ViewPortSizeY * 0.5
+		
+		                        This.ScrollVert(lnScrollVert)
+		                    ENDIF
+		                ENDIF
+		            ENDIF
+		        ENDFOR
+		
+		        This.WndRedraw()
+		        RETURN SCH_FOUND
+		    ENDIF
+		
+		
+		    IF lnDirection = SCH_BCK
+		        lnPageIndex = lnPageIndex - 1
+		        lnSearchStartIndex = -1
+		    ELSE
+		        lnPageIndex = lnPageIndex + 1
+		        lnSearchStartIndex = 0
+		    ENDIF
+		
+		ENDDO
+		
+		RETURN SCH_NOT_FOUND
 		
 	ENDPROC
 
@@ -1664,8 +1972,8 @@ DEFINE CLASS pdfiumviewer AS control
 		        lnPageY = lnPageY +  MIN(MAX(INT(lnPageWidth * 0.02),5),40) &&page separator
 		    ENDIF
 		    
-		    This.fpdf_pages_pos[lnPage,1] = lnPageX - This.ViewPortX
-		    This.fpdf_pages_pos[lnPage,2] = lnPageY - This.ViewPortY
+		    This.fpdf_pages_pos[lnPage,1] = lnPageX
+		    This.fpdf_pages_pos[lnPage,2] = lnPageY
 		
 		    This.fpdf_pages_pos[lnPage,3] = lnPageWidth
 		    This.fpdf_pages_pos[lnPage,4] = lnPageHeight
@@ -1712,7 +2020,8 @@ DEFINE CLASS pdfiumviewer AS control
 		
 		
 		
-		
+		*********************************************************************
+		* Scrollbars update
 		*********************************************************************
 		IF EMPTY(This.WndHandle)=.T.
 		    RETURN
@@ -1724,7 +2033,7 @@ DEFINE CLASS pdfiumviewer AS control
 		#define SIF_DISABLENOSCROLL 0x0008
 		
 		*********************************************************************
-		* Vertical scrolling setup
+		* Vertical scrollbar update
 		
 		LOCAL lnScrollMin, lnScrollMax, lnScrollPageSize, lnScrollPos
 		IF INLIST(This.ScrollBars,2,3) AND This.ViewPortSizeY > 0
@@ -1750,10 +2059,10 @@ DEFINE CLASS pdfiumviewer AS control
 		    BINTOC(0, "4RS")
 		
 		WinApi_SetScrollInfo(This.WndHandle, 1, @lcScrollInfo, 1)
-		*********************************************************************
+		
 		
 		*********************************************************************
-		* Horizontal scrolling setup
+		* Horizontal scrollbar update
 		
 		LOCAL lnScrollMin, lnScrollMax, lnScrollPageSize, lnScrollPos
 		IF INLIST(This.ScrollBars,1,3) AND This.ViewPortMaxX > This.ViewPortSizeX AND This.ViewPortSizeX > 0
@@ -1780,7 +2089,8 @@ DEFINE CLASS pdfiumviewer AS control
 		    BINTOC(0, "4RS")
 		
 		WinApi_SetScrollInfo(This.WndHandle, 0, @lcScrollInfo, 1)
-		*********************************************************************
+		
+		
 		
 	ENDPROC
 
@@ -1947,7 +2257,7 @@ DEFINE CLASS pdfiumviewer AS control
 		    This.Redraw(lnWndDC)
 		
 		    WinApi_EndPaint(m.thWnd, @lcPaint)
-		    
+		
 		
 		 CASE This.UIState.GetEffectivelyEnabled() = .F.
 		 
@@ -2096,7 +2406,6 @@ DEFINE CLASS pdfiumviewer AS control
 		ENDIF
 		
 		This.ViewPortUpdate()
-		
 		This.DrawBufCreate()
 		
 		WinApi_MoveWindow(This.WndHandle, This.UIState.ObjToClient(2), This.UIState.ObjToClient(1), This.Width, This.Height, 1)
@@ -2177,6 +2486,7 @@ DEFINE CLASS pdfiumviewer_i18n AS custom 		&& PdfiumViewer Internationalization 
  	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
 
 	*<DefinedPropArrayMethod>
+		*m: getlocaleid
 		*m: text		&& Returns all of the text in a text-entry area of a control.
 		*m: text_de
 		*m: text_en
@@ -2195,9 +2505,15 @@ DEFINE CLASS pdfiumviewer_i18n AS custom 		&& PdfiumViewer Internationalization 
 		Width = 27
 		_memberdata = <VFPData>
 			<memberdata name="localeid" type="property" display="LocaleID"/>
+			<memberdata name="getlocaleid" type="method" display="GetLocaleID"/>
 		</VFPData>
 	*</PropValue>
 	
+	PROCEDURE getlocaleid
+		RETURN This.LocaleID
+		
+	ENDPROC
+
 	PROCEDURE Init
 		DECLARE INTEGER GetSystemDefaultLCID IN WIN32API AS WinApi_GetSystemDefaultLCID
 		This.LocaleID = WinApi_GetSystemDefaultLCID()

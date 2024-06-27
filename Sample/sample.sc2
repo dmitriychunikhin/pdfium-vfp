@@ -22,6 +22,7 @@ DEFINE CLASS sample AS form
  	*< CLASSDATA: Baseclass="form" Timestamp="" Scale="" Uniqueid="" />
 
 	*-- OBJECTDATA items order determines ZOrder / El orden de los items OBJECTDATA determina el ZOrder 
+	*< OBJECTDATA: ObjPath="shpSearch" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="PdfiumViewer" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdEnable" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="Pageframe1" UniqueID="" Timestamp="" />
@@ -36,6 +37,11 @@ DEFINE CLASS sample AS form
 	*< OBJECTDATA: ObjPath="cmdOpenPdfSample2" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdClosePdf" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="Pdfiumviewer_conf1" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="txtSearch" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdSearch" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="chkSearchMatchCase" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="chkSearchWholeWord" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="chkSearchBackward" UniqueID="" Timestamp="" />
 
 	*<DefinedPropArrayMethod>
 		*m: closepdf
@@ -49,27 +55,64 @@ DEFINE CLASS sample AS form
 	*<PropValue>
 		Caption = "Sample Pdfium Viewer"
 		DoCreate = .T.
-		Height = 738
+		Height = 741
 		Left = 0
-		Name = "sample"
+		Name = "SAMPLE"
 		ScrollBars = 2
 		ShowWindow = 0
 		Top = 0
 		Visible = .T.
-		Width = 1030
+		Width = 1095
 		WindowType = 0
 	*</PropValue>
 
+	ADD OBJECT 'chkSearchBackward' AS checkbox WITH ;
+		Alignment = 0, ;
+		BackStyle = 0, ;
+		Caption = "Backward", ;
+		Height = 17, ;
+		Left = 238, ;
+		Name = "chkSearchBackward", ;
+		TabIndex = 7, ;
+		Top = 82, ;
+		Width = 75
+		*< END OBJECT: BaseClass="checkbox" />
+
+	ADD OBJECT 'chkSearchMatchCase' AS checkbox WITH ;
+		Alignment = 0, ;
+		BackStyle = 0, ;
+		Caption = "Match case", ;
+		Height = 17, ;
+		Left = 419, ;
+		Name = "chkSearchMatchCase", ;
+		TabIndex = 9, ;
+		Top = 82, ;
+		Width = 82
+		*< END OBJECT: BaseClass="checkbox" />
+
+	ADD OBJECT 'chkSearchWholeWord' AS checkbox WITH ;
+		Alignment = 0, ;
+		BackStyle = 0, ;
+		Caption = "Whole word", ;
+		Height = 17, ;
+		Left = 325, ;
+		Name = "chkSearchWholeWord", ;
+		TabIndex = 8, ;
+		Top = 82, ;
+		Width = 84
+		*< END OBJECT: BaseClass="checkbox" />
+
 	ADD OBJECT 'cmbControls' AS combobox WITH ;
+		Anchor = 32, ;
 		BoundTo = .F., ;
 		DisplayCount = 30, ;
 		Height = 24, ;
-		Left = 456, ;
+		Left = 534, ;
 		Name = "cmbControls", ;
 		RowSource = "", ;
 		RowSourceType = 0, ;
 		Style = 2, ;
-		TabIndex = 5, ;
+		TabIndex = 10, ;
 		Top = 12, ;
 		Value = , ;
 		Width = 420
@@ -87,28 +130,28 @@ DEFINE CLASS sample AS form
 		TabIndex = 1, ;
 		Top = 12, ;
 		Value = , ;
-		Width = 420
+		Width = 492
 		*< END OBJECT: BaseClass="combobox" />
 
 	ADD OBJECT 'cmdClosePdf' AS commandbutton WITH ;
 		Anchor = 0, ;
 		Caption = "Close pdf", ;
 		Height = 27, ;
-		Left = 300, ;
+		Left = 372, ;
 		Name = "cmdClosePdf", ;
 		TabIndex = 4, ;
-		Top = 38, ;
+		Top = 39, ;
 		Width = 132, ;
 		WordWrap = .F.
 		*< END OBJECT: BaseClass="commandbutton" />
 
 	ADD OBJECT 'cmdEnable' AS commandbutton WITH ;
-		Anchor = 0, ;
+		Anchor = 32, ;
 		Caption = "Enable/Disable", ;
 		Height = 29, ;
-		Left = 456, ;
+		Left = 534, ;
 		Name = "cmdEnable", ;
-		TabIndex = 7, ;
+		TabIndex = 12, ;
 		Top = 65, ;
 		Width = 420, ;
 		WordWrap = .F.
@@ -121,7 +164,7 @@ DEFINE CLASS sample AS form
 		Left = 12, ;
 		Name = "cmdOpenPdfSample1", ;
 		TabIndex = 2, ;
-		Top = 38, ;
+		Top = 39, ;
 		Width = 132, ;
 		WordWrap = .F.
 		*< END OBJECT: BaseClass="commandbutton" />
@@ -130,21 +173,33 @@ DEFINE CLASS sample AS form
 		Anchor = 0, ;
 		Caption = "Open Sample2.pdf", ;
 		Height = 27, ;
-		Left = 156, ;
+		Left = 189, ;
 		Name = "cmdOpenPdfSample2", ;
 		TabIndex = 3, ;
-		Top = 38, ;
+		Top = 39, ;
 		Width = 132, ;
 		WordWrap = .F.
 		*< END OBJECT: BaseClass="commandbutton" />
 
+	ADD OBJECT 'cmdSearch' AS commandbutton WITH ;
+		Caption = "", ;
+		Height = 28, ;
+		Left = 188, ;
+		Name = "cmdSearch", ;
+		Picture = images\search16.bmp, ;
+		PicturePosition = 14, ;
+		TabIndex = 6, ;
+		Top = 75, ;
+		Width = 37
+		*< END OBJECT: BaseClass="commandbutton" />
+
 	ADD OBJECT 'cmdShow' AS commandbutton WITH ;
-		Anchor = 0, ;
+		Anchor = 32, ;
 		Caption = "Show/Hide", ;
 		Height = 27, ;
-		Left = 456, ;
+		Left = 534, ;
 		Name = "cmdShow", ;
-		TabIndex = 6, ;
+		TabIndex = 11, ;
 		Top = 38, ;
 		Width = 420, ;
 		WordWrap = .F.
@@ -154,10 +209,10 @@ DEFINE CLASS sample AS form
 		Anchor = 225, ;
 		ErasePage = .T., ;
 		Height = 624, ;
-		Left = 456, ;
+		Left = 534, ;
 		Name = "Pageframe1", ;
 		PageCount = 2, ;
-		TabIndex = 9, ;
+		TabIndex = 14, ;
 		TabStyle = 0, ;
 		Top = 108, ;
 		Width = 552, ;
@@ -245,22 +300,41 @@ DEFINE CLASS sample AS form
 		Left = 12, ;
 		Name = "PdfiumViewer", ;
 		scrollbars = 3, ;
-		TabIndex = 8, ;
+		TabIndex = 13, ;
 		TabStop = .T., ;
 		Top = 108, ;
 		Visible = .T., ;
-		Width = 420, ;
+		Width = 492, ;
 		cmdFocus.Name = "cmdFocus", ;
 		i18n.Name = "i18n", ;
 		UIState.Name = "UIState"
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
 
 	ADD OBJECT 'Pdfiumviewer_conf1' AS pdfiumviewer_conf WITH ;
-		Left = 12, ;
+		Left = 1044, ;
 		Name = "Pdfiumviewer_conf1", ;
 		pdfium_dll_path = ("..\Source\pdfium.dll"), ;
-		Top = 72
+		Top = 12
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="custom" />
+
+	ADD OBJECT 'shpSearch' AS shape WITH ;
+		Anchor = 130, ;
+		Height = 5, ;
+		Left = 12, ;
+		Name = "shpSearch", ;
+		SpecialEffect = 0, ;
+		Top = 69, ;
+		Width = 490
+		*< END OBJECT: BaseClass="shape" />
+
+	ADD OBJECT 'txtSearch' AS textbox WITH ;
+		Height = 23, ;
+		Left = 12, ;
+		Name = "txtSearch", ;
+		TabIndex = 5, ;
+		Top = 78, ;
+		Width = 168
+		*< END OBJECT: BaseClass="textbox" />
 	
 	PROCEDURE closepdf
 		LOCAL i, lnStart, lnEnd
@@ -312,6 +386,9 @@ DEFINE CLASS sample AS form
 		SET TALK OFF
 		SET NOTIFY OFF
 		SYS(2060,1)
+		
+		PUSH MENU _MSYSMENU
+		SET SYSMENU TO
 		
 		DO ..\Source\system.app
 		
@@ -474,6 +551,8 @@ DEFINE CLASS sample AS form
 	ENDPROC
 
 	PROCEDURE Unload
+		POP MENU _MSYSMENU
+		
 		IF _VFP.StartMode = 4 AND _VFP.Forms.Count <= 1
 		    CLEAR EVENTS
 		ENDIF
@@ -515,6 +594,17 @@ DEFINE CLASS sample AS form
 		
 	ENDPROC
 
+	PROCEDURE cmdSearch.Click
+		CLEAR TYPEAHEAD 
+		
+		LOCAL lnDir
+		lnDir = IIF(EMPTY(Thisform.chkSearchBackward.Value)=.F., 2, 1)
+		
+		Thisform.Pdfiumviewer.SearchText(Thisform.txtSearch.Value, lnDir, Thisform.chkSearchMatchCase.Value, Thisform.chkSearchWholeWord.Value)
+		
+		
+	ENDPROC
+
 	PROCEDURE cmdShow.Click
 		Thisform.SetVisible()
 		
@@ -549,6 +639,13 @@ DEFINE CLASS sample AS form
 		LPARAMETERS toConf as pdfiumviewer_conf of pdfium-vfp
 		
 		RETURN DODEFAULT(Thisform.pdfiumviewer_conf1)
+		
+	ENDPROC
+
+	PROCEDURE txtSearch.Valid
+		IF EMPTY(This.Value)
+		    Thisform.pdfiumviewer.SearchClose()
+		ENDIF
 		
 	ENDPROC
 
