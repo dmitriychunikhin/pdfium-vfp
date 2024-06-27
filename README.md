@@ -25,7 +25,7 @@ Open sample.pjx project from [Sample](Sample) folder or just run Sample/sample.e
 
 ### Basic usage
 1) Copy pdfium-vfp.vcx, pdfium-vfp.vct, pdfium.dll from Source folder to your project folder
-2) Copy system.app from Source folder to your project folder, if you have no GDIPlusX if your project. At your project startup perfom 
+2) Copy system.app from Source folder to your project's folder, if you have no GDIPlusX in your project. At the project startup perfom 
 ```foxpro
 DO system.app
 ```
