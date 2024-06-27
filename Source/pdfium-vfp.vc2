@@ -1751,7 +1751,12 @@ DEFINE CLASS pdfiumviewer AS control
 		
 		ENDDO
 		
-		RETURN SCH_NOT_FOUND
+		
+		IF EMPTY(This.SearchState_ResCount)=.F.
+		    RETURN SCH_ENDED
+		ELSE
+		    RETURN SCH_NOT_FOUND
+		ENDIF
 		
 	ENDPROC
 
