@@ -7,6 +7,5 @@ DO FORM sample.scx
 DO FORM sample.scx
 
 IF _VFP.StartMode = 4
-    SET SYSMENU TO
     READ EVENTS
 ENDIF
