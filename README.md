@@ -25,15 +25,14 @@ Open sample.pjx project from [Sample](Sample) folder or just run Sample/sample.e
 
 ### Basic usage
 1) Copy pdfium-vfp.vcx, pdfium-vfp.vct, pdfium.dll from Source folder to your project folder
-2) Copy system.app from Source folder to your project folder, if you have no GDIPlusX if your project. 
-At your project startup perfom 
+2) Copy system.app from Source folder to your project folder, if you have no GDIPlusX if your project. At your project startup perfom 
 ```foxpro
 DO system.app
 ```
 
-3) Add pdfiumviwer object from pdfium-vfp.vcx to a form
+3) Add pdfiumviewer object from pdfium-vfp.vcx to the form
 
-4) Open PDF file in code:
+4) Open PDF file
 ```foxpro
 Thisform.PdfiumViewer.OpenPdf("some.pdf")
 ```
