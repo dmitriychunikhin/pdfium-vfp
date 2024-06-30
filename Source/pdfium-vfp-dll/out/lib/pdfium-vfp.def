@@ -1,0 +1,3 @@
+EXPORTS
+    FPDF_GetFontFileName@28 @1
+    FPDF_SaveDocument@16 @2

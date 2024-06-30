@@ -1,33 +1,79 @@
-# VFP generated files
-*.err
-*.ERR
-*.mpr
-*.MPR
+# Generic .gitignore file
 
 # VFP compiled files
-*.fxp
-*.FXP
-*.mpx
-*.MPX
-*.qpx
-*.QPX
+*.[fF][xX][pP]
+*.[mM][pP][xX]
+*.[qQ][pP][xX]
 
-# VFP backup files
-*.bak
-*.BAK 
-*.tbk
-*.TBK
+# VFP artifacts in the edit-build cycle
+*.[eE][rR][rR]
+*.[bB][aA][kK]
+*.[tT][bB][kK]
+*.[mM][pP][rR]
+*.[tT][mM][pP]
+_command.prg
+foxuser.dbf
+foxuser.fpt
 
-# Misc backup files
-*.orig
-*.ORIG
-*.save
-*.SAVE
-*.lnk
+# Code references
+*_ref.[dD][bB][fF]
+*_ref.[cC][dD][xX]
+*_ref.[fF][pP][tT]
 
+# FoxUnit files
+FxuClassFactory.dbf
+FXUResults.DBF
+FXUResults.FPT
+FXUResults.CDX
+FXUPERSIST.XML
+FXUPERSISTGETTEMPLATE.XML
+
+# TwoFox temporary files and folders
+.twofox*
+
+# Microsoft Office temporary files
+~$*
+
+# Windows Explorer copies. The name is localized. If you intend to make
+# a copy and add it to the repository, please choose a better name
+# than the default.
+* - Copy.*
+* - Copy ([1234567890]).*
+* - Copy ([1234567890][1234567890]).*
+* - Kopie.*
+* - Kopie ([1234567890]).*
+* - Kopie ([1234567890][1234567890]).*
+
+# Files used by Windows Explorer
+Thumbs.db
+desktop.ini
+
+# Files used by Mac Finder
+.DS_Store
+.localized
+
+# =================================================================
+# The following lines are templates for specific products. Copy
+# the line from here to the end of the file and remove the hash
+# sign at the beginning of the line.
+# =================================================================
+
+# XFRX (version without source code). XFRX provides an FXP file
+# without corresponding PRG file. Therefore we add the FXP file
+# to the repository despite excluding FXP files generally.
+
+#![xX][fF][rR][xX].[fF][xX][pP]
+
+
+# =================================================================
+# Put project specific exclusions below this comment block.
+#
+# You would typically exclude data folders
+# =================================================================
 # code ref files
 *_ref.*
-bin2txt.*
 
-foxuser.*
+bin2txt.*
+.vscode/
+buildlog.txt
 
