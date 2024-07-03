@@ -21,7 +21,7 @@ ENDCASE
 
 
 IF VARTYPE(m._PdfiumReportEnv) <> "O"
-    ERROR "PdfiumReport.App was not initializaed. Execute DO PdfiumReport.app WITH [ .T. | Pdfium_env object ]"
+    ERROR "PdfiumReport.App was not initialized. Execute DO PdfiumReport.app WITH [ .T. | Pdfium_env object ]"
 ENDIF    
 
 
