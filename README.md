@@ -90,7 +90,7 @@ loPdfiumReport.BatchEnd()
 
 ```
 
-#### As _REPORTOUPUT ####
+#### As _REPORTOUTPUT ####
 
 ```foxpro
 SET REPORTBEHAVIOR 90
