@@ -49,10 +49,22 @@ MODIFY PROJECT 'sample.pjx' NOWAIT NOSHOW NOPROJECTHOOK
 loProject = _VFP.Projects('sample.pjx')
 
 WITH loProject.FILES
+	.ADD('..\source\images\close.bmp')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
+	.ADD('..\source\images\fitpage.bmp')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
+	.ADD('..\source\images\fitwidth.bmp')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
+	.ADD('..\source\images\print.bmp')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
+	.ADD('..\source\images\saveas.bmp')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
+	.ADD('..\source\images\search.bmp')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
 	.ADD('..\source\pdfium-vfp.vcx')		&& *< FileMetadata: Type="V" Cpid="1251" Timestamp="0" ID="0" ObjRev="544" User="" />
-	.ADD('..\source\system.app')		&& *< FileMetadata: Type="Z" Cpid="0" Timestamp="0" ID="0" ObjRev="0" User="" />
-	.ADD('images\search16.bmp')		&& *< FileMetadata: Type="x" Cpid="0" Timestamp="0" ID="0" ObjRev="0" User="" />
-	.ADD('images\search16.msk')		&& *< FileMetadata: Type="x" Cpid="0" Timestamp="0" ID="0" ObjRev="0" User="" />
+	.ADD('..\source\pdfiumreport.app')		&& *< FileMetadata: Type="Z" Cpid="0" Timestamp="0" ID="0" ObjRev="0" User="" />
+	.ADD('foxbarcode.prg')		&& *< FileMetadata: Type="P" Cpid="1251" Timestamp="0" ID="0" ObjRev="544" User="" />
+	.ADD('gpimage2.prg')		&& *< FileMetadata: Type="P" Cpid="1251" Timestamp="0" ID="0" ObjRev="544" User="" />
+	.ADD('images\foxpro-icon.png')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
+	.ADD('images\search16.bmp')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
+	.ADD('images\search16.msk')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
+	.ADD('images\wwrite.ico')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
+	.ADD('report1.frx')		&& *< FileMetadata: Type="R" Cpid="0" Timestamp="0" ID="0" ObjRev="0" User="" />
+	.ADD('report2.frx')		&& *< FileMetadata: Type="R" Cpid="0" Timestamp="0" ID="0" ObjRev="0" User="" />
 	.ADD('sample.prg')		&& *< FileMetadata: Type="P" Cpid="1251" Timestamp="0" ID="0" ObjRev="544" User="" />
 	.ADD('sample.scx')		&& *< FileMetadata: Type="K" Cpid="1251" Timestamp="0" ID="0" ObjRev="544" User="" />
 	*</BuildProj>
@@ -63,7 +75,7 @@ WITH loProject.FILES
 	*</FileComments>
 
 	*<ExcludedFiles>
-	.ITEM(lcCurdir + '..\source\system.app').Exclude = .T.
+	.ITEM(lcCurdir + '..\source\pdfiumreport.app').Exclude = .T.
 	*</ExcludedFiles>
 
 	*<TextFiles>
