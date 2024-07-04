@@ -76,4 +76,4 @@ desktop.ini
 bin2txt.*
 .vscode/
 buildlog.txt
-
+!/build.fxp
