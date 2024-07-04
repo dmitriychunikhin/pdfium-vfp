@@ -12,7 +12,7 @@ pdfium-vfp is a open source PDF viewer control for Visual Fox Pro 9 SP2 based on
 * Text selection and copying
 * Text searching
 * Multiple control instances
-* VFP frx reports previewing, printing and saving (in pdf) without HighDPI pain in the neck
+* VFP frx reports previewing, printing and saving (in pdf) without HighDPI pain in a neck
 
 ### Minumum system requirements
 * Windows Vista SP 2
