@@ -27,8 +27,9 @@ PDFIUM_VFP_EXPORT BOOL PDFIUM_VFP_CALL FPDF_SaveDocument(FPDF_DOCUMENT document,
 /// @param buffer - output buffer to accept font filename
 /// @param buflen - output buffer size in bytes
 /// @param nFontSimulations - recieve font simulations
+/// @param bSymbolFont - receive TRUE if font is symbolic (windings, ...)
 /// @return TRUE on success, FALSE on failure
-PDFIUM_VFP_EXPORT BOOL PDFIUM_VFP_CALL FPDF_GetFontFileName(WCHAR* family_name, BOOL is_bold, BOOL is_italic, DWORD nCharset, WCHAR* buffer, LONG buflen, DWRITE_FONT_SIMULATIONS* nFontSimulations);
+PDFIUM_VFP_EXPORT BOOL PDFIUM_VFP_CALL FPDF_GetFontFileName(WCHAR* family_name, BOOL is_bold, BOOL is_italic, DWORD nCharset, WCHAR* buffer, LONG buflen, DWRITE_FONT_SIMULATIONS* nFontSimulations, DWORD* bSymbolFont);
 
 #ifdef __cplusplus
 } // __cplusplus defined.

@@ -32,7 +32,7 @@ _AutoIncrement = "0"
 
 
 *<BuildProj>
-*<.HomeDir = 'c:\pets\pdfium-vfp\source' />
+*<.HomeDir = 'c:\_prods\pdfium-vfp\source' />
 
 FOR EACH loProject IN _VFP.Projects FOXOBJECT
 	loProject.Close()

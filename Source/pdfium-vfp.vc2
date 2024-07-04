@@ -61,7 +61,7 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		lcPdfiumVfpDll = ADDBS(JUSTPATH(This.pdfium_dll_path)) + "pdfium-vfp.dll"
 		DECLARE LONG FPDF_SaveDocument IN (lcPdfiumVfpDll) LONG document, STRING filepath, STRING@ errMsg, LONG errMsgSize &&errMsgSize: errMsg buffer size in chars, not in bytes
 		
-		DECLARE LONG FPDF_GetFontFileName IN (lcPdfiumVfpDll) STRING@ family_name, LONG is_bold, LONG is_italic, LONG nCharset, STRING@ buffer, LONG buflen, LONG@ nFontSimulations
+		DECLARE LONG FPDF_GetFontFileName IN (lcPdfiumVfpDll) STRING@ family_name, LONG is_bold, LONG is_italic, LONG nCharset, STRING@ buffer, LONG buflen, LONG@ nFontSimulations, LONG@ bSymbolFont
 		
 		
 		************************************************************************
@@ -1491,6 +1491,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		*m: render_frxpicture
 		*m: render_frxrectangle
 		*m: render_text
+		*m: render_textasimage		&& Fallback rendering text as images (case of symbolic and non ttf fonts)
 		*p: batchmode
 		*p: batch_reportcount
 		*p: closepreviewonprint		&& Close preview window when user pushed Print button from preview.
@@ -1566,6 +1567,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 			<memberdata name="closepreviewonprint" type="property" display="ClosePreviewOnPrint"/>
 			<memberdata name="printenv" type="property" display="PrintEnv"/>
 			<memberdata name="printondestroy" type="property" display="PrintOnDestroy"/>
+			<memberdata name="render_textasimage" type="method" display="Render_TextAsImage"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -1982,6 +1984,9 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		
 		    LOCAL lnFontSimulations
 		    lnFontSimulations = 0
+		    
+		    LOCAL lnIsSymbolFont
+		    lnIsSymbolFont = 0
 		
 		    LOCAL lnGetFont
 		    lnGetFont = FPDF_GetFontFileName( ;
@@ -1991,11 +1996,17 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		                    loRepObj.FontCharset, ;
 		                    @lcFontFileName, ;
 		                    LEN(lcFontFileName), ;
-		                    @lnFontSimulations)
+		                    @lnFontSimulations, ;
+		                    @lnIsSymbolFont)
 		                    
 		
 		    IF lnGetFont <> 1
 		        EXIT && Error
+		    ENDIF
+		
+		    IF EMPTY(lnIsSymbolFont)=.F.
+		        * LibHARU fails on HPDF_LoadTTFontFromFile with Symbol fonts (Windings*...)    
+		        EXIT
 		    ENDIF
 		
 		    lcFontFileName = STRCONV(lcFontFileName,6)
@@ -2031,7 +2042,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		
 		FINALLY
 		
-		    IF EMPTY(lnHPDF_Font)=.T. && Get Fallback Font
+		    IF EMPTY(lnHPDF_Font)=.T. AND EMPTY(lnIsSymbolFont)=.T. && Get Fallback Font
 		        lnFontSimulations = 0
 		        lcFontFileName = ""
 		
@@ -2784,14 +2795,9 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		CATCH TO loErr
 		    This.ErrMsg(loErr)
 		FINALLY
-		ENDTRY
-		
-		
-		TRY
 		    IF FILE(lcTempFileName,1)
 		        DELETE FILE (lcTempFileName)
 		    ENDIF
-		CATCH
 		ENDTRY
 		
 		
@@ -2942,9 +2948,12 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		
 		LOCAL loPDFFont
 		loPDFFont = This.GetFontPDF(loRepObj)
+		
 		IF VARTYPE(loPDFFont) <> "O"
+		    This.Render_TextAsImage(loRepObj)
 		    RETURN
 		ENDIF
+		
 		
 		
 		HPDF_Page_SetFontAndSize(lnHPDF_Page, loPDFFont.FontHandle, loRepObj.FontSize)
@@ -3065,6 +3074,66 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		    ENDIF
 		    
 		ENDDO
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE render_textasimage		&& Fallback rendering text as images (case of symbolic and non ttf fonts)
+		LPARAMETERS loRepObj
+		
+		LOCAL loPDFPage, lnHPDF_Page
+		loPDFPage = This.hpdf_pages[This.hpdf_pagecount]
+		lnHPDF_Page = loPDFPage.PageHandle
+		
+		LOCAL lnDpiCoef
+		lnDpiCoef = This.env.GetPDFDPI() / 96
+		
+		LOCAL loGDIFont
+		loGDIFont = This.GetFontGDI(loRepObj)
+		
+		
+		LOCAL lcTempFileName
+		lcTempFileName = This.env.GetUniqueTempFileName("png")
+		
+		LOCAL loErr
+		loErr = .F.
+		TRY
+		
+		    LOCAL loImage, loGfx
+		    loImage = This.env.System.Drawing.Bitmap.New(loRepObj.Width, loRepObj.Height, This.env.System.Drawing.Imaging.PixelFormat.Format32bppARGB)
+		    loGfx = This.env.System.Drawing.Graphics.New()
+		    loGfx = loGfx.FromImage(loImage)
+		    loGfx.DrawString(loRepObj.Text, loGDIFont, This.env.System.Drawing.Brushes.Black, 0, 0, This.env.System.Drawing.StringFormat.GenericDefault)
+		
+		    loImage.Save(lcTempFileName, This.env.System.Drawing.Imaging.ImageFormat.Png)
+		    loImage = .F.
+		
+		    LOCAL lnHPDF_Image
+		    lnHPDF_Image = 0
+		
+		    IF FILE(lcTempFileName, 1)
+		        lnHPDF_Image = HPDF_LoadPngImageFromFile(This.hpdf_doc, lcTempFileName)
+		    ENDIF
+		
+		    IF EMPTY(lnHPDF_Image)
+		        EXIT
+		    ENDIF
+		
+		
+		    HPDF_Page_DrawImage(lnHPDF_Page, lnHPDF_Image, ;
+		        lnDpiCoef * (loRepObj.Left), ;
+		        lnDpiCoef * (loRepObj.TopRev - loRepObj.Height), ;
+		        lnDpiCoef * (loRepObj.Width), ;
+		        lnDpiCoef * (loRepObj.Height))
+		
+		
+		CATCH TO loErr
+		    This.ErrMsg(loErr)
+		FINALLY
+		    IF FILE(lcTempFileName,1)
+		        DELETE FILE (lcTempFileName)
+		    ENDIF
+		ENDTRY
+		
 		
 	ENDPROC
 
