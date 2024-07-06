@@ -1163,10 +1163,14 @@ DEFINE CLASS pdfium_textbox AS textbox 		&& Pdfium-vfp Textbox. Library consumer
 		ENDIF
 		*******************************************************
 		
-		IF This.allow_lost_focus = .F. AND NOT EMPTY(This.Value) AND NOT MDOWN()
-		    This.SelStart = LEN(This.Text)
-		    NODEFAULT
-		    RETURN
+		#define VK_LBUTTON 0x01
+		#define VK_RBUTTON 0x02
+		IF This.allow_lost_focus = .F. AND This.SelStart+1 >= LEN(This.Text) AND NOT EMPTY(This.Value) AND NOT MDOWN() 
+		    IF WinApi_GetKeyState(VK_LBUTTON)>=0 AND WinApi_GetKeyState(VK_RBUTTON)>=0 
+		        This.SelStart = LEN(This.Text)
+		        NODEFAULT
+		        RETURN
+		    ENDIF
 		ENDIF
 		
 	ENDPROC
@@ -3210,6 +3214,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 
 	ADD OBJECT 'cmdClose' AS commandbutton WITH ;
 		Alignment = 2, ;
+		Anchor = 0, ;
 		AutoSize = .F., ;
 		Caption = "", ;
 		FontName = "Segoe UI", ;
@@ -3229,6 +3234,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 
 	ADD OBJECT 'cmdFitPage' AS commandbutton WITH ;
 		Alignment = 2, ;
+		Anchor = 0, ;
 		AutoSize = .F., ;
 		Caption = "", ;
 		FontName = "Segoe UI", ;
@@ -3248,6 +3254,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 
 	ADD OBJECT 'cmdFitWidth' AS commandbutton WITH ;
 		Alignment = 2, ;
+		Anchor = 0, ;
 		AutoSize = .F., ;
 		Caption = "", ;
 		FontName = "Segoe UI", ;
@@ -3267,6 +3274,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 
 	ADD OBJECT 'cmdPrint' AS commandbutton WITH ;
 		Alignment = 2, ;
+		Anchor = 0, ;
 		AutoSize = .F., ;
 		Caption = "  Print", ;
 		FontName = "Segoe UI", ;
@@ -3286,6 +3294,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 
 	ADD OBJECT 'cmdSaveAs' AS commandbutton WITH ;
 		Alignment = 2, ;
+		Anchor = 0, ;
 		AutoSize = .F., ;
 		Caption = "", ;
 		FontName = "Segoe UI", ;
@@ -3304,6 +3313,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		*< END OBJECT: BaseClass="commandbutton" />
 
 	ADD OBJECT 'cmdSearch' AS commandbutton WITH ;
+		Anchor = 0, ;
 		AutoSize = .F., ;
 		Caption = "", ;
 		FontName = "Segoe UI", ;
@@ -3352,6 +3362,8 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="custom" />
 
 	ADD OBJECT 'txtSearch' AS pdfium_textbox WITH ;
+		Anchor = 0, ;
+		InputMask = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", ;
 		Left = 12, ;
 		Name = "txtSearch", ;
 		TabIndex = 2, ;
@@ -4117,6 +4129,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& Pdf viewer control.
 		*p: fpdf_pagecount
 		*p: fpdf_page_first_visible		&& Index of the page that appears first after rendering
 		*p: fpdf_page_last_visible
+		*p: isfocused		&& .T. if control has input focus
 		*p: scale
 		*p: scrollbars		&& Specifies the type of scroll bars that an EditBox control, Form object, or Grid control has. 0 - None (Default); 1 - Horizontal; 2 - Vertical; 3 - Both vertical and horizontal
 		*p: searchbrush
@@ -4150,7 +4163,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& Pdf viewer control.
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
-	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,ClassLibrary,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,DragDrop,DragIcon,DragMode,DragOver,Drag,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,fpdf_doc,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_render_cache,fpdf_pages_search,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Moved,Objects,OLECompleteDrag,OLEDragDrop,OLEDragMode,OLEDragOver,OLEDragPicture,OLEDrag,OLEDropEffects,OLEDropHasData,OLEDropMode,OLEGiveFeedback,OLESetData,OLEStartDrag,ParentClass,Picture,ReadExpression,ReadMethod,Refresh,ResetToDefault,Resize,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_flags,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,SetFocus,ShowWhatsThis,SpecialEffect,Style,Tag,tplclickbegin,UIEnable,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,WriteExpression,WriteMethod,ZOrder
+	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,ClassLibrary,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,DragDrop,DragIcon,DragMode,DragOver,Drag,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,fpdf_doc,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_render_cache,fpdf_pages_search,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Moved,Objects,OLECompleteDrag,OLEDragDrop,OLEDragMode,OLEDragOver,OLEDragPicture,OLEDrag,OLEDropEffects,OLEDropHasData,OLEDropMode,OLEGiveFeedback,OLESetData,OLEStartDrag,ParentClass,Picture,ReadExpression,ReadMethod,Refresh,ResetToDefault,Resize,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_flags,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,SetFocus,ShowWhatsThis,SpecialEffect,Style,Tag,tplclickbegin,UIEnable,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,WriteExpression,WriteMethod,ZOrder
 	*<PropValue>
 		backcolorbrush = .F.
 		BackStyle = 1
@@ -4165,6 +4178,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& Pdf viewer control.
 		fpdf_page_first_visible = 0
 		fpdf_page_last_visible = 0
 		Height = 622
+		isfocused = .F.
 		Name = "pdfiumviewer"
 		scale = 1
 		scrollbars = 0
@@ -4268,6 +4282,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& Pdf viewer control.
 			<memberdata name="savedocument" type="method" display="SaveDocument"/>
 			<memberdata name="fitwidth" type="property" display="FitWidth"/>
 			<memberdata name="fitwidth_assign" type="method" display="FitWidth_Assign"/>
+			<memberdata name="isfocused" type="property" display="IsFocused"/>
 		</VFPData>
 	*</PropValue>
 
@@ -4594,6 +4609,12 @@ DEFINE CLASS pdfiumviewer AS control 		&& Pdf viewer control.
 		
 	ENDPROC
 
+	HIDDEN PROCEDURE GotFocus
+		This.IsFocused = .T.
+		
+		
+	ENDPROC
+
 	PROCEDURE Init
 		LPARAMETERS toEnv as pdfium_env of pdfium-vfp
 		
@@ -4691,6 +4712,13 @@ DEFINE CLASS pdfiumviewer AS control 		&& Pdf viewer control.
 		    This.SelectionCopy()
 		    
 		ENDCASE
+		
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE LostFocus
+		This.IsFocused = .F.
+		
 		
 		
 	ENDPROC
@@ -4902,6 +4930,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& Pdf viewer control.
 		IF This.fpdf_opened = .F.
 		    RETURN
 		ENDIF
+		
 		
 		IF m.nButton = 2
 		    This.contextmenu()
@@ -6190,15 +6219,18 @@ DEFINE CLASS pdfiumviewer AS control 		&& Pdf viewer control.
 		 
 		
 		CASE m.tnMsg = WM_MOUSEACTIVATE
-		    IF TYPE("Application.ActiveForm.WindowType") = "N"
-		        IF Application.ActiveForm.WindowType <> 1 OR Application.ActiveForm = Thisform
-		            This.SetFocus()
+		    IF This.IsFocused = .F.
+		        LOCAL lSaveMousePointer
+		        lSaveMousePointer = This.MousePointer
+		        IF TYPE("Application.ActiveForm.HWnd") = "N"
+		            IF Application.ActiveForm.WindowType <> 1 OR Application.ActiveForm.HWnd = Thisform.HWnd
+		                This.SetFocus()
+		            ENDIF
 		        ENDIF
+		        This.MousePointer = lSaveMousePointer
 		    ENDIF
-		
-		        
 		    
-		CASE INLIST(m.tnMsg, WM_MOUSEMOVE, WM_MOUSEWHEEL, WM_LBUTTONDOWN, WM_RBUTTONUP)
+		CASE INLIST(m.tnMsg, WM_MOUSEMOVE, WM_MOUSEWHEEL, WM_LBUTTONDOWN, WM_RBUTTONUP) 
 		    LOCAL lnMBtn, lnMShift, lnMouseX, lnMouseY
 		    lnMBtn = BITAND(m.tnWParam, MK_LBUTTON + MK_RBUTTON)
 		    lnMShift = BITRSHIFT(BITAND(m.tnWParam, MK_SHIFT + MK_CONTROL),2)
@@ -6206,6 +6238,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& Pdf viewer control.
 		    lnMouseY = BITAND(BITRSHIFT(m.tnLParam,16), 0xffff)
 		    
 		    DO CASE
+		    
 		    CASE INLIST(m.tnMsg, WM_MOUSEMOVE)
 		        This.MouseMove(lnMBtn, lnMShift, lnMouseX, lnMouseY)
 		 
@@ -6216,10 +6249,10 @@ DEFINE CLASS pdfiumviewer AS control 		&& Pdf viewer control.
 		        
 		        This.MouseWheel(lnMWDir, lnMShift, lnMouseX, lnMouseY)
 		
-		    CASE INLIST(m.tnMsg, WM_LBUTTONDOWN)
+		    CASE INLIST(m.tnMsg, WM_LBUTTONDOWN) AND This.IsFocused
 		        This.MouseDown(1, lnMShift, lnMouseX, lnMouseY)
 		        
-		    CASE INLIST(m.tnMsg, WM_RBUTTONUP)
+		    CASE INLIST(m.tnMsg, WM_RBUTTONUP) AND This.IsFocused
 		        This.MouseUp(2, lnMShift, lnMouseX, lnMouseY)
 		
 		    ENDCASE
@@ -6374,7 +6407,7 @@ DEFINE CLASS pdfiumviewer_cmdfocus AS commandbutton 		&& PdfiumViewer input focu
 		Caption = ""
 		Enabled = .T.
 		Height = 27
-		Name = "pdfiumview_cmdfocus"
+		Name = "pdfiumviewer_cmdfocus"
 		Style = 0
 		Visible = .T.
 		Width = 27
