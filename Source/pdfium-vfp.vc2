@@ -1502,6 +1502,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		*p: env		&& pdfium_env object
 		*p: errlog
 		*p: frx_pagecount
+		*p: gdi_fonts
 		*p: hpdf_doc
 		*p: hpdf_fonts		&& Font collection for caching purporses
 		*p: hpdf_pagecount
@@ -1513,7 +1514,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
-	HIDDEN batchmode,batch_reportcount,batch_reports,env,errlog,frx_pagecount,hpdf_doc,hpdf_fonts,hpdf_pagecount,hpdf_pages,ogfx,printenv,printondestroy
+	HIDDEN batchmode,batch_reportcount,batch_reports,env,errlog,frx_pagecount,gdi_fonts,hpdf_doc,hpdf_fonts,hpdf_pagecount,hpdf_pages,ogfx,printenv,printondestroy
 	*<PropValue>
 		AllowModalMessages = .T.
 		batchmode = .F.
@@ -1524,6 +1525,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		errlog = ("")
 		FRXDataSession = 0
 		frx_pagecount = 0
+		gdi_fonts = .F.
 		Height = 23
 		hpdf_doc = 0
 		hpdf_fonts = .F.
@@ -1572,6 +1574,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 			<memberdata name="printenv" type="property" display="PrintEnv"/>
 			<memberdata name="printondestroy" type="property" display="PrintOnDestroy"/>
 			<memberdata name="render_textasimage" type="method" display="Render_TextAsImage"/>
+			<memberdata name="gdi_fonts" type="property" display="gdi_fonts"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -1923,6 +1926,34 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 	HIDDEN PROCEDURE getfontgdi
 		LPARAMETERS loRepObj
 		
+		LOCAL lcFontID
+		lcFontID = ALLTRIM(loRepObj.FontFace)
+		IF loRepObj.FontBold
+		    lcFontID = lcFontID + "<B>"
+		ENDIF
+		IF loRepObj.FontItalic
+		    lcFontID = lcFontID + "<I>"
+		ENDIF
+		IF loRepObj.FontUnderline
+		    lcFontID = lcFontID + "<U>"
+		ENDIF
+		lcFontID = lcFontID + "<"+TRANSFORM(loRepObj.FontCharset)+">"
+		
+		
+		***********************************************************
+		* Font has been found
+		***********************************************************
+		LOCAL lnFontIndex
+		lnFontIndex = This.gdi_fonts.GetKey(lcFontID)
+		IF lnFontIndex > 0
+		    RETURN This.gdi_fonts[lnFontIndex]
+		ENDIF
+		***********************************************************
+		
+		
+		***********************************************************
+		* Font hasn't been found, create it
+		***********************************************************
 		LOCAL loFont
 		loFont = This.env.System.Drawing.Font.New( ;
 		    loRepObj.FontFace, ;
@@ -1935,6 +1966,8 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		    This.env.System.Drawing.GraphicsUnit.Point, ;
 		    loRepObj.FontCharset, ;
 		    .F.)
+		
+		This.gdi_fonts.Add(loFont, lcFontID)
 		
 		RETURN loFont
 		
@@ -1957,10 +1990,10 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		LOCAL lcFontID
 		lcFontID = ALLTRIM(loRepObj.FontFace)
 		IF loRepObj.FontBold
-		    lcFontID = lcFontID + "<Bold>"
+		    lcFontID = lcFontID + "<B>"
 		ENDIF
 		IF loRepObj.FontItalic
-		    lcFontID = lcFontID + "<Italic>"
+		    lcFontID = lcFontID + "<I>"
 		ENDIF
 		
 		
@@ -2113,12 +2146,11 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		
 		
 		This.oGfx = This.env.System.Drawing.Graphics.FromHWND(_SCREEN.HWnd)
+		This.gdi_fonts = NEWOBJECT("Collection")
 		
 	ENDPROC
 
 	PROCEDURE LoadReport
-		
-		This.TwoPassProcess = .T.
 		
 		
 		This.frx_pagecount = 0
