@@ -278,7 +278,7 @@ DEFINE CLASS sample AS form
 		Visible = .T., ;
 		Width = 480, ;
 		CMDFOCUS.Name = "CMDFOCUS", ;
-		ENV.Name = "ENV", ;
+		env.Name = "env", ;
 		I18N.Name = "I18N", ;
 		UISTATE.Name = "UISTATE"
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
@@ -297,7 +297,7 @@ DEFINE CLASS sample AS form
 		Visible = .T., ;
 		Width = 441, ;
 		CMDFOCUS.Name = "CMDFOCUS", ;
-		ENV.Name = "ENV", ;
+		env.Name = "env", ;
 		I18N.Name = "I18N", ;
 		UISTATE.Name = "UISTATE"
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
@@ -316,7 +316,7 @@ DEFINE CLASS sample AS form
 		Visible = .T., ;
 		Width = 480, ;
 		CMDFOCUS.Name = "CMDFOCUS", ;
-		ENV.Name = "ENV", ;
+		env.Name = "env", ;
 		I18N.Name = "I18N", ;
 		UISTATE.Name = "UISTATE"
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
@@ -344,7 +344,7 @@ DEFINE CLASS sample AS form
 		Visible = .T., ;
 		Width = 636, ;
 		CMDFOCUS.Name = "CMDFOCUS", ;
-		ENV.Name = "ENV", ;
+		env.Name = "env", ;
 		I18N.Name = "I18N", ;
 		UISTATE.Name = "UISTATE"
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
@@ -701,12 +701,12 @@ DEFINE CLASS sample AS form
 		    TRY
 		        _REPORTOUTPUT = "../source/pdfiumreport.app"
 		
-		        DO (_REPORTOUTPUT) WITH Thisform.pdfium_env
+		        DO (_REPORTOUTPUT) WITH Thisform.pdfium_env && Execute on initialization step of your application
 		        
 		        REPORT FORM Report1.frx NOPAGEEJECT
 		        REPORT FORM Report2.frx PREVIEW 
 		        
-		        DO (_REPORTOUTPUT) WITH .F.
+		        DO (_REPORTOUTPUT) WITH .F. && Execute on release step of your application
 		            
 		    FINALLY    
 		        _REPORTOUTPUT = lSave_REPORTOUTPUT
@@ -722,18 +722,21 @@ DEFINE CLASS sample AS form
 		    REPORT FORM Report1.frx OBJECT loPdfiumReport 
 		    REPORT FORM Report2.frx OBJECT loPdfiumReport PREVIEW
 		
-		    loPdfiumReport.BatchEnd()
+		    loPdfiumReport.BatchEnd() && Mandatory. Release object or call BatchEnd to get the result of REPORT FORM PREVIEW OR REPORT FORM TO FILE
 		
-		    loPdfiumReport = .F. && Releasing variable after printing is mandatory. It must be done before any cursors, variables that used in reports are released
+		    loPdfiumReport = .F. 
 		
 		CASE 3 = REPOBJ_VARIANT && local scoped single
 		
 		    LOCAL loPdfiumReport as PdfiumReport OF "..\Source\pdfium-vfp.vcx"
 		    loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "../source/pdfiumreport.app", Thisform.Pdfium_env)
 		
-		    REPORT FORM Report1.frx OBJECT loPdfiumReport PREVIEW
+		    REPORT FORM Report1.frx OBJECT loPdfiumReport NOPAGEEJECT
+		    REPORT FORM Report2.frx OBJECT loPdfiumReport PREVIEW
 		
-		    loPdfiumReport = .F. && Releasing variable after printing is mandatory. It must be done before any cursors, variables that used in reports are released
+		    loPdfiumReport.BatchEnd() && Mandatory. Release object or call BatchEnd to get the result of REPORT FORM PREVIEW OR REPORT FORM TO FILE
+		
+		    loPdfiumReport = .F. 
 		    
 		    
 		ENDCASE

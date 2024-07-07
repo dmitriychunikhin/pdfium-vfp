@@ -2147,10 +2147,8 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		This.CommandClauses.NOPAGEEJECT = .F.
 		
 		DO CASE
-		CASE VARTYPE(m._PdfiumReport) = "O" AND m._PdfiumReport = This AND This.BatchModeAuto
-		    IF This.BatchMode = .F.
-		        This.BatchBegin()
-		    ENDIF
+		CASE This.BatchModeAuto AND This.BatchMode = .F.
+		    This.BatchBegin()
 		    This.Batch_reportcount = This.Batch_reportcount + 1
 		
 		CASE This.BatchMode = .T.
@@ -2208,7 +2206,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 	ENDPROC
 
 	PROCEDURE OnPreviewClose
-		LPARAMETERS llPrint
+		LPARAMETERS lPrint
 		
 		This.PreviewContainer = NULL
 		
@@ -2480,7 +2478,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		    This.env.declaredll()
 		    
 		    This.frx_pagecount = This.frx_pagecount + 1
-		    This.hpdf_pagecount = This.hpdf_pagecount + 1 &&It may be greater than frx_pagecount if PDF comprise output of many reports when This.BatchMode=.T. | This.BatchModeAuto=.T.
+		    This.hpdf_pagecount = This.hpdf_pagecount + 1 &&It may be greater than frx_pagecount if PDF comprise output of many reports when This.BatchMode=.T.
 		
 		    DIMENSION This.hpdf_pages(This.hpdf_pagecount)
 		
@@ -3398,10 +3396,8 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="textbox" />
 	
 	PROCEDURE close
-		LPARAMETERS llPrint
-		
 		IF VARTYPE(This.ListenerRef)="O"
-		    This.ListenerRef.OnPreviewClose(llPrint)
+		    This.ListenerRef.OnPreviewClose()
 		    This.ListenerRef = .F.
 		ENDIF
 		
@@ -3520,8 +3516,9 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		
 		This.PrintEnv.Setup(loFrmSetup.PrintEnv)
 		
-		This.ListenerRef.PrintReport(loFrmSetup.PrintEnv)
-		
+		IF VARTYPE(This.ListenerRef) = "O"
+		    Thisform.ListenerRef.PrintReport(This.PrintEnv)
+		ENDIF
 		
 	ENDPROC
 

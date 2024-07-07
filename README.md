@@ -25,7 +25,8 @@ pdfium-vfp is a open source PDF viewer control for Visual Fox Pro 9 SP2 based on
 * open and explore Sample/sample.pjx
 
 ### Sample
-Open sample.pjx project from [Sample](Sample) folder or just run Sample/sample.exe (all neccesary binaries included)
+Open sample.pjx project from `pdfium-vfp/Sample` folder or just run Sample/sample.exe (all neccesary binaries included)
+
 <img alt="Sample screen shot" src="Sample/screenshots/pdfium-vfp-screen01.png" />
 
 <img alt="Sample screen shot" src="Sample/screenshots/pdfium-vfp-screen02.png" />
@@ -36,8 +37,8 @@ Open sample.pjx project from [Sample](Sample) folder or just run Sample/sample.e
 * PdfiumViewer doesn't support case insensitive searching for non-ASCII character range (likely it's pdfium pecularity)
 * Report previewer doesn't support dynamics
 * Fallback font in report previewer is Helvetica with no chance to change it
-* Report previewer can deal with ttf fonts only  (no ttc, fon)
-* Report previewer doesn't respect General in picture objects and field's trimming settings
+* Report previewer can deal with ttf fonts only  (ttc, fon), non ttf font are rendered as images
+* Report previewer doesn't handle General in picture objects and field's trimming settings
 * Interface language always is your system language 
 * Dependencies declaration conflict with gpimage2.prg that used in [FoxBarcode](https://github.com/VFPX/FoxBarcode) library (to solve this just remove clear dlls section in gpimage2.prg and compile it)
 
@@ -60,6 +61,7 @@ Thisform.PdfiumViewer.OpenPdf("some.pdf")
 1) Copy PdfiumReport.app from Source folder to your project folder
 2) Copy all dependency binaries (libhpdf.dll, pdfium.dll, pdfium-vfp.dll,  system.app) from Source folder to your project's folder
 
+More examples can be found at `pdfium-vfp/Sample/sample.scx`
 
 #### Standalone ####
 
@@ -71,17 +73,17 @@ loPdfiumReport = NEWOBJECT(;
 *******************************************
 * Report previewing
 *******************************************
-loPdfiumReport.BatchBegin() && Remove this if you don't need batching
+loPdfiumReport.BatchBegin()
 
 REPORT FORM Report1.frx OBJECT loPdfiumReport
 REPORT FORM Report2.frx OBJECT loPdfiumReport PREVIEW
 
-loPdfiumReport.BatchEnd() && Remove this if you don't need batching
+loPdfiumReport.BatchEnd()
 
 *******************************************
 * Saving report output to the file
 *******************************************
-loPdfiumReport.BatchBegin()    
+loPdfiumReport.BatchBegin()
 
 REPORT FORM Report1.frx OBJECT loPdfiumReport 
 REPORT FORM Report2.frx OBJECT loPdfiumReport TO FILE "some.pdf"
@@ -101,35 +103,68 @@ lSave_REPORTOUTPUT = _REPORTOUTPUT
 TRY
     _REPORTOUTPUT = "pdfiumreport.app"
 
-    DO pdfiumreport.app WITH .T. && Initialization (mandatory)
+    DO pdfiumreport.app WITH .T. && Initialization (mandatory) / Execute on initialization step of your application
 
     *******************************************
     * Report previewing
-    * batching preview with NOPAGEEJECT is not supported
     *******************************************
-    REPORT FORM Report1.frx PREVIEW
+    REPORT FORM Report1.frx NOPAGEEJECT 
     REPORT FORM Report2.frx PREVIEW
 
     *******************************************
     * Saving report output to the file
     *******************************************
-    REPORT FORM Report1.frx TO FILE "some.pdf"
+    REPORT FORM Report1.frx NOPAGEEJECT
+    REPORT FORM Report2.frx TO FILE "some.pdf"
 
-
-    DO pdfiumreport.app WITH .F. && Release
+    DO pdfiumreport.app WITH .F. && Release / Execute on release step of your application
         
 FINALLY    
     _REPORTOUTPUT = lSave_REPORTOUTPUT
 ENDTRY
 ```
 
+### Remarks on Printing From Preview Window (should be read)
+So far, PdfiumReport printing from preview use `REPORT FORM` replaying approarch, thus `report form` environment must not be changed before BatchEnd will be called or PdfiumReport variable will be released. If you use PdfiumReport.app as _REPORTOUTPUT all mentioned here doesn't need. 
+
+Example
+```foxpro
+LOCAL loPdfiumReport
+loPdfiumReport = NEWOBJECT(;
+    "PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app")
+
+REPORT FORM Report1.frx OBJECT loPdfiumReport NOPAGEEJECT
+REPORT FORM Report2.frx OBJECT loPdfiumReport PREVIEW
+
+* loPdfiumReport.BatchEnd()
+
+loPdfiumReport = .F. && Call BatchEnd or release PdfiumReport object right after the last `REPORT FORM` of your batch or Preview Window will not be opened 
+
+
+** OR **
+
+LOCAL loPdfiumReport
+loPdfiumReport = NEWOBJECT(;
+    "PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app")
+
+loPdfiumReport.BatchBegin()
+REPORT FORM Report1.frx OBJECT loPdfiumReport NOPAGEEJECT
+REPORT FORM Report2.frx OBJECT loPdfiumReport PREVIEW
+
+loPdfiumReport.BatchEnd() && Call BatchEnd or release PdfiumReport object right after the last `REPORT FORM` of your batch or Preview Window will not be opened 
+
+* loPdfiumReport = .F. 
+
+```
+
+
 
 ### Binaries
 What binaries exactly do you need to run all the stuff (or your own latest version of it)
-* [pdfium.dll](Source/pdfium.dll)
-* [pdfium-vfp.dll](Source/pdfium-vfp.dll)
-* [libhpdf.dll](Source/libhpdf.dll) - for PdfiumReport.app only
-* [system.app](Source/system.app)
+* [pdfium-vfp/Source/pdfium.dll](Source/pdfium.dll)
+* [pdfium-vfp/Source/pdfium-vfp.dll](Source/pdfium-vfp.dll)
+* [pdfium-vfp/Source/libhpdf.dll](Source/libhpdf.dll) - for PdfiumReport.app only
+* [pdfium-vfp/Source/system.app](Source/system.app)
 
 Source repositories
 * [pdfium.dll](https://github.com/bblanchon/pdfium-binaries) 
@@ -143,6 +178,7 @@ Source repositories
 * PdfiumReport.app declares 
 ```foxpro
 PUBLIC _PdfiumReportEnv as pdfium_env of pdfium-vfp
+PUBLIC _PdfiumReport as pdfiumreport of pdfium-vfp
 ```
 * Declares WIN32API functions via WinApi_* pattern (aliased)
 * Declares pdfium.dll functions via FPDF_* pattern (without alias)
