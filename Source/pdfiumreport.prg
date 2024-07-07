@@ -1,4 +1,4 @@
-LPARAMETERS tvType, tvReference, tvUnload
+LPARAMETERS tvType, tvReference
 
 
 DO CASE
@@ -28,8 +28,16 @@ ENDIF
 LOCAL lcAppPath
 lcAppPath = STREXTRACT(SYS(16)," ","",2,1+2)
 
-m.tvReference = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", lcAppPath, m._PdfiumReportEnv)
-m.tvReference.ClosePreviewOnPrint = .T.
+IF VARTYPE(m._PdfiumReport) = "O" 
+    * NOPAGEEJECT was set on previous report
+    m.tvReference = m._PdfiumReport
+    RETURN
+ENDIF
+
+* Will be released on PdfiumReport.UnloadReport if NOPAGEEJECT haven't been set
+_PdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", lcAppPath, m._PdfiumReportEnv)
+m.tvReference = m._PdfiumReport
+
 
 
 * Initialization of PdfiumReport.app global resources
@@ -40,21 +48,25 @@ PROCEDURE PdfiumReportAppInit
 
     IF VARTYPE(m._PdfiumReportEnv)="O"
         RETURN
-    ENDIF    
-
+    ENDIF
+    
     LOCAL lcAppPath
     lcAppPath = STREXTRACT(SYS(16)," ","",2,1+2)
 
     PUBLIC _PdfiumReportEnv
     m._PdfiumReportEnv = NEWOBJECT("Pdfium_env", "pdfium-vfp.vcx", lcAppPath)
     m._PdfiumReportEnv.setup(m.toEnv)
-    
+
+    PUBLIC _PdfiumReport
+    m._PdfiumReport = .F.
 
 ENDPROC
 
 * Release PdfiumReport.app resources
 PROCEDURE PdfiumReportAppRelease
 
+    RELEASE _PdfiumReport
     RELEASE _PdfiumReportEnv
+
     
 ENDPROC

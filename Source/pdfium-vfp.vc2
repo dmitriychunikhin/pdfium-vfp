@@ -1497,8 +1497,8 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		*m: render_text
 		*m: render_textasimage		&& Fallback rendering text as images (case of symbolic and non ttf fonts)
 		*p: batchmode
+		*p: batchmodeauto		&& .T. if report was created by  _REPORTOUTPUT (= PdfiumReport.app)  and NOPAGEEJECT was set
 		*p: batch_reportcount
-		*p: closepreviewonprint		&& Close preview window when user pushed Print button from preview.
 		*p: env		&& pdfium_env object
 		*p: errlog
 		*p: frx_pagecount
@@ -1508,18 +1508,17 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		*p: hpdf_pagecount
 		*p: ogfx
 		*p: printenv
-		*p: printondestroy		&& Print report on destroy event (related to ClosePreviewOnPrint)
 		*a: batch_reports[1,0]
 		*a: hpdf_pages[1,0]
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
-	HIDDEN batchmode,batch_reportcount,batch_reports,env,errlog,frx_pagecount,gdi_fonts,hpdf_doc,hpdf_fonts,hpdf_pagecount,hpdf_pages,ogfx,printenv,printondestroy
+	HIDDEN batchmodeauto,batchmode,batch_reportcount,batch_reports,env,errlog,frx_pagecount,gdi_fonts,hpdf_doc,hpdf_fonts,hpdf_pagecount,hpdf_pages,ogfx,printenv
 	*<PropValue>
 		AllowModalMessages = .T.
 		batchmode = .F.
+		batchmodeauto = .F.
 		batch_reportcount = 0
-		closepreviewonprint = .F.
 		DynamicLineHeight = .T.
 		env = .F.
 		errlog = ("")
@@ -1534,7 +1533,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		Name = "pdfiumreport"
 		ogfx = .F.
 		printenv = .F.
-		printondestroy = .F.
 		QuietMode = .F.
 		SendGDIPlusImage = 1
 		TwoPassProcess = .T.
@@ -1570,11 +1568,10 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 			<memberdata name="hpdf_fonts" type="property" display="hpdf_Fonts"/>
 			<memberdata name="frx_printenv_set" type="method" display="frx_printenv_set"/>
 			<memberdata name="frx_apply_printenv" type="method" display="frx_apply_printenv"/>
-			<memberdata name="closepreviewonprint" type="property" display="ClosePreviewOnPrint"/>
 			<memberdata name="printenv" type="property" display="PrintEnv"/>
-			<memberdata name="printondestroy" type="property" display="PrintOnDestroy"/>
 			<memberdata name="render_textasimage" type="method" display="Render_TextAsImage"/>
 			<memberdata name="gdi_fonts" type="property" display="gdi_fonts"/>
+			<memberdata name="batchmodeauto" type="property" display="BatchModeAuto"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -1585,6 +1582,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		DIMENSION This.Batch_reports(1)
 		This.Batch_reports[1] = .F.
 		
+		
 	ENDPROC
 
 	PROCEDURE batchend
@@ -1593,6 +1591,8 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		ENDIF
 		
 		This.Finalize()
+		
+		This.ClosePDF()
 		
 		This.BatchMode = .F.
 		This.Batch_reportcount = 0
@@ -1648,17 +1648,15 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 
 	PROCEDURE Destroy
 		
-		IF This.PrintOnDestroy
-		    This.PrintReport()
-		ENDIF    
+		This.Finalize()
+		
+		This.ClosePDF()
 		
 		This.printenv = .F.
 		
 		This.env = .F.
 		
 		This.PreviewContainer = NULL
-		
-		This.ClosePDF()
 		
 		This.Batch_reportcount = 0
 		DIMENSION This.Batch_reports(1)
@@ -1721,7 +1719,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		    RETURN
 		ENDIF
 		
-		
 		This.errLogShow()
 		
 		LOCAL lcTempFileName
@@ -1767,17 +1764,13 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		
 		    This.PreviewContainer = NULL
 		    
-		    IF This.PrintOnDestroy = .F.
-		        This.ClosePDF()
-		    ENDIF
-		
 		    TRY
 		        IF FILE(lcTempFileName,1)
 		            DELETE FILE (lcTempFileName)
 		        ENDIF
 		    CATCH
 		    ENDTRY
-		    
+		
 		ENDTRY
 		
 		
@@ -1865,7 +1858,8 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		    lcNewExpr = lcNewExpr + "DEVICE=" + CHR(13)+CHR(10)
 		    lcNewExpr = lcNewExpr + "OUTPUT=" + CHR(13)+CHR(10)
 		    
-		    lcNewExpr = lcNewExpr + "COPIES=" + TRANSFORM(MAX(m.toPrintEnv.copies,1)) + CHR(13)+CHR(10)
+		    *lcNewExpr = lcNewExpr + "COPIES=" + TRANSFORM(MAX(m.toPrintEnv.copies,1)) + CHR(13)+CHR(10)
+		    lcNewExpr = lcNewExpr + "COPIES=" + TRANSFORM(1) + CHR(13)+CHR(10)
 		        
 		    DO CASE
 		    CASE m.toPrintEnv.duplex AND lnOrientation = 1 &&Landscape
@@ -1893,21 +1887,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		    GO TOP
 		    SCAN FOR objtype = 17 AND EMPTY(picture)=.F. AND offset = 0
 		        
-		        LOCAL llPictureFileExists, llPictureInResources
-		        llPictureFileExists = FILE(ALLTRIM(expr),1) && check file for existence
-		        llPictureInResources = .F.
-		        
-		        IF llPictureFileExists = .F.
-		            TRY
-		                FILETOSTR(ALLTRIM(expr)) && try to load from .exe | .app resources
-		                llPictureInResources = .T.
-		            CATCH
-		            ENDTRY
-		        ENDIF
-		        
-		        IF llPictureFileExists=.F. AND llPictureInResources = .F.
-		            REPLACE picture WITH '"' + ADDBS(FULLPATH(".")) + ALLTRIM(picture,1," ", '"') + '"'
-		        ENDIF
+		        REPLACE picture WITH '"' + ALLTRIM(FULLPATH(picture,lcFrxPath),1," ", '"') + '"'
 		        
 		    ENDSCAN    
 		
@@ -2141,8 +2121,8 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		    RETURN
 		ENDIF
 		
-		This.printenv = NEWOBJECT("pdfium_print_env", This.ClassLibrary)
-		This.printenv.setup()
+		This.PrintEnv = NEWOBJECT("pdfium_print_env", This.ClassLibrary)
+		This.PrintEnv.Setup()
 		
 		
 		This.oGfx = This.env.System.Drawing.Graphics.FromHWND(_SCREEN.HWnd)
@@ -2163,16 +2143,28 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		ENDIF    
 		
 		
-		IF EMPTY(This.hpdf_doc)
+		This.BatchModeAuto = This.CommandClauses.NOPAGEEJECT
+		This.CommandClauses.NOPAGEEJECT = .F.
+		
+		DO CASE
+		CASE VARTYPE(m._PdfiumReport) = "O" AND m._PdfiumReport = This AND This.BatchModeAuto
+		    IF This.BatchMode = .F.
+		        This.BatchBegin()
+		    ENDIF
+		    This.Batch_reportcount = This.Batch_reportcount + 1
+		
+		CASE This.BatchMode = .T.
+		    This.Batch_reportcount = This.Batch_reportcount + 1
+		
+		OTHERWISE
+		    This.Batch_reportcount = 1
+		
+		ENDCASE
+		
+		IF This.Batch_reportcount = 1
 		    This.CreatePDF()
 		ENDIF
 		
-		
-		IF This.BatchMode = .T.
-		    This.Batch_reportcount = This.Batch_reportcount + 1
-		ELSE
-		    This.Batch_reportcount = 1
-		ENDIF
 		
 		DIMENSION This.Batch_reports(This.Batch_reportcount)
 		
@@ -2216,10 +2208,9 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 	ENDPROC
 
 	PROCEDURE OnPreviewClose
-		LPARAMETERS lPrint
+		LPARAMETERS llPrint
 		
 		This.PreviewContainer = NULL
-		
 		
 	ENDPROC
 
@@ -2234,13 +2225,8 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		    RETURN
 		ENDIF    
 		
-		This.printEnv.Setup(m.toPrintEnv)
 		
-		IF VARTYPE(This.PreviewContainer) = "O" AND This.ClosePreviewOnPrint
-		    This.PrintOnDestroy = .T.
-		    This.PreviewContainer = NULL
-		    RETURN
-		ENDIF
+		This.printEnv.Setup(m.toPrintEnv)
 		
 		
 		This.printEnv.SysDefaultPrinter_Set()
@@ -2303,131 +2289,138 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		* Print page ranges according to PrintEnv.PageMode
 		*********************************************************************
 		
-		LOCAL lnPageRange
-		lnPageRange = 1
+		LOCAL liCopies, lnCopies
+		lnCopies = This.PrintEnv.Copies
+		liCopies = 1
 		
-		FOR lnPageRange = 1 TO lnPageRangeCnt
-		    
-		    LOCAL lnRangeFrom, lnRangeTo
-		    lnRangeFrom = MAX(laPageRanges[lnPageRange,1], 1)
-		    lnRangeTo = MIN(laPageRanges[lnPageRange,2], This.hpdf_pagecount)
-		    
-		    IF lnRangeFrom > lnRangeTo OR lnRangeFrom < 1
-		        LOOP
-		    ENDIF
-		    
-		    LOCAL loPDFPageFrom, loPDFPageTo
-		    loPDFPageFrom = This.hpdf_pages[lnRangeFrom]
-		    loPDFPageTo = This.hpdf_pages[lnRangeTo]
-		    
+		FOR liCopies = 1 TO lnCopies
+		    LOCAL lnPageRange
+		    lnPageRange = 1
 		
-		    LOCAL lnRep, loRep
-		    lnRep = 1
-		
-		    FOR lnRep = loPDFPageFrom.BatchRepNo TO loPDFPageTo.BatchRepNo
-		    
-		        loRep = This.Batch_Reports[lnRep]
+		    FOR lnPageRange = 1 TO lnPageRangeCnt
 		        
-		        IF EMPTY(loRep.DataSourceAlias)
+		        LOCAL lnRangeFrom, lnRangeTo
+		        lnRangeFrom = MAX(laPageRanges[lnPageRange,1], 1)
+		        lnRangeTo = MIN(laPageRanges[lnPageRange,2], This.hpdf_pagecount)
+		        
+		        IF lnRangeFrom > lnRangeTo OR lnRangeFrom < 1
 		            LOOP
 		        ENDIF
 		        
-		        LOCAL lcRepFile
-		        lcRepFile = loRep.CommandClauses.File
-		
-		        LOCAL lcRepFileTemp
-		        lcRepFileTemp = This.frx_apply_printenv(lcRepFile, This.printEnv)
-		        lcRepFile = EVL(lcRepFileTemp, lcRepFile)
-		       
+		        LOCAL loPDFPageFrom, loPDFPageTo
+		        loPDFPageFrom = This.hpdf_pages[lnRangeFrom]
+		        loPDFPageTo = This.hpdf_pages[lnRangeTo]
 		        
-		        TRY
-		            SET DATASESSION TO (loRep.CommandClauses.STARTDATASESSION)
-		            
-		            SELECT (loRep.DataSourceAlias)
-		            
-		            ***********************************
-		            * Find RANGEFROM, RANGETO
-		            ***********************************
-		            LOCAL loPDFPageFirst, loPDFPageLast
-		            loPDFPageFirst = This.hpdf_pages[MAX(loPDFPageFrom.PdfPageNo, loRep.PDFPageNoFrom)]
-		            loPDFPageLast = This.hpdf_pages[MIN(loPDFPageTo.PdfPageNo, loRep.PDFPageNoTo)]
 		
+		        LOCAL lnRep, loRep
+		        lnRep = 1
+		
+		        FOR lnRep = loPDFPageFrom.BatchRepNo TO loPDFPageTo.BatchRepNo
+		        
+		            loRep = This.Batch_Reports[lnRep]
 		            
-		            ***********************************
-		            * Find NOPAGEEJECT value
-		            *********************************** 
-		            LOCAL llNOPAGEEJECT
-		            llNOPAGEEJECT = .F.
-		            
-		            LOCAL lnNextPDFPage
-		            lnNextPDFPage = 0
-		            DO CASE
-		            CASE lnRep < loPDFPageTo.BatchRepNo
-		                LOCAL loNextRep
-		                loNextRep = This.Batch_Reports[lnRep+1]
-		                lnNextPDFPage = MAX(loPDFPageFrom.PdfPageNo, loNextRep.PDFPageNoFrom)
-		            
-		            CASE lnPageRange < lnPageRangeCnt
-		                lnNextPDFPage = MAX(laPageRanges[lnPageRange+1,1], 1)
-		            ENDCASE
-		            
-		            LOCAL loNextPDFPage
-		            IF BETWEEN(lnNextPDFPage, 1, This.hpdf_pagecount) = .T.
-		                loNextPDFPage = This.hpdf_pages[lnNextPDFPage]
-		                
-		                IF BETWEEN(ABS((loPDFPageLast.PdfPageWidth / EVL(loPDFPageLast.PdfPageHeight,1)) - (loNextPDFPage.PdfPageWidth / EVL(loNextPDFPage.PdfPageHeight,1))), 0, 0.5)
-		                    llNOPAGEEJECT = .T.
-		                ENDIF
+		            IF EMPTY(loRep.DataSourceAlias)
+		                LOOP
 		            ENDIF
-		            ***********************************
-		            * / Find NOPAGEEJECT value
-		            *********************************** 
-		                                    
 		            
-		            LOCAL lcReportCmd
-		            lcReportCmd = ""
-		            
-		            WITH loRep.CommandClauses
-		                lcReportCmd = IIF(.ISREPORT, "REPORT FORM ", "LABEL ") + ALLTRIM(lcRepFile)
-		                
-		                lcReportCmd = lcReportCmd + IIF(.ENVIRONMENT, " ENVIRONMENT","")
-		                
-		                lcReportCmd = lcReportCmd + TEXTMERGE(" RANGE <<loPDFPageFirst.FrxPageNo>>, <<loPDFPageLast.FrxPageNo>>")
-		                
-		                lcReportCmd = lcReportCmd + IIF(EMPTY(.HEADING)=.F., " HEADING " + .HEADING,"")
-		                lcReportCmd = lcReportCmd + IIF(.SUMMARY, " SUMMARY","")
-		                lcReportCmd = lcReportCmd + IIF(.NORESET, " NORESET","")
-		                lcReportCmd = lcReportCmd + IIF(.PLAIN, " PLAIN","")
-		                
-		                lcReportCmd = lcReportCmd + IIF(.NOCONSOLE, " NOCONSOLE","")
-		                lcReportCmd = lcReportCmd + IIF(.OFF, " OFF","")
-		                lcReportCmd = lcReportCmd + IIF(.SAMPLE, " SAMPLE","")
-		                
-		                lcReportCmd = lcReportCmd + " TO PRINTER" 
-		                lcReportCmd = lcReportCmd + IIF(llNOPAGEEJECT, " NOPAGEEJECT","")
-		                lcReportCmd = lcReportCmd + IIF(.NOEJECT, " NOEJECT","")
+		            LOCAL lcRepFile
+		            lcRepFile = loRep.CommandClauses.File
 		
-		            ENDWITH
-		
-		            &lcReportCmd
-		
-		    
-		
-		        FINALLY
-		            SET DATASESSION TO (This.CurrentDataSession)
+		            LOCAL lcRepFileTemp
+		            lcRepFileTemp = This.frx_apply_printenv(lcRepFile, This.printEnv)
+		            lcRepFile = EVL(lcRepFileTemp, lcRepFile)
+		           
 		            
 		            TRY
-		                IF FILE(lcRepFileTemp,1)
-		                    DELETE FILE (lcRepFileTemp)
-		                    DELETE FILE (FORCEEXT(lcRepFileTemp,"frt"))
+		                SET DATASESSION TO (loRep.CommandClauses.STARTDATASESSION)
+		                
+		                SELECT (loRep.DataSourceAlias)
+		                
+		                ***********************************
+		                * Find RANGEFROM, RANGETO
+		                ***********************************
+		                LOCAL loPDFPageFirst, loPDFPageLast
+		                loPDFPageFirst = This.hpdf_pages[MAX(loPDFPageFrom.PdfPageNo, loRep.PDFPageNoFrom)]
+		                loPDFPageLast = This.hpdf_pages[MIN(loPDFPageTo.PdfPageNo, loRep.PDFPageNoTo)]
+		
+		                
+		                ***********************************
+		                * Find NOPAGEEJECT value
+		                *********************************** 
+		                LOCAL llNOPAGEEJECT
+		                llNOPAGEEJECT = .F.
+		                
+		                LOCAL lnNextPDFPage
+		                lnNextPDFPage = 0
+		                DO CASE
+		                CASE lnRep < loPDFPageTo.BatchRepNo
+		                    LOCAL loNextRep
+		                    loNextRep = This.Batch_Reports[lnRep+1]
+		                    lnNextPDFPage = MAX(loPDFPageFrom.PdfPageNo, loNextRep.PDFPageNoFrom)
+		                
+		                CASE lnPageRange < lnPageRangeCnt
+		                    lnNextPDFPage = MAX(laPageRanges[lnPageRange+1,1], 1)
+		                ENDCASE
+		                
+		                
+		                LOCAL loNextPDFPage
+		                IF BETWEEN(lnNextPDFPage, 1, This.hpdf_pagecount) = .T.
+		                    loNextPDFPage = This.hpdf_pages[lnNextPDFPage]
+		                    
+		                    IF BETWEEN(ABS((loPDFPageLast.PdfPageWidth / EVL(loPDFPageLast.PdfPageHeight,1)) - (loNextPDFPage.PdfPageWidth / EVL(loNextPDFPage.PdfPageHeight,1))), 0, 0.5)
+		                        llNOPAGEEJECT = .T.
+		                    ENDIF
 		                ENDIF
-		            CATCH
-		            ENDTRY
-		        ENDTRY
+		                ***********************************
+		                * / Find NOPAGEEJECT value
+		                *********************************** 
+		                
+		                LOCAL lcReportCmd
+		                lcReportCmd = ""
+		                
+		                WITH loRep.CommandClauses
+		                    lcReportCmd = IIF(.ISREPORT, "REPORT FORM ", "LABEL ") + ALLTRIM(lcRepFile)
+		                    
+		                    lcReportCmd = lcReportCmd + IIF(.ENVIRONMENT, " ENVIRONMENT","")
+		                    
+		                    lcReportCmd = lcReportCmd + TEXTMERGE(" RANGE <<loPDFPageFirst.FrxPageNo>>, <<loPDFPageLast.FrxPageNo>>")
+		                    
+		                    lcReportCmd = lcReportCmd + IIF(EMPTY(.HEADING)=.F., " HEADING " + .HEADING,"")
+		                    lcReportCmd = lcReportCmd + IIF(.SUMMARY, " SUMMARY","")
+		                    lcReportCmd = lcReportCmd + IIF(.NORESET, " NORESET","")
+		                    lcReportCmd = lcReportCmd + IIF(.PLAIN, " PLAIN","")
+		                    
+		                    lcReportCmd = lcReportCmd + IIF(.NOCONSOLE, " NOCONSOLE","")
+		                    lcReportCmd = lcReportCmd + IIF(.OFF, " OFF","")
+		                    lcReportCmd = lcReportCmd + IIF(.SAMPLE, " SAMPLE","")
+		
+		                    lcReportCmd = lcReportCmd + " TO PRINTER" 
+		
+		                    lcReportCmd = lcReportCmd + IIF(llNOPAGEEJECT, " NOPAGEEJECT","")
+		                    lcReportCmd = lcReportCmd + IIF(.NOEJECT, " NOEJECT","")
+		                    
+		
+		                ENDWITH
+		
+		                &lcReportCmd
+		
 		        
+		
+		            FINALLY
+		                SET DATASESSION TO (This.CurrentDataSession)
+		                
+		                TRY
+		                    IF FILE(lcRepFileTemp,1)
+		                        DELETE FILE (lcRepFileTemp)
+		                        DELETE FILE (FORCEEXT(lcRepFileTemp,"frt"))
+		                    ENDIF
+		                CATCH
+		                ENDTRY
+		            ENDTRY
+		            
+		        ENDFOR
 		    ENDFOR
 		ENDFOR
-		
 		
 		*********************************************************************
 		SET DATASESSION TO (This.CurrentDataSession)
@@ -2487,7 +2480,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		    This.env.declaredll()
 		    
 		    This.frx_pagecount = This.frx_pagecount + 1
-		    This.hpdf_pagecount = This.hpdf_pagecount + 1 &&It may be greater than frx_pagecount if PDF comprise output of many reports when This.BatchMode=.T.
+		    This.hpdf_pagecount = This.hpdf_pagecount + 1 &&It may be greater than frx_pagecount if PDF comprise output of many reports when This.BatchMode=.T. | This.BatchModeAuto=.T.
 		
 		    DIMENSION This.hpdf_pages(This.hpdf_pagecount)
 		
@@ -3181,9 +3174,10 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with ingetrated
 		    loBatchRep.PDFPageNoTo = This.hpdf_pagecount
 		ENDIF
 		
-		
-		IF This.BatchMode = .F.
-		    This.Finalize()
+		IF VARTYPE(m._PdfiumReport) = "O" AND m._PdfiumReport = This 
+		    IF This.BatchModeAuto = .F.
+		        m._PdfiumReport = .F.
+		    ENDIF
 		ENDIF
 		
 		
@@ -3404,9 +3398,10 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="textbox" />
 	
 	PROCEDURE close
+		LPARAMETERS llPrint
 		
-		IF VARTYPE(This.ListenerRef)<>"O"
-		    This.ListenerRef.OnPreviewClose(.F.)
+		IF VARTYPE(This.ListenerRef)="O"
+		    This.ListenerRef.OnPreviewClose(llPrint)
 		    This.ListenerRef = .F.
 		ENDIF
 		
@@ -3513,6 +3508,8 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		loFrmSetup = NEWOBJECT("PdfiumReportViewer_printsetup", This.ClassLibrary, "", This.PrintEnv)
 		loFrmSetup.Show(1)
 		
+		This.pdfiumviewer.SetFocus()
+		
 		IF VARTYPE(loFrmSetup)<>"O"
 		    RETURN
 		ENDIF    
@@ -3523,9 +3520,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		
 		This.PrintEnv.Setup(loFrmSetup.PrintEnv)
 		
-		IF VARTYPE(This.ListenerRef) = "O"
-		    Thisform.ListenerRef.PrintReport(This.PrintEnv)
-		ENDIF
+		This.ListenerRef.PrintReport(loFrmSetup.PrintEnv)
 		
 		
 	ENDPROC
@@ -4195,7 +4190,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& Pdf viewer control.
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
-	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,ClassLibrary,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,DragDrop,DragIcon,DragMode,DragOver,Drag,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,fpdf_doc,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_render_cache,fpdf_pages_search,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Moved,Objects,OLECompleteDrag,OLEDragDrop,OLEDragMode,OLEDragOver,OLEDragPicture,OLEDrag,OLEDropEffects,OLEDropHasData,OLEDropMode,OLEGiveFeedback,OLESetData,OLEStartDrag,ParentClass,Picture,ReadExpression,ReadMethod,Refresh,ResetToDefault,Resize,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_flags,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,SetFocus,ShowWhatsThis,SpecialEffect,Style,Tag,tplclickbegin,UIEnable,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,WriteExpression,WriteMethod,ZOrder
+	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,ClassLibrary,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,DragDrop,DragIcon,DragMode,DragOver,Drag,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,fpdf_doc,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_render_cache,fpdf_pages_search,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Moved,Objects,OLECompleteDrag,OLEDragDrop,OLEDragMode,OLEDragOver,OLEDragPicture,OLEDrag,OLEDropEffects,OLEDropHasData,OLEDropMode,OLEGiveFeedback,OLESetData,OLEStartDrag,ParentClass,Picture,ReadExpression,ReadMethod,Refresh,ResetToDefault,Resize,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_flags,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,ShowWhatsThis,SpecialEffect,Style,Tag,tplclickbegin,UIEnable,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,WriteExpression,WriteMethod,ZOrder
 	*<PropValue>
 		backcolorbrush = .F.
 		BackStyle = 1
@@ -6271,7 +6266,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& Pdf viewer control.
 		    
 		    DO CASE
 		    
-		    CASE INLIST(m.tnMsg, WM_MOUSEMOVE)
+		    CASE INLIST(m.tnMsg, WM_MOUSEMOVE) AND This.IsFocused
 		        This.MouseMove(lnMBtn, lnMShift, lnMouseX, lnMouseY)
 		 
 		    CASE INLIST(m.tnMsg, WM_MOUSEWHEEL)
