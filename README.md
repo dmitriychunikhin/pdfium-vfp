@@ -11,8 +11,9 @@ pdfium-vfp is a open source PDF viewer control for Visual Fox Pro 9 SP2 based on
 * Viewing PDF files
 * Text selection and copying
 * Text searching
+* Printing PDF
 * Multiple control instances
-* VFP frx reports previewing, printing and saving (in pdf) without HighDPI pain in the neck
+* VFP frx reports previewing, printing and saving (in pdf) without High DPI pain in the neck
 
 ### Minumum system requirements
 * Windows Vista SP 2
@@ -80,6 +81,12 @@ REPORT FORM Report2.frx OBJECT loPdfiumReport PREVIEW
 
 loPdfiumReport.BatchEnd()
 
+** OR **
+
+REPORT FORM Report1.frx OBJECT loPdfiumReport NOPAGEEJECT
+REPORT FORM Report2.frx OBJECT loPdfiumReport PREVIEW
+
+
 *******************************************
 * Saving report output to the file
 *******************************************
@@ -89,6 +96,12 @@ REPORT FORM Report1.frx OBJECT loPdfiumReport
 REPORT FORM Report2.frx OBJECT loPdfiumReport TO FILE "some.pdf"
 
 loPdfiumReport.BatchEnd()
+
+
+** OR **
+
+REPORT FORM Report1.frx OBJECT loPdfiumReport NOPAGEEJECT 
+REPORT FORM Report2.frx OBJECT loPdfiumReport TO FILE "some.pdf"
 
 ```
 
@@ -123,40 +136,6 @@ FINALLY
     _REPORTOUTPUT = lSave_REPORTOUTPUT
 ENDTRY
 ```
-
-### Remarks on Printing From Preview Window (should be read)
-So far, PdfiumReport printing from preview use `REPORT FORM` replaying approarch, thus `report form` environment must not be changed before BatchEnd will be called or PdfiumReport variable will be released. If you use PdfiumReport.app as _REPORTOUTPUT all mentioned here doesn't need. 
-
-Example
-```foxpro
-LOCAL loPdfiumReport
-loPdfiumReport = NEWOBJECT(;
-    "PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app")
-
-REPORT FORM Report1.frx OBJECT loPdfiumReport NOPAGEEJECT
-REPORT FORM Report2.frx OBJECT loPdfiumReport PREVIEW
-
-* loPdfiumReport.BatchEnd()
-
-loPdfiumReport = .F. && Call BatchEnd or release PdfiumReport object right after the last `REPORT FORM` of your batch or Preview Window will not be opened 
-
-
-** OR **
-
-LOCAL loPdfiumReport
-loPdfiumReport = NEWOBJECT(;
-    "PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app")
-
-loPdfiumReport.BatchBegin()
-REPORT FORM Report1.frx OBJECT loPdfiumReport NOPAGEEJECT
-REPORT FORM Report2.frx OBJECT loPdfiumReport PREVIEW
-
-loPdfiumReport.BatchEnd() && Call BatchEnd or release PdfiumReport object right after the last `REPORT FORM` of your batch or Preview Window will not be opened 
-
-* loPdfiumReport = .F. 
-
-```
-
 
 
 ### Binaries

@@ -277,10 +277,10 @@ DEFINE CLASS sample AS form
 		Top = 6, ;
 		Visible = .T., ;
 		Width = 480, ;
-		CMDFOCUS.Name = "CMDFOCUS", ;
+		cmdFocus.Name = "cmdFocus", ;
 		env.Name = "env", ;
-		I18N.Name = "I18N", ;
-		UISTATE.Name = "UISTATE"
+		i18n.Name = "i18n", ;
+		UIState.Name = "UIState"
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
 
 	ADD OBJECT 'Pageframe1.Page1.Pageframe2.Page2.Pdfiumviewer' AS pdfiumviewer WITH ;
@@ -296,10 +296,10 @@ DEFINE CLASS sample AS form
 		Top = 8, ;
 		Visible = .T., ;
 		Width = 441, ;
-		CMDFOCUS.Name = "CMDFOCUS", ;
+		cmdFocus.Name = "cmdFocus", ;
 		env.Name = "env", ;
-		I18N.Name = "I18N", ;
-		UISTATE.Name = "UISTATE"
+		i18n.Name = "i18n", ;
+		UIState.Name = "UIState"
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
 
 	ADD OBJECT 'Pageframe1.Page2.Pdfiumviewer' AS pdfiumviewer WITH ;
@@ -315,10 +315,10 @@ DEFINE CLASS sample AS form
 		Top = 43, ;
 		Visible = .T., ;
 		Width = 480, ;
-		CMDFOCUS.Name = "CMDFOCUS", ;
+		cmdFocus.Name = "cmdFocus", ;
 		env.Name = "env", ;
-		I18N.Name = "I18N", ;
-		UISTATE.Name = "UISTATE"
+		i18n.Name = "i18n", ;
+		UIState.Name = "UIState"
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
 
 	ADD OBJECT 'Pdfium_env' AS pdfium_env WITH ;
@@ -343,10 +343,10 @@ DEFINE CLASS sample AS form
 		Top = 108, ;
 		Visible = .T., ;
 		Width = 636, ;
-		CMDFOCUS.Name = "CMDFOCUS", ;
+		cmdFocus.Name = "cmdFocus", ;
 		env.Name = "env", ;
-		I18N.Name = "I18N", ;
-		UISTATE.Name = "UISTATE"
+		i18n.Name = "i18n", ;
+		UIState.Name = "UIState"
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
 
 	ADD OBJECT 'shpSearch' AS shape WITH ;
@@ -691,7 +691,7 @@ DEFINE CLASS sample AS form
 		#define REPOBJ_VARIANT 1
 		
 		DO CASE
-		CASE 1 = REPOBJ_VARIANT && global scoped _REPORTOUTPUT
+		CASE 1 = REPOBJ_VARIANT && global scope _REPORTOUTPUT
 		
 		    SET REPORTBEHAVIOR 90
 		
@@ -712,7 +712,7 @@ DEFINE CLASS sample AS form
 		        _REPORTOUTPUT = lSave_REPORTOUTPUT
 		    ENDTRY
 		
-		CASE 2 = REPOBJ_VARIANT && local scoped batch
+		CASE 2 = REPOBJ_VARIANT && local scope batch
 		
 		    LOCAL loPdfiumReport as PdfiumReport OF "..\Source\pdfium-vfp.vcx"
 		    loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "../source/pdfiumreport.app", Thisform.Pdfium_env)
@@ -722,19 +722,17 @@ DEFINE CLASS sample AS form
 		    REPORT FORM Report1.frx OBJECT loPdfiumReport 
 		    REPORT FORM Report2.frx OBJECT loPdfiumReport PREVIEW
 		
-		    loPdfiumReport.BatchEnd() && Mandatory. Release object or call BatchEnd to get the result of REPORT FORM PREVIEW OR REPORT FORM TO FILE
+		    loPdfiumReport.BatchEnd() 
 		
 		    loPdfiumReport = .F. 
 		
-		CASE 3 = REPOBJ_VARIANT && local scoped single
+		CASE 3 = REPOBJ_VARIANT && local scope single
 		
 		    LOCAL loPdfiumReport as PdfiumReport OF "..\Source\pdfium-vfp.vcx"
 		    loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "../source/pdfiumreport.app", Thisform.Pdfium_env)
 		
 		    REPORT FORM Report1.frx OBJECT loPdfiumReport NOPAGEEJECT
 		    REPORT FORM Report2.frx OBJECT loPdfiumReport PREVIEW
-		
-		    loPdfiumReport.BatchEnd() && Mandatory. Release object or call BatchEnd to get the result of REPORT FORM PREVIEW OR REPORT FORM TO FILE
 		
 		    loPdfiumReport = .F. 
 		    

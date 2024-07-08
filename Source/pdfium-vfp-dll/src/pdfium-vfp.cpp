@@ -83,7 +83,8 @@ int WriteBlockCallback(FPDF_FILEWRITE* pFileWrite, const void* data, unsigned lo
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-// origin: https://stackoverflow.com/a/77118485 by https://stackoverflow.com/users/15835974/jeremie-bergeron
+// originated from https://stackoverflow.com/a/77118485 by https://stackoverflow.com/users/15835974/jeremie-bergeron
+// with minor additions
 //////////////////////////////////////////////////////////////////////////////////////////////
 BOOL PDFIUM_VFP_CALL FPDF_GetFontFileName(WCHAR* family_name, BOOL is_bold, BOOL is_italic, DWORD nCharset, WCHAR* buffer, LONG buflen, DWRITE_FONT_SIMULATIONS* nFontSimulations, DWORD* bSymbolFont)
 {
