@@ -3250,6 +3250,8 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		ENDCASE
 		
 		DO CASE
+		CASE loRepObj.Mode = 0 AND loRepObj.FillPat > 0 AND loRepObj.PenPat = 0
+		    HPDF_Page_Fill(lnHPDF_Page)
 		CASE loRepObj.Mode = 0 AND loRepObj.FillPat > 0
 		    HPDF_Page_FillStroke(lnHPDF_Page)
 		
