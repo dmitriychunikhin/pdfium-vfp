@@ -38,7 +38,7 @@ Open sample.pjx project from `pdfium-vfp/Sample` folder or just run Sample/sampl
 * PdfiumViewer doesn't support case insensitive searching for non-ASCII character range (likely it's pdfium pecularity)
 * Report previewer doesn't support dynamics
 * Fallback font in report previewer is Helvetica with no chance to change it
-* Report previewer can deal with ttf fonts only  (ttc, fon), non ttf font are rendered as images
+* Report previewer can deal with ttf fonts only, non ttf font (ttc, fon) are rendered as images
 * Report previewer doesn't handle General in picture objects and field's trimming settings
 * Interface language always is your system language 
 * Dependencies declaration conflict with gpimage2.prg that used in [FoxBarcode](https://github.com/VFPX/FoxBarcode) library (to solve this just remove clear dlls section in gpimage2.prg and compile it)
