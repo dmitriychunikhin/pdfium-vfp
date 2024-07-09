@@ -2493,6 +2493,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		LOCAL lcFontID
 		lcFontID = ALLTRIM(loRepObj.FontFace)
+		lcFontID = lcFontID + "<"+TRANSFORM(loRepObj.FontSize)+">"
 		IF loRepObj.FontBold
 		    lcFontID = lcFontID + "<B>"
 		ENDIF
