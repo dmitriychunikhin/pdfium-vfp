@@ -27,4 +27,4 @@ return lcNotes
 * "pdfium-vfp" is a Component. No procedure GetRegisterWithThor created by VFPX Deployment 
 
 
-*created by VFPX Deployment, 13.07.24 04:45:20
+*created by VFPX Deployment, 13.07.24 05:52:24

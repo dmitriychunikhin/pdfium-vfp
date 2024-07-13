@@ -18,7 +18,7 @@ lcRepositoryURL   = 'https://github.com/dmitriychunikhin/pdfium-vfp'
 lcDownloadsBranch = 'main'
 lcDownloadsURL    = strtran(m.lcRepositoryURL, 'github.com', ;
 	'raw.githubusercontent.com') + '/' + m.lcDownloadsBranch + '/ThorUpdater/'
-lcVersionFileURL  = m.lcDownloadsURL + 'Version.txt' &&'Version.txt'
+lcVersionFileURL  = m.lcDownloadsURL + 'pdfium-vfpVersion.txt' &&'Version.txt'
 	&& the URL for the file containing code to get the available version number
 lcZIPFileURL      = m.lcDownloadsURL + 'pdfium-vfp.zip'
 	&& the URL for the zip file containing the project

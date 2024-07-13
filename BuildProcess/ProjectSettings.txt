@@ -13,6 +13,7 @@ RunBin2Prg = No
 RunGit = No
 gitIgnore_InstalledFiles = Yes
 
+
 *Yes (Default) to prompt for Version if not specified
 *Prompt = Yes
 
