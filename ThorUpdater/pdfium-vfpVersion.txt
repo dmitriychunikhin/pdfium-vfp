@@ -1,0 +1,30 @@
+lparameters toUpdateObject
+
+* Set the properties of the passed updater object.
+
+with toUpdateObject
+	.VersionNumber    = '1.2.7 - 20240712'
+	.AvailableVersion = 'pdfium-vfp-1.2.7-update-20240712'
+	.Notes            = GetNotes()
+*	.RegisterWithThor = GetRegisterWithThor()
+endwith
+return toUpdateObject
+
+* Get the notes for the project.
+
+procedure GetNotes
+local lcNotes
+text to lcNotes noshow
+1.2.7: VFPX Deployment
+
+endtext
+return lcNotes
+
+* Register the tool with Thor. Note: Thor replaces ##InstallFolder## with the
+* installation path for the tool when this code is executed.
+
+
+* "pdfium-vfp" is a Component. No procedure GetRegisterWithThor created by VFPX Deployment 
+
+
+*created by VFPX Deployment, 13.07.24 04:45:20

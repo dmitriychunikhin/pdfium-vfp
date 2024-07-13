@@ -62,6 +62,8 @@ WITH loProject.FILES
 	.ADD('images\foxpro-icon.png')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
 	.ADD('images\search16.bmp')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
 	.ADD('images\search16.msk')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
+	.ADD('images\vfpxbanner.gif')		&& *< FileMetadata: Type="x" Cpid="0" Timestamp="0" ID="0" ObjRev="0" User="" />
+	.ADD('images\vfpxpoweredby_alternative.gif')		&& *< FileMetadata: Type="x" Cpid="0" Timestamp="0" ID="0" ObjRev="0" User="" />
 	.ADD('images\wwrite.ico')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
 	.ADD('report1.frx')		&& *< FileMetadata: Type="R" Cpid="0" Timestamp="0" ID="0" ObjRev="0" User="" />
 	.ADD('report2.frx')		&& *< FileMetadata: Type="R" Cpid="0" Timestamp="0" ID="0" ObjRev="0" User="" />

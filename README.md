@@ -1,3 +1,5 @@
+<img alt="VFPX" src="docs/images/vfpxpoweredby_alternative.gif" />
+
 # pdfium-vfp 
 
 pdfium-vfp is a open source PDF viewer control for Visual Fox Pro 9 SP2 based on 

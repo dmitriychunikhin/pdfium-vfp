@@ -1,0 +1,40 @@
+AppName   = pdfium-vfp
+AppID     = pdfium-vfp
+Version   = 1.2.7
+VersionDate = 2024-07-12
+Repository_URL    = dmitriychunikhin/pdfium-vfp
+Repository_Branch = main
+AppFile = Source/pdfiumreport.app
+PJXFile = Source/pdfiumreport.pjx
+ChangeLog = ./ChangeLog.md
+Include_VFPX = Yes
+Include_Thor = Yes
+RunBin2Prg = No
+RunGit = No
+gitIgnore_InstalledFiles = Yes
+
+*Yes (Default) to prompt for Version if not specified
+*Prompt = Yes
+
+*The category to use when adding to the Thor menu. If omitted, "Applications". only when Component is No.
+*Category = {My}
+
+*Builds the project specified in PJXFile without the RECOMPILE clause.
+*Recompile = No
+
+*A comma-separated list of relative paths to which FoxBin2Prg is to be applied.
+*Bin2PrgFolder = {MySource1,MySource1}
+
+*A different name for the staging directory.
+*InstalledFilesFolder = {MyInstallFolder}
+
+*Remove all files from InstalledFiles directory if InstalledFiles.txt is given
+*Clear_InstalledFiles = No
+
+*A different name for version file used to publish info on the remote server.
+*A help with old projects using a different name for the version file
+*VersionFile_Remote = {AppID}Version.txt
+
+*Allow to create Thor_Update_{AppId}_Test.prg file, used for testing this app from a 1different location.
+*Alter Repository_URL / Repository_Branch or Repository for a test location on the web.
+*DEBUGGING = Yes

@@ -1,0 +1,7 @@
+#.gitignore for pdfium-vfp/ThorUpdater
+# a .gitignore for ThorUpdater to publish to Thor.
+# enable some files that are in general not under git control for VFP projects to publish to Thor
+
+!README.md
+!{VersionFile_Remote}.txt
+!pdfium-vfp.zip

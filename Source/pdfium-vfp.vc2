@@ -784,6 +784,7 @@ DEFINE CLASS pdfium_print_env AS custom 		&& Print configuration for PdfiumRepor
 
 	*<DefinedPropArrayMethod>
 		*m: getprinterdevmode		&& Return output structure DEVMODE from DocumentProperties win32api function
+		*m: getprinterduplex		&& Returns printer duplex support: .T. - duplex is supported, .F. - duplex is not supported.
 		*m: getprinterforms		&& Return full list of paper forms with the flag indicating that  form is supported by printer
 		*m: pagelist_parse		&& Parse page list input (string), returns valid string of page list
 		*m: setup		&& Setup print configuration (from external printenv if needed). Set default foxpro (not system) printer to Printer property
@@ -825,6 +826,7 @@ DEFINE CLASS pdfium_print_env AS custom 		&& Print configuration for PdfiumRepor
 			<memberdata name="getprinterforms" type="method" display="GetPrinterForms"/>
 			<memberdata name="getprinterdevmode" type="method" display="GetPrinterDevMode"/>
 			<memberdata name="papersize" type="property" display="PaperSize"/>
+			<memberdata name="getprinterduplex" type="method" display="GetPrinterDuplex"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -874,6 +876,22 @@ DEFINE CLASS pdfium_print_env AS custom 		&& Print configuration for PdfiumRepor
 		WinApi_ClosePrinter(lhPrinter)
 		
 		RETURN lcPrnDevMode
+		
+	ENDPROC
+
+	PROCEDURE getprinterduplex		&& Returns printer duplex support: .T. - duplex is supported, .F. - duplex is not supported.
+		LPARAMETERS lcPrinter
+		
+		IF EMPTY(NVL(lcPrinter,""))
+		    RETURN 0
+		ENDIF
+		
+		#define DC_DUPLEX 7
+		
+		DECLARE INTEGER DeviceCapabilities IN winspool.drv AS WinApi_DeviceCapabilities STRING pDevice, STRING pPort, INTEGER fwCapability, STRING@ pOutput, STRING@ pDevMode
+		
+		RETURN EMPTY(WinApi_DeviceCapabilities(lcPrinter, NULL, DC_DUPLEX, NULL, NULL)) = .F.
+		
 		
 	ENDPROC
 
@@ -5109,8 +5127,19 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		LOCAL lnPrinterDPI
 		lnPrinterDPI =  EVL(IIF(BITAND(lnPrnDevModeFlags, DM_YRESOLUTION)<>0, CTOBIN(SUBSTR(lcPrnDevMode,DM_OFFSET_YRESOLUTION,2),"2RS"), 0), 600)
 		
-		LOCAL lnPrinterDuplex
+		LOCAL llPrinterHasDuplex, lnPrinterDuplex
+		llPrinterHasDuplex = This.PrintEnv.GetPrinterDuplex(This.PrintEnv.Printer)
+		
+		* Get default duplex setting of the printer
 		lnPrinterDuplex = EVL(IIF(BITAND(lnPrnDevModeFlags, DM_DUPLEX)<>0, CTOBIN(SUBSTR(lcPrnDevMode,DM_OFFSET_DUPLEX,2),"2RS"), 0), DMDUP_SIMPLEX)
+		
+		DO CASE
+		CASE llPrinterHasDuplex = .F. OR This.PrintEnv.Duplex  = .F.
+		    lnPrinterDuplex = DMDUP_SIMPLEX
+		OTHERWISE
+		    lnPrinterDuplex = DMDUP_VERTICAL
+		ENDCASE
+		
 		
 		
 		LOCAL loErr
@@ -5140,6 +5169,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		    LOCAL llStartDoc
 		    llStartDoc = .T.
+		    
+		    LOCAL lnDocPageNum
+		    lnDocPageNum = 0
 		    
 		    LOCAL lnOrientation
 		    lnOrientation = 0
@@ -5215,6 +5247,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		                    WinApi_DeleteDC(lhPrinterDC)
 		                ENDIF
 		
+		                lnDocPageNum = 0
 		                
 		                lnOrientation = IIF(lnPageWidth > lnPageHeight, DMORIENT_LANDSCAPE, DMORIENT_PORTRAIT)
 		                
@@ -5224,7 +5257,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		                * Set duplex
 		                lcPrnDevMode = STUFF(lcPrnDevMode, DM_OFFSET_DMFIELDS, 4, BINTOC(BITOR(lnPrnDevModeFlags, DM_DUPLEX), "4RS"))
-		                lcPrnDevMode = STUFF(lcPrnDevMode, DM_OFFSET_DUPLEX, 2, BINTOC(IIF(This.PrintEnv.Duplex=.F., DMDUP_SIMPLEX, lnPrinterDuplex), "2RS"))
+		                lcPrnDevMode = STUFF(lcPrnDevMode, DM_OFFSET_DUPLEX, 2, BINTOC(lnPrinterDuplex, "2RS"))
 		                
 		                * Set page orientation
 		                lcPrnDevMode = STUFF(lcPrnDevMode, DM_OFFSET_DMFIELDS, 4, BINTOC(BITOR(lnPrnDevModeFlags, DM_ORIENTATION), "4RS"))
@@ -5245,7 +5278,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		                llStartDoc = .F.
 		            ENDIF
 		
-		
+		            lnDocPageNum = lnDocPageNum + 1
 		
 		            ***********************************
 		            * Render page 
@@ -5266,6 +5299,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		            
 		            LOCAL lnPrintRotate
 		            lnPrintRotate = IIF(lnOrientation = DMORIENT_LANDSCAPE, IIF(lnPageWidth > lnPageHeight, 0, 1), IIF(lnPageWidth > lnPageHeight, 1, 0))
+		            IF lnPrinterDuplex = DMDUP_VERTICAL AND MOD(lnDocPageNum,2) = 0
+		                lnPrintRotate = IIF(lnOrientation = DMORIENT_LANDSCAPE, IIF(lnPageWidth > lnPageHeight, 2, 1), IIF(lnPageWidth > lnPageHeight, 3, 0)) 
+		            ENDIF
 		            
 		            LOCAL lnFPDF_Page 
 		            lnFPDF_Page = This.fpdf_pages[lnPageIndex]

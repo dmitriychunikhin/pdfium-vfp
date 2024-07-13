@@ -1,0 +1,7 @@
+Source/pdfium-vfp.vcx
+Source/pdfium-vfp.vct
+Source/pdfiumreport.app
+Source/pdfium-vfp.dll
+Source/pdfium.dll
+Source/libharu.dll
+Source/system.app
