@@ -3361,9 +3361,9 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		LOCAL lnAlign
 		lnAlign = ICASE(loRepObj.Offset = 0, HPDF_TALIGN_LEFT, loRepObj.Offset = 1, HPDF_TALIGN_RIGHT, loRepObj.Offset = 2, HPDF_TALIGN_CENTER, HPDF_TALIGN_LEFT)
 		
-		LOCAL lnPadtX, lnPadY
-		lnPadX = 1
-		lnPadY = 1
+		LOCAL lnPadX, lnPadY
+		lnPadX = ICASE(lnAlign = HPDF_TALIGN_RIGHT, -1, lnAlign = HPDF_TALIGN_LEFT, 1, 0) * 2
+		lnPadY = 2
 		
 		*******************************************************
 		
