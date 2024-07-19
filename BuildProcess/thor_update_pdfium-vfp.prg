@@ -37,7 +37,7 @@ with m.toUpdateObject
 	.SourceFileUrl        = m.lcZIPFileURL
 	.Component            = 'Yes'
 	.Link                 = m.lcRepositoryURL
-	.LinkPrompt           = 'pdfium-vfp Home Page'
+	.LinkPrompt           = 'pdfium-vfp github'
 	.ProjectCreationDate  = date(2024, 7, 20)
 	.Dependencies         = ''	&& a comma or space delimited list of other Thor applications (ApplicationName) that this project depends on
 	.RegisterWithThor     = m.lcRegisterWithThor
