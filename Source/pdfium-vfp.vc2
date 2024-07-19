@@ -2538,8 +2538,8 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		***********************************************************
 		* Font hasn't been found, create it
 		***********************************************************
-		LOCAL loFont
-		loFont = This.env.System.Drawing.Font.New( ;
+		LOCAL loGDIFont
+		loGDIFont = This.env.System.Drawing.Font.New( ;
 		    loRepObj.FontFace, ;
 		    loRepObj.FontSize, ;
 		    ( ;
@@ -2551,9 +2551,29 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    loRepObj.FontCharset, ;
 		    .F.)
 		
+		
+		LOCAL loFont
+		loFont = NEWOBJECT("Empty")
+		ADDPROPERTY(loFont, "GDIFont", loGDIFont)
+		ADDPROPERTY(loFont, "Handle", loGDIFont.GetHandle())
+		ADDPROPERTY(loFont, "Height", loGDIFont.GetHeight())
+		ADDPROPERTY(loFont, "HeightCeil", loGDIFont.Height)
+		
+		TRY
+		    * FontFamily access can cause unexpected error for unkown reason
+		    ADDPROPERTY(loFont, "CellDescent", loGDIFont.FontFamily.GetCellDescent())
+		    ADDPROPERTY(loFont, "CellAscent", loGDIFont.FontFamily.GetCellAscent())
+		    ADDPROPERTY(loFont, "EmHeight", loGDIFont.FontFamily.GetEmHeight())
+		CATCH
+		    ADDPROPERTY(loFont, "CellDescent", 434.000)
+		    ADDPROPERTY(loFont, "CellAscent", 1854.000)
+		    ADDPROPERTY(loFont, "EmHeight", 2048.000)
+		ENDTRY    
+		
 		This.gdi_fonts.Add(loFont, lcFontID)
 		
 		RETURN loFont
+		
 		
 	ENDPROC
 
@@ -2772,7 +2792,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    This.oGfx.GetHandle(), ;
 		    m.tcTextUnicode + CHR(0), ;
 		    LEN(m.tcTextUnicode) / 2, ;
-		    toFont.GetHandle(), ;
+		    toFont.Handle, ;
 		    toLayoutRectF.ToVarBinary(), ;
 		    This.env.system.Drawing.StringFormat.GenericTypographic.GetHandle(), ;
 		    @lcObjBBox, ;
@@ -3342,21 +3362,21 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		
 		IF loRepObj.ObjType = FRX_OBJ_LABEL
-		    loRepObj.Width = loRepObj.Width + loGDIFont.Height
+		    loRepObj.Width = loRepObj.Width + loGDIFont.HeightCeil
 		ENDIF
 		    
 		*******************************************************
 		LOCAL loLineRect
-		loLineRect = This.env.system.Drawing.RectangleF.New(0, 0, loRepObj.Width, loGDIFont.Height)
+		loLineRect = This.env.system.Drawing.RectangleF.New(0, 0, loRepObj.Width, loGDIFont.HeightCeil)
 		
 		LOCAL lnLineHeight
-		lnLineHeight = loGDIFont.GetHeight()
+		lnLineHeight = loGDIFont.Height
 		
 		LOCAL lnFontDescent
-		lnFontDescent = lnLineHeight * loGDIFont.FontFamily.GetCellDescent() / loGDIFont.FontFamily.GetEmHeight()
+		lnFontDescent = lnLineHeight * loGDIFont.CellDescent / loGDIFont.EmHeight
 		
 		LOCAL lnFontAscent
-		lnFontAscent = lnLineHeight * loGDIFont.FontFamily.GetCellAscent() / loGDIFont.FontFamily.GetEmHeight()
+		lnFontAscent = lnLineHeight * loGDIFont.CellAscent / loGDIFont.EmHeight
 		
 		LOCAL lnAlign
 		lnAlign = ICASE(loRepObj.Offset = 0, HPDF_TALIGN_LEFT, loRepObj.Offset = 1, HPDF_TALIGN_RIGHT, loRepObj.Offset = 2, HPDF_TALIGN_CENTER, HPDF_TALIGN_LEFT)
@@ -3479,7 +3499,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    loImage = This.env.System.Drawing.Bitmap.New(loRepObj.Width, loRepObj.Height, This.env.System.Drawing.Imaging.PixelFormat.Format32bppARGB)
 		    loGfx = This.env.System.Drawing.Graphics.New()
 		    loGfx = loGfx.FromImage(loImage)
-		    loGfx.DrawString(loRepObj.Text, loGDIFont, This.env.System.Drawing.Brushes.Black, 0, 0, This.env.System.Drawing.StringFormat.GenericDefault)
+		    loGfx.DrawString(loRepObj.Text, loGDIFont.GDIFont, This.env.System.Drawing.Brushes.Black, 0, 0, This.env.System.Drawing.StringFormat.GenericDefault)
 		
 		    loImage.Save(lcTempFileName, This.env.System.Drawing.Imaging.ImageFormat.Png)
 		    loImage = .F.
@@ -3544,11 +3564,13 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 	*< OBJECTDATA: ObjPath="cmdFitWidth" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdFitPage" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="PrintEnv" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmbScale" UniqueID="" Timestamp="" />
 
 	*<DefinedPropArrayMethod>
 		*m: close		&& Close preview window
 		*m: openpdf		&& Open pdf file
 		*m: printreport		&& Print report
+		*m: scalechanged		&& Scale change handling
 		*m: setreport		&& ReportPreviewer interface requirement (reead docs on ReportPreviewer, ReportListener)
 		*p: listenerref
 		*p: _memberdata		&& XML Metadata for customizable properties
@@ -3571,7 +3593,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		ShowWindow = 1
 		Top = 0
 		Visible = .T.
-		Width = 587
+		Width = 697
 		WindowState = 0
 		WindowType = 1
 		_memberdata = <VFPData>
@@ -3580,8 +3602,28 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 			<memberdata name="listenerref" type="property" display="ListenerRef"/>
 			<memberdata name="printreport" type="method" display="PrintReport"/>
 			<memberdata name="close" type="method" display="Close"/>
+			<memberdata name="scalechanged" type="method" display="ScaleChanged"/>
 		</VFPData>
 	*</PropValue>
+
+	ADD OBJECT 'cmbScale' AS combobox WITH ;
+		BoundColumn = 1, ;
+		BoundTo = .F., ;
+		ColumnCount = 1, ;
+		ColumnLines = .F., ;
+		ColumnWidths = "80,0", ;
+		ControlSource = "", ;
+		FontName = "Segoe UI", ;
+		FontSize = 10, ;
+		Height = 27, ;
+		Left = 528, ;
+		Name = "cmbScale", ;
+		Style = 2, ;
+		TabIndex = 8, ;
+		TabStop = .F., ;
+		Top = 11, ;
+		Width = 80
+		*< END OBJECT: BaseClass="combobox" />
 
 	ADD OBJECT 'cmdClose' AS commandbutton WITH ;
 		Alignment = 2, ;
@@ -3591,13 +3633,13 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		FontName = "Segoe UI", ;
 		FontSize = 12, ;
 		Height = 32, ;
-		Left = 537, ;
+		Left = 642, ;
 		Name = "cmdClose", ;
 		Picture = images\close.bmp, ;
 		PictureMargin = 0, ;
 		PicturePosition = 1, ;
 		PictureSpacing = 0, ;
-		TabIndex = 8, ;
+		TabIndex = 9, ;
 		TabStop = .F., ;
 		Top = 8, ;
 		Width = 41
@@ -3719,7 +3761,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		TabStop = .T., ;
 		Top = 48, ;
 		Visible = .T., ;
-		Width = 564, ;
+		Width = 672, ;
 		cmdFocus.Name = "cmdFocus", ;
 		env.Name = "env", ;
 		i18n.Name = "i18n", ;
@@ -3762,6 +3804,8 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		LPARAMETERS toEnv as pdfium_env of pdfium-vfp
 		
 		This.Pdfiumviewer.Init(m.toEnv)
+		
+		BINDEVENT(This.PdfiumViewer, "scale", This, "scalechanged", 1)
 		
 		
 		This.Caption = This.i18n.text("REPORTVIEWER_TITLE")
@@ -3861,10 +3905,40 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		
 	ENDPROC
 
+	PROCEDURE scalechanged		&& Scale change handling
+		LOCAL lnScale, lcScale
+		lnScale = This.PdfiumViewer.Scale
+		lcScale = TRANSFORM(INT(lnScale*100)) + "%"
+		
+		IF INLIST(lnScale,1,2,3,4)=.F.
+		    This.cmbScale.List[1] = lcScale
+		ELSE
+		    This.cmbScale.List[1] = ""
+		ENDIF
+		
+		This.cmbScale.Value = lcScale
+		
+	ENDPROC
+
 	PROCEDURE setreport		&& ReportPreviewer interface requirement (reead docs on ReportPreviewer, ReportListener)
 		LPARAMETERS toListenerRef 
 		
 		This.ListenerRef = m.toListenerRef 
+		
+	ENDPROC
+
+	PROCEDURE cmbScale.Init
+		This.AddItem("")
+		This.AddItem("100%")
+		This.AddItem("200%")
+		This.AddItem("300%")
+		This.AddItem("400%")
+		
+	ENDPROC
+
+	PROCEDURE cmbScale.InteractiveChange
+		Thisform.pdfiumviewer.Scale = MIN(MAX(INT(VAL(EVL(This.Value,"100")))/100,0.25),4)
+		Thisform.Refresh()
 		
 	ENDPROC
 

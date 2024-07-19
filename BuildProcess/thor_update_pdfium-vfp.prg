@@ -18,7 +18,7 @@ lcRepositoryURL   = 'https://github.com/dmitriychunikhin/pdfium-vfp'
 lcDownloadsBranch = 'main'
 lcDownloadsURL    = strtran(m.lcRepositoryURL, 'github.com', ;
 	'raw.githubusercontent.com') + '/' + m.lcDownloadsBranch + '/ThorUpdater/'
-lcVersionFileURL  = m.lcDownloadsURL + 'pdfium-vfpVersion.txt' &&'Version.txt'
+lcVersionFileURL  = m.lcDownloadsURL + 'pdfium-vfpVersion.txt' &&'pdfium-vfpVersion.txt'
 	&& the URL for the file containing code to get the available version number
 lcZIPFileURL      = m.lcDownloadsURL + 'pdfium-vfp.zip'
 	&& the URL for the zip file containing the project
@@ -32,13 +32,13 @@ endtext
 
 with m.toUpdateObject
 	.ApplicationName      = 'pdfium-vfp'
-	.VersionLocalFilename = 'Version.txt'
+	.VersionLocalFilename = 'pdfium-vfpVersionFile.txt'
 	.VersionFileURL       = m.lcVersionFileURL
 	.SourceFileUrl        = m.lcZIPFileURL
-	.Component            = 'Yes'
+	.Component            = 'No'
 	.Link                 = m.lcRepositoryURL
 	.LinkPrompt           = 'pdfium-vfp Home Page'
-	.ProjectCreationDate  = date(2024, 7, 12)
+	.ProjectCreationDate  = date(2024, 7, 18)
 	.Dependencies         = ''	&& a comma or space delimited list of other Thor applications (ApplicationName) that this project depends on
 	.RegisterWithThor     = m.lcRegisterWithThor
 
@@ -46,4 +46,4 @@ endwith
 
 return m.toUpdateObject
 
-*created by VFPX Deployment, 12.07.24 23:45:20
+*created by VFPX Deployment, 18.07.24 04:00:00

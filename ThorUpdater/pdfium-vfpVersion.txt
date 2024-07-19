@@ -3,10 +3,10 @@ lparameters toUpdateObject
 * Set the properties of the passed updater object.
 
 with toUpdateObject
-	.VersionNumber    = '1.2.7 - 20240712'
-	.AvailableVersion = 'pdfium-vfp-1.2.7-update-20240712'
+	.VersionNumber    = '1.2.8 - 20240718'
+	.AvailableVersion = 'pdfium-vfp-1.2.8-update-20240718'
 	.Notes            = GetNotes()
-*	.RegisterWithThor = GetRegisterWithThor()
+	.RegisterWithThor = GetRegisterWithThor()
 endwith
 return toUpdateObject
 
@@ -24,7 +24,44 @@ return lcNotes
 * installation path for the tool when this code is executed.
 
 
-* "pdfium-vfp" is a Component. No procedure GetRegisterWithThor created by VFPX Deployment 
+procedure GetRegisterWithThor
+ local lcCommand
+ text to lcCommand noshow
+* "pdfium-vfp" is a tool created by VFPX Deployment:
+* Create the tool under Thor Tools.
+
+loThorInfo = Execscript (_Screen.cThorDispatcher, 'Thor Register=')
+with loThorInfo
+
+* Required properties.
+
+	.PRGName    = 'Thor_Tool_pdfium-vfp'
+	.FolderName = '##InstallFolder##'
+	.Prompt     = 'pdfium-vfp'
+	.AppID      = 'pdfium-vfp'
+
+* Optional properties.
+
+	.Description = 'pdfium-vfp'
+
+* These are used to group and sort tools when they are displayed in menus or
+* the Thor form.
+
+	.Category        = 'Applications'
+	.CanRunAtStartUp = .F.
+
+* This is the code to execute when the tool is selected.
+
+	.Code = "do ('##InstallFolder##pdfium-vfp.app')"
+
+* Register the tool with Thor.
+
+	llRegister = .Register()
+endwith
+ endtext
+
+ return lcCommand
+endproc &&GetRegisterWithThor
 
 
-*created by VFPX Deployment, 13.07.24 06:01:36
+*created by VFPX Deployment, 18.07.24 04:27:55
