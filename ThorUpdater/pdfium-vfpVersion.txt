@@ -3,10 +3,10 @@ lparameters toUpdateObject
 * Set the properties of the passed updater object.
 
 with toUpdateObject
-	.VersionNumber    = '1.2.8 - 20240718'
-	.AvailableVersion = 'pdfium-vfp-1.2.8-update-20240718'
+	.VersionNumber    = '1.2 - 20240720'
+	.AvailableVersion = 'pdfium-vfp-1.2-update-20240720'
 	.Notes            = GetNotes()
-	.RegisterWithThor = GetRegisterWithThor()
+*	.RegisterWithThor = GetRegisterWithThor()
 endwith
 return toUpdateObject
 
@@ -16,6 +16,10 @@ procedure GetNotes
 local lcNotes
 text to lcNotes noshow
 1.2.7: VFPX Deployment
+1.2.8: 
+ - Scale selector added on pdfiumreport.app preview form
+ - Added fallback fontfamily ascent and descent values in case when system.app Font.FontFamily throws error (for unknown reason so far)
+
 
 endtext
 return lcNotes
@@ -24,44 +28,7 @@ return lcNotes
 * installation path for the tool when this code is executed.
 
 
-procedure GetRegisterWithThor
- local lcCommand
- text to lcCommand noshow
-* "pdfium-vfp" is a tool created by VFPX Deployment:
-* Create the tool under Thor Tools.
-
-loThorInfo = Execscript (_Screen.cThorDispatcher, 'Thor Register=')
-with loThorInfo
-
-* Required properties.
-
-	.PRGName    = 'Thor_Tool_pdfium-vfp'
-	.FolderName = '##InstallFolder##'
-	.Prompt     = 'pdfium-vfp'
-	.AppID      = 'pdfium-vfp'
-
-* Optional properties.
-
-	.Description = 'pdfium-vfp'
-
-* These are used to group and sort tools when they are displayed in menus or
-* the Thor form.
-
-	.Category        = 'Applications'
-	.CanRunAtStartUp = .F.
-
-* This is the code to execute when the tool is selected.
-
-	.Code = "do ('##InstallFolder##pdfium-vfp.app')"
-
-* Register the tool with Thor.
-
-	llRegister = .Register()
-endwith
- endtext
-
- return lcCommand
-endproc &&GetRegisterWithThor
+* "pdfium-vfp" is a Component. No procedure GetRegisterWithThor created by VFPX Deployment 
 
 
-*created by VFPX Deployment, 18.07.24 04:27:55
+*created by VFPX Deployment, 20.07.24 02:11:37

@@ -3,5 +3,5 @@ Source\pdfium-vfp.vct
 Source\pdfiumreport.app
 Source\pdfium-vfp.dll
 Source\pdfium.dll
-Source\libharu.dll
+Source\libhpdf.dll
 Source\system.app

@@ -35,10 +35,10 @@ with m.toUpdateObject
 	.VersionLocalFilename = 'pdfium-vfpVersionFile.txt'
 	.VersionFileURL       = m.lcVersionFileURL
 	.SourceFileUrl        = m.lcZIPFileURL
-	.Component            = 'No'
+	.Component            = 'Yes'
 	.Link                 = m.lcRepositoryURL
 	.LinkPrompt           = 'pdfium-vfp Home Page'
-	.ProjectCreationDate  = date(2024, 7, 18)
+	.ProjectCreationDate  = date(2024, 7, 20)
 	.Dependencies         = ''	&& a comma or space delimited list of other Thor applications (ApplicationName) that this project depends on
 	.RegisterWithThor     = m.lcRegisterWithThor
 
@@ -46,4 +46,4 @@ endwith
 
 return m.toUpdateObject
 
-*created by VFPX Deployment, 18.07.24 04:00:00
+*created by VFPX Deployment, 20.07.24 02:11:37
