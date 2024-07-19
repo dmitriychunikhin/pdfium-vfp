@@ -4,6 +4,7 @@ lparameters toUpdateObject
 
 with toUpdateObject
 	.VersionNumber    = '1.2.8 - 20240720'
+	.VersionDate      = '20240720'
 	.AvailableVersion = 'pdfium-vfp-1.2.8-update-20240720'
 	.Notes            = GetNotes()
 *	.RegisterWithThor = GetRegisterWithThor()
@@ -15,11 +16,11 @@ return toUpdateObject
 procedure GetNotes
 local lcNotes
 text to lcNotes noshow
-1.2.7: VFPX Deployment
 1.2.8: 
  - Scale selector added on pdfiumreport.app preview form
  - Added fallback fontfamily ascent and descent values in case when system.app Font.FontFamily throws error (for unknown reason so far)
 
+1.2.7: VFPX Deployment
 
 endtext
 return lcNotes
@@ -31,4 +32,4 @@ return lcNotes
 * "pdfium-vfp" is a Component. No procedure GetRegisterWithThor created by VFPX Deployment 
 
 
-*created by VFPX Deployment, 20.07.24 02:17:26
+*created by VFPX Deployment, 20.07.24 02:42:11
