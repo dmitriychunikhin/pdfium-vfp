@@ -4,7 +4,6 @@ lparameters toUpdateObject
 
 with toUpdateObject
 	.VersionNumber    = '1.2.8 - 20240720'
-	.VersionDate      = DATE(VAL(SUBSTR('20240720',1,4)), VAL(SUBSTR('20240720',5,2)), VAL(SUBSTR('20240720',7,2)))
 	.AvailableVersion = 'pdfium-vfp-1.2.8-update-20240720'
 	.Notes            = GetNotes()
 *	.RegisterWithThor = GetRegisterWithThor()
@@ -32,4 +31,4 @@ return lcNotes
 * "pdfium-vfp" is a Component. No procedure GetRegisterWithThor created by VFPX Deployment 
 
 
-*created by VFPX Deployment, 20.07.24 02:53:24
+*created by VFPX Deployment, 20.07.24 02:57:09

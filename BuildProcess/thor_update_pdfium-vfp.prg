@@ -35,7 +35,7 @@ with m.toUpdateObject
 	.VersionLocalFilename = 'pdfium-vfpVersionFile.txt'
 	.VersionFileURL       = m.lcVersionFileURL
 	.SourceFileUrl        = m.lcZIPFileURL
-    .VersionDate          = DATE(2024, 7, 20)
+	.VersionDate          = DATE(2024, 7, 20)
 	.Component            = 'Yes'
 	.Link                 = m.lcRepositoryURL
 	.LinkPrompt           = 'pdfium-vfp github'
