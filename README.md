@@ -1,4 +1,7 @@
-<img alt="VFPX" src="docs/images/vfpxpoweredby_alternative.gif" />
+<a href="https://vfpx.github.io/projects/"><img alt="VFPX" src="docs/images/vfpxpoweredby_alternative.gif" /></a>
+
+This and a dozen other components and tools are provided to you by <a href="https://vfpx.github.io/">VFPX community</a> 
+
 
 # pdfium-vfp 
 
