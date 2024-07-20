@@ -52,12 +52,12 @@ Open sample.pjx project from `pdfium-vfp/Sample` folder or just run Sample/sampl
 
 
 ### Basic usage of PdfiumViewer
-1) Copy pdfium-vfp.vcx, pdfium-vfp.vct, pdfium.dll from Source folder to your project folder
+1) Copy pdfium-vfp.vcx, pdfium-vfp.vct from Source folder to your project folder
 2) Copy all dependency binaries (pdfium.dll, pdfium-vfp.dll, system.app) from Source folder to your project's folder
 
 3) Add PdfiumViewer object from pdfium-vfp.vcx on the form
 
-5) Open PDF file
+4) Open PDF file
 ```foxpro
 Thisform.PdfiumViewer.OpenPdf("some.pdf")
 ```
