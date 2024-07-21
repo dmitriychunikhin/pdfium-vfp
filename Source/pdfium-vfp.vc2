@@ -2257,7 +2257,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*p: hpdf_fonts		&& Font collection for caching purporses
 		*p: hpdf_pagecount
 		*p: ogfx
-		*p: saveas_filename		&& Filename suggestion for save as dialog
+		*p: saveas_filename		&& Filename suggestion for "save as" dialog
 		*a: hpdf_pages[1,0]
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
@@ -3577,7 +3577,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		*m: scalechanged		&& Scale change handling
 		*m: setreport		&& ReportPreviewer interface requirement (reead docs on ReportPreviewer, ReportListener)
 		*p: listenerref
-		*p: saveas_filename
+		*p: saveas_filename		&& Filename suggestion for "save as" dialog
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 

@@ -39,14 +39,14 @@ FOR EACH loProject IN _VFP.Projects FOXOBJECT
 ENDFOR
 
 STRTOFILE( '', '__newproject.f2b' )
-BUILD PROJECT pdfiumreport.pjx FROM '__newproject.f2b'
+BUILD PROJECT PdfiumReport.pjx FROM '__newproject.f2b'
 FOR EACH loProject IN _VFP.Projects FOXOBJECT
 	loProject.Close()
 ENDFOR
 
-MODIFY PROJECT 'pdfiumreport.pjx' NOWAIT NOSHOW NOPROJECTHOOK
+MODIFY PROJECT 'PdfiumReport.pjx' NOWAIT NOSHOW NOPROJECTHOOK
 
-loProject = _VFP.Projects('pdfiumreport.pjx')
+loProject = _VFP.Projects('PdfiumReport.pjx')
 
 WITH loProject.FILES
 	.ADD('images\close.bmp')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
@@ -91,7 +91,7 @@ WITH loProject
 ENDWITH
 
 
-_VFP.Projects('pdfiumreport.pjx').Close()
+_VFP.Projects('PdfiumReport.pjx').Close()
 *ERASE '__newproject.f2b'
 CD (lcCurdir)
 RETURN
