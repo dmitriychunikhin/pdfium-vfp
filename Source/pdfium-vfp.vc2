@@ -2257,6 +2257,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*p: hpdf_fonts		&& Font collection for caching purporses
 		*p: hpdf_pagecount
 		*p: ogfx
+		*p: saveas_filename		&& Filename suggestion for save as dialog
 		*a: hpdf_pages[1,0]
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
@@ -2280,6 +2281,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		Name = "pdfiumreport"
 		ogfx = .F.
 		QuietMode = .F.
+		saveas_filename = ("")
 		SendGDIPlusImage = 1
 		TwoPassProcess = .T.
 		Width = 23
@@ -2313,6 +2315,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 			<memberdata name="render_textasimage" type="method" display="Render_TextAsImage"/>
 			<memberdata name="gdi_fonts" type="property" display="gdi_fonts"/>
 			<memberdata name="batchmodeauto" type="property" display="BatchModeAuto"/>
+			<memberdata name="saveas_filename" type="property" display="SaveAs_Filename"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -2474,6 +2477,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		        This.PreviewContainer = NEWOBJECT("PdfiumReportViewer", This.ClassLibrary, "", This.env)
 		        This.PreviewContainer.SetReport(This)
 		        This.PreviewContainer.OpenPDF(lcTempFileName)
+		        This.PreviewContainer.SaveAs_Filename = This.SaveAs_Filename
 		        This.PreviewContainer.Show(1)
 		    
 		    ENDCASE
@@ -3573,6 +3577,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		*m: scalechanged		&& Scale change handling
 		*m: setreport		&& ReportPreviewer interface requirement (reead docs on ReportPreviewer, ReportListener)
 		*p: listenerref
+		*p: saveas_filename
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
@@ -3589,6 +3594,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		MaxButton = .T.
 		MinButton = .F.
 		Name = "pdfiumreportviewer"
+		saveas_filename = ("")
 		ScrollBars = 0
 		ShowWindow = 1
 		Top = 0
@@ -3603,6 +3609,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 			<memberdata name="printreport" type="method" display="PrintReport"/>
 			<memberdata name="close" type="method" display="Close"/>
 			<memberdata name="scalechanged" type="method" display="ScaleChanged"/>
+			<memberdata name="saveas_filename" type="property" display="SaveAs_Filename"/>
 		</VFPData>
 	*</PropValue>
 
@@ -3998,7 +4005,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 
 	PROCEDURE cmdSaveAs.Click
 		LOCAL lcFilename
-		lcFilename = PUTFILE("", "", "pdf")
+		lcFilename = PUTFILE("", Thisform.SaveAs_Filename, "pdf")
 		
 		IF EMPTY(lcFilename)
 		    RETURN
@@ -5353,6 +5360,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		            ENDIF
 		
 		            lnDocPageNum = lnDocPageNum + 1
+		
 		
 		            ***********************************
 		            * Render page 
