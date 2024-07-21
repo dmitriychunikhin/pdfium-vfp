@@ -18,7 +18,7 @@ pdfium-vfp is a open source PDF viewer control for Visual Fox Pro 9 SP2 based on
 * Text searching
 * Printing PDF
 * Multiple control instances
-* VFP frx reports previewing, printing and saving (in pdf) without High DPI pain in the neck
+* VFP frx reports previewing, printing and saving (as pdf) without High DPI pain in the neck
 
 ### Minumum system requirements
 * Windows Vista SP 2
@@ -31,7 +31,7 @@ pdfium-vfp is a open source PDF viewer control for Visual Fox Pro 9 SP2 based on
 * open and explore Sample/sample.pjx
 
 ### Sample
-Open sample.pjx project from `pdfium-vfp/Sample` folder or just run Sample/sample.exe (all neccesary binaries included)
+Open sample.pjx project from `pdfium-vfp/Sample` folder or just run Sample/sample.exe (all neccesary binaries are included)
 
 <img alt="Sample screen shot" src="Sample/screenshots/pdfium-vfp-screen01.png" />
 
@@ -49,8 +49,6 @@ Open sample.pjx project from `pdfium-vfp/Sample` folder or just run Sample/sampl
 * Dependencies declaration conflict with gpimage2.prg that used in [FoxBarcode](https://github.com/VFPX/FoxBarcode) library (to solve this just remove clear dlls section in gpimage2.prg and compile it)
 
 
-
-
 ### Basic usage of PdfiumViewer
 1) Copy pdfium-vfp.vcx, pdfium-vfp.vct from Source folder to your project folder
 2) Copy all dependency binaries (pdfium.dll, pdfium-vfp.dll, system.app) from Source folder to your project's folder
@@ -60,6 +58,21 @@ Open sample.pjx project from `pdfium-vfp/Sample` folder or just run Sample/sampl
 4) Open PDF file
 ```foxpro
 Thisform.PdfiumViewer.OpenPdf("some.pdf")
+```
+
+5) Print document
+```foxpro
+Thisform.PdfiumViewer.PrintDocument()
+```
+
+6) Save document to the file
+```foxpro
+Thisform.PdfiumViewer.SaveDocument("c:\myfolder\mydoc.pdf")
+```
+
+7) Close PDF file
+```foxpro
+Thisform.PdfiumViewer.ClosePdf()
 ```
 
 
@@ -79,6 +92,8 @@ loPdfiumReport = NEWOBJECT(;
 *******************************************
 * Report previewing
 *******************************************
+loPdfiumReport.SaveAs_Filename = "myreport" && Filename suggestion for "save as" dialog, not mandatory
+
 loPdfiumReport.BatchBegin()
 
 REPORT FORM Report1.frx OBJECT loPdfiumReport

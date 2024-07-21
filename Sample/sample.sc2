@@ -44,6 +44,8 @@ DEFINE CLASS sample AS form
 	*< OBJECTDATA: ObjPath="Pageframe1.Page1.Pageframe2.Page2.Pdfiumviewer" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="Pageframe1.Page2.Pdfiumviewer" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdFit" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdPrint" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdSaveAs" UniqueID="" Timestamp="" />
 
 	*<DefinedPropArrayMethod>
 		*m: closepdf
@@ -65,7 +67,7 @@ DEFINE CLASS sample AS form
 		ShowWindow = 0
 		Top = 0
 		Visible = .T.
-		Width = 1235
+		Width = 1280
 		WindowType = 0
 	*</PropValue>
 
@@ -74,7 +76,7 @@ DEFINE CLASS sample AS form
 		BackStyle = 0, ;
 		Caption = "Backward", ;
 		Height = 17, ;
-		Left = 238, ;
+		Left = 199, ;
 		Name = "chkSearchBackward", ;
 		TabIndex = 7, ;
 		Top = 82, ;
@@ -86,7 +88,7 @@ DEFINE CLASS sample AS form
 		BackStyle = 0, ;
 		Caption = "Match case", ;
 		Height = 17, ;
-		Left = 419, ;
+		Left = 380, ;
 		Name = "chkSearchMatchCase", ;
 		TabIndex = 9, ;
 		Top = 82, ;
@@ -98,7 +100,7 @@ DEFINE CLASS sample AS form
 		BackStyle = 0, ;
 		Caption = "Whole word", ;
 		Height = 17, ;
-		Left = 325, ;
+		Left = 286, ;
 		Name = "chkSearchWholeWord", ;
 		TabIndex = 8, ;
 		Top = 82, ;
@@ -110,12 +112,12 @@ DEFINE CLASS sample AS form
 		BoundTo = .F., ;
 		DisplayCount = 30, ;
 		Height = 24, ;
-		Left = 678, ;
+		Left = 726, ;
 		Name = "cmbControls", ;
 		RowSource = "", ;
 		RowSourceType = 0, ;
 		Style = 2, ;
-		TabIndex = 11, ;
+		TabIndex = 13, ;
 		Top = 12, ;
 		Value = , ;
 		Width = 420
@@ -152,9 +154,9 @@ DEFINE CLASS sample AS form
 		Anchor = 32, ;
 		Caption = "Enable/Disable", ;
 		Height = 29, ;
-		Left = 678, ;
+		Left = 726, ;
 		Name = "cmdEnable", ;
-		TabIndex = 13, ;
+		TabIndex = 15, ;
 		Top = 65, ;
 		Width = 420, ;
 		WordWrap = .F.
@@ -164,11 +166,11 @@ DEFINE CLASS sample AS form
 		Anchor = 0, ;
 		Caption = "Fit width / not fit width", ;
 		Height = 27, ;
-		Left = 514, ;
+		Left = 592, ;
 		Name = "cmdFit", ;
-		TabIndex = 10, ;
+		TabIndex = 12, ;
 		Top = 76, ;
-		Width = 132, ;
+		Width = 106, ;
 		WordWrap = .F.
 		*< END OBJECT: BaseClass="commandbutton" />
 
@@ -196,23 +198,47 @@ DEFINE CLASS sample AS form
 		WordWrap = .F.
 		*< END OBJECT: BaseClass="commandbutton" />
 
+	ADD OBJECT 'cmdPrint' AS commandbutton WITH ;
+		Anchor = 0, ;
+		Caption = "Print", ;
+		Height = 27, ;
+		Left = 467, ;
+		Name = "cmdPrint", ;
+		TabIndex = 10, ;
+		Top = 76, ;
+		Width = 53, ;
+		WordWrap = .F.
+		*< END OBJECT: BaseClass="commandbutton" />
+
 	ADD OBJECT 'cmdReport' AS commandbutton WITH ;
 		Anchor = 9, ;
 		Caption = "Report Sample", ;
 		Height = 85, ;
-		Left = 1152, ;
+		Left = 1200, ;
 		Name = "cmdReport", ;
 		Picture = images\wwrite.ico, ;
-		TabIndex = 15, ;
+		TabIndex = 17, ;
 		Top = 12, ;
 		Width = 73, ;
 		WordWrap = .T.
 		*< END OBJECT: BaseClass="commandbutton" />
 
+	ADD OBJECT 'cmdSaveAs' AS commandbutton WITH ;
+		Anchor = 0, ;
+		Caption = "Save as", ;
+		Height = 27, ;
+		Left = 525, ;
+		Name = "cmdSaveAs", ;
+		TabIndex = 11, ;
+		Top = 76, ;
+		Width = 60, ;
+		WordWrap = .F.
+		*< END OBJECT: BaseClass="commandbutton" />
+
 	ADD OBJECT 'cmdSearch' AS commandbutton WITH ;
 		Caption = "", ;
 		Height = 28, ;
-		Left = 188, ;
+		Left = 149, ;
 		Name = "cmdSearch", ;
 		Picture = images\search16.bmp, ;
 		PicturePosition = 14, ;
@@ -225,9 +251,9 @@ DEFINE CLASS sample AS form
 		Anchor = 32, ;
 		Caption = "Show/Hide", ;
 		Height = 27, ;
-		Left = 678, ;
+		Left = 726, ;
 		Name = "cmdShow", ;
-		TabIndex = 12, ;
+		TabIndex = 14, ;
 		Top = 38, ;
 		Width = 420, ;
 		WordWrap = .F.
@@ -237,10 +263,10 @@ DEFINE CLASS sample AS form
 		Anchor = 225, ;
 		ErasePage = .T., ;
 		Height = 624, ;
-		Left = 675, ;
+		Left = 723, ;
 		Name = "Pageframe1", ;
 		PageCount = 2, ;
-		TabIndex = 16, ;
+		TabIndex = 18, ;
 		Top = 108, ;
 		Width = 550, ;
 		Page1.Caption = "Page1", ;
@@ -338,11 +364,11 @@ DEFINE CLASS sample AS form
 		Left = 12, ;
 		Name = "PdfiumViewer", ;
 		scrollbars = 3, ;
-		TabIndex = 14, ;
+		TabIndex = 16, ;
 		TabStop = .T., ;
 		Top = 108, ;
 		Visible = .T., ;
-		Width = 636, ;
+		Width = 696, ;
 		cmdFocus.Name = "cmdFocus", ;
 		env.Name = "env", ;
 		i18n.Name = "i18n", ;
@@ -356,7 +382,7 @@ DEFINE CLASS sample AS form
 		Name = "shpSearch", ;
 		SpecialEffect = 0, ;
 		Top = 69, ;
-		Width = 634
+		Width = 695
 		*< END OBJECT: BaseClass="shape" />
 
 	ADD OBJECT 'txtSearch' AS textbox WITH ;
@@ -365,7 +391,7 @@ DEFINE CLASS sample AS form
 		Name = "txtSearch", ;
 		TabIndex = 5, ;
 		Top = 78, ;
-		Width = 168
+		Width = 132
 		*< END OBJECT: BaseClass="textbox" />
 	
 	PROCEDURE closepdf
@@ -670,6 +696,11 @@ DEFINE CLASS sample AS form
 		
 	ENDPROC
 
+	PROCEDURE cmdPrint.Click
+		Thisform.pdfiumviewer.PrintDocument()
+		
+	ENDPROC
+
 	PROCEDURE cmdReport.Click
 		IF USED("curReport1")
 		    USE IN curReport1
@@ -704,7 +735,7 @@ DEFINE CLASS sample AS form
 		        DO (_REPORTOUTPUT) WITH Thisform.pdfium_env && Execute on initialization step of your application
 		        
 		        REPORT FORM Report1.frx NOPAGEEJECT
-		        REPORT FORM Report2.frx PREVIEW 
+		        REPORT FORM Report2.frx PREVIEW
 		        
 		        DO (_REPORTOUTPUT) WITH .F. && Execute on release step of your application
 		            
@@ -716,6 +747,7 @@ DEFINE CLASS sample AS form
 		
 		    LOCAL loPdfiumReport as PdfiumReport OF "..\Source\pdfium-vfp.vcx"
 		    loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "../source/pdfiumreport.app", Thisform.Pdfium_env)
+		    loPdfiumReport.SaveAs_Filename = "myreport" && Filename suggestion for save as dialog, not mandatory
 		
 		    loPdfiumReport.BatchBegin()
 		
@@ -730,6 +762,7 @@ DEFINE CLASS sample AS form
 		
 		    LOCAL loPdfiumReport as PdfiumReport OF "..\Source\pdfium-vfp.vcx"
 		    loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "../source/pdfiumreport.app", Thisform.Pdfium_env)
+		    loPdfiumReport.SaveAs_Filename = "myreport" && Filename suggestion for save as dialog, not mandatory
 		
 		    REPORT FORM Report1.frx OBJECT loPdfiumReport NOPAGEEJECT
 		    REPORT FORM Report2.frx OBJECT loPdfiumReport PREVIEW
@@ -742,6 +775,19 @@ DEFINE CLASS sample AS form
 		IF USED("curReport1")
 		    USE IN curReport1
 		ENDIF
+		
+		
+	ENDPROC
+
+	PROCEDURE cmdSaveAs.Click
+		LOCAL lcFilename
+		lcFilename = PUTFILE("", "", "pdf")
+		
+		IF EMPTY(lcFilename)
+		    RETURN
+		ENDIF
+		
+		Thisform.pdfiumviewer.SaveDocument(lcFileName)
 		
 		
 	ENDPROC
