@@ -62,7 +62,7 @@ DEFINE CLASS sample AS form
 		Height = 741
 		Left = 0
 		MinWidth = 1235
-		Name = "sample"
+		Name = "SAMPLE"
 		ScrollBars = 2
 		ShowWindow = 0
 		Top = 0
@@ -714,6 +714,11 @@ DEFINE CLASS sample AS form
 		    REPLACE name WITH SYS(2015)
 		    replace name_utf WITH FILETOSTR("sample_utf8.txt")
 		ENDFOR
+		
+		
+		
+		Thisform.Pdfium_env.PrivateFonts.Remove(-1) 
+		Thisform.Pdfium_env.PrivateFonts.Add(FULLPATH("Fonts\KurintoSansSC-Rg.ttf"), "Kurinto Sans SC") && Adding private (non system) font 
 		
 		
 		SELECT curReport1

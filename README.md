@@ -2,7 +2,6 @@
 
 This and a dozen other components and tools are provided to you by <a href="https://vfpx.github.io/">VFPX community</a> 
 
-
 # pdfium-vfp 
 
 pdfium-vfp is a open source PDF viewer control for Visual Fox Pro 9 SP2 based on 
@@ -19,18 +18,46 @@ pdfium-vfp is a open source PDF viewer control for Visual Fox Pro 9 SP2 based on
 * Printing PDF
 * Multiple control instances
 * VFP frx reports previewing, printing and saving (as pdf) without High DPI pain in the neck
+* Frx report rendering supports private fonts (non system fonts)
 
 ### Minumum system requirements
+#### Windows
 * Windows Vista SP 2
 * 1 core CPU
 * 1024 MB of RAM
 
+#### Linux
+* Tested on Debian (12 bookworm) and Alt (kworkstation 10) distros
+* Wine 9.0
+
+
+
 ### Getting started
+#### Windows
 * git clone https://github.com/dmitriychunikhin/pdfium-vfp
 * run pdfium-vfp/Sample/sample.exe
 * open and explore Sample/sample.pjx
 
-### Sample
+#### Linux
+* Check wine version
+```bash
+wine --version
+> wine-9.0
+```
+
+* Clone repo and run sample.exe 
+
+```bash
+cd ~
+git clone https://github.com/dmitriychunikhin/pdfium-vfp
+cd ~/pdfium-vfp/Sample
+WINEDLLOVERRIDES="gdiplus=n" wine sample.exe
+
+#wine built-in gdiplus.dll doesn't work as expected, thus it has to be overrided. You can take one from pdfium-vfp/Sample folder.
+```
+
+
+### Sample VFP project
 Open sample.pjx project from `pdfium-vfp/Sample` folder or just run Sample/sample.exe (all neccesary binaries are included)
 
 <img alt="Sample screen shot" src="Sample/screenshots/pdfium-vfp-screen01.png" />
@@ -82,12 +109,11 @@ Thisform.PdfiumViewer.ClosePdf()
 
 More examples can be found at `pdfium-vfp/Sample/sample.scx`
 
-#### Standalone ####
+#### Standalone 
 
 ```foxpro
 LOCAL loPdfiumReport
-loPdfiumReport = NEWOBJECT(;
-    "PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app")
+loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app")
 
 *******************************************
 * Report previewing
@@ -125,7 +151,7 @@ REPORT FORM Report2.frx OBJECT loPdfiumReport TO FILE "some.pdf"
 
 ```
 
-#### As _REPORTOUTPUT ####
+#### As _REPORTOUTPUT 
 
 ```foxpro
 SET REPORTBEHAVIOR 90
@@ -157,6 +183,46 @@ FINALLY
 ENDTRY
 ```
 
+### PdfiumReport.app and private fonts
+Private font is a font that is not installed in system in your development, testing or production environment
+
+Sample can be found in `pdfium-vfp/Sample/Sample.scx` in `cmdReport.Click`
+
+#### Standalone
+```foxpro
+* Manually create Pdfium environment and add your private fonts in Pdfium_env.PrivateFonts collection
+
+LOCAL loPdfiumEnv
+loPdfiumEnv = NEWOBJECT("Pdfium_env", "pdfium-vfp.vcx", "pdfiumreport.app")
+
+* parameters: font file path, font face name
+loPdfiumEnv.PrivateFonts.Add("Fonts\KurintoSansSC-Rg.ttf", "Kurinto Sans SC")
+
+* Pass pdfium_env object as the first parameter of PdfiumReport constructor
+LOCAL loPdfiumReport
+loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app", loPdfiumEnv)
+
+* Run report with private fonts
+REPORT FORM Report1.frx OBJECT loPdfiumReport PREVIEW
+```
+
+#### Aas _REPORTOUTPUT
+```foxpro
+* Manually create Pdfium environment and add your private fonts in Pdfium_env.PrivateFonts collection
+
+LOCAL loPdfiumEnv
+loPdfiumEnv = NEWOBJECT("Pdfium_env", "pdfium-vfp.vcx", "pdfiumreport.app")
+
+* parameters: font file path, font face name
+loPdfiumEnv.PrivateFonts.Add("Fonts\KurintoSansSC-Rg.ttf", "Kurinto Sans SC")
+
+* Pass pdfium_env object as the first parameter of PdfiumReport.app initialization routine
+DO pdfiumreport.app WITH loPdfiumEnv
+
+* Run report with private fonts
+REPORT FORM Report1.frx PREVIEW
+```
+
 
 ### Binaries
 What binaries exactly do you need to run all the stuff (or your own latest version of it)
@@ -184,4 +250,4 @@ PUBLIC _PdfiumReport as pdfiumreport of pdfium-vfp
 * Declares pdfium-vfp.dll functions (two for the moment) via FPDF_* pattern (without alias)
 * Declares libhpdf.dll functions via HPDF_* pattern (without alias)
 * Doesn't perform CLEAR DLLS 
-
+* Adds fonts from Pdfium_env.PrivateFonts collection to GDI Plus [System.Drawing.Text.PrivateFontCollection](https://learn.microsoft.com/en-us/dotnet/api/system.drawing.text.privatefontcollection?view=net-8.0)

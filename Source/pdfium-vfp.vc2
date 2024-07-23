@@ -20,6 +20,7 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		*p: declaredll_ok
 		*p: libhpdf_dll_path		&& Path to file libhpdf.dll. Filename without path also accepted
 		*p: pdfium_dll_path		&& Path to file pdfium.dll. Filename without path also accepted
+		*p: privatefonts		&& Collection of non system (custom / private) fonts. Key must be the font face name, Value - path to the font file
 		*p: system		&& GDIPlusX System object
 		*p: system_app_path		&& Path to file GDIPlusX system.app Filename without path also accepted
 		*p: _memberdata		&& XML Metadata for customizable properties
@@ -32,6 +33,7 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		libhpdf_dll_path = ("libhpdf.dll")
 		Name = "pdfium_env"
 		pdfium_dll_path = ("pdfium.dll")
+		privatefonts = .F.
 		system = .F.
 		system_app_path = ("system.app")
 		Width = 27
@@ -50,6 +52,7 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 			<memberdata name="libhpdf_dll_path" type="property" display="libhpdf_dll_path"/>
 			<memberdata name="getuniquetempfilename" type="method" display="GetUniqueTempFileName"/>
 			<memberdata name="system_app_path" type="property" display="system_app_path"/>
+			<memberdata name="privatefonts" type="property" display="PrivateFonts"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -302,10 +305,9 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 	ENDPROC
 
 	PROCEDURE Destroy
-		
+		This.PrivateFonts = .F.
 		This.System = .F.
 		This.SetupRelease()
-		
 		
 	ENDPROC
 
@@ -382,6 +384,11 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		
 	ENDPROC
 
+	PROCEDURE Init
+		This.PrivateFonts = NEWOBJECT("Collection")
+		
+	ENDPROC
+
 	PROCEDURE ok		&& Return TRUE if enviroment setup ended up with success
 		RETURN This.declaredll_ok
 		
@@ -397,6 +404,8 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		    This.pdfium_dll_path = EVL(NVL(m.toEnv.pdfium_dll_path,""), This.pdfium_dll_path)
 		    This.libhpdf_dll_path = EVL(NVL(m.toEnv.libhpdf_dll_path,""), "")
 		    This.system_app_path = EVL(NVL(m.toEnv.system_app_path,""), This.system_app_path)  
+		
+		    This.PrivateFonts = IIF(VARTYPE(m.toEnv.PrivateFonts)="O", m.toEnv.PrivateFonts, This.PrivateFonts)
 		ENDIF
 		
 		IF VARTYPE(This.System)<>"O" AND FILE(This.system_app_path,1)
@@ -464,6 +473,25 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		IF This.declaredll_ok = .F.
 		    RETURN .F.
 		ENDIF
+		
+		
+		* Private fonts installing
+		LOCAL loErr
+		loErr = .F.
+		TRY
+		
+		    LOCAL lcFontPath
+		    lcFontPath = ""
+		    FOR EACH lcFontPath IN This.PrivateFonts FOXOBJECT
+		        IF FILE(ALLTRIM(lcFontPath),1)
+		            This.System.Drawing.Text.PrivateFontCollection.AddFontFile(ALLTRIM(lcFontPath) + CHR(0))
+		        ENDIF
+		    ENDFOR
+		
+		CATCH TO loErr
+		    This.errMsg(loErr)
+		ENDTRY
+		
 		
 	ENDPROC
 
@@ -2542,37 +2570,79 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		***********************************************************
 		* Font hasn't been found, create it
 		***********************************************************
-		LOCAL loGDIFont
-		loGDIFont = This.env.System.Drawing.Font.New( ;
-		    loRepObj.FontFace, ;
-		    loRepObj.FontSize, ;
-		    ( ;
-		        IIF(loRepObj.FontBold, This.env.System.Drawing.FontStyle.Bold, 0) + ;
-		        IIF(loRepObj.FontItalic, This.env.System.Drawing.FontStyle.Italic, 0) + ; 
-		        IIF(loRepObj.FontUnderline, This.env.System.Drawing.FontStyle.Underline, 0) ;
-		    ),;
-		    This.env.System.Drawing.GraphicsUnit.Point, ;
-		    loRepObj.FontCharset, ;
-		    .F.)
+		LOCAL loGDIFont, loGDIFontFamily, liFont, lcFontFace
+		STORE .F. TO loGDIFont, loGDIFontFamily
+		liFont = 1
+		FOR liFont = 1 TO 3
+		
+		    lcFontFace = ICASE(liFont=1, loRepObj.FontFace, liFont=2, "Helvetica", "Arial") && If report font is not found, take fallback font
+		
+		    loGDIFont = This.env.System.Drawing.Font.New( ;
+		        lcFontFace, ;
+		        loRepObj.FontSize, ;
+		        ( ;
+		            IIF(loRepObj.FontBold, This.env.System.Drawing.FontStyle.Bold, 0) + ;
+		            IIF(loRepObj.FontItalic, This.env.System.Drawing.FontStyle.Italic, 0) + ; 
+		            IIF(loRepObj.FontUnderline, This.env.System.Drawing.FontStyle.Underline, 0) ;
+		        ),;
+		        This.env.System.Drawing.GraphicsUnit.Point, ;
+		        loRepObj.FontCharset, ;
+		        .F.)
+		
+		
+		    IF EMPTY(loGDIFont.GetHandle()) = .F.
+		        loGDIFontFamily = loGDIFont.FontFamily
+		        EXIT
+		    ENDIF
+		    
+		    LOOP
+		
+		
+		    IF EMPTY(This.env.System.Drawing.Text.PrivateFontCollection.Families.GetKey(lcFontFace)) = .F. && Try to get font from private font collection
+		        
+		        loGDIFontFamily = This.env.System.Drawing.Text.PrivateFontCollection.Families.Item(lcFontFace)
+		        
+		        loGDIFont = This.env.System.Drawing.Font.New( ;
+		            loGDIFontFamily, ;
+		            loRepObj.FontSize, ;
+		            ( ;
+		                IIF(loRepObj.FontBold, This.env.System.Drawing.FontStyle.Bold, 0) + ;
+		                IIF(loRepObj.FontItalic, This.env.System.Drawing.FontStyle.Italic, 0) + ; 
+		                IIF(loRepObj.FontUnderline, This.env.System.Drawing.FontStyle.Underline, 0) ;
+		            ),;
+		            This.env.System.Drawing.GraphicsUnit.Point, ;
+		            loRepObj.FontCharset, ;
+		            .F.)
+		
+		    ENDIF    
+		
+		    IF EMPTY(loGDIFont.GetHandle()) = .F.
+		        EXIT
+		    ENDIF
+		    
+		    loGDIFont = .F.
+		    loGDIFontFamily = .F.
+		
+		ENDFOR
 		
 		
 		LOCAL loFont
 		loFont = NEWOBJECT("Empty")
 		ADDPROPERTY(loFont, "GDIFont", loGDIFont)
 		ADDPROPERTY(loFont, "Handle", loGDIFont.GetHandle())
-		ADDPROPERTY(loFont, "Height", loGDIFont.GetHeight())
-		ADDPROPERTY(loFont, "HeightCeil", loGDIFont.Height)
+		ADDPROPERTY(loFont, "Height", EVL(MAX(loGDIFont.GetHeight(), 0), 15.7))
+		ADDPROPERTY(loFont, "HeightCeil", EVL(MAX(loGDIFont.Height, 0), 16))
 		
 		TRY
-		    * FontFamily access can cause unexpected error for unkown reason
-		    ADDPROPERTY(loFont, "CellDescent", loGDIFont.FontFamily.GetCellDescent())
-		    ADDPROPERTY(loFont, "CellAscent", loGDIFont.FontFamily.GetCellAscent())
-		    ADDPROPERTY(loFont, "EmHeight", loGDIFont.FontFamily.GetEmHeight())
+		    ADDPROPERTY(loFont, "CellDescent", loGDIFontFamily.GetCellDescent())
+		    ADDPROPERTY(loFont, "CellAscent", loGDIFontFamily.GetCellAscent())
+		    ADDPROPERTY(loFont, "EmHeight", loGDIFontFamily.GetEmHeight())
 		CATCH
-		    ADDPROPERTY(loFont, "CellDescent", 434.000)
-		    ADDPROPERTY(loFont, "CellAscent", 1854.000)
-		    ADDPROPERTY(loFont, "EmHeight", 2048.000)
-		ENDTRY    
+		    ADDPROPERTY(loFont, "CellDescent", 434)
+		    ADDPROPERTY(loFont, "CellAscent", 1854)
+		    ADDPROPERTY(loFont, "EmHeight", 2048)
+		ENDTRY
+		
 		
 		This.gdi_fonts.Add(loFont, lcFontID)
 		
@@ -2622,16 +2692,18 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		LOCAL lnHPDF_Font
 		lnHPDF_Font = 0
 		
+		LOCAL lnFontSimulations
+		lnFontSimulations = 0
+		
+		LOCAL lnIsSymbolFont
+		lnIsSymbolFont = 0
+		
+		LOCAL lcFontFileName
+		lcFontFileName = ""
 		
 		TRY
-		    LOCAL lcFontFileName
-		    lcFontFileName = REPLICATE(CHR(0),255*2)
-		
-		    LOCAL lnFontSimulations
-		    lnFontSimulations = 0
 		    
-		    LOCAL lnIsSymbolFont
-		    lnIsSymbolFont = 0
+		    lcFontFileName = REPLICATE(CHR(0),255*2)
 		
 		    LOCAL lnGetFont
 		    lnGetFont = FPDF_GetFontFileName( ;
@@ -2644,9 +2716,35 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		                    @lnFontSimulations, ;
 		                    @lnIsSymbolFont)
 		                    
+		    IF lnGetFont = 1
+		        lcFontFileName = STRCONV(lcFontFileName,6)
+		        lcFontFileName = ALLTRIM(lcFontFileName, 1, CHR(0), " ")
 		
-		    IF lnGetFont <> 1
-		        EXIT && Error
+		    ELSE    
+		        * Font is not found
+		        
+		        * Private font collection searching
+		        LOCAL lnPrivateFontKey
+		        lnPrivateFontKey = This.env.PrivateFonts.GetKey(ALLTRIM(loRepObj.FontFace)) 
+		        IF EMPTY(lnPrivateFontKey)
+		            EXIT
+		        ENDIF
+		        
+		        lcFontFileName = ALLTRIM(This.env.PrivateFonts.Item(lnPrivateFontKey))
+		        
+		        lnIsSymbolFont = 0
+		        lnFontSimulations = 0
+		        
+		        IF EMPTY(This.env.System.Drawing.Text.PrivateFontCollection.Families.GetKey(ALLTRIM(loRepObj.FontFace))) = .F.
+		            LOCAL loGDIFontFamily
+		            loGDIFontFamily = This.env.System.Drawing.Text.PrivateFontCollection.Families.Item(ALLTRIM(loRepObj.FontFace))
+		
+		            lnFontSimulations = lnFontSimulations + IIF(loGDIFontFamily.IsStyleAvailable(This.env.System.Drawing.FontStyle.Bold), 0, DWRITE_FONT_SIMULATIONS_BOLD)
+		            lnFontSimulations = lnFontSimulations + IIF(loGDIFontFamily.IsStyleAvailable(This.env.System.Drawing.FontStyle.Italic), 0, DWRITE_FONT_SIMULATIONS_OBLIQUE)
+		            
+		            loGDIFontFamily = .F.
+		        ENDIF
+		
 		    ENDIF
 		
 		    IF EMPTY(lnIsSymbolFont)=.F.
@@ -2654,8 +2752,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		        EXIT
 		    ENDIF
 		
-		    lcFontFileName = STRCONV(lcFontFileName,6)
-		    lcFontFileName = ALLTRIM(lcFontFileName, 1, CHR(0), " ")
 		
 		    IF FILE(lcFontFileName,1) = .F.
 		        EXIT && Font file doesn't exist OR FILENAME HAS UNICODE SYMBOLS
@@ -3368,7 +3464,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		IF loRepObj.ObjType = FRX_OBJ_LABEL
 		    loRepObj.Width = loRepObj.Width + loGDIFont.HeightCeil
 		ENDIF
-		    
+		
 		*******************************************************
 		LOCAL loLineRect
 		loLineRect = This.env.system.Drawing.RectangleF.New(0, 0, loRepObj.Width, loGDIFont.HeightCeil)
@@ -3407,10 +3503,9 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    lcLineText = SUBSTR(loRepObj.Text, lnCharIndex * 2 - 1)
 		
 		    lnLineCharsFitted = 0
-		    
+		
 		    LOCAL loLineTextRect
 		    This.MeasureString(lcLineText, loGDIFont, loLineRect, @loLineTextRect, @lnLineCharsFitted)
-		    
 		    
 		    lcLineText = SUBSTR(lcLineText, 1, lnLineCharsFitted * 2)
 		    lcLineTextUTF = STRCONV(lcLineText, 10)
@@ -3569,6 +3664,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 	*< OBJECTDATA: ObjPath="cmdFitPage" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="PrintEnv" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmbScale" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="lblPageInfo" UniqueID="" Timestamp="" />
 
 	*<DefinedPropArrayMethod>
 		*m: close		&& Close preview window
@@ -3599,7 +3695,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		ShowWindow = 1
 		Top = 0
 		Visible = .T.
-		Width = 697
+		Width = 747
 		WindowState = 0
 		WindowType = 1
 		_memberdata = <VFPData>
@@ -3623,13 +3719,13 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		FontName = "Segoe UI", ;
 		FontSize = 10, ;
 		Height = 27, ;
-		Left = 528, ;
+		Left = 534, ;
 		Name = "cmbScale", ;
 		Style = 2, ;
 		TabIndex = 8, ;
 		TabStop = .F., ;
 		Top = 11, ;
-		Width = 80
+		Width = 65
 		*< END OBJECT: BaseClass="combobox" />
 
 	ADD OBJECT 'cmdClose' AS commandbutton WITH ;
@@ -3640,7 +3736,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		FontName = "Segoe UI", ;
 		FontSize = 12, ;
 		Height = 32, ;
-		Left = 642, ;
+		Left = 685, ;
 		Name = "cmdClose", ;
 		Picture = images\close.bmp, ;
 		PictureMargin = 0, ;
@@ -3660,7 +3756,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		FontName = "Segoe UI", ;
 		FontSize = 12, ;
 		Height = 32, ;
-		Left = 479, ;
+		Left = 483, ;
 		Name = "cmdFitPage", ;
 		Picture = images\fitpage.bmp, ;
 		PictureMargin = 0, ;
@@ -3680,7 +3776,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		FontName = "Segoe UI", ;
 		FontSize = 12, ;
 		Height = 32, ;
-		Left = 433, ;
+		Left = 437, ;
 		Name = "cmdFitWidth", ;
 		Picture = images\fitwidth.bmp, ;
 		PictureMargin = 0, ;
@@ -3720,7 +3816,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		FontName = "Segoe UI", ;
 		FontSize = 12, ;
 		Height = 32, ;
-		Left = 377, ;
+		Left = 384, ;
 		Name = "cmdSaveAs", ;
 		Picture = images\saveas.bmp, ;
 		PictureMargin = 0, ;
@@ -3757,6 +3853,20 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		Top = 72
 		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="custom" />
 
+	ADD OBJECT 'lblPageInfo' AS label WITH ;
+		Alignment = 2, ;
+		AutoSize = .F., ;
+		BackStyle = 0, ;
+		Caption = "1234 / 1234", ;
+		FontName = "Segoe UI", ;
+		FontSize = 10, ;
+		Height = 19, ;
+		Left = 603, ;
+		Name = "lblPageInfo", ;
+		Top = 15, ;
+		Width = 76
+		*< END OBJECT: BaseClass="label" />
+
 	ADD OBJECT 'PdfiumViewer' AS pdfiumviewer WITH ;
 		Anchor = 15, ;
 		Enabled = .T., ;
@@ -3768,7 +3878,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		TabStop = .T., ;
 		Top = 48, ;
 		Visible = .T., ;
-		Width = 672, ;
+		Width = 723, ;
 		cmdFocus.Name = "cmdFocus", ;
 		env.Name = "env", ;
 		i18n.Name = "i18n", ;
@@ -4034,6 +4144,16 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		
 	ENDPROC
 
+	PROCEDURE lblPageInfo.Refresh
+		This.Caption = TRANSFORM(Thisform.PdfiumViewer.GetCurrentPage()) + " / " + TRANSFORM(Thisform.PdfiumViewer.GetPageCount())
+		
+	ENDPROC
+
+	PROCEDURE PdfiumViewer.afterviewportupdate
+		Thisform.lblPageInfo.Refresh()
+		
+	ENDPROC
+
 	PROCEDURE txtSearch.GotFocus
 		Thisform.pdfiumviewer.SearchClose()
 		
@@ -4066,6 +4186,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 	*< OBJECTDATA: ObjPath="UIState" UniqueID="" Timestamp="" />
 
 	*<DefinedPropArrayMethod>
+		*m: afterviewportupdate		&& Event. Triggered after ViewPortUpdate call
 		*m: backcolor_assign
 		*m: closepdf		&& Close pdf file, previously opened by PdfiumViewer.openpdf
 		*m: contextmenu
@@ -4271,6 +4392,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 			<memberdata name="isfocused" type="property" display="IsFocused"/>
 			<memberdata name="printdocument" type="method" display="PrintDocument"/>
 			<memberdata name="printenv" type="property" display="PrintEnv"/>
+			<memberdata name="afterviewportupdate" type="method" display="AfterViewportUpdate"/>
 		</VFPData>
 	*</PropValue>
 
@@ -4299,6 +4421,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		Top = 24
 		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="custom" />
 	
+	PROCEDURE afterviewportupdate		&& Event. Triggered after ViewPortUpdate call
+	ENDPROC
+
 	HIDDEN PROCEDURE backcolor_assign
 		LPARAMETERS vNewVal
 		
@@ -6420,6 +6545,11 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		WinApi_SetScrollInfo(This.WndHandle, 0, lcScrollInfo, 1)
 		
+		
+		*********************************************************************
+		* Events triggering
+		This.AfterViewportUpdate()
+		*********************************************************************
 		
 		
 	ENDPROC
