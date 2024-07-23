@@ -151,7 +151,7 @@ REPORT FORM Report2.frx OBJECT loPdfiumReport TO FILE "some.pdf"
 
 ```
 
-#### As _REPORTOUTPUT 
+#### as _REPORTOUTPUT 
 
 ```foxpro
 SET REPORTBEHAVIOR 90
@@ -206,7 +206,7 @@ loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app",
 REPORT FORM Report1.frx OBJECT loPdfiumReport PREVIEW
 ```
 
-#### Aas _REPORTOUTPUT
+#### as _REPORTOUTPUT
 ```foxpro
 * Manually create Pdfium environment and add your private fonts in Pdfium_env.PrivateFonts collection
 
