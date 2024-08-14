@@ -3,8 +3,8 @@ lparameters toUpdateObject
 * Set the properties of the passed updater object.
 
 with toUpdateObject
-	.VersionNumber    = '1.3 - 20240723'
-	.AvailableVersion = CHRTRAN('pdfium-vfp','-','_')+'-1.3-update-20240723'
+	.VersionNumber    = '1.4 - 20240814'
+	.AvailableVersion = CHRTRAN('pdfium-vfp','-','_')+'-1.4-update-20240814'
 	.Notes            = GetNotes()
 *	.RegisterWithThor = GetRegisterWithThor()
 endwith
@@ -38,4 +38,4 @@ return lcNotes
 * "pdfium-vfp" is a Component. No procedure GetRegisterWithThor created by VFPX Deployment 
 
 
-*created by VFPX Deployment, 14.08.24 19:46:21
+*created by VFPX Deployment, 14.08.24 19:47:32
