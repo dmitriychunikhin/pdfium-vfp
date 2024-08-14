@@ -62,7 +62,7 @@ DEFINE CLASS sample AS form
 		Height = 741
 		Left = 0
 		MinWidth = 1235
-		Name = "SAMPLE"
+		Name = "sample"
 		ScrollBars = 2
 		ShowWindow = 0
 		Top = 0
