@@ -1,3 +1,9 @@
+1.5:
+  - Support of VFPA x64
+
+1.4:
+  - Filename with diacritics
+
 1.3:
   - Private fonts support in PdfiumReport.app
   - First tests on Linux
