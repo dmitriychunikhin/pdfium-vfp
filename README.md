@@ -4,7 +4,7 @@ This and a dozen other components and tools are provided to you by <a href="http
 
 # pdfium-vfp 
 
-pdfium-vfp is a open source PDF viewer control for Visual Fox Pro 9 SP2 based on 
+pdfium-vfp is a open source PDF viewer control for Visual Fox Pro 9 SP2 and VFP Advanced based on 
 * [PDFium](https://pdfium.googlesource.com/pdfium/) 
 * [libHaru](https://github.com/libharu/) 
 * [GDIPlusX](https://github.com/VFPX/GDIPlusX)
@@ -19,6 +19,7 @@ pdfium-vfp is a open source PDF viewer control for Visual Fox Pro 9 SP2 based on
 * Multiple control instances
 * VFP frx reports previewing, printing and saving (as pdf) without High DPI pain in the neck
 * Frx report rendering supports private fonts (non system fonts)
+* Supports VFP Advanced x64 
 
 ### Minumum system requirements
 #### Windows
@@ -78,7 +79,10 @@ Open sample.pjx project from `pdfium-vfp/Sample` folder or just run Sample/sampl
 
 ### Basic usage of PdfiumViewer
 1) Copy pdfium-vfp.vcx, pdfium-vfp.vct from Source folder to your project folder
-2) Copy all dependency binaries (pdfium.dll, pdfium-vfp.dll, system.app) from Source folder to your project's folder
+2) <br/>
+    <b>VFP:</b> Copy dependency binaries <i>pdfium.dll, pdfium-vfp.dll, system.app</i> from <i>Source</i> folder to your project's folder
+    
+    <b>VFPA x64:</b> Copy dependency binaries <i>pdfium64.dll, pdfium-vfp64.dll, system.app</i> from <i>Source</i> folder to your project's folder
 
 3) Add PdfiumViewer object from pdfium-vfp.vcx on the form
 
@@ -105,7 +109,7 @@ Thisform.PdfiumViewer.ClosePdf()
 
 ### Basic usage of PdfiumReport 
 1) Copy PdfiumReport.app from Source folder to your project folder
-2) Copy all dependency binaries (libhpdf.dll, pdfium.dll, pdfium-vfp.dll,  system.app) from Source folder to your project's folder
+2) Copy dependency binaries <i>libhpdf.dll, pdfium.dll, pdfium-vfp.dll, system.app</i> from Source folder to your project's folder
 
 More examples can be found at `pdfium-vfp/Sample/sample.scx`
 
@@ -226,12 +230,19 @@ REPORT FORM Report1.frx PREVIEW
 
 ### Binaries
 What binaries exactly do you need to run all the stuff (or your own latest version of it)
+#### VFP
 * [pdfium-vfp/Source/pdfium.dll](Source/pdfium.dll)
 * [pdfium-vfp/Source/pdfium-vfp.dll](Source/pdfium-vfp.dll)
 * [pdfium-vfp/Source/libhpdf.dll](Source/libhpdf.dll) - for PdfiumReport.app only
 * [pdfium-vfp/Source/system.app](Source/system.app)
 
-Source repositories
+#### VFPA x64
+* [pdfium-vfp/Source/pdfium64.dll](Source/pdfium64.dll)
+* [pdfium-vfp/Source/pdfium-vfp64.dll](Source/pdfium-vfp64.dll)
+* [pdfium-vfp/Source/libhpdf64.dll](Source/libhpdf64.dll) - for PdfiumReport.app only
+* [pdfium-vfp/Source/system.app](Source/system.app)
+
+#### Source repositories
 * [pdfium.dll](https://github.com/bblanchon/pdfium-binaries) 
 * [libhpdf.dll](https://github.com/libharu/)
 * [system.app](https://github.com/VFPX/GDIPlusX)
