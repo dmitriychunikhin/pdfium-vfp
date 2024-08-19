@@ -32,7 +32,7 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		Height = 27
 		libhpdf_dll_path = ("libhpdf.dll")
 		Name = "pdfium_env"
-		pdfium_dll_path = ("pdfium.dll")
+		pdfium_dll_path = (IIF(ATC("x64", SYS(17))<>0 , "pdfium64.dll", "pdfium.dll"))
 		privatefonts = .F.
 		system = .F.
 		system_app_path = ("system.app")
@@ -61,9 +61,9 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		
 		************************************************************************
 		LOCAL lcPdfiumVfpDll
-		lcPdfiumVfpDll = ADDBS(JUSTPATH(This.pdfium_dll_path)) + "pdfium-vfp.dll"
-		DECLARE LONG FPDF_SaveDocument IN (lcPdfiumVfpDll) LONG document, STRING filepath, STRING@ errMsg, LONG errMsgSize &&errMsgSize: errMsg buffer size in chars, not in bytes
+		lcPdfiumVfpDll = ADDBS(JUSTPATH(This.pdfium_dll_path)) + IIF(ATC("x64", SYS(17))<>0, "pdfium-vfp64.dll", "pdfium-vfp.dll")
 		
+		DECLARE LONG FPDF_SaveDocument IN (lcPdfiumVfpDll) LONG document, STRING filepath, STRING@ errMsg, LONG errMsgSize &&errMsgSize: errMsg buffer size in chars, not in bytes
 		DECLARE LONG FPDF_GetFontFileName IN (lcPdfiumVfpDll) STRING@ family_name, LONG is_bold, LONG is_italic, LONG nCharset, STRING@ buffer, LONG buflen, LONG@ nFontSimulations, LONG@ bSymbolFont
 		
 		
@@ -90,8 +90,8 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		DECLARE FPDFText_ClosePage IN (lcPdfiumDll) LONG text_page
 		
 		DECLARE INTEGER FPDF_GetPageSizeByIndex IN (lcPdfiumDll) LONG document, integer page_index, double@ width, double@ height
-		DECLARE double FPDF_GetPageWidthF IN (lcPdfiumDll) LONG page
-		DECLARE double FPDF_GetPageHeightF IN (lcPdfiumDll) LONG page
+		DECLARE double FPDF_GetPageWidth IN (lcPdfiumDll) LONG page
+		DECLARE double FPDF_GetPageHeight IN (lcPdfiumDll) LONG page
 		
 		DECLARE INTEGER FPDFText_CountChars IN (lcPdfiumDll) LONG text_page
 		
@@ -106,7 +106,7 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		DECLARE INTEGER FPDFText_GetBoundedText IN (lcPdfiumDll) LONG text_page, double left, double top, double right, double bottom, STRING@ buffer, integer buflen
 		
 		DECLARE INTEGER FPDF_DeviceToPage IN (lcPdfiumDll) LONG page, integer start_x, integer start_y, integer size_x, integer size_y, integer rotate, integer device_x, integer device_y, double@ page_x, double@ page_y
-		DECLARE INTEGER FPDF_PageToDevice IN (lcPdfiumDll) LONG page, integer start_x, integer start_y, integer size_x, integer size_y, integer rotate, double page_x, double page_y, integer@ device_x, integer@ device_y
+		DECLARE INTEGER FPDF_PageToDevice IN (lcPdfiumDll) LONG page, integer start_x, integer start_y, integer size_x, integer size_y, integer rotate, double page_x, double page_y, string@ device_x, string@ device_y
 		
 		DECLARE LONG FPDFBitmap_Create IN (lcPdfiumDll) integer width, integer height, integer alpha
 		DECLARE LONG FPDFBitmap_CreateEx IN (lcPdfiumDll) integer width, integer height, integer format, LONG first_scan, integer stride
@@ -5129,8 +5129,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    This.fpdf_pages_selection[lnPage,2] = 0
 		    This.fpdf_pages_selection[lnPage,3] = 0
 		    
-		    This.fpdf_pages_size[lnPage,1] = FPDF_GetPageWidthF(This.fpdf_pages[lnPage])
-		    This.fpdf_pages_size[lnPage,2] = FPDF_GetPageHeightF(This.fpdf_pages[lnPage])
+		    This.fpdf_pages_size[lnPage,1] = FPDF_GetPageWidth(This.fpdf_pages[lnPage])
+		    This.fpdf_pages_size[lnPage,2] = FPDF_GetPageHeight(This.fpdf_pages[lnPage])
 		ENDFOR
 		
 		This.ViewPortUpdate()
@@ -5765,7 +5765,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    
 		       
 		    LOCAL lnLeft, lnTop, lnRight, lnBottom
-		    STORE 0 TO lnLeft, lnTop, lnRight, lnBottom
+		    STORE 0h00000000 TO lnLeft, lnTop, lnRight, lnBottom
 		    
 		    IF FPDF_PageToDevice(This.FPDF_PAGES[lnPage], This.fpdf_pages_pos[lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[lnPage,3], This.fpdf_pages_pos[lnPage,4], 0, lnPageLeft, lnPageTop, @lnLeft, @lnTop) = 0
 		        LOOP
@@ -5774,6 +5774,11 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    IF FPDF_PageToDevice(This.FPDF_PAGES[lnPage], This.fpdf_pages_pos[lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[lnPage,3], This.fpdf_pages_pos[lnPage,4], 0, lnPageRight, lnPageBottom, @lnRight, @lnBottom) = 0
 		        LOOP
 		    ENDIF
+		
+		    lnLeft = CTOBIN(lnLeft, "4RS")
+		    lnTop = CTOBIN(lnTop, "4RS")
+		    lnRight = CTOBIN(lnRight, "4RS")
+		    lnBottom = CTOBIN(lnBottom, "4RS")
 		    
 		    loGfx.FillRectangle(This.SearchBrush, lnLeft, lnTop, lnRight - lnLeft, lnBottom - lnTop)
 		ENDFOR
@@ -5800,9 +5805,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    lnPageRight = CTOBIN(SUBSTR(lcRect,17,8),"B")
 		    lnPageBottom = CTOBIN(SUBSTR(lcRect,25,8),"B")
 		    
-		       
+		    
 		    LOCAL lnLeft, lnTop, lnRight, lnBottom
-		    STORE 0 TO lnLeft, lnTop, lnRight, lnBottom
+		    STORE 0h00000000 TO lnLeft, lnTop, lnRight, lnBottom
 		    
 		    IF FPDF_PageToDevice(This.FPDF_PAGES[lnPage], This.fpdf_pages_pos[lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[lnPage,3], This.fpdf_pages_pos[lnPage,4], 0, lnPageLeft, lnPageTop, @lnLeft, @lnTop) = 0
 		        LOOP
@@ -5811,6 +5816,11 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    IF FPDF_PageToDevice(This.FPDF_PAGES[lnPage], This.fpdf_pages_pos[lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[lnPage,3], This.fpdf_pages_pos[lnPage,4], 0, lnPageRight, lnPageBottom, @lnRight, @lnBottom) = 0
 		        LOOP
 		    ENDIF
+		    
+		    lnLeft = CTOBIN(lnLeft, "4RS")
+		    lnTop = CTOBIN(lnTop, "4RS")
+		    lnRight = CTOBIN(lnRight, "4RS")
+		    lnBottom = CTOBIN(lnBottom, "4RS")
 		    
 		    loGfx.FillRectangle(This.SelectionBrush, lnLeft, lnTop, lnRight - lnLeft, lnBottom - lnTop)
 		ENDFOR
@@ -6129,9 +6139,12 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		                
 		                IF lnRect = 1
 		                    LOCAL lnLeft, lnTop
-		                    STORE 0 TO lnLeft, lnTop
+		                    STORE 0h00000000 TO lnLeft, lnTop
 		                    
 		                    IF FPDF_PageToDevice(This.FPDF_PAGES[lnPageIndex], 0, 0, This.fpdf_pages_pos[lnPageIndex,3], This.fpdf_pages_pos[lnPageIndex,4], 0, lnPageLeft, lnPageTop, @lnLeft, @lnTop) > 0
+		                        lnLeft = CTOBIN(lnLeft, "4RS")
+		                        lnTop = CTOBIN(lnTop, "4RS")
+		                    
 		                        LOCAL lnScrollVert
 		                        lnScrollVert = This.fpdf_pages_pos[lnPageIndex,2] + lnTop
 		                        lnScrollVert = lnScrollVert - This.ViewPortSizeY * 0.5
