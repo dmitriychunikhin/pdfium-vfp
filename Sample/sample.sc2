@@ -349,7 +349,7 @@ DEFINE CLASS sample AS form
 
 	ADD OBJECT 'Pdfium_env' AS pdfium_env WITH ;
 		Left = 612, ;
-		libhpdf_dll_path = ("..\Source\libhpdf.dll"), ;
+		libhpdf_dll_path = (IIF(ATC("x64", SYS(17))<>0 , "..\Source\libhpdf64.dll", "..\Source\libhpdf.dll")), ;
 		Name = "Pdfium_env", ;
 		pdfium_dll_path = (IIF(ATC("x64", SYS(17))<>0, "..\Source\pdfium64.dll", "..\Source\pdfium.dll")), ;
 		system_app_path = ("..\Source\system.app"), ;
