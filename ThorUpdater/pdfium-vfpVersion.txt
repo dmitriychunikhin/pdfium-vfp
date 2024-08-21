@@ -3,8 +3,8 @@ lparameters toUpdateObject
 * Set the properties of the passed updater object.
 
 with toUpdateObject
-	.VersionNumber    = '1.4 - 20240814'
-	.AvailableVersion = CHRTRAN('pdfium-vfp','-','_')+'-1.4-update-20240814'
+	.VersionNumber    = '1.5 - 20240821'
+	.AvailableVersion = CHRTRAN('pdfium-vfp','-','_')+'-1.5-update-20240821'
 	.Notes            = GetNotes()
 *	.RegisterWithThor = GetRegisterWithThor()
 endwith
@@ -15,6 +15,14 @@ return toUpdateObject
 procedure GetNotes
 local lcNotes
 text to lcNotes noshow
+1.5:
+  - Support of VFPA x64 (pdfuim64.dll, pdfium-vfp64.dll, libhpdf64.dll were added)
+  - pdfium.dll, libhpdf.dll was updated to the latest versions
+  - Fixed vertical scrollbar size calculation (scrollbar was invisible on single page pdfs)
+
+1.4:
+  - Filename with diacritics
+
 1.3:
   - Private fonts support in PdfiumReport.app
   - First tests on Linux
@@ -38,4 +46,4 @@ return lcNotes
 * "pdfium-vfp" is a Component. No procedure GetRegisterWithThor created by VFPX Deployment 
 
 
-*created by VFPX Deployment, 14.08.24 19:47:32
+*created by VFPX Deployment, 21.08.24 11:16:10

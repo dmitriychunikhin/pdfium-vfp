@@ -1,3 +1,11 @@
+1.5:
+  - Support of VFPA x64 (pdfuim64.dll, pdfium-vfp64.dll, libhpdf64.dll were added)
+  - pdfium.dll, libhpdf.dll was updated to the latest versions
+  - Fixed vertical scrollbar size calculation (scrollbar was invisible on single page pdfs)
+
+1.4:
+  - Filename with diacritics
+
 1.3:
   - Private fonts support in PdfiumReport.app
   - First tests on Linux
