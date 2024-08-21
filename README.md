@@ -36,10 +36,12 @@ pdfium-vfp is a open source PDF viewer control for Visual Fox Pro 9 SP2 and VFP 
 
 ### Getting started 
 
-#### Thor (lastest component release)
+#### Thor 
 * Install Thor https://github.com/VFPX/Thor
 * Run VFP and open Thor / Check for updates in VFP system menu 
 * Download pdfium-vfp component
+* Open Thor / Folders / Components in VFP system menu and then open pdfium-vfp folder in Explorer
+* Read Basic Usage section on this page
 
 #### Windows (full sources with samples)
 * git clone https://github.com/dmitriychunikhin/pdfium-vfp
@@ -116,7 +118,10 @@ Thisform.PdfiumViewer.ClosePdf()
 
 ### Basic usage of PdfiumReport 
 1) Copy PdfiumReport.app from Source folder to your project folder
-2) Copy dependency binaries <i>libhpdf.dll, pdfium.dll, pdfium-vfp.dll, system.app</i> from Source folder to your project's folder
+2) <br/>
+    <b>VFP:</b> Copy dependency binaries <i>libhpdf.dll, pdfium.dll, pdfium-vfp.dll, system.app</i> from <i>Source</i> folder to your project's folder
+    
+    <b>VFPA x64:</b> Copy dependency binaries <i>libhpdf64.dll, pdfium64.dll, pdfium-vfp64.dll, system.app</i> from <i>Source</i> folder to your project's folder
 
 More examples can be found at `pdfium-vfp/Sample/sample.scx`
 
