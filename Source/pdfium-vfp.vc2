@@ -6369,8 +6369,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		    *********************************************************************
 		
-		    This.ViewPortSizeX = MAX(This.Width - IIF(INLIST(This.ScrollBars,1,3), SYSMETRIC(8),0), 0)
-		    This.ViewPortSizeY = MAX(This.Height - IIF(INLIST(This.ScrollBars,2,3), SYSMETRIC(5),0), 0)
+		    This.ViewPortSizeX = MAX(This.Width - IIF(INLIST(This.ScrollBars,2,3), SYSMETRIC(5),0), 0)
+		    This.ViewPortSizeY = MAX(This.Height - IIF(INLIST(This.ScrollBars,1,3), SYSMETRIC(8),0), 0)
 		
 		
 		    *********************************************************************
@@ -6505,7 +6505,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		LOCAL lnScrollMin, lnScrollMax, lnScrollPageSize, lnScrollPos
 		IF INLIST(This.ScrollBars,2,3) AND This.ViewPortSizeY > 0
 		    lnScrollMin = 0
-		    lnScrollMax = This.ViewPortMaxY - This.ViewPortSizeY
+		    lnScrollMax = This.ViewPortMaxY
 		    lnScrollPageSize = This.ViewPortSizeY
 		    lnScrollPos = This.ViewPortY
 		ELSE
