@@ -33,13 +33,20 @@ pdfium-vfp is a open source PDF viewer control for Visual Fox Pro 9 SP2 and VFP 
 
 
 
-### Getting started
-#### Windows
+
+### Getting started 
+
+#### Thor (lastest component release)
+* Install Thor https://github.com/VFPX/Thor
+* Run VFP and open Thor / Check for updates in VFP system menu 
+* Download pdfium-vfp component
+
+#### Windows (full sources with samples)
 * git clone https://github.com/dmitriychunikhin/pdfium-vfp
 * run pdfium-vfp/Sample/sample.exe
 * open and explore Sample/sample.pjx
 
-#### Linux
+#### Linux  (full sources with samples)
 * Check wine version
 ```bash
 wine --version
