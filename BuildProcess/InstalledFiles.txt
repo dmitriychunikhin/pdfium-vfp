@@ -2,6 +2,9 @@ Source\pdfium-vfp.vcx
 Source\pdfium-vfp.vct
 Source\pdfiumreport.app
 Source\pdfium-vfp.dll
+Source\pdfium-vfp64.dll
 Source\pdfium.dll
+Source\pdfium64.dll
 Source\libhpdf.dll
+Source\libhpdf64.dll
 Source\system.app
