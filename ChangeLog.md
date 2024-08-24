@@ -1,3 +1,6 @@
+1.6:
+  - Dynamics and rotation properties support in PdfiumReport.app
+
 1.5:
   - Support of VFPA x64 (pdfuim64.dll, pdfium-vfp64.dll, libhpdf64.dll were added)
   - pdfium.dll, libhpdf.dll was updated to the latest versions

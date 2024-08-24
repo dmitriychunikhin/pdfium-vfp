@@ -3,8 +3,8 @@ lparameters toUpdateObject
 * Set the properties of the passed updater object.
 
 with toUpdateObject
-	.VersionNumber    = '1.5 - 20240821'
-	.AvailableVersion = CHRTRAN('pdfium-vfp','-','_')+'-1.5-update-20240821'
+	.VersionNumber    = '1.6 - 20240824'
+	.AvailableVersion = CHRTRAN('pdfium-vfp','-','_')+'-1.6-update-20240824'
 	.Notes            = GetNotes()
 *	.RegisterWithThor = GetRegisterWithThor()
 endwith
@@ -15,6 +15,9 @@ return toUpdateObject
 procedure GetNotes
 local lcNotes
 text to lcNotes noshow
+1.6:
+  - Dynamics and rotation properties support in PdfiumReport.app
+
 1.5:
   - Support of VFPA x64 (pdfuim64.dll, pdfium-vfp64.dll, libhpdf64.dll were added)
   - pdfium.dll, libhpdf.dll was updated to the latest versions
@@ -46,4 +49,4 @@ return lcNotes
 * "pdfium-vfp" is a Component. No procedure GetRegisterWithThor created by VFPX Deployment 
 
 
-*created by VFPX Deployment, 21.08.24 11:16:10
+*created by VFPX Deployment, 24.08.24 16:20:56

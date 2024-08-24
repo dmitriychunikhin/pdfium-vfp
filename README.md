@@ -19,6 +19,7 @@ pdfium-vfp is a open source PDF viewer control for Visual Fox Pro 9 SP2 and VFP 
 * Multiple control instances
 * VFP frx reports previewing, printing and saving (as pdf) without High DPI pain in the neck
 * Frx report rendering supports private fonts (non system fonts)
+* Frx report rendering supports dynamics and rotation properties
 * Supports VFP Advanced x64 
 
 ### Minumum system requirements
@@ -77,8 +78,7 @@ Open sample.pjx project from `pdfium-vfp/Sample` folder or just run Sample/sampl
 
 ### Known issues
 * PdfiumViewer doesn't support page rotation, bookrmarks, annotations and active hyperlinks
-* PdfiumViewer doesn't support case insensitive searching for non-ASCII character range (likely it's pdfium pecularity)
-* Report previewer doesn't support dynamics
+* PdfiumViewer doesn't support case insensitive searching for non-ASCII character range
 * Fallback font in report previewer is Helvetica with no chance to change it
 * Report previewer can deal with ttf fonts only, non ttf font (ttc, fon) are rendered as images
 * Report previewer doesn't handle General in picture objects and field's trimming settings
@@ -268,9 +268,9 @@ What binaries exactly do you need to run all the stuff (or your own latest versi
 PUBLIC _PdfiumReportEnv as pdfium_env of pdfium-vfp
 PUBLIC _PdfiumReport as pdfiumreport of pdfium-vfp
 ```
-* Declares WIN32API functions via WinApi_* pattern (aliased)
-* Declares pdfium.dll functions via FPDF_* pattern (without alias)
-* Declares pdfium-vfp.dll functions (two for the moment) via FPDF_* pattern (without alias)
-* Declares libhpdf.dll functions via HPDF_* pattern (without alias)
+* Declares WIN32API functions via WinApi_* pattern (with aliases)
+* Declares pdfium.dll functions via FPDF_* pattern (with aliases)
+* Declares pdfium-vfp.dll functions via FPDF_* pattern (with aliases)
+* Declares libhpdf.dll functions via HPDF_* pattern (with aliases)
 * Doesn't perform CLEAR DLLS 
 * Adds fonts from Pdfium_env.PrivateFonts collection to GDI Plus [System.Drawing.Text.PrivateFontCollection](https://learn.microsoft.com/en-us/dotnet/api/system.drawing.text.privatefontcollection?view=net-8.0)

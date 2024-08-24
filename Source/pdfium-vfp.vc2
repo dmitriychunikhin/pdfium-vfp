@@ -63,61 +63,61 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		LOCAL lcPdfiumVfpDll
 		lcPdfiumVfpDll = ADDBS(JUSTPATH(This.pdfium_dll_path)) + IIF(ATC("x64", SYS(17))<>0, "pdfium-vfp64.dll", "pdfium-vfp.dll")
 		
-		DECLARE LONG FPDF_SaveDocument IN (lcPdfiumVfpDll) LONG document, STRING filepath, STRING@ errMsg, LONG errMsgSize &&errMsgSize: errMsg buffer size in chars, not in bytes
-		DECLARE LONG FPDF_GetFontFileName IN (lcPdfiumVfpDll) STRING@ family_name, LONG is_bold, LONG is_italic, LONG nCharset, STRING@ buffer, LONG buflen, LONG@ nFontSimulations, LONG@ bSymbolFont
+		DECLARE LONG FPDF_SaveDocument IN (lcPdfiumVfpDll) AS FPDF_SaveDocument LONG document, STRING filepath, STRING@ errMsg, LONG errMsgSize &&errMsgSize: errMsg buffer size in chars, not in bytes
+		DECLARE LONG FPDF_GetFontFileName IN (lcPdfiumVfpDll) AS FPDF_GetFontFileName STRING@ family_name, LONG is_bold, LONG is_italic, LONG nCharset, STRING@ buffer, LONG buflen, LONG@ nFontSimulations, LONG@ bSymbolFont
 		
 		
 		************************************************************************
 		LOCAL lcPdfiumDll
 		lcPdfiumDll = This.pdfium_dll_path
 		
-		DECLARE FPDF_InitLibraryWithConfig IN (lcPdfiumDll) STRING config
-		DECLARE FPDF_DestroyLibrary IN (lcPdfiumDll)
+		DECLARE FPDF_InitLibraryWithConfig IN (lcPdfiumDll) AS FPDF_InitLibraryWithConfig STRING config
+		DECLARE FPDF_DestroyLibrary IN (lcPdfiumDll) AS FPDF_DestroyLibrary
 		
-		DECLARE LONG FPDF_LoadDocument IN (lcPdfiumDll) STRING file_path, STRING password
-		DECLARE LONG FPDF_LoadMemDocument IN (lcPdfiumDll) STRING@ data_buf, integer size, STRING password
-		DECLARE FPDF_CloseDocument IN (lcPdfiumDll) LONG document
+		DECLARE LONG FPDF_LoadDocument IN (lcPdfiumDll) AS FPDF_LoadDocument STRING file_path, STRING password
+		DECLARE LONG FPDF_LoadMemDocument IN (lcPdfiumDll) AS FPDF_LoadMemDocument STRING@ data_buf, integer size, STRING password
+		DECLARE FPDF_CloseDocument IN (lcPdfiumDll) AS FPDF_CloseDocument LONG document
 		
-		DECLARE INTEGER FPDF_GetPageCount IN (lcPdfiumDll) LONG document
+		DECLARE INTEGER FPDF_GetPageCount IN (lcPdfiumDll) AS FPDF_GetPageCount LONG document
 		
-		DECLARE LONG FPDF_LoadPage IN (lcPdfiumDll) LONG document, INTEGER page_index
-		DECLARE FPDF_ClosePage IN (lcPdfiumDll) LONG page
+		DECLARE LONG FPDF_LoadPage IN (lcPdfiumDll) AS FPDF_LoadPage LONG document, INTEGER page_index
+		DECLARE FPDF_ClosePage IN (lcPdfiumDll) AS FPDF_ClosePage LONG page
 		
-		DECLARE FPDF_RenderPage IN (lcPdfiumDll) LONG dc, LONG page, integer start_x, integer start_y, integer size_x, integer size_y, integer rotate, integer flags
-		DECLARE FPDF_RenderPageBitmap IN (lcPdfiumDll) LONG bitmap, LONG page, integer start_x, integer start_y, integer size_x, integer size_y, integer rotate, integer flags
+		DECLARE FPDF_RenderPage IN (lcPdfiumDll) AS FPDF_RenderPage LONG dc, LONG page, integer start_x, integer start_y, integer size_x, integer size_y, integer rotate, integer flags
+		DECLARE FPDF_RenderPageBitmap IN (lcPdfiumDll) AS FPDF_RenderPageBitmap LONG bitmap, LONG page, integer start_x, integer start_y, integer size_x, integer size_y, integer rotate, integer flags
 		
-		DECLARE LONG FPDFText_LoadPage IN (lcPdfiumDll) LONG page
-		DECLARE FPDFText_ClosePage IN (lcPdfiumDll) LONG text_page
+		DECLARE LONG FPDFText_LoadPage IN (lcPdfiumDll) AS FPDFText_LoadPage LONG page
+		DECLARE FPDFText_ClosePage IN (lcPdfiumDll) AS FPDFText_ClosePage LONG text_page
 		
-		DECLARE INTEGER FPDF_GetPageSizeByIndex IN (lcPdfiumDll) LONG document, integer page_index, double@ width, double@ height
-		DECLARE double FPDF_GetPageWidth IN (lcPdfiumDll) LONG page
-		DECLARE double FPDF_GetPageHeight IN (lcPdfiumDll) LONG page
+		DECLARE INTEGER FPDF_GetPageSizeByIndex IN (lcPdfiumDll) AS FPDF_GetPageSizeByIndex LONG document, integer page_index, double@ width, double@ height
+		DECLARE double FPDF_GetPageWidth IN (lcPdfiumDll) AS FPDF_GetPageWidth LONG page
+		DECLARE double FPDF_GetPageHeight IN (lcPdfiumDll) AS FPDF_GetPageHeight LONG page
 		
-		DECLARE INTEGER FPDFText_CountChars IN (lcPdfiumDll) LONG text_page
+		DECLARE INTEGER FPDFText_CountChars IN (lcPdfiumDll) AS FPDFText_CountChars LONG text_page
 		
-		DECLARE INTEGER FPDFText_GetCharIndexAtPos IN (lcPdfiumDll) LONG text_page, double x, double y, double xTolerance, double yTolerance
-		DECLARE INTEGER FPDFText_GetCharBox IN (lcPdfiumDll) LONG text_page, INTEGER index, double@ left, double@ right, double@ bottom, double@ top
+		DECLARE INTEGER FPDFText_GetCharIndexAtPos IN (lcPdfiumDll) AS FPDFText_GetCharIndexAtPos LONG text_page, double x, double y, double xTolerance, double yTolerance
+		DECLARE INTEGER FPDFText_GetCharBox IN (lcPdfiumDll) AS FPDFText_GetCharBox LONG text_page, INTEGER index, double@ left, double@ right, double@ bottom, double@ top
 		
-		DECLARE INTEGER FPDFText_GetText IN (lcPdfiumDll) LONG text_page, integer start_index, integer count, STRING@ result
-		DECLARE LONG FPDFText_GetUnicode IN (lcPdfiumDll) LONG text_page, integer index
+		DECLARE INTEGER FPDFText_GetText IN (lcPdfiumDll) AS FPDFText_GetText LONG text_page, integer start_index, integer count, STRING@ result
+		DECLARE LONG FPDFText_GetUnicode IN (lcPdfiumDll) AS FPDFText_GetUnicode LONG text_page, integer index
 		
-		DECLARE INTEGER FPDFText_CountRects IN (lcPdfiumDll) LONG text_page, integer start_index, integer count
-		DECLARE INTEGER FPDFText_GetRect IN (lcPdfiumDll) LONG text_page, integer rect_index, double@ left, double@ top, double@ right, double@ bottom
-		DECLARE INTEGER FPDFText_GetBoundedText IN (lcPdfiumDll) LONG text_page, double left, double top, double right, double bottom, STRING@ buffer, integer buflen
+		DECLARE INTEGER FPDFText_CountRects IN (lcPdfiumDll) AS FPDFText_CountRects LONG text_page, integer start_index, integer count
+		DECLARE INTEGER FPDFText_GetRect IN (lcPdfiumDll) AS FPDFText_GetRect LONG text_page, integer rect_index, double@ left, double@ top, double@ right, double@ bottom
+		DECLARE INTEGER FPDFText_GetBoundedText IN (lcPdfiumDll) AS FPDFText_GetBoundedText LONG text_page, double left, double top, double right, double bottom, STRING@ buffer, integer buflen
 		
-		DECLARE INTEGER FPDF_DeviceToPage IN (lcPdfiumDll) LONG page, integer start_x, integer start_y, integer size_x, integer size_y, integer rotate, integer device_x, integer device_y, double@ page_x, double@ page_y
-		DECLARE INTEGER FPDF_PageToDevice IN (lcPdfiumDll) LONG page, integer start_x, integer start_y, integer size_x, integer size_y, integer rotate, double page_x, double page_y, string@ device_x, string@ device_y
+		DECLARE INTEGER FPDF_DeviceToPage IN (lcPdfiumDll) AS FPDF_DeviceToPage LONG page, integer start_x, integer start_y, integer size_x, integer size_y, integer rotate, integer device_x, integer device_y, double@ page_x, double@ page_y
+		DECLARE INTEGER FPDF_PageToDevice IN (lcPdfiumDll) AS FPDF_PageToDevice LONG page, integer start_x, integer start_y, integer size_x, integer size_y, integer rotate, double page_x, double page_y, string@ device_x, string@ device_y
 		
-		DECLARE LONG FPDFBitmap_Create IN (lcPdfiumDll) integer width, integer height, integer alpha
-		DECLARE LONG FPDFBitmap_CreateEx IN (lcPdfiumDll) integer width, integer height, integer format, LONG first_scan, integer stride
-		DECLARE FPDFBitmap_Destroy IN (lcPdfiumDll) LONG bitmap
+		DECLARE LONG FPDFBitmap_Create IN (lcPdfiumDll) AS FPDFBitmap_Create integer width, integer height, integer alpha
+		DECLARE LONG FPDFBitmap_CreateEx IN (lcPdfiumDll) AS FPDFBitmap_CreateEx integer width, integer height, integer format, LONG first_scan, integer stride
+		DECLARE FPDFBitmap_Destroy IN (lcPdfiumDll) AS FPDFBitmap_Destroy LONG bitmap
 		
-		DECLARE LONG FPDFText_FindStart IN (lcPdfiumDll) LONG text_page, STRING findwhat, LONG flags, INTEGER start_index
-		DECLARE LONG FPDFText_FindNext IN (lcPdfiumDll) LONG handle
-		DECLARE LONG FPDFText_FindPrev IN (lcPdfiumDll) LONG handle
-		DECLARE INTEGER FPDFText_GetSchResultIndex IN (lcPdfiumDll) LONG handle
-		DECLARE INTEGER FPDFText_GetSchCount IN (lcPdfiumDll) LONG handle
-		DECLARE FPDFText_FindClose IN (lcPdfiumDll) LONG handle
+		DECLARE LONG FPDFText_FindStart IN (lcPdfiumDll) AS FPDFText_FindStart LONG text_page, STRING findwhat, LONG flags, INTEGER start_index
+		DECLARE LONG FPDFText_FindNext IN (lcPdfiumDll) AS FPDFText_FindNext LONG handle
+		DECLARE LONG FPDFText_FindPrev IN (lcPdfiumDll) AS FPDFText_FindPrev LONG handle
+		DECLARE INTEGER FPDFText_GetSchResultIndex IN (lcPdfiumDll) AS FPDFText_GetSchResultIndex LONG handle
+		DECLARE INTEGER FPDFText_GetSchCount IN (lcPdfiumDll) AS FPDFText_GetSchCount LONG handle
+		DECLARE FPDFText_FindClose IN (lcPdfiumDll) AS FPDFText_FindClose LONG handle
 		
 		
 		
@@ -126,90 +126,99 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		LOCAL lcLibHaruDll
 		lcLibhpdfDll = This.libhpdf_dll_path
 		IF EMPTY(lcLibhpdfDll)=.F.
-		    DECLARE INTEGER HPDF_New IN (lcLibhpdfDll) INTEGER user_error_fn, INTEGER user_data
-		    DECLARE INTEGER HPDF_Free IN (lcLibhpdfDll) INTEGER pdf
-		    DECLARE INTEGER HPDF_SaveToFile IN (lcLibhpdfDll) INTEGER pdf, STRING file_name
-		    DECLARE INTEGER HPDF_SaveToStream IN (lcLibhpdfDll) INTEGER pdf
-		    DECLARE INTEGER HPDF_ReadFromStream IN (lcLibhpdfDll) INTEGER pdf, STRING@ buf, INTEGER@ size
-		    DECLARE INTEGER HPDF_GetStreamSize IN (lcLibhpdfDll) INTEGER pdf
-		    DECLARE INTEGER HPDF_GetError IN (lcLibhpdfDll) INTEGER pdf
-		    DECLARE INTEGER HPDF_ResetError IN (lcLibhpdfDll) INTEGER pdf
-		    DECLARE INTEGER HPDF_SetPageMode IN (lcLibhpdfDll) INTEGER pdf, INTEGER mode
-		    DECLARE INTEGER HPDF_GetCurrentPage IN (lcLibhpdfDll) INTEGER pdf
-		    DECLARE INTEGER HPDF_AddPage IN (lcLibhpdfDll) INTEGER pdf
-		    DECLARE INTEGER HPDF_Page_SetWidth IN (lcLibhpdfDll) INTEGER page, SINGLE value
-		    DECLARE INTEGER HPDF_Page_SetHeight IN (lcLibhpdfDll) INTEGER page, SINGLE value
-		    DECLARE INTEGER HPDF_Page_SetSize IN (lcLibhpdfDll) INTEGER page, SINGLE size, SINGLE direction
-		    DECLARE INTEGER HPDF_GetFont IN (lcLibhpdfDll) INTEGER, STRING, STRING
-		    DECLARE STRING  HPDF_LoadTTFontFromFile IN (lcLibhpdfDll) INTEGER, STRING, INTEGER
-		    DECLARE INTEGER HPDF_GetEncoder IN (lcLibhpdfDll) INTEGER, STRING
-		    DECLARE INTEGER HPDF_GetCurrentEncoder IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_SetCurrentEncoder IN (lcLibhpdfDll) INTEGER, STRING
-		    DECLARE INTEGER HPDF_Encoder_GetType IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_Encoder_GetByteType IN (lcLibhpdfDll) INTEGER, STRING, INTEGER
-		    DECLARE STRING  HPDF_Encoder_GetUnicode IN (lcLibhpdfDll) INTEGER, STRING
-		    DECLARE INTEGER HPDF_Encoder_GetWritingMode IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_UseJPEncodings IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_UseKREncodings IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_UseCNSEncodings IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_UseCNTEncodings IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_UseUTFEncodings IN (lcLibhpdfDll) INTEGER
+		    DECLARE INTEGER HPDF_New IN (lcLibhpdfDll) AS HPDF_New INTEGER user_error_fn, INTEGER user_data
+		    DECLARE INTEGER HPDF_Free IN (lcLibhpdfDll) AS HPDF_Free INTEGER pdf
+		    DECLARE INTEGER HPDF_SaveToFile IN (lcLibhpdfDll) AS HPDF_SaveToFile INTEGER pdf, STRING file_name
+		    DECLARE INTEGER HPDF_SaveToStream IN (lcLibhpdfDll) AS HPDF_SaveToStream INTEGER pdf
+		    DECLARE INTEGER HPDF_ReadFromStream IN (lcLibhpdfDll) AS HPDF_ReadFromStream INTEGER pdf, STRING@ buf, INTEGER@ size
+		    DECLARE INTEGER HPDF_GetStreamSize IN (lcLibhpdfDll) AS HPDF_GetStreamSize INTEGER pdf
+		    DECLARE INTEGER HPDF_GetError IN (lcLibhpdfDll) AS HPDF_GetError INTEGER pdf
+		    DECLARE INTEGER HPDF_ResetError IN (lcLibhpdfDll) AS HPDF_ResetError INTEGER pdf
+		    DECLARE INTEGER HPDF_SetPageMode IN (lcLibhpdfDll) AS HPDF_SetPageMode INTEGER pdf, INTEGER mode
+		    DECLARE INTEGER HPDF_GetCurrentPage IN (lcLibhpdfDll) AS HPDF_GetCurrentPage INTEGER pdf
+		    DECLARE INTEGER HPDF_AddPage IN (lcLibhpdfDll) AS HPDF_AddPage INTEGER pdf
+		    DECLARE INTEGER HPDF_Page_SetWidth IN (lcLibhpdfDll) AS HPDF_Page_SetWidth INTEGER page, SINGLE value
+		    DECLARE INTEGER HPDF_Page_SetHeight IN (lcLibhpdfDll) AS HPDF_Page_SetHeight INTEGER page, SINGLE value
+		    DECLARE INTEGER HPDF_Page_SetSize IN (lcLibhpdfDll) AS HPDF_Page_SetSize INTEGER page, SINGLE size, SINGLE direction
+		    DECLARE INTEGER HPDF_GetFont IN (lcLibhpdfDll) AS HPDF_GetFont INTEGER, STRING, STRING
+		    DECLARE STRING  HPDF_LoadTTFontFromFile IN (lcLibhpdfDll) AS HPDF_LoadTTFontFromFile INTEGER, STRING, INTEGER
+		    DECLARE INTEGER HPDF_GetEncoder IN (lcLibhpdfDll) AS HPDF_GetEncoder INTEGER, STRING
+		    DECLARE INTEGER HPDF_GetCurrentEncoder IN (lcLibhpdfDll) AS HPDF_GetCurrentEncoder INTEGER
+		    DECLARE INTEGER HPDF_SetCurrentEncoder IN (lcLibhpdfDll) AS HPDF_SetCurrentEncoder INTEGER, STRING
+		    DECLARE INTEGER HPDF_Encoder_GetType IN (lcLibhpdfDll) AS HPDF_Encoder_GetType INTEGER
+		    DECLARE INTEGER HPDF_Encoder_GetByteType IN (lcLibhpdfDll) AS HPDF_Encoder_GetByteType INTEGER, STRING, INTEGER
+		    DECLARE STRING  HPDF_Encoder_GetUnicode IN (lcLibhpdfDll) AS HPDF_Encoder_GetUnicode INTEGER, STRING
+		    DECLARE INTEGER HPDF_Encoder_GetWritingMode IN (lcLibhpdfDll) AS HPDF_Encoder_GetWritingMode INTEGER
+		    DECLARE INTEGER HPDF_UseJPEncodings IN (lcLibhpdfDll) AS HPDF_UseJPEncodings INTEGER
+		    DECLARE INTEGER HPDF_UseKREncodings IN (lcLibhpdfDll) AS HPDF_UseKREncodings INTEGER
+		    DECLARE INTEGER HPDF_UseCNSEncodings IN (lcLibhpdfDll) AS HPDF_UseCNSEncodings INTEGER
+		    DECLARE INTEGER HPDF_UseCNTEncodings IN (lcLibhpdfDll) AS HPDF_UseCNTEncodings INTEGER
+		    DECLARE INTEGER HPDF_UseUTFEncodings IN (lcLibhpdfDll) AS HPDF_UseUTFEncodings INTEGER
 		
-		    DECLARE INTEGER HPDF_UseJPFonts IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_UseKRFonts IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_UseCNSFonts IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_UseCNTFonts IN (lcLibhpdfDll) INTEGER
+		    DECLARE INTEGER HPDF_UseJPFonts IN (lcLibhpdfDll) AS HPDF_UseJPFonts INTEGER
+		    DECLARE INTEGER HPDF_UseKRFonts IN (lcLibhpdfDll) AS HPDF_UseKRFonts INTEGER
+		    DECLARE INTEGER HPDF_UseCNSFonts IN (lcLibhpdfDll) AS HPDF_UseCNSFonts INTEGER
+		    DECLARE INTEGER HPDF_UseCNTFonts IN (lcLibhpdfDll) AS HPDF_UseCNTFonts INTEGER
 		
-		    DECLARE INTEGER HPDF_LoadPngImageFromFile IN (lcLibhpdfDll) INTEGER, STRING
-		    DECLARE INTEGER HPDF_LoadJpegImageFromFile IN (lcLibhpdfDll) INTEGER, STRING
-		    DECLARE INTEGER HPDF_Image_GetWidth IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_Image_GetHeight IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_SetInfoAttr IN (lcLibhpdfDll) INTEGER, INTEGER, STRING
-		    DECLARE INTEGER HPDF_SetPassword IN (lcLibhpdfDll) INTEGER, STRING, STRING
-		    DECLARE INTEGER HPDF_SetPermission IN (lcLibhpdfDll) INTEGER, INTEGER
-		    DECLARE INTEGER HPDF_SetEncryptionMode IN (lcLibhpdfDll) INTEGER, INTEGER, INTEGER
-		    DECLARE INTEGER HPDF_SetCompressionMode IN (lcLibhpdfDll) INTEGER, INTEGER
-		    DECLARE INTEGER HPDF_Font_MeasureText IN (lcLibhpdfDll) INTEGER, STRING, INTEGER, SINGLE, SINGLE, SINGLE, SINGLE, INTEGER, SINGLE @
-		    DECLARE SINGLE  HPDF_Page_GetWidth IN (lcLibhpdfDll) INTEGER
-		    DECLARE SINGLE  HPDF_Page_GetHeight IN (lcLibhpdfDll) INTEGER
-		    DECLARE SINGLE  HPDF_Page_TextWidth IN (lcLibhpdfDll) INTEGER, STRING
-		    DECLARE INTEGER HPDF_Page_GetCurrentFont IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_Page_MeasureText IN (lcLibhpdfDll) INTEGER, STRING, SINGLE, INTEGER, SINGLE @
-		    DECLARE INTEGER HPDF_Page_GetRGBFill IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_Page_GetCurrentFont IN (lcLibhpdfDll) INTEGER
-		    DECLARE SINGLE  HPDF_Page_GetCurrentFontSize IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_Page_SetLineWidth IN (lcLibhpdfDll) INTEGER, SINGLE
-		    DECLARE INTEGER HPDF_Page_SetDash IN (lcLibhpdfDll) INTEGER, STRING @, INTEGER, SINGLE
-		    DECLARE INTEGER HPDF_Page_MoveTo IN (lcLibhpdfDll) INTEGER, SINGLE, SINGLE
-		    DECLARE INTEGER HPDF_Page_LineTo IN (lcLibhpdfDll) INTEGER, SINGLE, SINGLE
-		    DECLARE INTEGER HPDF_Page_ClosePath IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_Page_Rectangle IN (lcLibhpdfDll) INTEGER, SINGLE, SINGLE, SINGLE, SINGLE
-		    DECLARE INTEGER HPDF_Page_Concat IN (lcLibhpdfDll) INTEGER, SINGLE, SINGLE, SINGLE, SINGLE, SINGLE, SINGLE
-		    DECLARE INTEGER HPDF_Page_SetCharSpace IN (lcLibhpdfDll) INTEGER, SINGLE
-		    DECLARE INTEGER HPDF_Page_SetWordSpace IN (lcLibhpdfDll) INTEGER, SINGLE
-		    DECLARE INTEGER HPDF_Page_SetHorizontalScalling IN (lcLibhpdfDll) INTEGER, SINGLE
-		    DECLARE INTEGER HPDF_Page_SetTextLeading IN (lcLibhpdfDll) INTEGER, SINGLE
-		    DECLARE INTEGER HPDF_Page_SetTextRise IN (lcLibhpdfDll) INTEGER, SINGLE
-		    DECLARE INTEGER HPDF_Page_Stroke IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_Page_ClosePathStroke IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_Page_Fill IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_Page_FillStroke IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_Page_EndPath IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_Page_BeginText IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_Page_EndText IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_Page_SetFontAndSize IN (lcLibhpdfDll) INTEGER, INTEGER, SINGLE
-		    DECLARE INTEGER HPDF_Page_SetTextRenderingMode IN (lcLibhpdfDll) INTEGER, INTEGER
-		    DECLARE INTEGER HPDF_Page_MoveTextPos IN (lcLibhpdfDll) INTEGER, SINGLE, SINGLE
-		    DECLARE INTEGER HPDF_Page_MoveToNextLine IN (lcLibhpdfDll) INTEGER
-		    DECLARE INTEGER HPDF_Page_SetRGBFill IN (lcLibhpdfDll) INTEGER, SINGLE, SINGLE, SINGLE
-		    DECLARE INTEGER HPDF_Page_SetRGBStroke IN (lcLibhpdfDll) INTEGER, SINGLE, SINGLE, SINGLE
-		    DECLARE INTEGER HPDF_Page_Ellipse IN (lcLibhpdfDll) INTEGER, SINGLE, SINGLE, SINGLE, SINGLE
-		    DECLARE INTEGER HPDF_Page_DrawImage IN (lcLibhpdfDll) INTEGER, INTEGER, SINGLE, SINGLE, SINGLE, SINGLE
-		    DECLARE INTEGER HPDF_Page_TextRect IN (lcLibhpdfDll) INTEGER, SINGLE, SINGLE, SINGLE, SINGLE, STRING, INTEGER, INTEGER
-		    DECLARE INTEGER HPDF_Page_TextOut IN (lcLibhpdfDll) INTEGER, SINGLE, SINGLE, STRING
-		    DECLARE INTEGER HPDF_Page_SetTextMatrix IN (lcLibhpdfDll) INTEGER ,SINGLE, SINGLE, SINGLE, SINGLE, SINGLE, SINGLE
-		    DECLARE INTEGER HPDF_Page_ShowText IN (lcLibhpdfDll) INTEGER, STRING
-		    DECLARE INTEGER HPDF_Page_CurveTo IN (lcLibhpdfDll) INTEGER, SINGLE, SINGLE, SINGLE, SINGLE, SINGLE, SINGLE
+		    DECLARE INTEGER HPDF_LoadPngImageFromFile IN (lcLibhpdfDll) AS HPDF_LoadPngImageFromFile INTEGER, STRING
+		    DECLARE INTEGER HPDF_LoadJpegImageFromFile IN (lcLibhpdfDll) AS HPDF_LoadJpegImageFromFile INTEGER, STRING
+		    DECLARE INTEGER HPDF_Image_GetWidth IN (lcLibhpdfDll) AS HPDF_Image_GetWidth INTEGER
+		    DECLARE INTEGER HPDF_Image_GetHeight IN (lcLibhpdfDll) AS HPDF_Image_GetHeight INTEGER
+		    DECLARE INTEGER HPDF_SetInfoAttr IN (lcLibhpdfDll) AS HPDF_SetInfoAttr INTEGER, INTEGER, STRING
+		    DECLARE INTEGER HPDF_SetPassword IN (lcLibhpdfDll) AS HPDF_SetPassword INTEGER, STRING, STRING
+		    DECLARE INTEGER HPDF_SetPermission IN (lcLibhpdfDll) AS HPDF_SetPermission INTEGER, INTEGER
+		    DECLARE INTEGER HPDF_SetEncryptionMode IN (lcLibhpdfDll) AS HPDF_SetEncryptionMode INTEGER, INTEGER, INTEGER
+		    DECLARE INTEGER HPDF_SetCompressionMode IN (lcLibhpdfDll) AS HPDF_SetCompressionMode INTEGER, INTEGER
+		    DECLARE INTEGER HPDF_Font_MeasureText IN (lcLibhpdfDll) AS HPDF_Font_MeasureText INTEGER, STRING, INTEGER, SINGLE, SINGLE, SINGLE, SINGLE, INTEGER, SINGLE @
+		    DECLARE SINGLE  HPDF_Page_GetWidth IN (lcLibhpdfDll) AS  HPDF_Page_GetWidth INTEGER
+		    DECLARE SINGLE  HPDF_Page_GetHeight IN (lcLibhpdfDll) AS  HPDF_Page_GetHeight INTEGER
+		    DECLARE SINGLE  HPDF_Page_TextWidth IN (lcLibhpdfDll) AS  HPDF_Page_TextWidth INTEGER, STRING
+		    DECLARE INTEGER HPDF_Page_MeasureText IN (lcLibhpdfDll) AS HPDF_Page_MeasureText INTEGER, STRING, SINGLE, INTEGER, SINGLE @
+		    DECLARE INTEGER HPDF_Page_GetRGBFill IN (lcLibhpdfDll) AS HPDF_Page_GetRGBFill INTEGER
+		    DECLARE INTEGER HPDF_Page_GetCurrentFont IN (lcLibhpdfDll) AS HPDF_Page_GetCurrentFont INTEGER
+		    DECLARE SINGLE  HPDF_Page_GetCurrentFontSize IN (lcLibhpdfDll) AS  HPDF_Page_GetCurrentFontSize INTEGER
+		    DECLARE INTEGER HPDF_Page_SetLineWidth IN (lcLibhpdfDll) AS HPDF_Page_SetLineWidth INTEGER, SINGLE
+		    DECLARE INTEGER HPDF_Page_SetDash IN (lcLibhpdfDll) AS HPDF_Page_SetDash INTEGER, STRING @, INTEGER, SINGLE
+		    DECLARE INTEGER HPDF_Page_MoveTo IN (lcLibhpdfDll) AS HPDF_Page_MoveTo INTEGER, SINGLE, SINGLE
+		    DECLARE INTEGER HPDF_Page_LineTo IN (lcLibhpdfDll) AS HPDF_Page_LineTo INTEGER, SINGLE, SINGLE
+		    DECLARE INTEGER HPDF_Page_ClosePath IN (lcLibhpdfDll) AS HPDF_Page_ClosePath INTEGER
+		    DECLARE INTEGER HPDF_Page_Rectangle IN (lcLibhpdfDll) AS HPDF_Page_Rectangle INTEGER, SINGLE, SINGLE, SINGLE, SINGLE
+		    DECLARE INTEGER HPDF_Page_Concat IN (lcLibhpdfDll) AS HPDF_Page_Concat INTEGER, SINGLE, SINGLE, SINGLE, SINGLE, SINGLE, SINGLE
+		    DECLARE INTEGER HPDF_Page_SetCharSpace IN (lcLibhpdfDll) AS HPDF_Page_SetCharSpace INTEGER, SINGLE
+		    DECLARE INTEGER HPDF_Page_SetWordSpace IN (lcLibhpdfDll) AS HPDF_Page_SetWordSpace INTEGER, SINGLE
+		    DECLARE INTEGER HPDF_Page_SetHorizontalScalling IN (lcLibhpdfDll) AS HPDF_Page_SetHorizontalScalling INTEGER, SINGLE
+		    DECLARE INTEGER HPDF_Page_SetTextLeading IN (lcLibhpdfDll) AS HPDF_Page_SetTextLeading INTEGER, SINGLE
+		    DECLARE INTEGER HPDF_Page_SetTextRise IN (lcLibhpdfDll) AS HPDF_Page_SetTextRise INTEGER, SINGLE
+		    DECLARE INTEGER HPDF_Page_Stroke IN (lcLibhpdfDll) AS HPDF_Page_Stroke INTEGER
+		    DECLARE INTEGER HPDF_Page_ClosePathStroke IN (lcLibhpdfDll) AS HPDF_Page_ClosePathStroke INTEGER
+		    DECLARE INTEGER HPDF_Page_Fill IN (lcLibhpdfDll) AS HPDF_Page_Fill INTEGER
+		    DECLARE INTEGER HPDF_Page_FillStroke IN (lcLibhpdfDll) AS HPDF_Page_FillStroke INTEGER
+		    DECLARE INTEGER HPDF_Page_EndPath IN (lcLibhpdfDll) AS HPDF_Page_EndPath INTEGER
+		    DECLARE INTEGER HPDF_Page_BeginText IN (lcLibhpdfDll) AS HPDF_Page_BeginText INTEGER
+		    DECLARE INTEGER HPDF_Page_EndText IN (lcLibhpdfDll) AS HPDF_Page_EndText INTEGER
+		    DECLARE INTEGER HPDF_Page_SetFontAndSize IN (lcLibhpdfDll) AS HPDF_Page_SetFontAndSize INTEGER, INTEGER, SINGLE
+		    DECLARE INTEGER HPDF_Page_SetTextRenderingMode IN (lcLibhpdfDll) AS HPDF_Page_SetTextRenderingMode INTEGER, INTEGER
+		    DECLARE INTEGER HPDF_Page_MoveTextPos IN (lcLibhpdfDll) AS HPDF_Page_MoveTextPos INTEGER, SINGLE, SINGLE
+		    DECLARE INTEGER HPDF_Page_MoveToNextLine IN (lcLibhpdfDll) AS HPDF_Page_MoveToNextLine INTEGER
+		    DECLARE INTEGER HPDF_Page_SetRGBFill IN (lcLibhpdfDll) AS HPDF_Page_SetRGBFill INTEGER, SINGLE, SINGLE, SINGLE
+		    DECLARE INTEGER HPDF_Page_SetRGBStroke IN (lcLibhpdfDll) AS HPDF_Page_SetRGBStroke INTEGER, SINGLE, SINGLE, SINGLE
+		    DECLARE INTEGER HPDF_Page_Ellipse IN (lcLibhpdfDll) AS HPDF_Page_Ellipse INTEGER, SINGLE, SINGLE, SINGLE, SINGLE
+		    DECLARE INTEGER HPDF_Page_DrawImage IN (lcLibhpdfDll) AS HPDF_Page_DrawImage INTEGER, INTEGER, SINGLE, SINGLE, SINGLE, SINGLE
+		    DECLARE INTEGER HPDF_Page_TextRect IN (lcLibhpdfDll) AS HPDF_Page_TextRect INTEGER, SINGLE, SINGLE, SINGLE, SINGLE, STRING, INTEGER, INTEGER
+		    DECLARE INTEGER HPDF_Page_TextOut IN (lcLibhpdfDll) AS HPDF_Page_TextOut INTEGER, SINGLE, SINGLE, STRING
+		    DECLARE INTEGER HPDF_Page_SetTextMatrix IN (lcLibhpdfDll) AS HPDF_Page_SetTextMatrix INTEGER ,SINGLE, SINGLE, SINGLE, SINGLE, SINGLE, SINGLE
+		    DECLARE INTEGER HPDF_Page_ShowText IN (lcLibhpdfDll) AS HPDF_Page_ShowText INTEGER, STRING
+		    DECLARE INTEGER HPDF_Page_CurveTo IN (lcLibhpdfDll) AS HPDF_Page_CurveTo INTEGER, SINGLE, SINGLE, SINGLE, SINGLE, SINGLE, SINGLE
+		    
+		    DECLARE INTEGER HPDF_Page_GSave IN (lcLibhpdfDll) AS HPDF_Page_GSave INTEGER page
+		    DECLARE INTEGER HPDF_Page_GRestore IN (lcLibhpdfDll) AS HPDF_Page_GRestore INTEGER page
+		    DECLARE INTEGER HPDF_Page_ExecuteXObject IN (lcLibhpdfDll) AS HPDF_Page_ExecuteXObject INTEGER page, INTEGER obj
+		    
+		    DECLARE INTEGER HPDF_CreateExtGState IN (lcLibhpdfDll) AS HPDF_CreateExtGState INTEGER pdf
+		    DECLARE INTEGER HPDF_ExtGState_SetAlphaFill IN (lcLibhpdfDll) AS HPDF_ExtGState_SetAlphaFill INTEGER page, SINGLE value
+		    DECLARE INTEGER HPDF_ExtGState_SetAlphaStroke IN (lcLibhpdfDll) AS HPDF_ExtGState_SetAlphaStroke INTEGER page, SINGLE value
+		    DECLARE INTEGER HPDF_Page_SetExtGState IN (lcLibhpdfDll) AS HPDF_Page_SetExtGState INTEGER page, INTEGER ext_gstate
+		    
 		ENDIF
 		
 		
@@ -2268,6 +2277,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*m: getfontgdi
 		*m: getfontpdf
 		*m: measurestring
+		*m: render_frxdynamics
 		*m: render_frxfield
 		*m: render_frxlabel
 		*m: render_frxline
@@ -2344,6 +2354,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 			<memberdata name="gdi_fonts" type="property" display="gdi_fonts"/>
 			<memberdata name="batchmodeauto" type="property" display="BatchModeAuto"/>
 			<memberdata name="saveas_filename" type="property" display="SaveAs_Filename"/>
+			<memberdata name="render_frxdynamics" type="method" display="Render_FrxDynamics"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -2390,8 +2401,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		#define HPDF_PAGE_MODE_USE_OUTLINE 1
 		
 		This.ClosePDF()
-		    
-		This.env.declaredll()
 		
 		This.hpdf_doc = HPDF_New(0,0)
 		
@@ -2400,7 +2409,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		IF EMPTY(This.hpdf_doc) = .F.
 		    HPDF_SetCompressionMode(This.hpdf_doc, HPDF_COMP_ALL)
-		    HPDF_SetPageMode(This.hpdf_doc, HPDF_PAGE_MODE_USE_OUTLINE)
+		    HPDF_SetPageMode(This.hpdf_doc, HPDF_PAGE_MODE_USE_NONE)
 		
 		    HPDF_UseUTFEncodings(This.hpdf_doc)
 		    HPDF_SetCurrentEncoder(This.hpdf_doc, "UTF-8")
@@ -2470,7 +2479,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 	ENDPROC
 
 	HIDDEN PROCEDURE finalize
-		This.env.declaredll()
 		
 		IF EMPTY(This.hpdf_doc)
 		    RETURN
@@ -2853,6 +2861,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 
 	PROCEDURE LoadReport
 		
+		This.env.declaredll()
 		
 		This.frx_pagecount = 0
 		
@@ -2957,9 +2966,9 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		* Create new page
 		*************************************************
 		IF This.PageNo > This.frx_pagecount
-		   
+		
 		    This.env.declaredll()
-		    
+		   
 		    This.frx_pagecount = This.frx_pagecount + 1
 		    This.hpdf_pagecount = This.hpdf_pagecount + 1 &&It may be greater than frx_pagecount if PDF comprise output of many reports when This.BatchMode=.T.
 		
@@ -3016,12 +3025,10 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		ADDPROPERTY(loRepObj, "ObjType", loFrx.ObjType)
 		
 		ADDPROPERTY(loRepObj, "Text", "")
-		ADDPROPERTY(loRepObj, "TextUTF", "")
 		ADDPROPERTY(loRepObj, "FileName", "")
 		
-		 IF INLIST(loFrx.ObjType, FRX_OBJ_FIELD, FRX_OBJ_LABEL)
+		IF INLIST(loFrx.ObjType, FRX_OBJ_FIELD, FRX_OBJ_LABEL)
 		    loRepObj.Text = m.cContentsToBeRendered
-		    loRepObj.TextUTF = STRCONV(loRepObj.Text, 10)
 		ENDIF
 		
 		IF INLIST(loFrx.ObjType, FRX_OBJ_PICTURE)
@@ -3048,12 +3055,13 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		ADDPROPERTY(loRepObj, "FillRed", IIF(loFrx.FillRed=-1, 255, loFrx.FillRed))
 		ADDPROPERTY(loRepObj, "FillGreen", IIF(loFrx.FillGreen=-1, 255, loFrx.FillGreen))
 		ADDPROPERTY(loRepObj, "FillBlue", IIF(loFrx.FillBlue=-1, 255, loFrx.FillBlue))
+		ADDPROPERTY(loRepObj, "FillAlpha", 255)
 		
 		* (-1,-1,-1) - default color
 		ADDPROPERTY(loRepObj, "PenRed", IIF(loFrx.PenRed=-1, 0, loFrx.PenRed))
 		ADDPROPERTY(loRepObj, "PenGreen", IIF(loFrx.PenGreen=-1, 0, loFrx.PenGreen))
 		ADDPROPERTY(loRepObj, "PenBlue", IIF(loFrx.PenBlue=-1, 0, loFrx.PenBlue))
-		
+		ADDPROPERTY(loRepObj, "PenAlpha", 255)
 		
 		ADDPROPERTY(loRepObj, "PenPat", loFrx.PenPat)
 		ADDPROPERTY(loRepObj, "PenSize", loFrx.PenSize)
@@ -3064,7 +3072,10 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		ADDPROPERTY(loRepObj, "ContinuationType", m.nObjectContinuationType)
 		ADDPROPERTY(loRepObj, "GDIPlusImage", m.GDIPlusImage)
 		ADDPROPERTY(loRepObj, "General", loFrx.General)
+		ADDPROPERTY(loRepObj, "Style", loFrx.Style)
+		ADDPROPERTY(loRepObj, "Rotate", 0)
 		
+		This.Render_FrxDynamics(loRepObj)
 		
 		
 		*************************************************
@@ -3087,6 +3098,126 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		ENDCASE
 		*************************************************
 		
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE render_frxdynamics
+		LPARAMETERS loRepObj
+		
+		IF EMPTY(NVL(loRepObj.Style,""))
+		    RETURN
+		ENDIF
+		
+		#define FRX_OBJ_RECTANGLE   7
+		#define FRX_OBJ_FIELD       8
+		#define FRX_OBJ_PICTURE     17
+		
+		
+		LOCAL lSaveArea
+		lSaveArea = SELECT()
+		
+		LOCAL lSetNull
+		lSetNull = SET("Null")
+		
+		SET NULL OFF
+		
+		LOCAL lcAliasCursor, llRes
+		lcAliasCursor = "curTempFrxDynamics"+SYS(2015)
+		
+		CREATE CURSOR &lcAliasCursor (Name c(100), Execute c(10), ExecWhen M, Script M, FName c(100), FSize c(10), FStyle c(10), Width c(10), Height c(10), penrgb c(10), pena c(5), fillrgb c(10), filla c(5))
+		
+		SET NULL &lSetNull
+		
+		llRes = .T.
+		TRY
+		    XMLTOCURSOR(loRepObj.Style, lcAliasCursor,1024+8192)
+		CATCH
+		    llRes = .F.
+		FINALLY    
+		    IF llRes = .F.
+		        USE IN (lcAliasCursor)
+		        SELECT (lSaveArea)
+		        RETURN
+		    ENDIF
+		ENDTRY
+		
+		
+		SELECT (m.lcAliasCursor)
+		GO TOP
+		SCAN
+		    SELECT (m.lcAliasCursor)
+		
+		    LOCAL loDS
+		    SCATTER NAME loDS MEMO
+		    
+		    SELECT (lSaveArea)
+		
+		    DO CASE
+		    CASE ALLTRIM(loDS.Name) == "Microsoft.VFP.Reporting.Builder.Rotate"
+		        loRepObj.Rotate = CAST(loDS.Execute AS I)
+		        
+		    CASE EMPTY(loDS.ExecWhen)
+		
+		    CASE EVALUATE(loDS.ExecWhen) = .F.
+		    
+		    
+		    CASE loRepObj.ObjType = FRX_OBJ_FIELD
+		        IF EMPTY(loDS.Script) = .F.
+		            IF INLIST(loRepObj.FontCharset,0,1)=.F.
+		                loRepObj.Text = STRCONV(RTRIM(EVALUATE(loDS.Script)),5,loRepObj.FontCharset,2)
+		            ELSE
+		                loRepObj.Text = STRCONV(RTRIM(EVALUATE(loDS.Script)),5)
+		            ENDIF
+		        ENDIF
+		        
+		        IF EMPTY(loDS.FName) = .F.
+		            loRepObj.FontFace = LTRIM(ALLTRIM(loDS.FName), "@")
+		        ENDIF
+		
+		        IF EMPTY(CAST(loDS.FSize as I)) = .F.
+		            loRepObj.FontSize = CAST(loDS.FSize as I)
+		        ENDIF
+		        
+		        IF EMPTY(CAST(loDS.FStyle as I)) = .F.
+		            loRepObj.FontBold = BITTEST(CAST(loDS.FStyle as I),0)
+		            loRepObj.FontItalic = BITTEST(CAST(loDS.FStyle as I),1)
+		            loRepObj.FontUnderline = BITTEST(CAST(loDS.FStyle as I),2)
+		            loRepObj.FontStrikeout = BITTEST(CAST(loDS.FStyle as I),7)                                    
+		        ENDIF
+		        
+		        IF CAST(loDS.FillRgb as I) >= 0 AND EMPTY(loDS.FillRgb)=.F.
+		            loRepObj.FillRed = BITRSHIFT(BITAND(CAST(loDS.FillRgb as I), 0x0000FF),0)
+		            loRepObj.FillGreen = BITRSHIFT(BITAND(CAST(loDS.FillRgb as I), 0x00FF00),8)
+		            loRepObj.FillBlue = BITRSHIFT(BITAND(CAST(loDS.FillRgb as I), 0xFF0000),16)
+		        ENDIF
+		        
+		        IF CAST(loDS.PenA as I) >= 0 AND EMPTY(loDS.PenA)=.F.
+		            loRepObj.PenAlpha = BITAND(CAST(loDS.PenA as I), 0xFF)
+		        ENDIF
+		
+		        IF CAST(loDS.PenRgb as I) >= 0 AND EMPTY(loDS.PenRgb)=.F.
+		            loRepObj.PenRed = BITRSHIFT(BITAND(CAST(loDS.PenRgb as I), 0x0000FF),0)
+		            loRepObj.PenGreen = BITRSHIFT(BITAND(CAST(loDS.PenRgb as I), 0x00FF00),8)
+		            loRepObj.PenBlue = BITRSHIFT(BITAND(CAST(loDS.PenRgb as I), 0xFF0000),16)
+		        ENDIF
+		
+		        IF CAST(loDS.FillA as I) >= 0 AND EMPTY(loDS.FillA)=.F.
+		            loRepObj.FillAlpha = BITAND(CAST(loDS.FillA as I), 0xFF)
+		            loRepObj.Mode = IIF(loRepObj.FillAlpha = 0, 1, 0)
+		        ENDIF
+		
+		    
+		    CASE INLIST(loRepObj.ObjType, FRX_OBJ_RECTANGLE, FRX_OBJ_PICTURE)
+		        loRepObj.Width = IIF(CAST(loDS.Width AS I) >= 0, ROUND(CAST(loDS.Width AS I) / 10, 0), loRepObj.Width)
+		        loRepObj.Height = IIF(CAST(loDS.Height AS I) >= 0, ROUND(CAST(loDS.Height AS I) / 10, 0), loRepObj.Height)
+		    
+		    ENDCASE
+		    
+		ENDSCAN
+		GO TOP
+		
+		USE IN (m.lcAliasCursor)
+		SELECT (lSaveArea)
 		
 	ENDPROC
 
@@ -3114,6 +3245,21 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		LOCAL lnDpiCoef
 		lnDpiCoef = This.env.GetPDFDPI() / 96
 		
+		HPDF_Page_GSave(lnHPDF_Page)
+		
+		IF EMPTY(loRepObj.Rotate) = .F.
+		    LOCAL lnRad
+		    lnRad = -loRepObj.Rotate * PI() / 180
+		
+		    HPDF_Page_Concat(;
+		        lnHPDF_Page, ;
+		        COS(lnRad), ;
+		        SIN(lnRad), ;
+		        -SIN(lnRad), ;
+		        COS(lnRad), ;
+		        lnDpiCoef * loRepObj.Left, ;
+		        lnDpiCoef * loRepObj.TopRev)
+		ENDIF
 		
 		HPDF_Page_SetRGBStroke(lnHPDF_Page, loRepObj.PenRed / 255, loRepObj.PenGreen / 255, loRepObj.PenBlue / 255)
 		
@@ -3151,29 +3297,44 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		ENDCASE
 		
-		    
+		
 		IF loRepObj.OffSet = 1
 		    * Horizontal line
-		    HPDF_Page_MoveTo(lnHPDF_Page, ;
-		        lnDpiCoef * loRepObj.Left, ;
-		        lnDpiCoef * loRepObj.TopRev)
+		    IF EMPTY(loRepObj.Rotate) = .F.
+		        HPDF_Page_MoveTo(lnHPDF_Page, 0, 0)
+		        HPDF_Page_LineTo(lnHPDF_Page, lnDpiCoef * loRepObj.Width, 0)
+		    ELSE
+		        HPDF_Page_MoveTo(lnHPDF_Page, ;
+		            lnDpiCoef * loRepObj.Left, ;
+		            lnDpiCoef * loRepObj.TopRev)
+		            
+		        HPDF_Page_LineTo(lnHPDF_Page, ;
+		            lnDpiCoef * (loRepObj.Left + loRepObj.Width), ;
+		            lnDpiCoef * loRepObj.TopRev)
+		
+		    ENDIF
 		        
-		    HPDF_Page_LineTo(lnHPDF_Page, ;
-		        lnDpiCoef * (loRepObj.Left + loRepObj.Width), ;
-		        lnDpiCoef * loRepObj.TopRev)
-		    
 		ELSE
 		    * Vertical line
-		    HPDF_Page_MoveTo(lnHPDF_Page, ;
-		        lnDpiCoef * loRepObj.Left, ;
-		        lnDpiCoef * (loRepObj.TopRev - loRepObj.Height)) 
-		        
-		    HPDF_Page_LineTo(lnHPDF_Page, ;
-		        lnDpiCoef * loRepObj.Left, ;
-		        lnDpiCoef * loRepObj.TopRev)
+		    IF EMPTY(loRepObj.Rotate) = .F.
+		        HPDF_Page_MoveTo(lnHPDF_Page, 0, 0)
+		        HPDF_Page_LineTo(lnHPDF_Page, 0, lnDpiCoef * -loRepObj.Height)
+		    ELSE
+		        HPDF_Page_MoveTo(lnHPDF_Page, ;
+		            lnDpiCoef * loRepObj.Left, ;
+		            lnDpiCoef * (loRepObj.TopRev - loRepObj.Height)) 
+		            
+		        HPDF_Page_LineTo(lnHPDF_Page, ;
+		            lnDpiCoef * loRepObj.Left, ;
+		            lnDpiCoef * loRepObj.TopRev)
+		    ENDIF
 		ENDIF
+		    
 		
 		HPDF_Page_Stroke(lnHPDF_Page)
+		    
+		HPDF_Page_GRestore(lnHPDF_Page)
+		
 		
 		
 	ENDPROC
@@ -3282,13 +3443,25 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		        EXIT
 		    ENDIF
 		    
-		    
-		    HPDF_Page_DrawImage(lnHPDF_Page, lnHPDF_Image, ;
-		        lnDpiCoef * (loRepObj.Left), ;
-		        lnDpiCoef * (loRepObj.TopRev - lnImgHeight), ;
-		        lnDpiCoef * (lnImgWidth), ;
-		        lnDpiCoef * (lnImgHeight))
 		
+		    HPDF_Page_GSave(lnHPDF_Page)
+		    
+		    LOCAL lnRad
+		    lnRad = -loRepObj.Rotate * PI() / 180
+		    
+		    HPDF_Page_Concat(;
+		        lnHPDF_Page, ;
+		        lnDpiCoef * MAX(lnImgWidth,1) * COS(lnRad), ;
+		        lnDpiCoef * MAX(lnImgWidth,1) * SIN(lnRad), ;
+		        lnDpiCoef * MAX(lnImgHeight,1) * -SIN(lnRad), ;
+		        lnDpiCoef * MAX(lnImgHeight,1) * COS(lnRad), ;
+		        lnDpiCoef * (loRepObj.Left + SIN(lnRad) * lnImgHeight), ;
+		        lnDpiCoef * (loRepObj.TopRev - COS(lnRad) * lnImgHeight))
+		
+		    HPDF_Page_ExecuteXObject(lnHPDF_Page, lnHPDF_Image)
+		    
+		    HPDF_Page_GRestore(lnHPDF_Page)
+		    
 		CATCH TO loErr
 		    This.ErrMsg(loErr)
 		FINALLY
@@ -3309,6 +3482,23 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		LOCAL lnDpiCoef
 		lnDpiCoef = This.env.GetPDFDPI() / 96
+		
+		
+		HPDF_Page_GSave(lnHPDF_Page)
+		
+		IF EMPTY(loRepObj.Rotate) = .F.
+		    LOCAL lnRad
+		    lnRad = -loRepObj.Rotate * PI() / 180
+		
+		    HPDF_Page_Concat(;
+		        lnHPDF_Page, ;
+		        COS(lnRad), ;
+		        SIN(lnRad), ;
+		        -SIN(lnRad), ;
+		        COS(lnRad), ;
+		        lnDpiCoef * loRepObj.Left, ;
+		        lnDpiCoef * loRepObj.TopRev)
+		ENDIF
 		
 		
 		HPDF_Page_SetRGBFill(lnHPDF_Page, loRepObj.FillRed / 255, loRepObj.FillGreen / 255, loRepObj.FillBlue / 255)
@@ -3350,24 +3540,43 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*******************************************************
 		
 		
-		
 		DO CASE
 		CASE loRepObj.OffSet = 0 && Normal rectangle
+		    LOCAL lnLeft, lnTop
+		    IF EMPTY(loRepObj.Rotate) = .F.
+		        lnLeft = 0
+		        lnTop = 0
+		    ELSE
+		        lnLeft = loRepObj.Left
+		        lnTop = loRepObj.TopRev
+		    ENDIF
+		
 		    HPDF_Page_Rectangle(lnHPDF_Page, ;
-		        lnDpiCoef * (loRepObj.Left), ;
-		        lnDpiCoef * (loRepObj.TopRev - loRepObj.Height), ;
+		        lnDpiCoef * (lnLeft), ;
+		        lnDpiCoef * (lnTop - loRepObj.Height), ;
 		        lnDpiCoef * (loRepObj.Width), ;
 		        lnDpiCoef * (loRepObj.Height))
+		    
 		
 		CASE BETWEEN(loRepObj.OffSet, 1, 98) AND loRepObj.OffSet <= MAX(loRepObj.Width, loRepObj.Height)/2  && Rounded rectangle
 		    LOCAL lnRay
 		    lnRay = ROUND(IIF(loRepObj.Width > loRepObj.Height, MIN(loRepObj.OffSet, INT(loRepObj.Height / 2)), MIN(loRepObj.OffSet, INT(loRepObj.Width / 2))), 0)
 		    
 		    LOCAL lnLeft, lnRight, lnTop, lnBottom
-		    lnLeft = lnDpiCoef * (loRepObj.Left)
-		    lnRight = lnDpiCoef * (loRepObj.Left + loRepObj.Width)
-		    lnTop = lnDpiCoef * (loRepObj.TopRev)
-		    lnBottom = lnDpiCoef * (loRepObj.TopRev - loRepObj.Height)
+		
+		    LOCAL lnLeft, lnTop
+		    IF EMPTY(loRepObj.Rotate) = .F.
+		        lnLeft = 0
+		        lnRight = lnDpiCoef * loRepObj.Width
+		        lnTop = 0
+		        lnBottom = lnDpiCoef * -loRepObj.Height
+		    ELSE
+		        lnLeft = lnDpiCoef * (loRepObj.Left)
+		        lnRight = lnDpiCoef * (loRepObj.Left + loRepObj.Width)
+		        lnTop = lnDpiCoef * (loRepObj.TopRev)
+		        lnBottom = lnDpiCoef * (loRepObj.TopRev - loRepObj.Height)
+		    ENDIF
+		
 		    
 		    HPDF_Page_MoveTo(lnHPDF_Page, lnLeft + lnRay, lnBottom)
 		    HPDF_Page_LineTo(lnHPDF_Page, lnRight - lnRay, lnBottom)
@@ -3380,9 +3589,18 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    HPDF_Page_CurveTo(lnHPDF_Page, lnLeft, lnBottom, lnLeft, lnBottom, lnLeft + lnRay, lnBottom)
 		
 		OTHERWISE && Ellipsis
+		    LOCAL lnLeft, lnTop
+		    IF EMPTY(loRepObj.Rotate) = .F.
+		        lnLeft = 0
+		        lnTop = 0
+		    ELSE
+		        lnLeft = loRepObj.Left
+		        lnTop = loRepObj.TopRev
+		    ENDIF
+		
 		    HPDF_Page_Ellipse(lnHPDF_Page, ;
-		        lnDpiCoef * (loRepObj.Left + loRepObj.Width / 2), ;
-		        lnDpiCoef * (loRepObj.TopRev - loRepObj.Height / 2), ;
+		        lnDpiCoef * (lnLeft + loRepObj.Width / 2), ;
+		        lnDpiCoef * (lnTop - loRepObj.Height / 2), ;
 		        lnDpiCoef * (loRepObj.Width / 2), ;
 		        lnDpiCoef * (loRepObj.Height / 2))
 		
@@ -3399,6 +3617,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		ENDCASE
 		
+		HPDF_Page_GRestore(lnHPDF_Page)
 		
 	ENDPROC
 
@@ -3417,29 +3636,14 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		#define FRX_OBJ_LABEL       5
 		
 		
+		
 		LOCAL lnHPDF_Page
 		lnHPDF_Page = This.hpdf_pages[This.hpdf_pagecount]
-		
 		
 		
 		LOCAL lnDpiCoef
 		lnDpiCoef = This.env.GetPDFDPI() / 96
 		
-		
-		*******************************************************
-		* Background mode 0 - Opaque, 1 - Transparent
-		IF loRepObj.Mode = 0
-		    HPDF_Page_SetRGBFill(lnHPDF_Page, loRepObj.FillRed / 255, loRepObj.FillGreen / 255, loRepObj.FillBlue / 255)
-		
-		    HPDF_Page_Rectangle(lnHPDF_Page, ;
-		        lnDpiCoef * loRepObj.Left, ;
-		        lnDpiCoef * (loRepObj.TopRev - loRepObj.Height), ;
-		        lnDpiCoef * loRepObj.Width, ;
-		        lnDpiCoef * loRepObj.Height)
-		        
-		    HPDF_Page_Fill(lnHPDF_Page)
-		ENDIF
-		*******************************************************
 		
 		LOCAL loGDIFont
 		loGDIFont = This.GetFontGDI(loRepObj)
@@ -3452,6 +3656,51 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    RETURN
 		ENDIF
 		
+		IF EMPTY(loRepObj.Rotate)=.F.
+		    This.Render_TextAsImage(loRepObj)
+		    RETURN
+		ENDIF
+		
+		*******************************************************
+		* Background mode 0 - Opaque, 1 - Transparent
+		IF loRepObj.Mode = 0 
+		    HPDF_Page_GSave(lnHPDF_Page)
+		
+		    IF loRepObj.FillAlpha <> 255
+		        LOCAL lnExtGState
+		        lnExtGState = HPDF_CreateExtGState(This.hpdf_doc)
+		        IF lnExtGState <> 0
+		            HPDF_ExtGState_SetAlphaFill(lnExtGState, loRepObj.FillAlpha / 255)
+		            HPDF_Page_SetExtGState(lnHPDF_Page, lnExtGState)
+		        ENDIF
+		    ENDIF
+		    
+		    HPDF_Page_SetRGBFill(lnHPDF_Page, loRepObj.FillRed / 255, loRepObj.FillGreen / 255, loRepObj.FillBlue / 255)
+		
+		    HPDF_Page_Rectangle(lnHPDF_Page, ;
+		        lnDpiCoef * loRepObj.Left, ;
+		        lnDpiCoef * (loRepObj.TopRev - loRepObj.Height), ;
+		        lnDpiCoef * loRepObj.Width, ;
+		        lnDpiCoef * loRepObj.Height)
+		        
+		    HPDF_Page_Fill(lnHPDF_Page)
+		
+		    HPDF_Page_GRestore(lnHPDF_Page)
+		ENDIF
+		*******************************************************
+		
+		
+		HPDF_Page_GSave(lnHPDF_Page)
+		
+		IF loRepObj.PenAlpha <> 255
+		    LOCAL lnExtGState
+		    lnExtGState = HPDF_CreateExtGState(This.hpdf_doc)
+		    IF lnExtGState <> 0
+		        HPDF_ExtGState_SetAlphaFill(lnExtGState, loRepObj.PenAlpha / 255)
+		        HPDF_ExtGState_SetAlphaStroke(lnExtGState, loRepObj.PenAlpha / 255)
+		        HPDF_Page_SetExtGState(lnHPDF_Page, lnExtGState)
+		    ENDIF
+		ENDIF
 		
 		
 		HPDF_Page_SetFontAndSize(lnHPDF_Page, loPDFFont.FontHandle, loRepObj.FontSize)
@@ -3572,10 +3821,14 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    
 		ENDDO
 		
+		HPDF_Page_GRestore(lnHPDF_Page)
+		
 	ENDPROC
 
 	HIDDEN PROCEDURE render_textasimage		&& Fallback rendering text as images (case of symbolic and non ttf fonts)
 		LPARAMETERS loRepObj
+		
+		#define FRX_OBJ_LABEL       5
 		
 		LOCAL lnHPDF_Page
 		lnHPDF_Page = This.hpdf_pages[This.hpdf_pagecount]
@@ -3587,18 +3840,42 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		loGDIFont = This.GetFontGDI(loRepObj)
 		
 		
+		
 		LOCAL lcTempFileName
 		lcTempFileName = This.env.GetUniqueTempFileName("png")
 		
 		LOCAL loErr
 		loErr = .F.
 		TRY
+		    IF loRepObj.ObjType = FRX_OBJ_LABEL
+		        loRepObj.Width = loRepObj.Width + loGDIFont.HeightCeil
+		    ENDIF
 		
-		    LOCAL loImage, loGfx
+		    LOCAL loImage, loGfx, loColor, loBrush
 		    loImage = This.env.System.Drawing.Bitmap.New(loRepObj.Width, loRepObj.Height, This.env.System.Drawing.Imaging.PixelFormat.Format32bppARGB)
 		    loGfx = This.env.System.Drawing.Graphics.New()
 		    loGfx = loGfx.FromImage(loImage)
-		    loGfx.DrawString(loRepObj.Text, loGDIFont.GDIFont, This.env.System.Drawing.Brushes.Black, 0, 0, This.env.System.Drawing.StringFormat.GenericDefault)
+		    loGfx.CompositingMode = 0
+		    loGfx.CompositingQuality = 2
+		    loGfx.PixelOffsetMode = 2
+		    loGfx.TextRenderingHint = 4
+		    loGfx.TextContrast = 0    
+		    
+		    
+		    *******************************************************
+		    * Background mode 0 - Opaque, 1 - Transparent
+		    IF loRepObj.Mode = 0
+		        loColor = This.env.System.Drawing.Color.FromARGB(loRepObj.FillAlpha, loRepObj.FillRed, loRepObj.FillGreen, loRepObj.FillBlue)
+		        loBrush = This.env.System.Drawing.SolidBrush.New(loColor)
+		        loGfx.FillRectangle(loBrush, 0, 0, loRepObj.Width, loRepObj.Height)
+		    ENDIF
+		    *******************************************************
+		    
+		    
+		    loColor = This.env.System.Drawing.Color.FromARGB(loRepObj.PenAlpha, loRepObj.PenRed, loRepObj.PenGreen, loRepObj.PenBlue)
+		    loBrush = This.env.System.Drawing.SolidBrush.New(loColor)
+		
+		    loGfx.DrawString(loRepObj.Text, loGDIFont.GDIFont, loBrush, 0, 0, This.env.System.Drawing.StringFormat.GenericDefault)
 		
 		    loImage.Save(lcTempFileName, This.env.System.Drawing.Imaging.ImageFormat.Png)
 		    loImage = .F.
@@ -3615,13 +3892,24 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    ENDIF
 		
 		
-		    HPDF_Page_DrawImage(lnHPDF_Page, lnHPDF_Image, ;
-		        lnDpiCoef * (loRepObj.Left), ;
-		        lnDpiCoef * (loRepObj.TopRev - loRepObj.Height), ;
-		        lnDpiCoef * (loRepObj.Width), ;
-		        lnDpiCoef * (loRepObj.Height))
+		    HPDF_Page_GSave(lnHPDF_Page)
+		    
+		    LOCAL lnRad
+		    lnRad = -loRepObj.Rotate * PI() / 180
+		    
+		    HPDF_Page_Concat(;
+		        lnHPDF_Page, ;
+		        lnDpiCoef * MAX(loRepObj.Width,1) * COS(lnRad), ;
+		        lnDpiCoef * MAX(loRepObj.Width,1) * SIN(lnRad), ;
+		        lnDpiCoef * MAX(loRepObj.Height,1) * -SIN(lnRad), ;
+		        lnDpiCoef * MAX(loRepObj.Height,1) * COS(lnRad), ;
+		        lnDpiCoef * (loRepObj.Left + SIN(lnRad) * loRepObj.Height), ;
+		        lnDpiCoef * (loRepObj.TopRev - COS(lnRad) * loRepObj.Height))
 		
-		
+		    HPDF_Page_ExecuteXObject(lnHPDF_Page, lnHPDF_Image)
+		    
+		    HPDF_Page_GRestore(lnHPDF_Page)
+		    
 		CATCH TO loErr
 		    This.ErrMsg(loErr)
 		FINALLY
@@ -3634,6 +3922,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 	ENDPROC
 
 	PROCEDURE UnloadReport
+		This.env.declaredll()
 		
 		IF This.BatchModeAuto = .F. AND This.BatchMode = .F.
 		    This.Finalize()
@@ -3644,6 +3933,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		        _PdfiumReport = .F.
 		    ENDIF
 		ENDIF
+		
 		
 	ENDPROC
 
