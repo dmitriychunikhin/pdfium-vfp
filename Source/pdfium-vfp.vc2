@@ -30,12 +30,12 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 	*<PropValue>
 		declaredll_ok = .F.
 		Height = 27
-		libhpdf_dll_path = (IIF(ATC("x64", SYS(17))<>0 , "libhpdf64.dll", "libhpdf.dll"))
+		libhpdf_dll_path = (IIF(FILE(ADDBS(JUSTPATH(This.ClassLibrary))+"libhpdf.dll",1), ADDBS(JUSTPATH(This.ClassLibrary)), "") +  IIF(ATC("x64", SYS(17))<>0 , "libhpdf64.dll", "libhpdf.dll"))
 		Name = "pdfium_env"
-		pdfium_dll_path = (IIF(ATC("x64", SYS(17))<>0 , "pdfium64.dll", "pdfium.dll"))
+		pdfium_dll_path = (IIF(FILE(ADDBS(JUSTPATH(This.ClassLibrary))+"pdfium.dll",1), ADDBS(JUSTPATH(This.ClassLibrary)), "") + IIF(ATC("x64", SYS(17))<>0 , "pdfium64.dll", "pdfium.dll"))
 		privatefonts = .F.
 		system = .F.
-		system_app_path = ("system.app")
+		system_app_path = (IIF(FILE(ADDBS(JUSTPATH(This.ClassLibrary))+"system.app",1), ADDBS(JUSTPATH(This.ClassLibrary)), "") + "system.app")
 		Width = 27
 		_memberdata = <VFPData>
 			<memberdata name="pdfium_dll_path" type="property" display="pdfium_dll_path"/>
@@ -309,7 +309,7 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		DECLARE LONG GetTickCount IN WIN32API AS WinApi_GetTickCount
 		
 		DECLARE Long GdipMeasureString IN GDIPLUS.DLL AS WinApi_GdipMeasureString Long graphics, String str, Long length, Long thefont, String @layoutRect, Long StringFormat, String @boundingBox, Long @codepointsFitted, Long @linesFilled
-		
+		DECLARE Long GdipDrawString IN GDIPLUS.DLL AS WinApi_GdipDrawString Long graphics, String str, Long length, Long thefont, String @layoutRect, Long StringFormat, Long brush
 		
 	ENDPROC
 
@@ -1292,7 +1292,7 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 		Caption = "Print setup"
 		DoCreate = .T.
 		Height = 297
-		Icon = images\wwrite.ico
+		Icon = ("images\wwrite.ico")
 		KeyPreview = .T.
 		MaxButton = .F.
 		MinButton = .F.
@@ -2896,7 +2896,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		LOCAL lcObjBBox
 		lcObjBBox = m.toObjRectF.ToVarBinary()
 		
-		* Plain Api since GDIPluxX Graphics.MeasureString performs STRCONV(...,5) over input text and loRepObj.Text is Unicode
+		* Plain Api call because GDIPluxX Graphics.MeasureString performs STRCONV(...,5) on input text while loRepObj.Text is in Unicode
 		WinApi_GdipMeasureString (;
 		    This.oGfx.GetHandle(), ;
 		    m.tcTextUnicode + CHR(0), ;
@@ -3871,11 +3871,22 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    ENDIF
 		    *******************************************************
 		    
-		    
 		    loColor = This.env.System.Drawing.Color.FromARGB(loRepObj.PenAlpha, loRepObj.PenRed, loRepObj.PenGreen, loRepObj.PenBlue)
 		    loBrush = This.env.System.Drawing.SolidBrush.New(loColor)
 		
-		    loGfx.DrawString(loRepObj.Text, loGDIFont.GDIFont, loBrush, 0, 0, This.env.System.Drawing.StringFormat.GenericDefault)
+		    LOCAL lqLayoutRect
+		    lqLayoutRect = BINTOC(0,"F")+BINTOC(0,"F")+BINTOC(0,"F")+BINTOC(0,"F")
+		    
+		    * Plain Api call because GDIPluxX Graphics.DrawString performs STRCONV(...,5) on input text while loRepObj.Text is in Unicode
+		    WinApi_GdipDrawString(;
+		        loGfx.Handle, ;
+		        loRepObj.Text + CHR(0), ;
+		        LEN(loRepObj.Text) / 2, ;
+		        loGDIFont.GDIFont.Handle, ;
+		        @lqLayoutRect, ;
+		        This.env.System.Drawing.StringFormat.GenericDefault.Handle, ;
+		        loBrush.Handle)
+		    
 		
 		    loImage.Save(lcTempFileName, This.env.System.Drawing.Imaging.ImageFormat.Png)
 		    loImage = .F.
@@ -3973,7 +3984,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		Desktop = .F.
 		DoCreate = .T.
 		Height = 741
-		Icon = images\wwrite.ico
+		Icon = ("images\wwrite.ico")
 		KeyPreview = .T.
 		Left = 0
 		listenerref = .F.
@@ -4028,7 +4039,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		Height = 32, ;
 		Left = 685, ;
 		Name = "cmdClose", ;
-		Picture = images\close.bmp, ;
+		Picture = ("images\close.bmp"), ;
 		PictureMargin = 0, ;
 		PicturePosition = 1, ;
 		PictureSpacing = 0, ;
@@ -4048,7 +4059,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		Height = 32, ;
 		Left = 483, ;
 		Name = "cmdFitPage", ;
-		Picture = images\fitpage.bmp, ;
+		Picture = ("images\fitpage.bmp"), ;
 		PictureMargin = 0, ;
 		PicturePosition = 1, ;
 		PictureSpacing = 0, ;
@@ -4068,7 +4079,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		Height = 32, ;
 		Left = 437, ;
 		Name = "cmdFitWidth", ;
-		Picture = images\fitwidth.bmp, ;
+		Picture = ("images\fitwidth.bmp"), ;
 		PictureMargin = 0, ;
 		PicturePosition = 1, ;
 		PictureSpacing = 0, ;
@@ -4088,7 +4099,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		Height = 32, ;
 		Left = 237, ;
 		Name = "cmdPrint", ;
-		Picture = images\print.bmp, ;
+		Picture = ("images\print.bmp"), ;
 		PictureMargin = 0, ;
 		PicturePosition = 1, ;
 		PictureSpacing = 0, ;
@@ -4108,7 +4119,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		Height = 32, ;
 		Left = 384, ;
 		Name = "cmdSaveAs", ;
-		Picture = images\saveas.bmp, ;
+		Picture = ("images\saveas.bmp"), ;
 		PictureMargin = 0, ;
 		PicturePosition = 1, ;
 		PictureSpacing = 0, ;
@@ -4127,7 +4138,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		Height = 32, ;
 		Left = 189, ;
 		Name = "cmdSearch", ;
-		Picture = images\search.bmp, ;
+		Picture = ("images\search.bmp"), ;
 		PictureMargin = 0, ;
 		PicturePosition = 14, ;
 		PictureSpacing = 0, ;

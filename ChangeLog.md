@@ -1,3 +1,9 @@
+1.7
+  - Preparing to FoxGet publishing
+  - Picture paths in pdfium-vfp.vcx were rewrited as expressions to exculde "File not found" error during compilation of user's project
+  - PdfiumReport.app: GDIPluxX System.Drawing.Graphics.DrawString call was replaced by gdiplus plain api function call (GDIPluxX DrawString performs STRCONV(...,5) on input text while VFP ReportListener renders text in Unicode)
+
+
 1.6:
   - Dynamics and rotation properties support in PdfiumReport.app
 

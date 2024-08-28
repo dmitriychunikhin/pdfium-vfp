@@ -4,7 +4,7 @@ This and a dozen other components and tools are provided to you by <a href="http
 
 # pdfium-vfp 
 
-pdfium-vfp is a open source PDF viewer control for Visual Fox Pro 9 SP2 and VFP Advanced based on 
+pdfium-vfp is a open source PDF viewer control and ReportOutput + ReportPreview implementation for Visual Fox Pro 9 SP2 and VFP Advanced based on 
 * [PDFium](https://pdfium.googlesource.com/pdfium/) 
 * [libHaru](https://github.com/libharu/) 
 * [GDIPlusX](https://github.com/VFPX/GDIPlusX)

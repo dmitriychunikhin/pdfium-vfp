@@ -3,8 +3,8 @@ lparameters toUpdateObject
 * Set the properties of the passed updater object.
 
 with toUpdateObject
-	.VersionNumber    = '1.6 - 20240824'
-	.AvailableVersion = CHRTRAN('pdfium-vfp','-','_')+'-1.6-update-20240824'
+	.VersionNumber    = '1.7 - 20240828'
+	.AvailableVersion = CHRTRAN('pdfium-vfp','-','_')+'-1.7-update-20240828'
 	.Notes            = GetNotes()
 *	.RegisterWithThor = GetRegisterWithThor()
 endwith
@@ -15,6 +15,12 @@ return toUpdateObject
 procedure GetNotes
 local lcNotes
 text to lcNotes noshow
+1.7
+  - Preparing to FoxGet publishing
+  - Picture paths in pdfium-vfp.vcx were rewrited as expressions to exculde "File not found" error during compilation of user's project
+  - PdfiumReport.app: GDIPluxX System.Drawing.Graphics.DrawString call was replaced by gdiplus plain api function call (GDIPluxX DrawString performs STRCONV(...,5) on input text while VFP ReportListener renders text in Unicode)
+
+
 1.6:
   - Dynamics and rotation properties support in PdfiumReport.app
 
@@ -49,4 +55,4 @@ return lcNotes
 * "pdfium-vfp" is a Component. No procedure GetRegisterWithThor created by VFPX Deployment 
 
 
-*created by VFPX Deployment, 24.08.24 16:20:56
+*created by VFPX Deployment, 28.08.24 19:22:06
