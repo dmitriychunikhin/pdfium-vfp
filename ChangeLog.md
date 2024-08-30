@@ -1,3 +1,6 @@
+1.8
+  - Fixed issue [Pdfiumviewer in top-level form](./issue/3)
+
 1.7
   - Preparing to FoxGet publishing
   - Picture paths in pdfium-vfp.vcx were rewrited as expressions to exculde "File not found" error during compilation of user's project
