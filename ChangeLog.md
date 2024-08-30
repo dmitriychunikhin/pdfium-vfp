@@ -1,3 +1,6 @@
+1.8
+  - Fixed issue #3 "Pdfiumviewer in top-level form" (pdfiumviewer window was invisible when Thisform.ShowWindow = 2)
+
 1.7
   - Preparing to FoxGet publishing
   - Picture paths in pdfium-vfp.vcx were rewrited as expressions to exculde "File not found" error during compilation of user's project
