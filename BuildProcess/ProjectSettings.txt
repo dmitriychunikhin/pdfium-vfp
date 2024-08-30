@@ -1,7 +1,7 @@
 AppName   = pdfium-vfp
 AppID     = pdfium-vfp
-Version   = 1.7
-VersionDate = 2024-08-28
+Version   = 1.8
+VersionDate = 2024-08-30
 Repository_URL    = dmitriychunikhin/pdfium-vfp
 Repository_Branch = main
 ChangeLog = ChangeLog.md

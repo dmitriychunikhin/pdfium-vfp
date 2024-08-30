@@ -3,8 +3,8 @@ lparameters toUpdateObject
 * Set the properties of the passed updater object.
 
 with toUpdateObject
-	.VersionNumber    = '1.7 - 20240828'
-	.AvailableVersion = CHRTRAN('pdfium-vfp','-','_')+'-1.7-update-20240828'
+	.VersionNumber    = '1.8 - 20240830'
+	.AvailableVersion = CHRTRAN('pdfium-vfp','-','_')+'-1.8-update-20240830'
 	.Notes            = GetNotes()
 *	.RegisterWithThor = GetRegisterWithThor()
 endwith
@@ -15,6 +15,9 @@ return toUpdateObject
 procedure GetNotes
 local lcNotes
 text to lcNotes noshow
+1.8
+  - Fixed issue #3 "Pdfiumviewer in top-level form" (pdfiumviewer window was invisible when Thisform.ShowWindow = 2)
+
 1.7
   - Preparing to FoxGet publishing
   - Picture paths in pdfium-vfp.vcx were rewrited as expressions to exculde "File not found" error during compilation of user's project
@@ -55,4 +58,4 @@ return lcNotes
 * "pdfium-vfp" is a Component. No procedure GetRegisterWithThor created by VFPX Deployment 
 
 
-*created by VFPX Deployment, 28.08.24 19:22:06
+*created by VFPX Deployment, 30.08.24 19:56:45
