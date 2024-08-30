@@ -58,6 +58,7 @@ DEFINE CLASS sample AS form
 
 	*<PropValue>
 		Caption = "Sample Pdfium Viewer"
+		Desktop = .F.
 		DoCreate = .T.
 		Height = 741
 		Left = 0
@@ -303,10 +304,10 @@ DEFINE CLASS sample AS form
 		Top = 6, ;
 		Visible = .T., ;
 		Width = 480, ;
-		CMDFOCUS.Name = "CMDFOCUS", ;
-		ENV.Name = "ENV", ;
-		I18N.Name = "I18N", ;
-		UISTATE.Name = "UISTATE"
+		cmdFocus.Name = "cmdFocus", ;
+		env.Name = "env", ;
+		i18n.Name = "i18n", ;
+		UIState.Name = "UIState"
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
 
 	ADD OBJECT 'Pageframe1.Page1.Pageframe2.Page2.Pdfiumviewer' AS pdfiumviewer WITH ;
@@ -322,10 +323,10 @@ DEFINE CLASS sample AS form
 		Top = 8, ;
 		Visible = .T., ;
 		Width = 441, ;
-		CMDFOCUS.Name = "CMDFOCUS", ;
-		ENV.Name = "ENV", ;
-		I18N.Name = "I18N", ;
-		UISTATE.Name = "UISTATE"
+		cmdFocus.Name = "cmdFocus", ;
+		env.Name = "env", ;
+		i18n.Name = "i18n", ;
+		UIState.Name = "UIState"
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
 
 	ADD OBJECT 'Pageframe1.Page2.Pdfiumviewer' AS pdfiumviewer WITH ;
@@ -341,10 +342,10 @@ DEFINE CLASS sample AS form
 		Top = 43, ;
 		Visible = .T., ;
 		Width = 480, ;
-		CMDFOCUS.Name = "CMDFOCUS", ;
-		ENV.Name = "ENV", ;
-		I18N.Name = "I18N", ;
-		UISTATE.Name = "UISTATE"
+		cmdFocus.Name = "cmdFocus", ;
+		env.Name = "env", ;
+		i18n.Name = "i18n", ;
+		UIState.Name = "UIState"
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
 
 	ADD OBJECT 'Pdfium_env' AS pdfium_env WITH ;
@@ -369,10 +370,10 @@ DEFINE CLASS sample AS form
 		Top = 108, ;
 		Visible = .T., ;
 		Width = 696, ;
-		CMDFOCUS.Name = "CMDFOCUS", ;
-		ENV.Name = "ENV", ;
-		I18N.Name = "I18N", ;
-		UISTATE.Name = "UISTATE"
+		cmdFocus.Name = "cmdFocus", ;
+		env.Name = "env", ;
+		i18n.Name = "i18n", ;
+		UIState.Name = "UIState"
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
 
 	ADD OBJECT 'shpSearch' AS shape WITH ;

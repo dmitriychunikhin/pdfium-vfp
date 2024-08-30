@@ -1298,6 +1298,7 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 		MinButton = .F.
 		Name = "pdfium_print_env_setup"
 		out_ok = .F.
+		ShowWindow = 1
 		Visible = .T.
 		Width = 435
 		WindowType = 1
@@ -6888,11 +6889,13 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		
 		LOCAL lhWndParent
-		lhWndParent = WinApi_GetWindow(Thisform.HWnd, GW_CHILD) && VFP window with scroll bars creates his own child window
-		IF EMPTY(lhWndParent)=.T. OR Thisform.ScrollBars = 0
+		lhWndParent = WinApi_GetWindow(Thisform.HWnd, GW_CHILD) && VFP window with ScrollBars != 0 or with ShowWindow = 2 - As Top-Level Form creates his own child window
+		IF EMPTY(lhWndParent) = .F. AND Thisform.ShowWindow = 2 AND Thisform.ScrollBars <> 0
+		    lhWndParent = EVL(WinApi_GetWindow(lhWndParent, GW_CHILD), lhWndParent)
+		ENDIF
+		IF EMPTY(lhWndParent)=.T. OR (Thisform.ScrollBars = 0 AND Thisform.ShowWindow <> 2)
 		    lhWndParent = Thisform.HWnd
 		ENDIF
-		
 		
 		LOCAL lhInstance
 		lhInstance = WinApi_GetModuleHandle(0)
