@@ -1,5 +1,5 @@
 1.8
-  - Fixed issue [#3]
+  - Fixed issue #3 "Pdfiumviewer in top-level form" (pdfiumviewer window was invisible when Thisform.ShowWindow = 2)
 
 1.7
   - Preparing to FoxGet publishing
