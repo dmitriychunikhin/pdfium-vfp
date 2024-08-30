@@ -1,5 +1,5 @@
 1.8
-  - Fixed issue [Pdfiumviewer in top-level form](./issue/3)
+  - Fixed issue [#3]
 
 1.7
   - Preparing to FoxGet publishing
