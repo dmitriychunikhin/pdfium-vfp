@@ -32,23 +32,58 @@ DEFINE CLASS pdfiumbuild AS projecthook
 		loPdfium_i18n = laSelObj[1]
 		
 		
-		CREATE CURSOR curTempText (id c(250), text m)
+		LOCAL loLocales as Collection
+		loLocales = NEWOBJECT("Collection")
+		loLocales.Add(2052, "text_cn")
+		loLocales.Add(1031, "text_de")
+		loLocales.Add(1033, "text_en")
+		loLocales.Add(1034, "text_es")
+		loLocales.Add(1036, "text_fr")
+		loLocales.Add(1049, "text_ru")
 		
-		LOCAL lcMethodList, laMethodList(1), lnMethodListSize, i, lcMethod
-		lcMethodList = "text_cn,text_de,text_en,text_es,text_fr,text_ru"
-		lnMethodListSize = ALINES(laMethodList, lcMethodList, 1+4, ",")
+		CREATE CURSOR curTempText (id c(250), text m NOCPTRANS)
 		
+		LOCAL i
+		FOR i = 1 TO loLocales.Count
+		    LOCAL lcMethod, lnLocaleID
+		    lcMethod = loLocales.GetKey(i)
+		    lnLocaleID = loLocales.Item(i)
 		
-		FOR i = 1 TO lnMethodListSize
-		    lcMethod = laMethodList[i]
-		    
 		    SELECT * FROM curTempText WHERE 1=0 INTO CURSOR curTempText READWRITE
-		
+		        
 		    LOCAL lcFileName
 		    lcFileName = "i18n\" + lcMethod + ".xml"
 		    
 		    IF FILE(lcFileName)=.T.
-		        XMLTOCURSOR(lcFileName, "curTempText", 512+1204+8192)
+		        LOCAL loXMLAdapter as XMLAdapter
+		        loXMLAdapter = NEWOBJECT("XMLAdapter")
+		        loXMLAdapter.LoadXML(lcFileName, .T.)
+		        
+		        loXMLAdapter.RespectCursorCP = .F.
+		        loXMLAdapter.UTF8Encoded = .T.
+		        
+		        LOCAL loXmlTable as XMLTable
+		        loXmlTable = NEWOBJECT("XMLTable")
+		        loXmlTable.Alias = "curTempText"
+		        loXmlTable.XMLName = STRCONV("i18n",5)
+		        
+		        LOCAL loXmlField as XMLField
+		        loXmlField = NEWOBJECT("XMLField")
+		        loXmlField.Alias = "id"
+		        loXmlField.DataType = "C"
+		        loXmlField.MaxLength = 50
+		        loXmlField.XMLName = STRCONV(loXmlField.Alias,5)
+		        loXMLTable.Fields.Add(loXmlField, loXmlField.XMLName)
+		
+		        loXmlField = NEWOBJECT("XMLField")
+		        loXmlField.Alias = "text"
+		        loXmlField.DataType = "M"
+		        loXmlField.Unicode = .T.
+		        loXmlField.XMLName = STRCONV(loXmlField.Alias,5)
+		        loXMLTable.Fields.Add(loXmlField, loXmlField.XMLName)
+		        
+		        loXMLAdapter.Tables.Add(loXmlTable, loXmlTable.XMLName)
+		        loXmlTable.ToCursor(.T., "curTempText")
 		    ENDIF
 		
 		    LOCAL lcTextCases
@@ -61,6 +96,7 @@ DEFINE CLASS pdfiumbuild AS projecthook
 		        SCATTER NAME loDS MEMO
 		        
 		        loDS.id = ALLTRIM(EVL(NVL(loDS.id,""),""))
+		        loDS.text = STRCONV(loDS.text, 6, lnLocaleID)
 		        
 		        LOCAL lcText
 		        lcText = ""
@@ -103,10 +139,11 @@ DEFINE CLASS pdfiumbuild AS projecthook
 		    ENDTEXT
 		
 		    loPdfium_i18n.WriteMethod(lcMethod, lcMethodText, .T., 3)
-		    
+		
 		ENDFOR
 		
 		USE IN curTempText
+		
 		
 		
 		RELEASE WINDOWS (WONTOP())

@@ -610,15 +610,15 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		DO CASE
 		
 		CASE m.tcTxtID == "MNU_COPY"
-		RETURN CHR(63) + CHR(63)
+		RETURN CHR(184) + CHR(180) + CHR(214) + CHR(198)
 		
 		
 		CASE m.tcTxtID == "MNU_SLCTA"
-		RETURN CHR(63) + CHR(63) + CHR(63) + CHR(63)
+		RETURN CHR(209) + CHR(161) + CHR(212) + CHR(241) + CHR(200) + CHR(171) + CHR(178) + CHR(191)
 		
 		
 		CASE m.tcTxtID == "MNU_CUT"
-		RETURN CHR(63)
+		RETURN CHR(199) + CHR(208)
 		
 		OTHERWISE
 		RETURN This.text_en(m.tcTxtID)
@@ -818,7 +818,7 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		
 		
 		CASE m.tcTxtID == "MNU_SLCTA"
-		RETURN CHR(83) + CHR(101) + CHR(108) + CHR(101) + CHR(99) + CHR(116) + CHR(105) + CHR(111) + CHR(110) + CHR(110) + CHR(101) + CHR(114) + CHR(32) + CHR(116) + CHR(111) + CHR(117) + CHR(116)
+		RETURN CHR(83) + CHR(233) + CHR(108) + CHR(101) + CHR(99) + CHR(116) + CHR(105) + CHR(111) + CHR(110) + CHR(110) + CHR(101) + CHR(114) + CHR(32) + CHR(116) + CHR(111) + CHR(117) + CHR(116)
 		
 		OTHERWISE
 		RETURN This.text_en(m.tcTxtID)
