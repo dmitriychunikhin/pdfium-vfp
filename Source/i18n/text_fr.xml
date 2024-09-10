@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VFPData>
+    <i18n>
+        <id>MNU_COPY</id>
+        <text>Copier</text>
+    </i18n>
+
+    <i18n>
+        <id>MNU_SLCTA</id>
+        <text>Sélectionner tout</text>
+    </i18n>
+</VFPData>

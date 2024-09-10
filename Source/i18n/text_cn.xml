@@ -1,0 +1,14 @@
+<VFPData>
+    <i18n>
+        <id>MNU_COPY</id>
+        <text>复制</text>
+    </i18n>
+    <i18n>
+        <id>MNU_SLCTA</id>
+        <text>选择全部</text>
+    </i18n>
+    <i18n>
+        <id>MNU_CUT</id>
+        <text>切</text>
+    </i18n>
+</VFPData>

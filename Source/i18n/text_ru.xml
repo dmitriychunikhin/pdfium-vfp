@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VFPData>
+    <i18n>
+        <id>MNU_COPY</id>
+        <text>Копировать</text>
+    </i18n>
+
+    <i18n>
+        <id>MNU_SLCTA</id>
+        <text>Выбрать все</text>
+    </i18n>
+
+    <i18n>
+        <id>MNU_CUT</id>
+        <text>Вырезать</text>
+    </i18n>
+
+    <i18n>
+        <id>MNU_PASTE</id>
+        <text>Вставить</text>
+    </i18n>
+
+    <i18n>
+        <id>MNU_CLEAR</id>
+        <text>Удалить</text>
+    </i18n>
+
+    <i18n>
+        <id>REPORTVIEWER_TITLE</id>
+        <text>Просмотр печати</text>
+    </i18n>
+
+    <i18n>
+        <id>SEARCH_NOT_FOUND</id>
+        <text>Не найдено</text>
+    </i18n>
+
+    <i18n>
+        <id>SEARCH_ENDED</id>
+        <text>Поиск завершен</text>
+    </i18n>
+
+    <i18n>
+        <id>BTN_PRINT</id>
+        <text>Печать</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_TITLE</id>
+        <text>Параметры печати</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_OK</id>
+        <text>Печать</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_CANCEL</id>
+        <text>Отмена</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_PRINTER</id>
+        <text>Принтер</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_COPIES</id>
+        <text>Копии</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_PAGEMODE</id>
+        <text>Страницы</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_PAGEMODE_ALL</id>
+        <text>Все</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_PAGEMODE_ODD</id>
+        <text>Только нечетные</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_PAGEMODE_EVEN</id>
+        <text>Только четные</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_PAGEMODE_PAGELIST</id>
+        <text>Например: 1-3, 5-8, 9</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_PAGEMODE_DUPLEX</id>
+        <text>Двусторонняя печать</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_PAPERSIZE</id>
+        <text>Размер бумаги</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_PAPERSIZE_AUTO</id>
+        <text>Автовыбор</text>
+    </i18n>
+
+    <i18n>
+        <id>PASSWORDINPUT_TITLE</id>
+        <text>Введите пароль</text>
+    </i18n>
+
+    <i18n>
+        <id>PASSWORDINPUT_PROMPT</id>
+        <text>PDF файл защищен паролем. Введите пароль для открытия файла.</text>
+    </i18n>
+
+    <i18n>
+        <id>PASSWORDINPUT_INCORRECTPASSWORD</id>
+        <text>Неправильный пароль</text>
+    </i18n>
+
+    <i18n>
+        <id>PASSWORDINPUT_OK</id>
+        <text>Открыть документ</text>
+    </i18n>
+
+    <i18n>
+        <id>PASSWORDINPUT_CANCEL</id>
+        <text>Отмена</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_PAGEMODE_BORDERLESS</id>
+        <text>Печать без полей</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTER_SELECTION_TITLE</id>
+        <text>Выбор принтера</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTER_SELECTION_OK</id>
+        <text>Сохранить</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTER_SELECTION_CANCEL</id>
+        <text>Отмена</text>
+    </i18n>
+
+</VFPData>
