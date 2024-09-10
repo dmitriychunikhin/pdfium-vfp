@@ -3,6 +3,7 @@
 This and a dozen other components and tools are provided to you by <a href="https://vfpx.github.io/">VFPX community</a> 
 
 # pdfium-vfp 
+[English](README.md)|[简体中文](README_CN.md)
 
 pdfium-vfp is a open source PDF viewer control and ReportOutput + ReportPreview implementation for Visual Fox Pro 9 SP2 and VFP Advanced based on 
 * [PDFium](https://pdfium.googlesource.com/pdfium/) 
