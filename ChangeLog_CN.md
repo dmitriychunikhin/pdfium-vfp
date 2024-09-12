@@ -17,7 +17,7 @@
 
     在将报表保存到 pdf 文件时，应用了 PdfiumReport.SaveAs_PdfMeta。
 
-    在 [README_CN.md](README_CN.md.md#PdfiumReport-PDF-元数据和密码保护)中添加了一个使用指南
+    在 [README_CN.md](README_CN.md#PdfiumReport-PDF-元数据和密码保护)中添加了一个使用指南
     
   - 简体中文的 UI 本地化。作者：[Xinjie](https://github.com/vfp9)
 
