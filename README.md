@@ -21,7 +21,7 @@ pdfium-vfp is a open source PDF viewer control and ReportOutput + ReportPreview 
 * VFP frx reports previewing, printing and saving (as pdf) without High DPI pain in the neck
 * Frx report rendering supports private fonts (non system fonts)
 * Frx report rendering supports dynamics and rotation properties
-* Supports VFP Advanced x64 
+* Supports VFP Advanced x86 and x64 
 
 ### Minumum system requirements
 #### Windows
@@ -238,6 +238,43 @@ DO pdfiumreport.app WITH loPdfiumEnv
 
 * Run report with private fonts
 REPORT FORM Report1.frx PREVIEW
+```
+
+
+### <a name="PDFMeta">PdfiumReport PDF metadata and password protection</a>
+
+```foxpro
+
+LOCAL loPdfiumReport
+
+loPdfiumReport = _PdfiumReport
+* or *
+loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app")
+
+********************************************************************************************** 
+* _PdfiumReport is global variable created by pdfiumreport.app on initialization
+**********************************************************************************************
+
+loPdfiumReport.SaveAs_Filename = "myreport" && Filename suggestion for save as dialog in preview mode, not mandatory
+
+* PDF metadata setup sample, setting up metadata is not mandatory 
+loPdfiumReport.SaveAs_PDFMeta.Author = "Me"
+loPdfiumReport.SaveAs_PDFMeta.Creator = "Pdfium-vfp sample app"
+loPdfiumReport.SaveAs_PDFMeta.Keywords = "pdfium-vfp,sample"
+loPdfiumReport.SaveAs_PDFMeta.Subject = "report1.frx and report2.frx batch"
+loPdfiumReport.SaveAs_PDFMeta.Title = "Sample report"
+
+* PDF password protection, input any owner password and user password for testing
+loPdfiumReport.SaveAs_PDFMeta.OwnerPassword = "" && Owner Password protects permissions of the doc. Mandatory if User Password was set. Owner password mustn't be equal to user password
+loPdfiumReport.SaveAs_PDFMeta.UserPassword = "" && This password user inputs when open pdf file
+
+* PDF reader permissions (matter only if Owner passwords is set)
+loPdfiumReport.SaveAs_PDFMeta.Permit_Print = .T. && Allow to print document
+loPdfiumReport.SaveAs_PDFMeta.Permit_Edit_All = .T. && Allow to edit contents other than annotations and forms
+loPdfiumReport.SaveAs_PDFMeta.Permit_Copy = .T. && Allow copy contents of the document
+loPdfiumReport.SaveAs_PDFMeta.Permit_Edit = .T. && Allow to make annotations and fill forms
+**********************************************************************************************
+
 ```
 
 

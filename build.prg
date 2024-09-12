@@ -1,3 +1,5 @@
+* Builds VFP binaries from source code (Source/pdfiumreport.app, Sample/sample.exe)
+* Runs build_i18n.prg
 
 _SCREEN.WindowState = 2
 SET SAFETY OFF
@@ -14,6 +16,8 @@ ON ERROR buildError()
 
 PUBLIC glBuildError
 glBuildError = .F.
+
+DO build_i18n.prg
 
 buildProject(lcPath+"/Source/PdfiumReport.pjx", "app")
 buildProject(lcPath+"/Sample/sample.pjx", "exe")

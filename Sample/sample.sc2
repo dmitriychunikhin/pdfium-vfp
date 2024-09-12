@@ -725,7 +725,6 @@ DEFINE CLASS sample AS form
 		
 		SELECT curReport1
 		
-		
 		#define REPOBJ_VARIANT 1
 		
 		DO CASE
@@ -740,6 +739,34 @@ DEFINE CLASS sample AS form
 		        _REPORTOUTPUT = "../source/pdfiumreport.app"
 		
 		        DO (_REPORTOUTPUT) WITH Thisform.pdfium_env && Execute on initialization step of your application
+		        
+		        **********************************************************************************************
+		        * _PdfiumReport is created by pdfiumreport.app on initialization
+		        **********************************************************************************************
+		        #if .F.
+		        * just for intellisense
+		        PUBLIC _PdfiumReport as pdfiumreport OF ..\Source\pdfium-vfp.vcx
+		        #endif
+		        
+		        _PdfiumReport.SaveAs_Filename = "myreport" && Filename suggestion for save as dialog in preview mode, not mandatory
+		        
+		        * PDF metadata setup sample, setting up metadata is not mandatory 
+		        _PdfiumReport.SaveAs_PDFMeta.Author = "Me"
+		        _PdfiumReport.SaveAs_PDFMeta.Creator = "Pdfium-vfp sample app"
+		        _PdfiumReport.SaveAs_PDFMeta.Keywords = "pdfium-vfp,sample"
+		        _PdfiumReport.SaveAs_PDFMeta.Subject = "report1.frx and report2.frx batch"
+		        _PdfiumReport.SaveAs_PDFMeta.Title = "Sample report"
+		
+		        * PDF password protection, input any owner password and user password for testing
+		        _PdfiumReport.SaveAs_PDFMeta.OwnerPassword = "" && Owner Password protects permissions of the doc. Mandatory if User Password was set. Owner password mustn't be equal to user password
+		        _PdfiumReport.SaveAs_PDFMeta.UserPassword = "" && This password user inputs when open pdf file
+		        
+		        * PDF reader permissions (matter only if Owner passwords is set)
+		        _PdfiumReport.SaveAs_PDFMeta.Permit_Print = .T. && Allow to print document
+		        _PdfiumReport.SaveAs_PDFMeta.Permit_Edit_All = .T. && Allow to edit contents other than annotations and forms
+		        _PdfiumReport.SaveAs_PDFMeta.Permit_Copy = .T. && Allow copy contents of the document
+		        _PdfiumReport.SaveAs_PDFMeta.Permit_Edit = .T. && Allow to make annotations and fill forms
+		        **********************************************************************************************
 		        
 		        REPORT FORM Report1.frx NOPAGEEJECT
 		        REPORT FORM Report2.frx PREVIEW

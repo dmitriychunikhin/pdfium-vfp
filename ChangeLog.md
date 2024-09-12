@@ -1,3 +1,48 @@
+1.9
+  - PdfiumViewer.OpenPDF accepts PDF password as the second parameter
+      
+  - Password input form for encrypted PDF. The form appears when password isn't passed in parameter or it's incorrent. 
+  
+  - PdfiumReport.app no longer destroy _PdfiumReport variable after report rendering finished. _PdiumReport is persisted until DO PdfiumReport.app WITH .F. is called
+
+  - PdfiumReport class was extended with property SaveAs_PdfMeta referencing Pdfium_PdfMeta object that holds  
+      
+        - PDF metadata (Author, Creator, Title, Subject, Keyword, Publisher), 
+
+        - user password for PDF contents encryption, 
+    
+        - reader's permissions (Copy, Print, Edit contents, Edit annotations and fill forms)
+    
+        - owner password to protect reader's permissions.
+
+    PdfiumReport.SaveAs_PdfMeta is being applied when report is saving to the pdf file.
+
+    A little usage guide was added in [README.md](README.md#PDFMeta)
+    
+  - UI localization to Simplified Chinese. Made by [Xinjie](https://github.com/vfp9)
+
+  - PdfiumReport no longer bakes printer's offsets (margins) in the output pdf
+
+  - PdfiumReport renders lines and shapes positions in compliance with native VFP report rendering, before 1.9 it was less precise
+
+  - Changed how PdfiumReport reacts on REPORT FORM ... TO PRINTER clause:
+    - before 1.9 PdfiumReport didn't do anything when report command contained TO PRINTER, native VFP printing did all the job
+    
+    - since 1.9 PdfiumReport generates PDF as it does for Previewing and sends pdf to the printer. 
+          
+        To  switch back use PdfiumReport.ToPrinterNative property: 
+          
+          .T. - report is printed by VFP (PdfiumReport does nothing as before 1.9); 
+        
+          F. (default) - report is printed by PdfiumReport (renders report to PDF and prints PDF)
+
+  - Likely GDIPlusX bug was found when System.Drawing.Bitmap.FromVarBinary call occurs in PdfiumReport.Render_FrxPicture 
+
+        Error in xfcMemoryStream.capacity_assign ("MemoryStream is not expandable")
+        Error occurs when xfcMemoryStream.Handle is accessed in capacity_assign method
+    
+    While bug is being investigated FromVarbinary call was substituted by FromFile method
+
 1.8
   - Fixed issue #3 "Pdfiumviewer in top-level form" (pdfiumviewer window was invisible when Thisform.ShowWindow = 2)
 

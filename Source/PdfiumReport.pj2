@@ -85,8 +85,8 @@ WITH loProject
 	*<.NoLogo = .F. />
 	*<.SaveCode = .T. />
 	*<.User = '' />
-	.ProjectHookLibrary = 'pdfium-vfp-build.vcx'
-	.ProjectHookClass = 'pdfiumbuild'
+	.ProjectHookLibrary = ''
+	.ProjectHookClass = ''
 	*</ProjectProperties>
 ENDWITH
 

@@ -136,11 +136,6 @@
     </i18n>
 
     <i18n>
-        <id>PRINTENV_PAGEMODE_BORDERLESS</id>
-        <text>Borderless printing</text>
-    </i18n>
-
-    <i18n>
         <id>PRINTER_SELECTION_TITLE</id>
         <text>Printer selection</text>
     </i18n>

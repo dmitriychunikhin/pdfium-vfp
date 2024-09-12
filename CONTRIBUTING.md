@@ -1,1 +1,1 @@
-Fell free to make changes
+Feel free to propose changes

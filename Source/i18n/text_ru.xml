@@ -136,11 +136,6 @@
     </i18n>
 
     <i18n>
-        <id>PRINTENV_PAGEMODE_BORDERLESS</id>
-        <text>Печать без полей</text>
-    </i18n>
-
-    <i18n>
         <id>PRINTER_SELECTION_TITLE</id>
         <text>Выбор принтера</text>
     </i18n>

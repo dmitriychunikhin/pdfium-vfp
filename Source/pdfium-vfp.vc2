@@ -10,6 +10,9 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 	*<DefinedPropArrayMethod>
 		*m: declaredll		&& Declares dll functions
 		*m: errmsg
+		*m: foxenv_restore		&& Restore VFP environment to the state before first call of This.FoxEnv_Set or first call after last This.FoxEnv_Restore call
+		*m: foxenv_set		&& Sets VFP environment to fit pdfium-vfp requirements
+		*m: getappname		&& Returns file name of application executable (app, exe) from the top of the call stack. Returns empty string if there is no application executable in stack
 		*m: getpdfdpi		&& PDF standart resolution (72 DPI)
 		*m: getscreendpix		&& Screen horizontal DPI (constant 96 DPI)
 		*m: getscreendpiy		&& Screen vertical DPI (constant 96 DPI)
@@ -18,6 +21,7 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		*m: setup		&& Setup environment (from external environment if neccessary)
 		*m: setuprelease
 		*p: declaredll_ok
+		*p: foxenv_prev		&& VFP environment state saving by This.FoxEnv_Set and restoring by This.FoxEnv_Restore
 		*p: libhpdf_dll_path		&& Path to file libhpdf.dll. Filename without path also accepted
 		*p: pdfium_dll_path		&& Path to file pdfium.dll. Filename without path also accepted
 		*p: privatefonts		&& Collection of non system (custom / private) fonts. Key must be the font face name, Value - path to the font file
@@ -26,9 +30,10 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
-	HIDDEN AddObject,AddProperty,BaseClass,ClassLibrary,Class,CloneObject,Comment,ControlCount,Controls,declaredll_ok,Error,Height,HelpContextID,NewObject,Objects,ParentClass,Parent,Picture,ReadExpression,ReadMethod,RemoveObject,ResetToDefault,SaveAsClass,ShowWhatsThis,Tag,WhatsThisHelpID,Width,WriteExpression,WriteMethod
+	HIDDEN AddObject,AddProperty,BaseClass,CloneObject,Comment,ControlCount,Controls,declaredll_ok,Error,foxenv_prev,Height,HelpContextID,NewObject,Objects,ParentClass,Parent,Picture,ReadExpression,ReadMethod,RemoveObject,ResetToDefault,SaveAsClass,ShowWhatsThis,Tag,WhatsThisHelpID,Width,WriteExpression,WriteMethod
 	*<PropValue>
 		declaredll_ok = .F.
+		foxenv_prev = .F.
 		Height = 27
 		libhpdf_dll_path = (IIF(FILE(ADDBS(JUSTPATH(This.ClassLibrary))+"libhpdf.dll",1), ADDBS(JUSTPATH(This.ClassLibrary)), "") +  IIF(ATC("x64", SYS(17))<>0 , "libhpdf64.dll", "libhpdf.dll"))
 		Name = "pdfium_env"
@@ -53,6 +58,10 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 			<memberdata name="getuniquetempfilename" type="method" display="GetUniqueTempFileName"/>
 			<memberdata name="system_app_path" type="property" display="system_app_path"/>
 			<memberdata name="privatefonts" type="property" display="PrivateFonts"/>
+			<memberdata name="getappname" type="method" display="GetAppName"/>
+			<memberdata name="foxenv_prev" type="property" display="FoxEnv_Prev"/>
+			<memberdata name="foxenv_restore" type="method" display="FoxEnv_Restore"/>
+			<memberdata name="foxenv_set" type="method" display="FoxEnv_Set"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -77,6 +86,8 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		DECLARE LONG FPDF_LoadDocument IN (lcPdfiumDll) AS FPDF_LoadDocument STRING file_path, STRING password
 		DECLARE LONG FPDF_LoadMemDocument IN (lcPdfiumDll) AS FPDF_LoadMemDocument STRING@ data_buf, integer size, STRING password
 		DECLARE FPDF_CloseDocument IN (lcPdfiumDll) AS FPDF_CloseDocument LONG document
+		
+		DECLARE LONG FPDF_GetLastError IN (lcPdfiumDll) AS FPDF_GetLastError
 		
 		DECLARE INTEGER FPDF_GetPageCount IN (lcPdfiumDll) AS FPDF_GetPageCount LONG document
 		
@@ -165,6 +176,7 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		    DECLARE INTEGER HPDF_Image_GetWidth IN (lcLibhpdfDll) AS HPDF_Image_GetWidth INTEGER
 		    DECLARE INTEGER HPDF_Image_GetHeight IN (lcLibhpdfDll) AS HPDF_Image_GetHeight INTEGER
 		    DECLARE INTEGER HPDF_SetInfoAttr IN (lcLibhpdfDll) AS HPDF_SetInfoAttr INTEGER, INTEGER, STRING
+		    
 		    DECLARE INTEGER HPDF_SetPassword IN (lcLibhpdfDll) AS HPDF_SetPassword INTEGER, STRING, STRING
 		    DECLARE INTEGER HPDF_SetPermission IN (lcLibhpdfDll) AS HPDF_SetPermission INTEGER, INTEGER
 		    DECLARE INTEGER HPDF_SetEncryptionMode IN (lcLibhpdfDll) AS HPDF_SetEncryptionMode INTEGER, INTEGER, INTEGER
@@ -318,6 +330,8 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		This.System = .F.
 		This.SetupRelease()
 		
+		This.FoxEnv_Prev = .F.
+		
 	ENDPROC
 
 	HIDDEN PROCEDURE errmsg
@@ -346,6 +360,55 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		
 		MESSAGEBOX(m.lcMsg, 0+48, This.Class + " ("+This.ClassLibrary+")")
 		
+		
+	ENDPROC
+
+	PROCEDURE foxenv_restore		&& Restore VFP environment to the state before first call of This.FoxEnv_Set or first call after last This.FoxEnv_Restore call
+		IF VARTYPE(This.FoxEnv_Prev) <> "O"
+		    RETURN
+		ENDIF
+		
+		LOCAL loFoxEnv
+		loFoxEnv = This.FoxEnv_Prev
+		This.FoxEnv_Prev = .F.
+		
+		LOCAL lcVal
+		
+		lcVal = loFoxEnv.SET_COMPATIBLE
+		IF lcVal <> SET("Compatible")
+		    SET COMPATIBLE &lcVal
+		ENDIF
+		
+	ENDPROC
+
+	PROCEDURE foxenv_set		&& Sets VFP environment to fit pdfium-vfp requirements
+		IF VARTYPE(This.FoxEnv_Prev) <> "O"
+		    This.FoxEnv_Prev = NEWOBJECT("Empty")
+		    ADDPROPERTY(This.FoxEnv_Prev, "SET_COMPATIBLE", SET("Compatible"))
+		ENDIF
+		
+		IF UPPER(SET("Compatible")) <> "OFF"
+		    SET COMPATIBLE OFF
+		ENDIF
+		
+	ENDPROC
+
+	PROCEDURE getappname		&& Returns file name of application executable (app, exe) from the top of the call stack. Returns empty string if there is no application executable in stack
+		LOCAL ARRAY laStack(1)
+		LOCAL lnStack, liStack
+		lnStack = ASTACKINFO(laStack)
+		
+		FOR liStack = lnStack TO 1 STEP -1
+		
+		    IF INLIST(LOWER(JUSTEXT(laStack[liStack,2])), "app", "exe") = .F.
+		        LOOP
+		    ENDIF
+		    
+		    RETURN laStack[liStack,2]
+		
+		ENDFOR
+		
+		RETURN ""
 		
 	ENDPROC
 
@@ -542,7 +605,7 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
-	HIDDEN AddObject,AddProperty,BaseClass,ClassLibrary,Class,CloneObject,Comment,ControlCount,Controls,Error,Height,HelpContextID,localeid,NewObject,Objects,ParentClass,Parent,Picture,ReadExpression,ReadMethod,RemoveObject,ResetToDefault,SaveAsClass,ShowWhatsThis,Tag,WhatsThisHelpID,Width,WriteExpression,WriteMethod
+	HIDDEN AddObject,AddProperty,BaseClass,CloneObject,Comment,ControlCount,Controls,Error,Height,HelpContextID,localeid,NewObject,Objects,ParentClass,Parent,Picture,ReadExpression,ReadMethod,RemoveObject,ResetToDefault,SaveAsClass,ShowWhatsThis,Tag,WhatsThisHelpID,Width,WriteExpression,WriteMethod
 	*<PropValue>
 		Height = 27
 		localeid = 1033
@@ -567,45 +630,49 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 	ENDPROC
 
 	PROCEDURE text		&& Returns all of the text in a text-entry area of a control.
+		* This code is generated by BUILD_I18N.prg
+		
 		LPARAMETERS tcTxtID
 		
 		LOCAL lcTxtID
 		lcTxtID = UPPER(ALLTRIM(EVL(NVL(m.tcTxtID,""),"")))
 		
 		IF EMPTY(lcTxtID)
-		    RETURN ""
+		RETURN ""
 		ENDIF
 		
 		
 		DO CASE 
-		CASE This.LocaleID = 1031
-		    RETURN This.text_de(lcTxtID)
-		
-		CASE This.LocaleID = 1033
-		    RETURN This.text_en(lcTxtID)
-		
-		CASE This.LocaleID = 1034
-		    RETURN This.text_es(lcTxtID)
-		
-		CASE This.LocaleID = 1036
-		    RETURN This.text_fr(lcTxtID)
-		
-		CASE This.LocaleID = 1049
-		    RETURN This.text_ru(lcTxtID)
 		
 		CASE This.LocaleID = 2052
-		    RETURN This.text_cn(lcTxtID)
+		RETURN This.text_cn(lcTxtID)
+		
+		CASE This.LocaleID = 1031
+		RETURN This.text_de(lcTxtID)
+		
+		CASE This.LocaleID = 1033
+		RETURN This.text_en(lcTxtID)
+		
+		CASE This.LocaleID = 1034
+		RETURN This.text_es(lcTxtID)
+		
+		CASE This.LocaleID = 1036
+		RETURN This.text_fr(lcTxtID)
+		
+		CASE This.LocaleID = 1049
+		RETURN This.text_ru(lcTxtID)
 		
 		OTHERWISE
-		    RETURN This.text_en(lcTxtID)
+		RETURN This.text_en(lcTxtID)
 		
 		ENDCASE
 		
 	ENDPROC
 
 	HIDDEN PROCEDURE text_cn
+		* This code is generated by BUILD_I18N.prg from Source\i18n\text_cn.xml for LocaleID = 2052
+		
 		LPARAMETERS tcTxtID
-		* This code is generated by Pdfiumbuild of pdfium-vfp-build.vcx
 		
 		DO CASE
 		
@@ -614,11 +681,119 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		
 		
 		CASE m.tcTxtID == "MNU_SLCTA"
-		RETURN CHR(209) + CHR(161) + CHR(212) + CHR(241) + CHR(200) + CHR(171) + CHR(178) + CHR(191)
+		RETURN CHR(200) + CHR(171) + CHR(209) + CHR(161)
 		
 		
 		CASE m.tcTxtID == "MNU_CUT"
-		RETURN CHR(199) + CHR(208)
+		RETURN CHR(188) + CHR(244) + CHR(199) + CHR(208)
+		
+		
+		CASE m.tcTxtID == "MNU_PASTE"
+		RETURN CHR(213) + CHR(179) + CHR(204) + CHR(249)
+		
+		
+		CASE m.tcTxtID == "MNU_CLEAR"
+		RETURN CHR(199) + CHR(229) + CHR(192) + CHR(237)
+		
+		
+		CASE m.tcTxtID == "REPORTVIEWER_TITLE"
+		RETURN CHR(180) + CHR(242) + CHR(211) + CHR(161) + CHR(212) + CHR(164) + CHR(192) + CHR(192)
+		
+		
+		CASE m.tcTxtID == "SEARCH_NOT_FOUND"
+		RETURN CHR(195) + CHR(187) + CHR(211) + CHR(208) + CHR(183) + CHR(162) + CHR(207) + CHR(214)
+		
+		
+		CASE m.tcTxtID == "SEARCH_ENDED"
+		RETURN CHR(203) + CHR(209) + CHR(203) + CHR(247) + CHR(205) + CHR(234) + CHR(177) + CHR(207)
+		
+		
+		CASE m.tcTxtID == "BTN_PRINT"
+		RETURN CHR(180) + CHR(242) + CHR(211) + CHR(161)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_TITLE"
+		RETURN CHR(180) + CHR(242) + CHR(211) + CHR(161) + CHR(201) + CHR(232) + CHR(214) + CHR(195)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_OK"
+		RETURN CHR(180) + CHR(242) + CHR(211) + CHR(161)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_CANCEL"
+		RETURN CHR(200) + CHR(161) + CHR(207) + CHR(251)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PRINTER"
+		RETURN CHR(180) + CHR(242) + CHR(211) + CHR(161) + CHR(187) + CHR(250)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_COPIES"
+		RETURN CHR(183) + CHR(221) + CHR(202) + CHR(253)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PAGEMODE"
+		RETURN CHR(210) + CHR(179) + CHR(195) + CHR(230)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PAGEMODE_ALL"
+		RETURN CHR(203) + CHR(249) + CHR(211) + CHR(208)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PAGEMODE_ODD"
+		RETURN CHR(189) + CHR(246) + CHR(198) + CHR(230) + CHR(202) + CHR(253) + CHR(210) + CHR(179)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PAGEMODE_EVEN"
+		RETURN CHR(189) + CHR(246) + CHR(197) + CHR(188) + CHR(202) + CHR(253) + CHR(210) + CHR(179)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PAGEMODE_PAGELIST"
+		RETURN CHR(192) + CHR(253) + CHR(200) + CHR(231) + CHR(58) + CHR(32) + CHR(49) + CHR(45) + CHR(51) + CHR(44) + CHR(32) + CHR(53) + CHR(45) + CHR(56) + CHR(44) + CHR(32) + CHR(57)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PAGEMODE_DUPLEX"
+		RETURN CHR(203) + CHR(171) + CHR(195) + CHR(230) + CHR(180) + CHR(242) + CHR(211) + CHR(161)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PAPERSIZE"
+		RETURN CHR(214) + CHR(189) + CHR(213) + CHR(197) + CHR(185) + CHR(230) + CHR(184) + CHR(241)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PAPERSIZE_AUTO"
+		RETURN CHR(215) + CHR(212) + CHR(182) + CHR(175) + CHR(209) + CHR(161) + CHR(212) + CHR(241)
+		
+		
+		CASE m.tcTxtID == "PASSWORDINPUT_TITLE"
+		RETURN CHR(202) + CHR(228) + CHR(200) + CHR(235) + CHR(195) + CHR(220) + CHR(194) + CHR(235)
+		
+		
+		CASE m.tcTxtID == "PASSWORDINPUT_PROMPT"
+		RETURN CHR(80) + CHR(68) + CHR(70) + CHR(32) + CHR(206) + CHR(196) + CHR(188) + CHR(254) + CHR(202) + CHR(220) + CHR(195) + CHR(220) + CHR(194) + CHR(235) + CHR(177) + CHR(163) + CHR(187) + CHR(164) + CHR(161) + CHR(163) + CHR(202) + CHR(228) + CHR(200) + CHR(235) + CHR(195) + CHR(220) + CHR(194) + CHR(235) + CHR(188) + CHR(180) + CHR(191) + CHR(201) + CHR(180) + CHR(242) + CHR(191) + CHR(170) + CHR(206) + CHR(196) + CHR(188) + CHR(254) + CHR(161) + CHR(163)
+		
+		
+		CASE m.tcTxtID == "PASSWORDINPUT_INCORRECTPASSWORD"
+		RETURN CHR(195) + CHR(220) + CHR(194) + CHR(235) + CHR(180) + CHR(237) + CHR(206) + CHR(243)
+		
+		
+		CASE m.tcTxtID == "PASSWORDINPUT_OK"
+		RETURN CHR(180) + CHR(242) + CHR(191) + CHR(170) + CHR(206) + CHR(196) + CHR(181) + CHR(181)
+		
+		
+		CASE m.tcTxtID == "PASSWORDINPUT_CANCEL"
+		RETURN CHR(200) + CHR(161) + CHR(207) + CHR(251)
+		
+		
+		CASE m.tcTxtID == "PRINTER_SELECTION_TITLE"
+		RETURN CHR(209) + CHR(161) + CHR(212) + CHR(241) + CHR(180) + CHR(242) + CHR(211) + CHR(161) + CHR(187) + CHR(250)
+		
+		
+		CASE m.tcTxtID == "PRINTER_SELECTION_OK"
+		RETURN CHR(211) + CHR(166) + CHR(211) + CHR(195)
+		
+		
+		CASE m.tcTxtID == "PRINTER_SELECTION_CANCEL"
+		RETURN CHR(200) + CHR(161) + CHR(207) + CHR(251)
 		
 		OTHERWISE
 		RETURN This.text_en(m.tcTxtID)
@@ -626,11 +801,13 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		ENDCASE
 		
 		RETURN m.tcTxtID
+		
 	ENDPROC
 
 	HIDDEN PROCEDURE text_de
+		* This code is generated by BUILD_I18N.prg from Source\i18n\text_de.xml for LocaleID = 1031
+		
 		LPARAMETERS tcTxtID
-		* This code is generated by Pdfiumbuild of pdfium-vfp-build.vcx
 		
 		DO CASE
 		
@@ -647,11 +824,13 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		ENDCASE
 		
 		RETURN m.tcTxtID
+		
 	ENDPROC
 
 	HIDDEN PROCEDURE text_en
+		* This code is generated by BUILD_I18N.prg from Source\i18n\text_en.xml for LocaleID = 1033
+		
 		LPARAMETERS tcTxtID
-		* This code is generated by Pdfiumbuild of pdfium-vfp-build.vcx
 		
 		DO CASE
 		
@@ -763,10 +942,6 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		RETURN CHR(67) + CHR(97) + CHR(110) + CHR(99) + CHR(101) + CHR(108)
 		
 		
-		CASE m.tcTxtID == "PRINTENV_PAGEMODE_BORDERLESS"
-		RETURN CHR(66) + CHR(111) + CHR(114) + CHR(100) + CHR(101) + CHR(114) + CHR(108) + CHR(101) + CHR(115) + CHR(115) + CHR(32) + CHR(112) + CHR(114) + CHR(105) + CHR(110) + CHR(116) + CHR(105) + CHR(110) + CHR(103)
-		
-		
 		CASE m.tcTxtID == "PRINTER_SELECTION_TITLE"
 		RETURN CHR(80) + CHR(114) + CHR(105) + CHR(110) + CHR(116) + CHR(101) + CHR(114) + CHR(32) + CHR(115) + CHR(101) + CHR(108) + CHR(101) + CHR(99) + CHR(116) + CHR(105) + CHR(111) + CHR(110)
 		
@@ -784,11 +959,13 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		ENDCASE
 		
 		RETURN m.tcTxtID
+		
 	ENDPROC
 
 	HIDDEN PROCEDURE text_es
+		* This code is generated by BUILD_I18N.prg from Source\i18n\text_es.xml for LocaleID = 1034
+		
 		LPARAMETERS tcTxtID
-		* This code is generated by Pdfiumbuild of pdfium-vfp-build.vcx
 		
 		DO CASE
 		
@@ -805,11 +982,13 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		ENDCASE
 		
 		RETURN m.tcTxtID
+		
 	ENDPROC
 
 	HIDDEN PROCEDURE text_fr
+		* This code is generated by BUILD_I18N.prg from Source\i18n\text_fr.xml for LocaleID = 1036
+		
 		LPARAMETERS tcTxtID
-		* This code is generated by Pdfiumbuild of pdfium-vfp-build.vcx
 		
 		DO CASE
 		
@@ -826,11 +1005,13 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		ENDCASE
 		
 		RETURN m.tcTxtID
+		
 	ENDPROC
 
 	HIDDEN PROCEDURE text_ru
+		* This code is generated by BUILD_I18N.prg from Source\i18n\text_ru.xml for LocaleID = 1049
+		
 		LPARAMETERS tcTxtID
-		* This code is generated by Pdfiumbuild of pdfium-vfp-build.vcx
 		
 		DO CASE
 		
@@ -942,10 +1123,6 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		RETURN CHR(206) + CHR(242) + CHR(236) + CHR(229) + CHR(237) + CHR(224)
 		
 		
-		CASE m.tcTxtID == "PRINTENV_PAGEMODE_BORDERLESS"
-		RETURN CHR(207) + CHR(229) + CHR(247) + CHR(224) + CHR(242) + CHR(252) + CHR(32) + CHR(225) + CHR(229) + CHR(231) + CHR(32) + CHR(239) + CHR(238) + CHR(235) + CHR(229) + CHR(233)
-		
-		
 		CASE m.tcTxtID == "PRINTER_SELECTION_TITLE"
 		RETURN CHR(194) + CHR(251) + CHR(225) + CHR(238) + CHR(240) + CHR(32) + CHR(239) + CHR(240) + CHR(232) + CHR(237) + CHR(242) + CHR(229) + CHR(240) + CHR(224)
 		
@@ -963,41 +1140,404 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		ENDCASE
 		
 		RETURN m.tcTxtID
+		
 	ENDPROC
 
 ENDDEFINE
 
-DEFINE CLASS pdfium_print_env AS custom 		&& Print configuration for PdfiumReport.printreport
- 	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
+DEFINE CLASS pdfium_password_input AS form 		&& Password input form
+ 	*< CLASSDATA: Baseclass="form" Timestamp="" Scale="Pixels" Uniqueid="" />
+
+	*-- OBJECTDATA items order determines ZOrder / El orden de los items OBJECTDATA determina el ZOrder 
+	*< OBJECTDATA: ObjPath="txtPassword" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdOk" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdCancel" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="i18n" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="lblTitle" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdFocusHolder" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="lblPrompt" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="lblIncorrect" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="imgPasswordShow" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="imgPasswordHide" UniqueID="" Timestamp="" />
 
 	*<DefinedPropArrayMethod>
-		*m: getprinterdevmode		&& Return output structure DEVMODE from DocumentProperties win32api function
-		*m: getprinterduplex		&& Returns printer duplex support: .T. - duplex is supported, .F. - duplex is not supported.
-		*m: getprinterforms		&& Return full list of paper forms with the flag indicating that  form is supported by printer
-		*m: pagelist_parse		&& Parse page list input (string), returns valid string of page list
-		*m: setup		&& Setup print configuration (from external printenv if needed). Set default foxpro (not system) printer to Printer property
-		*m: sysdefaultprinter_restore		&& Restore system default printer to the value before SysDefaultPrinter_Set call
-		*m: sysdefaultprinter_set		&& Set system default printer
-		*p: copies		&& Number of  copies
-		*p: duplex		&& Duplex mode .T. | .F.
-		*p: pagelist		&& List of pages to print (comma separated), supports intervals: 1,2-5,10
-		*p: pagemode		&& 1 - all, 2 - only odd, 3 - only even, 4 - PageList
-		*p: papersize		&& Paper size index (like PRTINFO(2) returns); -1 - auto choice the fittest to the document; 0 - unknown paper size
-		*p: printer		&& Printer name
-		*p: sysdefaultprinter_prev		&& System default printer before SysDefaultPrinter_Set call
+		*p: in_incorrect		&& Incorrect password flag
+		*p: out_ok		&& .T. - User pressed ok button, .F. - user pressed cancel
+		*p: out_password		&& Inputted password
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
-	HIDDEN AddObject,AddProperty,BaseClass,ClassLibrary,Class,CloneObject,Comment,ControlCount,Controls,Error,Height,HelpContextID,NewObject,Objects,ParentClass,Parent,Picture,ReadExpression,ReadMethod,RemoveObject,ResetToDefault,SaveAsClass,ShowWhatsThis,sysdefaultprinter_prev,Tag,WhatsThisHelpID,Width,WriteExpression,WriteMethod
 	*<PropValue>
+		AlwaysOnTop = .T.
+		AutoCenter = .T.
+		BindControls = .F.
+		BorderStyle = 2
+		Caption = ""
+		DoCreate = .T.
+		Height = 187
+		Icon = (NVL(EVL(JUSTPATH(This.ClassLibrary),NULL)+"\images\wwrite.ico",""))
+		in_incorrect = .F.
+		KeyPreview = .T.
+		MaxButton = .F.
+		MinButton = .F.
+		Name = "pdfium_password_input"
+		out_ok = .F.
+		out_password = ("")
+		ShowWindow = 1
+		TitleBar = 0
+		Visible = .T.
+		Width = 331
+		WindowType = 1
+		_memberdata = <VFPData>
+			<memberdata name="in_incorrect" type="property" display="In_Incorrect"/>
+			<memberdata name="out_ok" type="property" display="Out_Ok"/>
+			<memberdata name="out_password" type="property" display="Out_Password"/>
+		</VFPData>
+	*</PropValue>
+
+	ADD OBJECT 'cmdCancel' AS commandbutton WITH ;
+		AutoSize = .F., ;
+		Caption = "Cancel", ;
+		FontName = "Segoe UI", ;
+		FontSize = 10, ;
+		Height = 30, ;
+		Left = 192, ;
+		Name = "cmdCancel", ;
+		TabIndex = 3, ;
+		Top = 144, ;
+		Width = 124
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'cmdFocusHolder' AS commandbutton WITH ;
+		Caption = "", ;
+		Height = 27, ;
+		Left = 444, ;
+		Name = "cmdFocusHolder", ;
+		Style = 1, ;
+		TabIndex = 4, ;
+		Top = 276, ;
+		Width = 36
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'cmdOk' AS commandbutton WITH ;
+		AutoSize = .F., ;
+		Caption = "Ok", ;
+		Default = .T., ;
+		FontBold = .T., ;
+		FontName = "Segoe UI", ;
+		FontSize = 10, ;
+		Height = 30, ;
+		Left = 12, ;
+		Name = "cmdOk", ;
+		TabIndex = 2, ;
+		Top = 144, ;
+		Width = 160
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'i18n' AS pdfium_i18n WITH ;
+		Left = 300, ;
+		Name = "i18n", ;
+		Top = 0
+		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="custom" />
+
+	ADD OBJECT 'imgPasswordHide' AS image WITH ;
+		Height = 24, ;
+		Left = 291, ;
+		MousePointer = 15, ;
+		Name = "imgPasswordHide", ;
+		PictureVal = , ;
+		Top = 73, ;
+		Visible = .F., ;
+		Width = 24
+		*< END OBJECT: BaseClass="image" />
+
+	ADD OBJECT 'imgPasswordShow' AS image WITH ;
+		Height = 24, ;
+		Left = 291, ;
+		MousePointer = 15, ;
+		Name = "imgPasswordShow", ;
+		PictureVal = , ;
+		Top = 73, ;
+		Visible = .F., ;
+		Width = 24
+		*< END OBJECT: BaseClass="image" />
+
+	ADD OBJECT 'lblIncorrect' AS label WITH ;
+		AutoSize = .F., ;
+		BackStyle = 0, ;
+		Caption = "Incorrect password", ;
+		FontBold = .T., ;
+		FontName = "Segoe UI", ;
+		FontSize = 10, ;
+		ForeColor = 255,0,0, ;
+		Height = 19, ;
+		Left = 12, ;
+		Name = "lblIncorrect", ;
+		TabIndex = 5, ;
+		Top = 106, ;
+		Width = 300
+		*< END OBJECT: BaseClass="label" />
+
+	ADD OBJECT 'lblPrompt' AS label WITH ;
+		AutoSize = .F., ;
+		BackStyle = 0, ;
+		Caption = "This file is protected by password. Input password to open the file", ;
+		FontBold = .F., ;
+		FontName = "Segoe UI", ;
+		FontSize = 9, ;
+		Height = 33, ;
+		Left = 12, ;
+		Name = "lblPrompt", ;
+		TabIndex = 5, ;
+		Top = 36, ;
+		Width = 300, ;
+		WordWrap = .T.
+		*< END OBJECT: BaseClass="label" />
+
+	ADD OBJECT 'lblTitle' AS label WITH ;
+		AutoSize = .F., ;
+		BackStyle = 0, ;
+		Caption = "Input password", ;
+		FontBold = .T., ;
+		FontName = "Segoe UI", ;
+		FontSize = 10, ;
+		Height = 19, ;
+		Left = 12, ;
+		Name = "lblTitle", ;
+		TabIndex = 5, ;
+		Top = 12, ;
+		Width = 300
+		*< END OBJECT: BaseClass="label" />
+
+	ADD OBJECT 'txtPassword' AS pdfium_textbox WITH ;
+		ControlSource = "Thisform.out_password", ;
+		Format = "KF", ;
+		Height = 27, ;
+		InputMask = "", ;
+		Left = 12, ;
+		MaxLength = 255, ;
+		Name = "txtPassword", ;
+		PasswordChar = "•", ;
+		TabIndex = 1, ;
+		Top = 72, ;
+		Width = 276
+		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="textbox" />
+	
+	PROCEDURE Init
+		This.BindControls = .T.
+		
+	ENDPROC
+
+	PROCEDURE KeyPress
+		LPARAMETERS nKeyCode, nShiftAltCtrl
+		
+		IF m.nKeyCode = 27 AND EMPTY(m.nShiftAltCtrl)
+		    This.out_ok = .F.
+		    This.Hide()
+		ENDIF
+		
+		
+	ENDPROC
+
+	PROCEDURE Load
+		CLEAR TYPEAHEAD 
+		
+		
+		
+		
+	ENDPROC
+
+	PROCEDURE Refresh
+		This.Caption = Thisform.i18n.text("PASSWORDINPUT_TITLE")
+		
+		This.txtPassword.Value = This.Out_Password
+		This.lblIncorrect.Visible = This.in_incorrect
+		
+	ENDPROC
+
+	PROCEDURE cmdCancel.Click
+		Thisform.out_ok = .F.
+		Thisform.Hide()
+		
+	ENDPROC
+
+	PROCEDURE cmdCancel.Refresh
+		This.Caption = Thisform.i18n.text("PASSWORDINPUT_CANCEL")
+		
+	ENDPROC
+
+	PROCEDURE cmdOk.Click
+		
+		Thisform.Out_Ok = .T.
+		
+		Thisform.Hide()
+		
+		
+	ENDPROC
+
+	PROCEDURE cmdOk.Refresh
+		This.Caption = Thisform.i18n.text("PASSWORDINPUT_OK")
+		
+	ENDPROC
+
+	PROCEDURE imgPasswordHide.Click
+		This.Visible = .F.
+		This.Parent.txtPassword.ResetToDefault("PasswordChar")
+		This.Parent.txtPassword.InteractiveChange()
+		This.Parent.txtPassword.SelStart = LEN(This.Parent.txtPassword.Text)
+		
+	ENDPROC
+
+	PROCEDURE imgPasswordHide.Init
+		This.PictureVal = STRCONV("iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsIAAA7CARUoSoAAAASnSURBVEhL7ZR7aFt1FMd/v/u+N69C3dwUpkWx7fLqc0xcZTIEFVe"+"FgmBfaZO1Da7+4R/6h8Ol9TFRhCKFdq3UPuI/boNVNhi+YFERtiZp0qKydi1tpfXFZpv0Jmnuy3PT24zVig78R/ADyb055/zON79zzu+H/udOwM3e9keN938NbDxRs6+j02y29IqJ5JujwwOvGeYcDQ0NVlIQdhGIEQiSoC"+"Q5LVoYZqWvr2/dCPlL8gJNXn85RZFnBMH0YCK51h0cGujS7SD8Ek3RJ+C1kCQphGGFoihIVuQVsH2LNfzx/Ox346FQSNbjt0MaTzQ1Gf7Z7ai4oGjqIwLP1ztcbhSLhkNlrspVROCDkPSaosgXpawUUzVlBWnaPo7jq1mOf"+"85kLXjW6apYmopFZo10efI72KKxtaPfYjb5NXCJ6+vdweHNnQDY42kv1jScHBsbWA4EAsT80koNJogXBV6o0yAgJYpvB4cHX90M3yS/A52mlrb3rVbrcQhckhUpYbZYavc7nDg+Gbnc1HS8ENPogmAxvessq3j+xs3EXHBk8"+"AvwnXE43ROqig5ZbdanS0oc1ngs8pmR8pYA/HOfzWZ7K53JLGqSclgjlTOKrD3D8/zR/Q43Co72XzpQVf6JpGh3IQ1XsDzrc7pc0dhkZAY+s/ZS1zko3RNmi7W2uLj0l6l4NKznzZWo3vvCfSyFpwmC5KTUxiEowVXd3uA5d"+"pBh2C8ZhhEyqVQ3TFeuXB5Px/0kS0/LsvRbyibYz/X0pHV7s8/nYmjT14qqYDktOYLBwSVCd9Ca/IoZZjSbTr+xlVyHEehfobm0JEmI5bmAx9eRExgdHViQlex5WFJkWU0V5YKBsaGhqWw2dUrPRdDEy7otJ6ARhKJp0CYSi"+"/rvPBmVg7GkVFVBugjDcoEWrz+guwiFPJFKp8KapppysQYwBKyeCpD0r00BUn0PJibBslxXo9fr0G06NK0twIpZmqaRCl2UQYRm2S5Pa0fXyEj/j1Jq7Ygo0D8Y4XCWvA/D6J4UxWQCq7hHt+WaPBWJrDnc5TdNJlOdKmtH7"+"BXu8eloNBGJRCRXZfUCgXE9RVG5AwZ/B7EcexjOCQ6ODn/6/cREFoy45Zi/hqKYs9Azazaz4R8dPv2VnvvWQYtFIqWlzkKbreApJSvVudxV1+Kx8PWpaHjG4SyfgFI5VA0VQklIEFI4nn/M7ihD8clwCJZjd1nVRzBB9sTqW"+"ieM7webWXc4aM1efzfPcyd1VzqTOksSxOD8zO7LoVC33NDWthdKRhIqsYciqHGW4+5Ni2JuujztnSWqLFcHPzwdNFLl+JOATnNr25OYpN6BaXCqiorSKfEGNO6KhtESCOh12geX0uOCIHBQMSSmxfzdtZ3bTvIW8Vj0+kMPF"+"A1hgrwqyTIBd9E90INKhmaqoOEHYOKKIfGMlM1+DpdeAUxlbandtVWu29hxB9tpbGw00bTlbpWUrHA6kKSi35fndi3rZWtpaasgaPoiL5j2JpPJ120m+lRvb++GsfSfCfwdDSACu7vE8dzu9WSyBi68bwzXziW6U6Zj0Z/sL"+"vcVRVZii3N7zi8uhlTD9Z8HoT8A5bAHNfkKxCkAAAAASUVORK5CYII=",14)
+		
+	ENDPROC
+
+	PROCEDURE imgPasswordShow.Click
+		This.Visible = .F.
+		This.Parent.txtPassword.PasswordChar = ""
+		This.Parent.txtPassword.InteractiveChange()
+		This.Parent.txtPassword.SelStart = LEN(This.Parent.txtPassword.Text)
+		
+	ENDPROC
+
+	PROCEDURE imgPasswordShow.Init
+		This.PictureVal = STRCONV("iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsIAAA7CARUoSoAAAAPxSURBV"+"EhL7ZRfaBxFHMdn9u/s7l1DHjQ2TTHFUqsBa1SKiKKSVqGGRi2o1Oz9SS53xT5IEGPBlxxtkWIffGmSW7zLXa4BEarWaC1UK6WgiE1JBNGWEmvQ+iAid7e7t//Hmbu9lJKYV33o52Fn9"+"7u/+f125vedBbf5z4HhuC6jo6PSn1V7E8dAiWEZzvXqRlQQbkxMTOhhyL+yboFk6mA/hoFKbh8jebtYjm1M8H0feL53A2J4ETL4g4I2+UljwhqsWeDV+PBTvCAeUxRlJ01WN83fMMCLJ"+"HwJBIAnSTtJ2KOSpNxJixq6fsnz8Fsni1PnmxluwoTjCmoyfUhRIl8jEe2s1fRTdUPfVcpPbZ7J5/p54B7lIHu4lM8NdHfdtdGyzD69VjstSdIjCAlfxZMH3gjTrHDLCgYT6SPt7e1vG"+"6bxR+D5mWJ+co7qaiI1wPLCMY5l74UQku3xf/Qcb6xczJ2h7xPDmT0MyxUkWe6oVqrZ8nRunOqUlQJqfESNtrXNWLa1bOvmM7OzhStUjw2N7JXkyGnPdYHrunMAQp8Uep7jeODY5t5iX"+"mt+hJraxknCWUWObKlVKqnSdC5P9UaB/UOv3Y04uMgwLGs71tPlgnaJ6vF4HGEWLQqi2O3V7f5iMXeO6olEZjeHhLOO4ywhDu/QNM1sxqce5iX5fBD42K27D5TL2nKjBzwMxpRIpM2yr"+"COt5BSflbYiSdpmW/aZVnIKvXccew4haavhwu5QBqXS+/O2bbyjRKJtDM+8SbWwyYGLMSarx17zuQmPcUD1tSC6SF6TGOCGUgOMGUguAEPg0OdGAQ8Gxw1Dr4iiNK6qQ71Uo/A8vm5b1"+"i8iEp+Lx9N9oQzU1I"+"FnRRHtsm3752hUWA5lsJ9sEUJoXNf1v33GP061lSbHkukkaXLBMutLlmHuaTVZTab6id/niHOA77mfknUGPMeRJnPAIn0pFSY/p3GvxFI9CkJfCEjcrFdr+8"+"pF7SOqs/RCWVyYX9h+Xw9UohtewBC/vKP3oasLl+ev/LBw+er9PQ9+DxnYy/PC48RB28nh+6nuWMlyIddInhhOv0iMcEpWlI3VSuXoyaJ2opGUsOokx4Yyr5Pg96gN66bxMdlF7fq1O7"+"68cCHrxWKZTTRmZib3Ox2J/3eTFR2UZWXA9Vxg29YYMcm79F2LVQUoanLkSYbjD0dk+QnaY9PQ/yLjd6Rxy6SBPgm5h65IlpQO8vMDpm5843jBodni1MVmhpusWaAFPaEQsi8Rx/SRf0"+"4Xy3LEacQUngeI168BzHwLOPDh9NSJz8Ipq1i3QIvBwUGF56MdAetuAEAgFnRrWzo7f81ms7fY+jb/RwD4B+vrrUXeOtApAAAAAElFTkSuQmCC",14)
+	ENDPROC
+
+	PROCEDURE lblIncorrect.Refresh
+		This.Caption = Thisform.i18n.text("PASSWORDINPUT_INCORRECTPASSWORD")
+	ENDPROC
+
+	PROCEDURE lblPrompt.Refresh
+		This.Caption = Thisform.i18n.text("PASSWORDINPUT_PROMPT")
+	ENDPROC
+
+	PROCEDURE lblTitle.Refresh
+		This.Caption = Thisform.i18n.text("PASSWORDINPUT_TITLE")
+	ENDPROC
+
+	PROCEDURE txtPassword.InteractiveChange
+		DO CASE
+		CASE EMPTY(NVL(This.Value,""))
+		    This.Parent.imgPasswordShow.Visible = .F.
+		    This.Parent.imgPasswordHide.Visible = .F.
+		
+		CASE EMPTY(This.PasswordChar) = .T.
+		    This.Parent.imgPasswordShow.Visible = .F.
+		    This.Parent.imgPasswordHide.Visible = .T.
+		
+		OTHERWISE
+		    This.Parent.imgPasswordShow.Visible = .T.
+		    This.Parent.imgPasswordHide.Visible = .F.
+		    
+		ENDCASE
+		
+	ENDPROC
+
+ENDDEFINE
+
+DEFINE CLASS pdfium_pdfmeta AS custom 		&& PDF metadata (author,creator etc) + encryption (by password) + permission (read, edit, print etc)
+ 	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
+
+	*<DefinedPropArrayMethod>
+		*p: author		&& The name of the person who created the document
+		*p: creator		&& The the name of the application that created the document
+		*p: keywords		&& The keywords associated with the document
+		*p: ownerpassword		&& The password for the owner of the document. Owner password protects permissions of the document (Permit_* properties) . The same value as user password are not allowed. Mandatory if user password is set
+		*p: permit_copy		&& Reader can copy the text and the graphics of the document; Owner password must be set to apply permission to the output doc
+		*p: permit_edit		&& Reader can add or modify the annotations and form fields of the document. Owner password must be set to apply permission to the output doc
+		*p: permit_edit_all		&& Reader can edit the contents of the document other than annotations, form fields. Owner password must be set to apply permission to the output doc
+		*p: permit_print		&& Reader can print the document; Owner password must be set to apply permission to the output doc
+		*p: producer		&& The name of the application that produced the document
+		*p: subject		&& The subject of the document
+		*p: title		&& The title of the document
+		*p: userpassword		&& The password for the reader of the document. Document is encrypted if user password is set. Owner password is mandatory if User password is not empty
+		*p: _memberdata		&& XML Metadata for customizable properties
+	*</DefinedPropArrayMethod>
+
+	HIDDEN AddObject,AddProperty,BaseClass,CloneObject,Comment,ControlCount,Controls,Error,Height,HelpContextID,NewObject,Objects,ParentClass,Parent,Picture,ReadExpression,ReadMethod,RemoveObject,ResetToDefault,SaveAsClass,ShowWhatsThis,Tag,WhatsThisHelpID,Width,WriteExpression,WriteMethod
+	*<PropValue>
+		author = ("")
+		creator = ("")
+		Height = 27
+		keywords = ("")
+		Name = "pdfium_pdfmeta"
+		ownerpassword = ("")
+		permit_copy = .T.
+		permit_edit = .T.
+		permit_edit_all = .T.
+		permit_print = .T.
+		producer = ("pdfium-vfp")
+		subject = ("")
+		title = ("")
+		userpassword = ("")
+		Width = 27
+		_memberdata = <VFPData>
+			<memberdata name="author" type="property" display="Author"/>
+			<memberdata name="creator" type="property" display="Creator"/>
+			<memberdata name="keywords" type="property" display="Keywords"/>
+			<memberdata name="ownerpassword" type="property" display="OwnerPassword"/>
+			<memberdata name="producer" type="property" display="Producer"/>
+			<memberdata name="subject" type="property" display="Subject"/>
+			<memberdata name="title" type="property" display="Title"/>
+			<memberdata name="userpassword" type="property" display="UserPassword"/>
+		</VFPData>
+	*</PropValue>
+
+ENDDEFINE
+
+DEFINE CLASS pdfium_print_env AS custom 		&& Print configuration state for PdfiumViewer and PdfiumReport.
+ 	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
+
+	*<DefinedPropArrayMethod>
+		*m: defaultprinter_restore		&& Restore vfp and system default printer to the value before first DefaultPrinter_Set call or before first DefaultPrinter_Set after previous DefaultPrinter_Restore call
+		*m: defaultprinter_set		&& Set VFP and system default printer to This.hPrinter
+		*m: foxdefaultprinter_get		&& Returns VFP default printer (SET("Printer", 3))
+		*m: foxdefaultprinter_restore		&& Restore VFP default printer to the value before first FoxDefaultPrinter_Set call or before first FoxDefaultPrinter_Set after previous FoxDefaultPrinter_Restore call
+		*m: foxdefaultprinter_set		&& Set VFP default printer. If input parameter is empty default printer is set to This.Printer
+		*m: getprinterdevmode		&& Return output structure DEVMODE from DocumentProperties win32api function
+		*m: getprinterduplex		&& Returns printer duplex support: .T. - duplex is supported, .F. - duplex is not supported.
+		*m: getprinterforms		&& Return full list of paper forms with the flag indicating that  form is supported by printer
+		*m: getprintertitle
+		*m: pagelist_parse		&& Parse page list input (string), returns valid string of page list
+		*m: setup		&& Copy print configuration from external pdfium_print_env object
+		*m: setupdefault		&& Set default values (as they are on Init)
+		*m: statelen		&& Return length of the state stack
+		*m: statepop		&& Restores object's state from stack saved by This.StatePush call
+		*m: statepush		&& Stores object's state in the stack
+		*m: sysdefaultprinter_get		&& Returns system default printer
+		*m: sysdefaultprinter_restore		&& Restore system default printer to the value before first SysDefaultPrinter_Set call or before first SysDefaultPrinter_Set after previous SysDefaultPrinter_Restore call
+		*m: sysdefaultprinter_set		&& Set system default printer. If input parameter is empty default printer is set to This.Printer
+		*p: allowprintsetupui		&& Allows print setup dialog to be shown to a user. This is instructions to application using this object not to show any print settings dialogs. Values .T. (Default) | .F. | NULL
+		*p: allowsetdefaultprinter		&& Allows set default printer. This is instructions to application using this object not to change default vfp printer. Values .T. (default) | .F. | NULL
+		*p: copies		&& Number of  copies; Default value = 1
+		*p: duplex		&& Duplex mode .T. | .F. (Default) | NULL
+		*p: foxdefaultprinter_prev		&& VFP default printer before FoxDefaultPrinter_Set call
+		*p: pagelist		&& List of pages to print (comma separated), supports intervals: 1,2-5,10; Default value = empty string
+		*p: pagemode		&& 1 (default) - all, 2 - only odd, 3 - only even, 4 - PageList
+		*p: papersize		&& Paper size index (like PRTINFO(2) returns); -1 - auto choice the fittest to the document; 0 (default) - unknown paper size
+		*p: printer		&& Printer name; Default value = VFP default printer (sys("printer",3))
+		*p: statestacksize		&& Size of StateStack
+		*p: sysdefaultprinter_prev		&& System default printer before SysDefaultPrinter_Set call
+		*a: statestack[1,0]		&& State store for This.StatePush and This.StatePop
+		*p: _memberdata		&& XML Metadata for customizable properties
+	*</DefinedPropArrayMethod>
+
+	HIDDEN AddObject,AddProperty,BaseClass,CloneObject,Comment,ControlCount,Controls,Error,foxdefaultprinter_prev,Height,HelpContextID,NewObject,Objects,ParentClass,Parent,Picture,ReadExpression,ReadMethod,RemoveObject,ResetToDefault,SaveAsClass,ShowWhatsThis,statestacksize,statestack,sysdefaultprinter_prev,Tag,WhatsThisHelpID,Width,WriteExpression,WriteMethod
+	*<PropValue>
+		allowprintsetupui = .T.
+		allowsetdefaultprinter = .T.
 		copies = 1
 		duplex = .F.
+		foxdefaultprinter_prev = ("")
 		Height = 27
 		Name = "pdfium_print_env"
 		pagelist = ("")
 		pagemode = 1
 		papersize = 0
 		printer = ("")
+		statestacksize = 0
 		sysdefaultprinter_prev = ("")
 		Width = 27
 		_memberdata = <VFPData>
@@ -1015,9 +1555,75 @@ DEFINE CLASS pdfium_print_env AS custom 		&& Print configuration for PdfiumRepor
 			<memberdata name="getprinterdevmode" type="method" display="GetPrinterDevMode"/>
 			<memberdata name="papersize" type="property" display="PaperSize"/>
 			<memberdata name="getprinterduplex" type="method" display="GetPrinterDuplex"/>
+			<memberdata name="allowprintsetupui" type="property" display="AllowPrintSetupUI"/>
+			<memberdata name="allowsetdefaultprinter" type="property" display="AllowSetDefaultPrinter"/>
+			<memberdata name="foxdefaultprinter_prev" type="property" display="FoxDefaultPrinter_Prev"/>
+			<memberdata name="foxdefaultprinter_restore" type="method" display="FoxDefaultPrinter_Restore"/>
+			<memberdata name="foxdefaultprinter_set" type="method" display="FoxDefaultPrinter_Set"/>
+			<memberdata name="defaultprinter_restore" type="method" display="DefaultPrinter_Restore"/>
+			<memberdata name="defaultprinter_set" type="method" display="DefaultPrinter_Set"/>
+			<memberdata name="getprintertitle" type="method" display="GetPrinterTitle"/>
+			<memberdata name="statepop" type="method" display="StatePop"/>
+			<memberdata name="statepush" type="method" display="StatePush"/>
+			<memberdata name="statestack" type="property" display="StateStack"/>
+			<memberdata name="statestacksize" type="property" display="StateStackSize"/>
+			<memberdata name="setupdefault" type="method" display="SetupDefault"/>
+			<memberdata name="foxdefaultprinter_get" type="method" display="FoxDefaultPrinter_Get"/>
+			<memberdata name="sysdefaultprinter_get" type="method" display="SysDefaultPrinter_Get"/>
+			<memberdata name="statelen" type="method" display="StateLen"/>
 		</VFPData>
 	*</PropValue>
 	
+	PROCEDURE defaultprinter_restore		&& Restore vfp and system default printer to the value before first DefaultPrinter_Set call or before first DefaultPrinter_Set after previous DefaultPrinter_Restore call
+		This.FoxDefaultPrinter_Restore()
+		This.SysDefaultPrinter_Restore()
+		
+	ENDPROC
+
+	PROCEDURE defaultprinter_set		&& Set VFP and system default printer to This.hPrinter
+		* VFP reports by standard takes printer parameters (border sizes for example) from default system printer, thus setting just VFP default printer is not enought
+		This.FoxDefaultPrinter_Set()
+		This.SysDefaultPrinter_Set()
+		
+	ENDPROC
+
+	PROCEDURE foxdefaultprinter_get		&& Returns VFP default printer (SET("Printer", 3))
+		RETURN EVL(SET("Printer",3),"")
+		
+	ENDPROC
+
+	PROCEDURE foxdefaultprinter_restore		&& Restore VFP default printer to the value before first FoxDefaultPrinter_Set call or before first FoxDefaultPrinter_Set after previous FoxDefaultPrinter_Restore call
+		
+		IF EMPTY(NVL(This.FoxDefaultPrinter_Prev,"")) = .T.
+		    RETURN .F.
+		ENDIF
+		
+		SET PRINTER TO NAME (This.FoxDefaultPrinter_Prev)
+		
+		This.FoxDefaultPrinter_Prev = ""
+		
+		
+	ENDPROC
+
+	PROCEDURE foxdefaultprinter_set		&& Set VFP default printer. If input parameter is empty default printer is set to This.Printer
+		LPARAMETERS tcPrinter
+		
+		LOCAL lcPrinter
+		lcPrinter = EVL(NVL(m.tcPrinter,""), EVL(NVL(This.Printer,""),""))
+		
+		IF EMPTY(lcPrinter) = .T.
+		    RETURN .F.
+		ENDIF
+		
+		IF EMPTY(This.FoxDefaultPrinter_Prev)
+		    This.FoxDefaultPrinter_Prev = This.FoxDefaultPrinter_Get()
+		ENDIF
+		
+		SET PRINTER TO NAME (lcPrinter)
+		
+		
+	ENDPROC
+
 	PROCEDURE getprinterdevmode		&& Return output structure DEVMODE from DocumentProperties win32api function
 		LPARAMETERS lcPrinter
 		
@@ -1129,6 +1735,8 @@ DEFINE CLASS pdfium_print_env AS custom 		&& Print configuration for PdfiumRepor
 		LOCAL lnPrnFormCnt
 		lnPrnFormCnt = 0
 		
+		LOCAL loErr
+		loErr = .F.
 		TRY
 		    LOCAL lnBufSize, lnFormHeap, lnFormHeapPtr
 		    STORE 0 TO lnBufSize, lnFormHeap, lnFormHeapPtr
@@ -1168,14 +1776,19 @@ DEFINE CLASS pdfium_print_env AS custom 		&& Print configuration for PdfiumRepor
 		        lnFormOffs = lnFormOffs + 32        
 		    ENDFOR
 		
+		CATCH TO loErr
+		    
 		FINALLY
 		    IF EMPTY(lnFormHeap) = .F.
 		        WinApi_HeapDestroy(lnFormHeap)
 		    ENDIF
+		
+		    WinApi_ClosePrinter(lhPrinter)
 		ENDTRY
 		
-		WinApi_ClosePrinter(lhPrinter)
-		
+		IF VARTYPE(loErr) = "O"
+		    RETURN 0
+		ENDIF
 		
 		LOCAL lcPapers, lnPaperCnt, liPaper, lnFormID
 		lnPaperCnt = WinApi_DeviceCapabilities(lcPrinter, NULL, DC_PAPERS, NULL, NULL)
@@ -1197,9 +1810,25 @@ DEFINE CLASS pdfium_print_env AS custom 		&& Print configuration for PdfiumRepor
 		
 	ENDPROC
 
-	PROCEDURE Init
-		This.printer = EVL(SET("Printer",3),"")
+	PROCEDURE getprintertitle
+		IF EMPTY(NVL(This.Printer,"")) = .T.
+		    RETURN ""
+		ENDIF
 		
+		LOCAL ARRAY laPrinters(1)
+		LOCAL lnPrinters, liPrinter
+		lnPrinters = APRINTERS(laPrinters,1)
+		liPrinter = ASCAN(laPrinters, This.Printer, 1, lnPrinters, 1, 15)
+		IF liPrinter > 0
+		    RETURN laPrinters[liPrinter,1]
+		ENDIF
+		
+		RETURN ""
+		
+	ENDPROC
+
+	PROCEDURE Init
+		This.Printer = This.FoxDefaultPrinter_Get()
 		
 	ENDPROC
 
@@ -1340,75 +1969,229 @@ DEFINE CLASS pdfium_print_env AS custom 		&& Print configuration for PdfiumRepor
 		
 	ENDPROC
 
-	PROCEDURE setup		&& Setup print configuration (from external printenv if needed). Set default foxpro (not system) printer to Printer property
-		LPARAMETERS toPrintEnv as pdfium_print_env of pdfium-vfp
+	PROCEDURE setup		&& Copy print configuration from external pdfium_print_env object
+		LPARAMETERS toPrintEnvSrc as pdfium_print_env of pdfium-vfp, tlCopyAsIs, tcFields, tcFieldsExcept
 		
-		IF VARTYPE(m.toPrintEnv)="O"
-		    IF NOT ALLTRIM(LOWER(EVL(NVL(m.toPrintEnv.Printer,""), This.Printer))) == ALLTRIM(LOWER(This.Printer))
+		* toPrintEnvSrc: if Object passed then copies state from it, if NULL is passed then set state to undefined
+		* tcFields: restore fields those matching this list (format: string of comma separated field names)
+		* tcFieldsExcept: restore fields except those matching this list (format: string of comma separated field names).
+		
+		LOCAL lcFields, lcFieldsExcept
+		lcFields = ALLTRIM(CHRTRAN(EVL(NVL(m.tcFields,""),""), " ", ""), 1, ",")
+		lcFieldsExcept = ALLTRIM(CHRTRAN(EVL(NVL(m.lcFieldsExcept,""),""), " ",""), 1, ",")
+		
+		**************************************************************
+		* Store props according to tcFieldsExcept and tcFields
+		**************************************************************
+		
+		LOCAL ARRAY laPropState(1,2) 
+		LOCAL lnPropStateCnt
+		lnPropStateCnt = 0
+		
+		IF EMPTY(lcFields)=.F. OR EMPTY(lcFieldsExcept) = .F.
+		    LOCAL ARRAY laProps(1)
+		    LOCAL lnProps, liProp
+		    lnProps = AMEMBERS(laProps, This, 0, "U+G")
+		
+		    FOR liProp = 1 TO lnProps
+		
+		        LOCAL lcPropName
+		        lcPropName = ALLTRIM(laProps[liProp])
+		
+		        IF EMPTY(lcFields)=.F. AND ATC(","+lcPropName+",", ","+lcFields+",") = 0
+		            LOOP
+		        ENDIF
+		
+		        IF EMPTY(lcFieldsExcept)=.F. AND ATC(","+lcPropName+",", ","+lcFieldsExcept+",") <> 0
+		            LOOP
+		        ENDIF
+		
+		        lnPropStateCnt = lnPropStateCnt + 1
+		        DIMENSION laPropState(lnPropStateCnt, 2)
+		
+		        laPropState[lnPropStateCnt, 1] = lcPropName
+		        laPropState[lnPropStateCnt, 2] = This.&lcPropName
+		
+		    ENDFOR
+		ENDIF
+		**************************************************************
+		
+		DO CASE
+		CASE VARTYPE(toPrintEnvSrc)="O" AND m.tlCopyAsIs
+		    This.Printer = m.toPrintEnvSrc.Printer
+		    This.Copies = m.toPrintEnvSrc.Copies
+		    This.PageMode = m.toPrintEnvSrc.PageMode
+		    This.PageList = m.toPrintEnvSrc.PageList
+		    This.Duplex = m.toPrintEnvSrc.Duplex
+		    This.PaperSize = m.toPrintEnvSrc.PaperSize
+		    This.AllowPrintSetupUI = m.toPrintEnvSrc.AllowPrintSetupUI
+		    This.AllowSetDefaultPrinter = m.toPrintEnvSrc.AllowSetDefaultPrinter
+		
+		CASE VARTYPE(toPrintEnvSrc)="O"
+		    IF NOT ALLTRIM(LOWER(EVL(NVL(m.toPrintEnvSrc.Printer,""), This.Printer))) == ALLTRIM(LOWER(This.Printer))
 		        This.PaperSize = 0
 		    ENDIF
-		    This.Printer = EVL(NVL(m.toPrintEnv.Printer,""), This.Printer)
-		    This.Copies = EVL(NVL(m.toPrintEnv.Copies, 0), This.Copies)
-		    This.PageMode = EVL(NVL(m.toPrintEnv.PageMode, 0), This.PageMode)
-		    This.PageList = EVL(NVL(m.toPrintEnv.PageList, ""), This.PageList)    
-		    This.Duplex = NVL(m.toPrintEnv.Duplex, This.Duplex)
-		    This.PaperSize = EVL(EVL(NVL(m.toPrintEnv.PaperSize, 0), This.PaperSize), EVL(MAX(PRTINFO(2, This.Printer),0), -1))
-		ENDIF
 		
-		IF EMPTY(This.Printer)=.F.
-		    SET PRINTER TO NAME (This.Printer)
-		ENDIF
+		    This.Printer = EVL(NVL(m.toPrintEnvSrc.Printer,""), This.Printer)
+		    This.Copies = EVL(NVL(m.toPrintEnvSrc.Copies, 0), This.Copies)
+		    This.PageMode = EVL(NVL(m.toPrintEnvSrc.PageMode, 0), This.PageMode)
+		    This.PageList = EVL(NVL(m.toPrintEnvSrc.PageList, ""), This.PageList)
+		    This.Duplex = NVL(m.toPrintEnvSrc.Duplex, This.Duplex)
+		    This.PaperSize = EVL(EVL(NVL(m.toPrintEnvSrc.PaperSize, 0), NVL(This.PaperSize,0)), EVL(MAX(PRTINFO(2, NVL(This.Printer,"")),0), -1))
+		    This.AllowPrintSetupUI = NVL(m.toPrintEnvSrc.AllowPrintSetupUI, This.AllowPrintSetupUI)
+		    This.AllowSetDefaultPrinter = NVL(m.toPrintEnvSrc.AllowSetDefaultPrinter, This.AllowSetDefaultPrinter)
 		
+		
+		CASE ISNULL(toPrintEnvSrc)
+		    This.Printer = ""
+		    This.Copies = 0
+		    This.PageMode = 0
+		    This.PageList = ""
+		    This.Duplex = NULL
+		    This.PaperSize = 0
+		    This.AllowPrintSetupUI = NULL
+		    This.AllowSetDefaultPrinter = NULL
+		
+		ENDCASE
+		
+		
+		**************************************************************
+		* Restore props according to tcFieldsExcept and tcFields
+		**************************************************************
+		LOCAL liProp
+		FOR liProp = 1 TO lnPropStateCnt
+		
+		    LOCAL lcPropName
+		    lcPropName = ALLTRIM(laPropState[liProp, 1])
+		
+		    This.&lcPropName = laPropState[liProp, 2]
+		
+		ENDFOR
+		**************************************************************
 		
 	ENDPROC
 
-	PROCEDURE sysdefaultprinter_restore		&& Restore system default printer to the value before SysDefaultPrinter_Set call
-		IF EMPTY(This.SysDefaultPrinter_Prev)
-		    RETURN
-		ENDIF
+	PROCEDURE setupdefault		&& Set default values (as they are on Init)
+		LPARAMETERS tlCopyAsIs, tcFields, tcFieldsExcept
 		
-		DECLARE INTEGER SetDefaultPrinter IN WINSPOOL.DRV  AS WinApi_SetDefaultPrinter STRING pszPrinter
+		* tcFields: restore fields those matching this list (format: string of comma separated field names)
+		* tcFieldsExcept: restore fields except those matching this list (format: string of comma separated field names).
 		
-		IF WinApi_SetDefaultPrinter(This.SysDefaultPrinter_Prev) = 0
-		    This.SysDefaultPrinter_Prev = ""
-		    RETURN
-		ENDIF
+		LOCAL loPrintEnv
+		loPrintEnv = NEWOBJECT("pdfium_print_env", This.ClassLibrary)
 		
-		This.SysDefaultPrinter_Prev = ""
+		This.Setup(loPrintEnv, m.tlCopyAsIs, m.tcFieldsExcept, m.tcFields)
 		
 	ENDPROC
 
-	PROCEDURE sysdefaultprinter_set		&& Set system default printer
+	PROCEDURE statelen		&& Return length of the state stack
+		RETURN This.StateStackSize
 		
-		IF EMPTY(This.Printer)
-		    RETURN
+	ENDPROC
+
+	PROCEDURE statepop		&& Restores object's state from stack saved by This.StatePush call
+		LPARAMETERS tcFields, tcFieldsExcept
+		
+		* tcFields: restore fields those matching this list (format: string of comma separated field names)
+		* tcFieldsExcept: restore fields except those matching this list (format: string of comma separated field names).
+		
+		
+		IF EMPTY(This.StateStackSize)
+		    RETURN 0
+		ENDIF
+		
+		LOCAL lSavePrintEnv
+		lSavePrintEnv = This.StateStack[This.StateStackSize]
+		
+		This.Setup(lSavePrintEnv, .T., m.tcFieldsExcept, m.tcFields)
+		
+		This.StateStack[This.StateStackSize] = .F.
+		This.StateStackSize = This.StateStackSize - 1
+		
+		IF EMPTY(This.StateStackSize) = .F.
+		    DIMENSION This.StateStack(This.StateStackSize)
 		ENDIF    
 		
-		DECLARE INTEGER GetDefaultPrinter IN WINSPOOL.DRV  AS WinApi_GetDefaultPrinter STRING@ pszBuffer, LONG@ pcchBuffer
+		RETURN This.StateStackSize
+		
+	ENDPROC
+
+	PROCEDURE statepush		&& Stores object's state in the stack
+		This.StateStackSize = This.StateStackSize + 1
+		DIMENSION This.StateStack(This.StateStackSize)
+		
+		LOCAL lSavePrintEnv
+		lSavePrintEnv = NEWOBJECT("pdfium_print_env", This.ClassLibrary)
+		
+		lSavePrintEnv.Setup(This, .T.)
+		
+		This.StateStack[This.StateStackSize] = lSavePrintEnv
+		
+		RETURN This.StateStackSize
+		
+	ENDPROC
+
+	PROCEDURE sysdefaultprinter_get		&& Returns system default printer
+		
+		DECLARE INTEGER GetDefaultPrinter IN WINSPOOL.DRV  AS WinApi_GetDefaultPrinter STRING @pszBuffer, LONG @pcchBuffer
 		
 		LOCAL lcBuf, lnBufLen
 		lcBuf = REPLICATE(CHR(0),2000)
 		lnBufLen = LEN(lcBuf)
 		
-		This.SysDefaultPrinter_Prev = ""
+		LOCAL lcPrinter
+		lcPrinter = ""
+		
 		IF WinApi_GetDefaultPrinter(@lcBuf, @lnBufLen) <> 0
 		    IF lnBufLen > 0
-		        This.SysDefaultPrinter_Prev = SUBSTR(lcBuf, 1, lnBufLen)
-		    ENDIF        
+		        lcPrinter = SUBSTR(lcBuf, 1, lnBufLen)
+		    ENDIF
+		ENDIF    
+		
+		RETURN lcPrinter
+		
+	ENDPROC
+
+	PROCEDURE sysdefaultprinter_restore		&& Restore system default printer to the value before first SysDefaultPrinter_Set call or before first SysDefaultPrinter_Set after previous SysDefaultPrinter_Restore call
+		IF EMPTY(NVL(This.SysDefaultPrinter_Prev,""))
+		    RETURN .F.
+		ENDIF
+		
+		DECLARE INTEGER SetDefaultPrinter IN WINSPOOL.DRV  AS WinApi_SetDefaultPrinter STRING pszPrinter
+		
+		IF WinApi_SetDefaultPrinter(This.SysDefaultPrinter_Prev) = 0
+		    RETURN .F.
+		ENDIF
+		
+		This.SysDefaultPrinter_Prev = ""
+		
+	ENDPROC
+
+	PROCEDURE sysdefaultprinter_set		&& Set system default printer. If input parameter is empty default printer is set to This.Printer
+		LPARAMETERS tcPrinter
+		
+		LOCAL lcPrinter
+		lcPrinter = EVL(NVL(m.tcPrinter,""), EVL(NVL(This.Printer,""),""))
+		
+		IF EMPTY(lcPrinter) = .T.
+		    RETURN .F.
+		ENDIF
+		
+		IF EMPTY(This.SysDefaultPrinter_Prev)
+		    This.SysDefaultPrinter_Prev = This.SysDefaultPrinter_Get()
 		ENDIF    
 		
 		DECLARE INTEGER SetDefaultPrinter IN WINSPOOL.DRV  AS WinApi_SetDefaultPrinter STRING pszPrinter
 		
 		IF WinApi_SetDefaultPrinter(This.Printer) = 0
-		    RETURN
+		    RETURN .F.
 		ENDIF
-		
 		
 	ENDPROC
 
 ENDDEFINE
 
-DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library consumer shouldn't use this class directly
+DEFINE CLASS pdfium_print_settings AS form 		&& Print settings dialog.
  	*< CLASSDATA: Baseclass="form" Timestamp="" Scale="Pixels" Uniqueid="" />
 
 	*-- OBJECTDATA items order determines ZOrder / El orden de los items OBJECTDATA determina el ZOrder 
@@ -1430,11 +2213,15 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 	*< OBJECTDATA: ObjPath="lblPaperSize" UniqueID="" Timestamp="" />
 
 	*<DefinedPropArrayMethod>
+		*m: cancel		&& Specifies if a CommandButton is the Cancel button.
 		*m: papersizerequery
+		*m: setup
 		*p: out_ok		&& .T. - User pressed ok button, .F. - user pressed cancel
+		*p: printenvin
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
+	HIDDEN printenvin
 	*<PropValue>
 		AlwaysOnTop = .T.
 		AutoCenter = .T.
@@ -1443,12 +2230,13 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 		Caption = "Print setup"
 		DoCreate = .T.
 		Height = 297
-		Icon = ("images\wwrite.ico")
+		Icon = (NVL(EVL(JUSTPATH(This.ClassLibrary),NULL)+"\images\wwrite.ico",""))
 		KeyPreview = .T.
 		MaxButton = .F.
 		MinButton = .F.
-		Name = "pdfium_print_env_setup"
+		Name = "pdfium_print_settings"
 		out_ok = .F.
+		printenvin = .F.
 		ShowWindow = 1
 		Visible = .T.
 		Width = 435
@@ -1456,6 +2244,9 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 		_memberdata = <VFPData>
 			<memberdata name="out_ok" type="property" display="Out_Ok"/>
 			<memberdata name="papersizerequery" type="method" display="PaperSizeRequery"/>
+			<memberdata name="cancel" type="method" display="Cancel"/>
+			<memberdata name="setup" type="method" display="Setup"/>
+			<memberdata name="printenvin" type="property" display="PrintEnvIn"/>
 		</VFPData>
 	*</PropValue>
 
@@ -1468,13 +2259,13 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 		FontBold = .T., ;
 		FontName = "Segoe UI", ;
 		FontSize = 10, ;
-		Height = 24, ;
+		Height = 20, ;
 		Left = 12, ;
 		Name = "chkDuplex", ;
 		TabIndex = 4, ;
 		Top = 125, ;
 		Width = 177, ;
-		WordWrap = .T.
+		WordWrap = .F.
 		*< END OBJECT: BaseClass="checkbox" />
 
 	ADD OBJECT 'cmbPaperSize' AS combobox WITH ;
@@ -1523,8 +2314,8 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 		Height = 30, ;
 		Left = 237, ;
 		Name = "cmdCancel", ;
-		TabIndex = 9, ;
-		Top = 246, ;
+		TabIndex = 10, ;
+		Top = 252, ;
 		Width = 124
 		*< END OBJECT: BaseClass="commandbutton" />
 
@@ -1548,8 +2339,8 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 		Height = 30, ;
 		Left = 74, ;
 		Name = "cmdOk", ;
-		TabIndex = 8, ;
-		Top = 246, ;
+		TabIndex = 9, ;
+		Top = 252, ;
 		Width = 124
 		*< END OBJECT: BaseClass="commandbutton" />
 
@@ -1569,7 +2360,7 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 		Height = 19, ;
 		Left = 16, ;
 		Name = "lblCopies", ;
-		TabIndex = 11, ;
+		TabIndex = 12, ;
 		Top = 69, ;
 		Width = 117
 		*< END OBJECT: BaseClass="label" />
@@ -1585,7 +2376,7 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 		Height = 19, ;
 		Left = 248, ;
 		Name = "lblPageList", ;
-		TabIndex = 10, ;
+		TabIndex = 11, ;
 		Top = 183, ;
 		Width = 143
 		*< END OBJECT: BaseClass="label" />
@@ -1600,7 +2391,7 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 		Height = 19, ;
 		Left = 227, ;
 		Name = "lblPageMode", ;
-		TabIndex = 14, ;
+		TabIndex = 15, ;
 		Top = 69, ;
 		Width = 171
 		*< END OBJECT: BaseClass="label" />
@@ -1615,7 +2406,7 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 		Height = 19, ;
 		Left = 16, ;
 		Name = "lblPaperSize", ;
-		TabIndex = 13, ;
+		TabIndex = 14, ;
 		Top = 158, ;
 		Width = 173
 		*< END OBJECT: BaseClass="label" />
@@ -1630,7 +2421,7 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 		Height = 19, ;
 		Left = 16, ;
 		Name = "lblPrinters", ;
-		TabIndex = 12, ;
+		TabIndex = 13, ;
 		Top = 4, ;
 		Width = 173
 		*< END OBJECT: BaseClass="label" />
@@ -1643,7 +2434,7 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 		Height = 121, ;
 		Left = 221, ;
 		Name = "ogrPageMode", ;
-		TabIndex = 6, ;
+		TabIndex = 7, ;
 		Top = 90, ;
 		Value = 1, ;
 		Width = 208, ;
@@ -1711,16 +2502,28 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 		InputMask = "", ;
 		Left = 242, ;
 		Name = "txtPageList", ;
-		TabIndex = 7, ;
+		TabIndex = 8, ;
 		TabStop = .F., ;
 		Top = 180, ;
 		Width = 173
 		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="textbox" />
 	
-	PROCEDURE Init
-		LPARAMETERS toPrintEnv as pdfium_print_env OF pdfium-vfp
+	PROCEDURE cancel		&& Specifies if a CommandButton is the Cancel button.
+		Thisform.out_ok = .F.
+		Thisform.Hide()
 		
-		This.PrintEnv.Setup(m.toPrintEnv)
+	ENDPROC
+
+	PROCEDURE Destroy
+		This.PrintEnvIn = .F.
+		
+	ENDPROC
+
+	PROCEDURE Init
+		LPARAMETERS toPrintEnvIn as pdfium_print_env of pdfium-vfp.vcx
+		
+		This.PrintEnvIn = m.toPrintEnvIn
+		This.PrintEnv.Setup(This.PrintEnvIn)
 		
 		This.BindControls = .T.
 		
@@ -1746,7 +2549,7 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 		    This.cmbPrinters.AddItem(lcPrinter)
 		    This.cmbPrinters.AddListItem(lcComment, i, 2)
 		    
-		    IF ALLTRIM(LOWER(This.PrintEnv.Printer)) == ALLTRIM(LOWER(lcPrinter))
+		    IF RTRIM(LOWER(This.PrintEnv.Printer)) == RTRIM(LOWER(lcPrinter))
 		        This.PrintEnv.Printer = lcPrinter &&Fix uppercase printer name of set(printer,3) result
 		    ENDIF
 		ENDFOR
@@ -1763,7 +2566,7 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 		LPARAMETERS nKeyCode, nShiftAltCtrl
 		
 		IF m.nKeyCode = 27 AND EMPTY(m.nShiftAltCtrl)
-		    This.Hide()
+		    This.Cancel()
 		ENDIF
 		
 		
@@ -1771,9 +2574,6 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 
 	PROCEDURE Load
 		CLEAR TYPEAHEAD 
-		
-		
-		
 		
 	ENDPROC
 
@@ -1833,6 +2633,21 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 		
 	ENDPROC
 
+	PROCEDURE setup
+		IF NVL(This.PrintEnv.AllowSetDefaultPrinter, .F.) = .T.
+		    This.PrintEnv.DefaultPrinter_Set()
+		ENDIF
+		
+		IF VARTYPE(This.PrintEnvIn) = "O"
+		    This.PrintEnvIn.Setup(This.PrintEnv)
+		ENDIF
+		
+		Thisform.Out_Ok = .T.
+		
+		Thisform.Hide()
+		
+	ENDPROC
+
 	PROCEDURE chkDuplex.Refresh
 		This.Caption = Thisform.i18n.text("PRINTENV_PAGEMODE_DUPLEX")
 		
@@ -1850,7 +2665,7 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 	ENDPROC
 
 	PROCEDURE cmdCancel.Click
-		Thisform.Hide()
+		Thisform.Cancel()
 		
 	ENDPROC
 
@@ -1860,12 +2675,7 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 	ENDPROC
 
 	PROCEDURE cmdOk.Click
-		
-		Thisform.Out_Ok = .T.
-		
-		Thisform.Hide()
-		
-		
+		Thisform.Setup()
 	ENDPROC
 
 	PROCEDURE cmdOk.Refresh
@@ -1959,6 +2769,282 @@ DEFINE CLASS pdfium_print_env_setup AS form 		&& Print settings dialog. Library 
 
 ENDDEFINE
 
+DEFINE CLASS pdfium_printer_selection AS form 		&& Printer selection dialog.
+ 	*< CLASSDATA: Baseclass="form" Timestamp="" Scale="Pixels" Uniqueid="" />
+
+	*-- OBJECTDATA items order determines ZOrder / El orden de los items OBJECTDATA determina el ZOrder 
+	*< OBJECTDATA: ObjPath="cmbPrinters" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="chkDuplex" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdOk" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdCancel" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="PrintEnv" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="i18n" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="lblPrinters" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdFocusHolder" UniqueID="" Timestamp="" />
+
+	*<DefinedPropArrayMethod>
+		*m: cancel		&& Specifies if a CommandButton is the Cancel button.
+		*m: setup
+		*p: out_ok		&& .T. - User pressed ok button, .F. - user pressed cancel
+		*p: printenvin
+		*p: _memberdata		&& XML Metadata for customizable properties
+	*</DefinedPropArrayMethod>
+
+	HIDDEN printenvin
+	*<PropValue>
+		AlwaysOnTop = .T.
+		AutoCenter = .T.
+		BindControls = .F.
+		BorderStyle = 2
+		Caption = "Print setup"
+		DoCreate = .T.
+		Height = 163
+		Icon = (NVL(EVL(JUSTPATH(This.ClassLibrary),NULL)+"\images\wwrite.ico",""))
+		KeyPreview = .T.
+		MaxButton = .F.
+		MinButton = .F.
+		Name = "pdfium_printer_selection"
+		out_ok = .F.
+		printenvin = .F.
+		ShowWindow = 1
+		Visible = .T.
+		Width = 435
+		WindowType = 1
+		_memberdata = <VFPData>
+			<memberdata name="out_ok" type="property" display="Out_Ok"/>
+			<memberdata name="cancel" type="method" display="Cancel"/>
+			<memberdata name="setup" type="method" display="Setup"/>
+			<memberdata name="printenvin" type="property" display="PrintEnvIn"/>
+		</VFPData>
+	*</PropValue>
+
+	ADD OBJECT 'chkDuplex' AS checkbox WITH ;
+		Alignment = 4, ;
+		AutoSize = .F., ;
+		BackStyle = 0, ;
+		Caption = "Duplex printing", ;
+		ControlSource = "Thisform.PrintEnv.duplex", ;
+		FontBold = .T., ;
+		FontName = "Segoe UI", ;
+		FontSize = 10, ;
+		Height = 20, ;
+		Left = 12, ;
+		Name = "chkDuplex", ;
+		TabIndex = 4, ;
+		Top = 72, ;
+		Width = 177, ;
+		WordWrap = .F.
+		*< END OBJECT: BaseClass="checkbox" />
+
+	ADD OBJECT 'cmbPrinters' AS combobox WITH ;
+		BoundColumn = 1, ;
+		BoundTo = .T., ;
+		ColumnCount = 2, ;
+		ColumnLines = .F., ;
+		ColumnWidths = "370,200", ;
+		ControlSource = "Thisform.PrintEnv.printer", ;
+		DisplayCount = 30, ;
+		FontName = "Segoe UI", ;
+		FontSize = 10, ;
+		Height = 28, ;
+		Left = 12, ;
+		Name = "cmbPrinters", ;
+		Style = 2, ;
+		TabIndex = 2, ;
+		Top = 28, ;
+		Width = 408
+		*< END OBJECT: BaseClass="combobox" />
+
+	ADD OBJECT 'cmdCancel' AS commandbutton WITH ;
+		AutoSize = .F., ;
+		Caption = "Cancel", ;
+		FontName = "Segoe UI", ;
+		FontSize = 10, ;
+		Height = 30, ;
+		Left = 235, ;
+		Name = "cmdCancel", ;
+		TabIndex = 10, ;
+		Top = 108, ;
+		Width = 124
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'cmdFocusHolder' AS commandbutton WITH ;
+		Caption = "", ;
+		Height = 27, ;
+		Left = 444, ;
+		Name = "cmdFocusHolder", ;
+		Style = 1, ;
+		TabIndex = 1, ;
+		Top = 276, ;
+		Width = 36
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'cmdOk' AS commandbutton WITH ;
+		AutoSize = .F., ;
+		Caption = "Ok", ;
+		FontBold = .T., ;
+		FontName = "Segoe UI", ;
+		FontSize = 10, ;
+		Height = 30, ;
+		Left = 72, ;
+		Name = "cmdOk", ;
+		TabIndex = 9, ;
+		Top = 108, ;
+		Width = 124
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'i18n' AS pdfium_i18n WITH ;
+		Left = 336, ;
+		Name = "i18n", ;
+		Top = 0
+		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="custom" />
+
+	ADD OBJECT 'lblPrinters' AS label WITH ;
+		AutoSize = .F., ;
+		BackStyle = 0, ;
+		Caption = "Printer", ;
+		FontBold = .T., ;
+		FontName = "Segoe UI", ;
+		FontSize = 10, ;
+		Height = 19, ;
+		Left = 16, ;
+		Name = "lblPrinters", ;
+		TabIndex = 13, ;
+		Top = 4, ;
+		Width = 173
+		*< END OBJECT: BaseClass="label" />
+
+	ADD OBJECT 'PrintEnv' AS pdfium_print_env WITH ;
+		Left = 288, ;
+		Name = "PrintEnv", ;
+		Top = 0
+		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="custom" />
+	
+	PROCEDURE cancel		&& Specifies if a CommandButton is the Cancel button.
+		Thisform.out_ok = .F.
+		Thisform.Hide()
+		
+	ENDPROC
+
+	PROCEDURE Destroy
+		This.PrintEnvIn = .F.
+		
+	ENDPROC
+
+	PROCEDURE Init
+		LPARAMETERS toPrintEnvIn as pdfium_print_env of pdfium-vfp.vcx
+		
+		This.PrintEnvIn = m.toPrintEnvIn
+		This.PrintEnv.Setup(This.PrintEnvIn)
+		
+		This.BindControls = .T.
+		
+		LOCAL ARRAY laPrinters(1)
+		LOCAL lnPrinters
+		lnPrinters = APRINTERS(laPrinters,1)
+		
+		LOCAL i, llHasComments
+		llHasComments = .F.
+		FOR i = 1 TO lnPrinters
+		    LOCAL lcPrinter, lcComment
+		    lcPrinter = RTRIM(EVL(NVL(laPrinters[i,1], ""),""))
+		    lcComment = RTRIM(EVL(NVL(laPrinters[i,4],""),""))
+		
+		    IF EMPTY(lcPrinter)
+		        LOOP
+		    ENDIF
+		    
+		    IF EMPTY(lcComment)=.F.
+		        llHasComments = .T.
+		    ENDIF
+		
+		    This.cmbPrinters.AddItem(lcPrinter)
+		    This.cmbPrinters.AddListItem(lcComment, i, 2)
+		    
+		    IF RTRIM(LOWER(This.PrintEnv.Printer)) == RTRIM(LOWER(lcPrinter))
+		        This.PrintEnv.Printer = lcPrinter &&Fix uppercase printer name of set(printer,3) result
+		    ENDIF
+		ENDFOR
+		
+		IF llHasComments = .F.
+		    This.cmbPrinters.ColumnWidths = STREXTRACT(This.cmbPrinters.ColumnWidths, "", ",",1,2) + ",0"
+		ENDIF
+		
+	ENDPROC
+
+	PROCEDURE KeyPress
+		LPARAMETERS nKeyCode, nShiftAltCtrl
+		
+		IF m.nKeyCode = 27 AND EMPTY(m.nShiftAltCtrl)
+		    This.Cancel()
+		ENDIF
+		
+	ENDPROC
+
+	PROCEDURE Load
+		CLEAR TYPEAHEAD 
+		
+	ENDPROC
+
+	PROCEDURE Refresh
+		This.Caption = Thisform.i18n.text("PRINTER_SELECTION_TITLE")
+		
+	ENDPROC
+
+	PROCEDURE setup
+		IF NVL(This.PrintEnv.AllowSetDefaultPrinter, .F.) = .T.
+		    This.PrintEnv.DefaultPrinter_Set()
+		ENDIF
+		
+		IF VARTYPE(This.PrintEnvIn) = "O"
+		    This.PrintEnvIn.Setup(This.PrintEnv)
+		ENDIF
+		
+		Thisform.Out_Ok = .T.
+		
+		Thisform.Hide()
+		
+	ENDPROC
+
+	PROCEDURE chkDuplex.Refresh
+		This.Caption = Thisform.i18n.text("PRINTENV_PAGEMODE_DUPLEX")
+		
+		
+	ENDPROC
+
+	PROCEDURE cmbPrinters.InteractiveChange
+		Thisform.PrintEnv.Printer = This.Value
+		
+	ENDPROC
+
+	PROCEDURE cmdCancel.Click
+		Thisform.Cancel()
+		
+	ENDPROC
+
+	PROCEDURE cmdCancel.Refresh
+		This.Caption = Thisform.i18n.text("PRINTER_SELECTION_CANCEL")
+		
+	ENDPROC
+
+	PROCEDURE cmdOk.Click
+		Thisform.Setup()
+		
+		
+	ENDPROC
+
+	PROCEDURE cmdOk.Refresh
+		This.Caption = Thisform.i18n.text("PRINTER_SELECTION_OK")
+		
+	ENDPROC
+
+	PROCEDURE lblPrinters.Refresh
+		This.Caption = Thisform.i18n.text("PRINTENV_PRINTER")
+		
+	ENDPROC
+
+ENDDEFINE
+
 DEFINE CLASS pdfium_textbox AS textbox 		&& Pdfium-vfp Textbox. Library consumer shouldn't use this class directly
  	*< CLASSDATA: Baseclass="textbox" Timestamp="" Scale="Pixels" Uniqueid="" />
 
@@ -2036,6 +3122,7 @@ DEFINE CLASS pdfium_textbox AS textbox 		&& Pdfium-vfp Textbox. Library consumer
 			This.MouseFocused = MDOWN()
 			This.SelectAll()
 		ENDIF
+		
 		
 		This.allow_lost_focus = .T.
 		
@@ -2173,7 +3260,7 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
-	HIDDEN AddObject,AddProperty,BaseClass,ClassLibrary,Class,CloneObject,Comment,ControlCount,Controls,effectivelyenabled,effectivelyvisible,Error,Height,HelpContextID,ispageframe,NewObject,Objects,ParentClass,Parent,Picture,ReadExpression,ReadMethod,RemoveObject,ResetToDefault,SaveAsClass,ShowWhatsThis,Tag,WhatsThisHelpID,Width,WriteExpression,WriteMethod,_ispagedeactivated
+	HIDDEN AddObject,AddProperty,BaseClass,CloneObject,Comment,ControlCount,Controls,effectivelyenabled,effectivelyvisible,Error,Height,HelpContextID,ispageframe,NewObject,Objects,ParentClass,Parent,Picture,ReadExpression,ReadMethod,RemoveObject,ResetToDefault,SaveAsClass,ShowWhatsThis,Tag,WhatsThisHelpID,Width,WriteExpression,WriteMethod,_ispagedeactivated
 	*<PropValue>
 		effectivelyenabled = .F.
 		effectivelyvisible = .F.
@@ -2415,7 +3502,96 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 
 ENDDEFINE
 
-DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated report preview base on PdfiumViewer control
+DEFINE CLASS pdfium_utils AS custom 		&& Utility class; Library consumer shouldn't use this class directly
+ 	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
+
+	*<DefinedPropArrayMethod>
+		*m: extractfile		&& Extract file contents from application executable (exe,app), return empty string if file wast not found. Pdfium-vfp.vcx must be included in the application executable or this method will  alwaysreturn empty string
+		*m: filetostr		&& FileToStr wrapper for ExtractFile mehtod
+		*m: strtofile
+		*p: _memberdata		&& XML Metadata for customizable properties
+	*</DefinedPropArrayMethod>
+
+	*<PropValue>
+		Name = "pdfium_utils"
+		_memberdata = <VFPData>
+			<memberdata name="extractfile" type="method" display="ExtractFile"/>
+			<memberdata name="filetostr" type="method" display="FileToStr"/>
+			<memberdata name="strtofile" type="method" display="StrToFile"/>
+		</VFPData>
+	*</PropValue>
+	
+	PROCEDURE extractfile		&& Extract file contents from application executable (exe,app), return empty string if file wast not found. Pdfium-vfp.vcx must be included in the application executable or this method will  alwaysreturn empty string
+		LPARAMETERS tcFileName
+		
+		IF EMPTY(NVL(m.tcFileName,""))
+		    RETURN ""
+		ENDIF
+		
+		IF FILE(m.tcFileName)
+		    RETURN This.FileToStr(m.tcFileName)
+		ENDIF
+		
+		LOCAL lcFileData
+		lcFileData = ""
+		
+		LOCAL ARRAY laStack(1)
+		LOCAL lnStack, liStack
+		lnStack = ASTACKINFO(laStack)
+		FOR liStack = lnStack TO 1 STEP -1
+		    IF INLIST(LOWER(JUSTEXT(laStack[liStack,2])), "app", "exe") = .F.
+		        LOOP
+		    ENDIF
+		    
+		    LOCAL loPdfiumUtils
+		    loPdfiumUtils = .F.
+		
+		    TRY
+		        loPdfiumUtils = NEWOBJECT("pdfium_utils", JUSTFNAME(This.ClassLibrary), laStack[liStack,2])        
+		        lcFileData = loPdfiumUtils.FileToStr(m.tcFileName)
+		    CATCH
+		        lcFileData = .F.
+		    FINALLY
+		        loPdfiumUtils = .F.
+		    ENDTRY
+		
+		    IF VARTYPE(lcFileData) = "C"
+		        RETURN lcFileData
+		    ENDIF
+		    
+		ENDFOR
+		
+		RETURN ""
+		
+	ENDPROC
+
+	PROCEDURE filetostr		&& FileToStr wrapper for ExtractFile mehtod
+		LPARAMETERS tcFileName
+		
+		RETURN FILETOSTR(m.tcFileName)
+		
+	ENDPROC
+
+	PROCEDURE strtofile
+		LPARAMETERS tcStr, tcFileName
+		
+		LOCAL lSaveSafety
+		lSaveSafety = SET("Safety")
+		SET SAFETY OFF
+		
+		LOCAL lnBytesWritten
+		lnBytesWritten = STRTOFILE(m.tcStr, m.tcFileName)
+		
+		SET SAFETY &lSaveSafety
+		
+		RETURN lnBytesWritten
+		
+		
+	ENDPROC
+
+ENDDEFINE
+
+DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated report preview based on PdfiumViewer control
  	*< CLASSDATA: Baseclass="reportlistener" Timestamp="" Scale="Pixels" Uniqueid="" />
 
 	*<DefinedPropArrayMethod>
@@ -2429,30 +3605,48 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*m: getfontgdi
 		*m: getfontpdf
 		*m: measurestring
+		*m: printenvdefault_access
+		*m: printenvdefault_assign
+		*m: printenv_access
+		*m: printenv_assign
 		*m: render_frxdynamics
 		*m: render_frxfield
+		*m: render_frxheader
 		*m: render_frxlabel
 		*m: render_frxline
 		*m: render_frxpicture
 		*m: render_frxrectangle
 		*m: render_text
 		*m: render_textasimage		&& Fallback rendering text as images (case of symbolic and non ttf fonts)
+		*m: saveas_pdfmeta_access
+		*m: saveas_pdfmeta_assign
 		*p: batchmode
 		*p: batchmodeauto		&& .T. if report was created by  _REPORTOUTPUT (= PdfiumReport.app)  and NOPAGEEJECT was set
 		*p: env		&& pdfium_env object
 		*p: errlog
+		*p: frx_offsetx
+		*p: frx_offsety
 		*p: frx_pagecount
+		*p: frx_wholepage
 		*p: gdi_fonts
 		*p: hpdf_doc
 		*p: hpdf_fonts		&& Font collection for caching purporses
 		*p: hpdf_pagecount
 		*p: ogfx
+		*p: printenv		&& Print configuration state (pdfium_print_env object). ; Read-only; Overrides default print settings when report is printed from preview window or by TO PRINTER clause with This.ToPrinterNative=.T.
+		*p: printenvdefault
 		*p: saveas_filename		&& Filename suggestion for "save as" dialog
+		*p: saveas_pdfmeta		&& Pdfium_pdfmeta object; Output PDF metadata + encryption (password) and reader permissions
+		*p: toprinternative		&& TO PRINTER clause handing mode:: .T. - report is printed by VFP (PdfiumReport does nothing) ; .F. (default) - report is printed by PdfiumReport (renders report to PDF and prints PDF)
+		*p: utils		&& pdfium_utils object
 		*a: hpdf_pages[1,0]
 		*p: _memberdata		&& XML Metadata for customizable properties
+		*p: _printenv		&& Print configuration state (pdfium_print_env object)
+		*p: _printenvdefault
+		*p: _saveas_pdfmeta
 	*</DefinedPropArrayMethod>
 
-	HIDDEN batchmodeauto,batchmode,env,errlog,frx_pagecount,gdi_fonts,hpdf_doc,hpdf_fonts,hpdf_pagecount,hpdf_pages,ogfx
+	HIDDEN batchmodeauto,batchmode,env,errlog,frx_offsetx,frx_offsety,frx_pagecount,frx_wholepage,gdi_fonts,hpdf_doc,hpdf_fonts,hpdf_pagecount,hpdf_pages,ogfx,utils,_printenvdefault,_printenv,_saveas_pdfmeta
 	*<PropValue>
 		AllowModalMessages = .T.
 		batchmode = .F.
@@ -2461,7 +3655,10 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		env = .F.
 		errlog = ("")
 		FRXDataSession = 0
+		frx_offsetx = 0
+		frx_offsety = 0
 		frx_pagecount = 0
+		frx_wholepage = .F.
 		gdi_fonts = .F.
 		Height = 23
 		hpdf_doc = 0
@@ -2470,10 +3667,15 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		ListenerType = -1
 		Name = "pdfiumreport"
 		ogfx = .F.
+		printenv = .F.
+		printenvdefault = .F.
 		QuietMode = .F.
 		saveas_filename = ("")
+		saveas_pdfmeta = .F.
 		SendGDIPlusImage = 1
+		toprinternative = .F.
 		TwoPassProcess = .T.
+		utils = .F.
 		Width = 23
 		_memberdata = <VFPData>
 			<memberdata name="hpdf_pages" type="property" display="hpdf_pages"/>
@@ -2501,13 +3703,33 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 			<memberdata name="closepdf" type="method" display="ClosePDF"/>
 			<memberdata name="createpdf" type="method" display="CreatePDF"/>
 			<memberdata name="hpdf_fonts" type="property" display="hpdf_Fonts"/>
-			<memberdata name="frx_printenv_set" type="method" display="frx_printenv_set"/>
 			<memberdata name="render_textasimage" type="method" display="Render_TextAsImage"/>
 			<memberdata name="gdi_fonts" type="property" display="gdi_fonts"/>
 			<memberdata name="batchmodeauto" type="property" display="BatchModeAuto"/>
 			<memberdata name="saveas_filename" type="property" display="SaveAs_Filename"/>
 			<memberdata name="render_frxdynamics" type="method" display="Render_FrxDynamics"/>
+			<memberdata name="utils" type="property" display="utils"/>
+			<memberdata name="printenv" type="property" display="PrintEnv"/>
+			<memberdata name="printenv_access" type="method" display="PrintEnv_Access"/>
+			<memberdata name="printenv_assign" type="method" display="PrintEnv_Assign"/>
+			<memberdata name="_printenv" type="property" display="_PrintEnv"/>
+			<memberdata name="printenvdefault" type="property" display="PrintEnvDefault"/>
+			<memberdata name="printenvdefault_access" type="method" display="PrintEnvDefault_Access"/>
+			<memberdata name="printenvdefault_assign" type="method" display="PrintEnvDefault_Assign"/>
+			<memberdata name="_printenvdefault" type="property" display="_PrintEnvDefault"/>
+			<memberdata name="toprinternative" type="property" display="ToPrinterNative"/>
+			<memberdata name="saveas_pdfmeta" type="property" display="SaveAs_PDFMeta"/>
+			<memberdata name="saveas_pdfmeta_access" type="method" display="SaveAs_PDFMeta_Access"/>
+			<memberdata name="saveas_pdfmeta_assign" type="method" display="SaveAs_PDFMeta_Assign"/>
+			<memberdata name="_saveas_pdfmeta" type="property" display="_SaveAs_PDFMeta"/>
+			<memberdata name="frx_offsetx" type="property" display="frx_offsetx"/>
+			<memberdata name="frx_offsety" type="property" display="frx_offsety"/>
+			<memberdata name="frx_wholepage" type="property" display="frx_wholepage"/>
+			<memberdata name="render_frxheader" type="method" display="Render_FrxHeader"/>
 		</VFPData>
+		_printenv = .F.
+		_printenvdefault = .F.
+		_saveas_pdfmeta = .F.
 	*</PropValue>
 	
 	PROCEDURE batchbegin
@@ -2543,7 +3765,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		This.hpdf_pagecount = 0
 		This.hpdf_doc = 0
 		This.hpdf_fonts = .F.
-		
+		This.gdi_fonts = .F.
 		
 	ENDPROC
 
@@ -2567,6 +3789,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    HPDF_SetCurrentEncoder(This.hpdf_doc, "UTF-8")
 		ENDIF
 		
+		This.gdi_fonts = NEWOBJECT("Collection")
 		
 	ENDPROC
 
@@ -2575,11 +3798,14 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		This.ClosePDF()
 		
 		This.env = .F.
+		This._PrintEnv = .F.
+		This._PrintEnvDefault = .F.
+		This.utils = .F.
 		This.oGfx = .F.
-		This.gdi_fonts = .F.
+		
+		This._SaveAs_PDFMeta = .F.
 		
 		This.PreviewContainer = NULL
-		
 		
 	ENDPROC
 
@@ -2598,6 +3824,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    This.DoStatus(LEFT(This.errLog, 250))
 		ENDIF
 		
+		This.errLog = ""
 		
 	ENDPROC
 
@@ -2631,12 +3858,27 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 	ENDPROC
 
 	HIDDEN PROCEDURE finalize
+		#define HPDF_INFO_CREATION_DATE  0
+		#define HPDF_INFO_MOD_DATE 1
+		#define HPDF_INFO_AUTHOR 2
+		#define HPDF_INFO_CREATOR 3
+		#define HPDF_INFO_PRODUCER 4
+		#define HPDF_INFO_TITLE 5
+		#define HPDF_INFO_SUBJECT 6
+		#define HPDF_INFO_KEYWORDS 7
+		#define HPDF_INFO_TRAPPED 8
+		#define HPDF_INFO_GTS_PDFX 9
+		#define HPDF_INFO_EOF 10
+		#define HPDF_ENCRYPT_R2 2
+		#define HPDF_ENCRYPT_R3 3
 		
 		IF EMPTY(This.hpdf_doc)
 		    RETURN
 		ENDIF
 		
+		
 		This.errLogShow()
+		
 		
 		LOCAL lcTempFileName
 		lcTempFileName = This.env.GetUniqueTempFileName("pdf")
@@ -2644,47 +3886,137 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		LOCAL loErr
 		loErr = .F.
 		TRY
-		    IF This.CommandClauses.PREVIEW = .F. AND This.CommandClauses.OUTPUTTO != 2 && not preview or output to file
+		    IF This.CommandClauses.OUTPUTTO = 1 AND This.ToPrinterNative = .T. && VFP native output to the printer, do nothing
 		        EXIT
 		    ENDIF
 		
+		    IF This.CommandClauses.PREVIEW = .F. AND INLIST(This.CommandClauses.OUTPUTTO,1,2)=.F. && not preview or output to the printer or to the file
+		        EXIT
+		    ENDIF
+		
+		
+		    HPDF_ResetError(This.hpdf_doc)
+		
+		    *******************************************************
+		    IF EMPTY(NVL(This.SaveAs_PDFMeta.Author,"")) = .F.
+		        HPDF_SetInfoAttr(This.hpdf_doc, HPDF_INFO_AUTHOR, This.SaveAs_PDFMeta.Author)
+		        HPDF_ResetError(This.hpdf_doc)
+		    ENDIF
+		    
+		    IF EMPTY(NVL(This.SaveAs_PDFMeta.Creator,"")) = .F.
+		        HPDF_SetInfoAttr(This.hpdf_doc, HPDF_INFO_CREATOR, This.SaveAs_PDFMeta.Creator)
+		        HPDF_ResetError(This.hpdf_doc)
+		    ENDIF
+		    
+		    IF EMPTY(NVL(This.SaveAs_PDFMeta.Producer,"")) = .F.
+		        HPDF_SetInfoAttr(This.hpdf_doc, HPDF_INFO_PRODUCER, This.SaveAs_PDFMeta.Producer)
+		        HPDF_ResetError(This.hpdf_doc)
+		    ENDIF
+		
+		    IF EMPTY(NVL(This.SaveAs_PDFMeta.Title,"")) = .F.
+		        HPDF_SetInfoAttr(This.hpdf_doc, HPDF_INFO_TITLE, This.SaveAs_PDFMeta.Title)
+		        HPDF_ResetError(This.hpdf_doc)
+		    ENDIF
+		
+		    IF EMPTY(NVL(This.SaveAs_PDFMeta.Subject,"")) = .F.
+		        HPDF_SetInfoAttr(This.hpdf_doc, HPDF_INFO_SUBJECT, This.SaveAs_PDFMeta.Subject)
+		        HPDF_ResetError(This.hpdf_doc)
+		    ENDIF
+		
+		    IF EMPTY(NVL(This.SaveAs_PDFMeta.Keywords,"")) = .F.
+		        HPDF_SetInfoAttr(This.hpdf_doc, HPDF_INFO_KEYWORDS, This.SaveAs_PDFMeta.Keywords)
+		        HPDF_ResetError(This.hpdf_doc)
+		    ENDIF
+		    *******************************************************
+		    
+		
+		    *******************************************************
+		    This.SaveAs_PDFMeta.OwnerPassword = NVL(This.SaveAs_PDFMeta.OwnerPassword,"")
+		    This.SaveAs_PDFMeta.UserPassword = NVL(This.SaveAs_PDFMeta.UserPassword,"")
+		    DO CASE
+		    CASE LEN(This.SaveAs_PDFMeta.OwnerPassword) = 0 AND LEN(This.SaveAs_PDFMeta.UserPassword) = 0
+		    
+		    CASE LEN(This.SaveAs_PDFMeta.OwnerPassword) = 0 AND LEN(This.SaveAs_PDFMeta.UserPassword) > 0
+		        ERROR "Owner Password cannot be empty when User Password is not empty"
+		    
+		    CASE This.SaveAs_PDFMeta.OwnerPassword == This.SaveAs_PDFMeta.UserPassword
+		        ERROR "Owner Password cannot be equal to User Password"
+		    
+		    OTHERWISE
+		
+		        IF HPDF_SetPassword(This.hpdf_doc, This.SaveAs_PDFMeta.OwnerPassword, This.SaveAs_PDFMeta.UserPassword) = 0
+		            LOCAL lnErrCode
+		            lnErrCode = HPDF_SetEncryptionMode(This.hpdf_doc, HPDF_ENCRYPT_R3, 16) 
+		            IF lnErrCode <> 0
+		                ERROR "HPDF_SetEncryptionMode returned error code " + TRANSFORM(lnErrCode)
+		            ENDIF
+		        ENDIF
+		        
+		        
+		        LOCAL lnPermit
+		        lnPermit = ;
+		            IIF(This.SaveAs_PDFMeta.Permit_Print, 4, 0) + ;
+		            IIF(This.SaveAs_PDFMeta.Permit_Edit_All, 8, 0) + ;
+		            IIF(This.SaveAs_PDFMeta.Permit_Copy, 16, 0) + ;
+		            IIF(This.SaveAs_PDFMeta.Permit_Edit, 32, 0) 
+		        
+		        IF lnPermit <> 0
+		            HPDF_SetPermission(This.hpdf_doc, lnPermit)
+		        ENDIF
+		        
+		        HPDF_ResetError(This.hpdf_doc)
+		    ENDCASE
+		    *******************************************************
+		    
+		
+		    *******************************************************
+		    HPDF_ResetError(This.hpdf_doc)    
+		    
 		    IF HPDF_SaveToFile(This.hpdf_doc, lcTempFileName) <> 0
 		        EXIT
 		    ENDIF
 		    
-		    This.ClosePDF()    
+		    This.ClosePDF()
 		    
+		        
 		    DO CASE
-		    CASE This.CommandClauses.OUTPUTTO = 2 && output to file
+		    CASE This.CommandClauses.OUTPUTTO = 2 && output to the file
 		        IF EMPTY(This.CommandClauses.TOFILE) = .F.
 		            COPY FILE (lcTempFileName) TO (This.CommandClauses.TOFILE)
 		        ENDIF
 		
-		    CASE This.CommandClauses.PREVIEW 
-		
-		        This.PreviewContainer = NEWOBJECT("PdfiumReportViewer", This.ClassLibrary, "", This.env)
+		    CASE This.CommandClauses.OUTPUTTO = 1 && output to the printer
+		        This.PreviewContainer = NEWOBJECT("PdfiumReportViewer", This.ClassLibrary, "", This.env, This.PrintEnv)
 		        This.PreviewContainer.SetReport(This)
-		        This.PreviewContainer.OpenPDF(lcTempFileName)
-		        This.PreviewContainer.SaveAs_Filename = This.SaveAs_Filename
+		        This.PreviewContainer.OpenPDF(lcTempFileName, This.SaveAs_PDFMeta.UserPassword)
+		
+		        IF This.CommandClauses.PROMPT
+		            This.PreviewContainer.Show()
+		        ENDIF
+		        
+		        This.PreviewContainer.PrintReport()
+		    
+		    
+		    CASE This.CommandClauses.PREVIEW
+		        This.PreviewContainer = NEWOBJECT("PdfiumReportViewer", This.ClassLibrary, "", This.env, This.PrintEnv)
+		        This.PreviewContainer.SetReport(This)
+		        This.PreviewContainer.OpenPDF(lcTempFileName, This.SaveAs_PDFMeta.UserPassword)
+		        This.PreviewContainer.SaveAs_Filename = EVL(NVL(This.SaveAs_Filename,""),"")
 		        This.PreviewContainer.Show(1)
 		    
 		    ENDCASE
 		
 		CATCH TO loErr
-		    LOCAL llShowErrLog
-		    llShowErrLog = EMPTY(This.ErrLog)
-		    
 		    This.ErrMsg(loErr)
-		    
-		    IF llShowErrLog
-		        This.errLogShow()
-		    ENDIF
+		    This.errLogShow()
 		
 		FINALLY
 		
 		    This.PreviewContainer = NULL
 		    
 		    This.ClosePDF()
+		
+		    This._PrintEnv = .F.
 		    
 		    TRY
 		        IF FILE(lcTempFileName,1)
@@ -2793,6 +4125,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		ADDPROPERTY(loFont, "Height", EVL(MAX(loGDIFont.GetHeight(), 0), 15.7))
 		ADDPROPERTY(loFont, "HeightCeil", EVL(MAX(loGDIFont.Height, 0), 16))
 		
+		
 		TRY
 		    ADDPROPERTY(loFont, "CellDescent", loGDIFontFamily.GetCellDescent())
 		    ADDPROPERTY(loFont, "CellAscent", loGDIFontFamily.GetCellAscent())
@@ -2861,6 +4194,8 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		LOCAL lcFontFileName
 		lcFontFileName = ""
 		
+		LOCAL loErr
+		loErr = .F.
 		TRY
 		    
 		    lcFontFileName = REPLICATE(CHR(0),255*2)
@@ -2941,6 +4276,9 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		        ENDIF
 		    ENDIF
 		
+		CATCH TO loErr
+		    This.ErrMsg(loErr)
+		
 		FINALLY
 		
 		    IF EMPTY(lnHPDF_Font)=.T. AND EMPTY(lnIsSymbolFont)=.T. && Get Fallback Font
@@ -3005,13 +4343,14 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    RETURN
 		ENDIF
 		
+		This.utils = NEWOBJECT("pdfium_utils", This.ClassLibrary, This.env.GetAppName())
 		
 		This.oGfx = This.env.System.Drawing.Graphics.FromHWND(_SCREEN.HWnd)
-		This.gdi_fonts = NEWOBJECT("Collection")
 		
 	ENDPROC
 
 	PROCEDURE LoadReport
+		This.env.FoxEnv_Set()
 		
 		This.env.declaredll()
 		
@@ -3019,14 +4358,31 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		This.ListenerType = -1
 		
+		********************************************************
+		LOCAL loPrintEnv
+		loPrintEnv = NEWOBJECT("pdfium_print_env", This.ClassLibrary)
+		loPrintEnv.Setup(This.PrintEnv)
+		This.PrintEnv.Setup(loPrintEnv, .T.)
+		loPrintEnv = .F.
+		
+		This.PrintEnv.DefaultPrinter_Set()
+		
+		IF This.CommandClauses.OUTPUTTO = 1
+		    This.PrintEnv.AllowPrintSetupUI = This.CommandClauses.PROMPT
+		ENDIF
+		
+		********************************************************
+		
+		********************************************************
 		DO CASE
-		 CASE This.CommandClauses.ISDESIGNERLOADED
-		     This.CommandClauses.PREVIEW = .T.
+		CASE This.CommandClauses.ISDESIGNERLOADED
+		    This.CommandClauses.PREVIEW = .T.
 		 
-		 CASE This.CommandClauses.OUTPUTTO = 1 &&Output to printer, do nothing
+		CASE This.CommandClauses.OUTPUTTO = 1 AND This.ToPrinterNative = .T. && VFP native output to the printer, do nothing
 		    This.ListenerType = 0
 		    RETURN
 		ENDCASE
+		********************************************************
 		
 		IF EMPTY(This.hpdf_doc)
 		    This.CreatePDF()
@@ -3034,7 +4390,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		This.BatchModeAuto = This.CommandClauses.NOPAGEEJECT
 		This.CommandClauses.NOPAGEEJECT = .F.
-		
 		
 	ENDPROC
 
@@ -3073,6 +4428,42 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 	ENDPROC
 
+	PROCEDURE printenvdefault_access
+		
+		IF VARTYPE(This._PrintEnvDefault) <> "O"
+		    This._PrintEnvDefault = NEWOBJECT("pdfium_print_env", This.ClassLibrary)
+		    This._PrintEnvDefault.Setup(NULL)
+		ENDIF
+		
+		RETURN This._PrintEnvDefault
+		
+	ENDPROC
+
+	PROCEDURE printenvdefault_assign
+		LPARAMETERS vNewVal
+		
+		ERROR 1740, TEXTMERGE("<<This.Class>>.PrintEnvDefault")
+		
+	ENDPROC
+
+	PROCEDURE printenv_access
+		
+		IF VARTYPE(This._PrintEnv) <> "O"
+		    This._PrintEnv = NEWOBJECT("pdfium_print_env", This.ClassLibrary)
+		    This._PrintEnv.Setup(This.PrintEnvDefault, .T.)
+		ENDIF
+		
+		RETURN This._PrintEnv
+		
+	ENDPROC
+
+	PROCEDURE printenv_assign
+		LPARAMETERS vNewVal
+		
+		ERROR 1740, TEXTMERGE("<<This.Class>>.PrintEnv")
+		
+	ENDPROC
+
 	PROCEDURE Render
 		LPARAMETERS nFRXRecno, nLeft, nTop, nWidth, nHeight, nObjectContinuationType, cContentsToBeRendered, GDIPlusImage
 		
@@ -3080,7 +4471,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    RETURN DODEFAULT(m.nFRXRecno, m.nLeft, m.nTop, m.nWidth, m.nHeight, m.nObjectContinuationType, m.cContentsToBeRendered, m.GDIPlusImage)
 		ENDIF
 		
-		IF This.ListenerType = 0 &&Output to printer, do nothing
+		IF This.ListenerType = 0 AND This.ToPrinterNative = .T. && VFP native output to the printer, do nothing
 		    RETURN DODEFAULT(m.nFRXRecno, m.nLeft, m.nTop, m.nWidth, m.nHeight, m.nObjectContinuationType, m.cContentsToBeRendered, m.GDIPlusImage)
 		ENDIF
 		
@@ -3107,8 +4498,8 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		lnDpiCoef = This.env.GetPDFDPI() / 96
 		
 		LOCAL lnPageWidth, lnPageHeight
-		lnPageWidth = ROUND(This.GetPageWidth() / 10, 0)
-		lnPageHeight = ROUND(This.GetPageHeight() / 10, 0)
+		lnPageWidth = This.GetPageWidth() / 10
+		lnPageHeight = This.GetPageHeight() / 10
 		
 		
 		HPDF_ResetError(This.hpdf_doc)
@@ -3135,7 +4526,10 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    ENDIF
 		    
 		    This.hpdf_pages[This.hpdf_pagecount] = lnHPDF_Page
-		
+		    
+		    IF This.frx_pagecount = 1
+		        This.Render_FrxHeader()
+		    ENDIF
 		ENDIF
 		
 		IF EMPTY(This.hpdf_pages[This.hpdf_pagecount])
@@ -3188,11 +4582,14 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		ENDIF
 		
 		
-		ADDPROPERTY(loRepObj, "Left", ROUND(m.nLeft / 10,0))
-		ADDPROPERTY(loRepObj, "Top", ROUND(m.nTop / 10,0))
-		ADDPROPERTY(loRepObj, "TopRev", lnPageHeight - ROUND(m.nTop / 10,0))
-		ADDPROPERTY(loRepObj, "Width", ROUND(m.nWidth / 10,0))
-		ADDPROPERTY(loRepObj, "Height", ROUND(m.nHeight / 10,0))
+		ADDPROPERTY(loRepObj, "Left", m.nLeft / 10)
+		ADDPROPERTY(loRepObj, "Top", m.nTop / 10)
+		ADDPROPERTY(loRepObj, "TopRev", lnPageHeight - m.nTop / 10)
+		ADDPROPERTY(loRepObj, "Width", m.nWidth / 10)
+		ADDPROPERTY(loRepObj, "Height", m.nHeight / 10)
+		
+		loRepObj.Left = loRepObj.Left - This.frx_offsetx * 96
+		loRepObj.Top = loRepObj.Top - This.frx_offsety * 96
 		
 		ADDPROPERTY(loRepObj, "FontFace", LTRIM(ALLTRIM(loFrx.FontFace), "@"))
 		ADDPROPERTY(loRepObj, "FontSize", loFrx.FontSize)
@@ -3360,8 +4757,8 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		    
 		    CASE INLIST(loRepObj.ObjType, FRX_OBJ_RECTANGLE, FRX_OBJ_PICTURE)
-		        loRepObj.Width = IIF(CAST(loDS.Width AS I) >= 0, ROUND(CAST(loDS.Width AS I) / 10, 0), loRepObj.Width)
-		        loRepObj.Height = IIF(CAST(loDS.Height AS I) >= 0, ROUND(CAST(loDS.Height AS I) / 10, 0), loRepObj.Height)
+		        loRepObj.Width = IIF(CAST(loDS.Width AS I) >= 0, CAST(loDS.Width AS I) / 10, loRepObj.Width)
+		        loRepObj.Height = IIF(CAST(loDS.Height AS I) >= 0, CAST(loDS.Height AS I) / 10, loRepObj.Height)
 		    
 		    ENDCASE
 		    
@@ -3377,6 +4774,60 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		LPARAMETERS loRepObj
 		
 		This.render_text(loRepObj)
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE render_frxheader
+		This.frx_wholepage = .F.
+		This.frx_offsetx = 0
+		This.frx_offsety = 0
+		
+		*************************************************
+		IF (This.FRXDatasession > -1) AND (This.FRXDatasession <> SET("DATASESSION"))
+		    SET DATASESSION TO (This.FRXDatasession)
+		ENDIF
+		
+		LOCAL lnFRXRecNo
+		lnFRXRecNo = RECNO("FRX")
+		
+		GO TOP IN FRX && Header record
+		
+		IF FRX.Top = .T.
+		    This.frx_wholepage = .T.
+		ENDIF
+		
+		IF BETWEEN(m.lnFRXRecNo, 1, RECCOUNT("FRX"))
+		    GO m.lnFRXRecNo IN FRX
+		ENDIF
+		
+		SET DATASESSION TO (This.CurrentDataSession)
+		*************************************************
+		
+		IF EMPTY(This.PrintEnv.Printer) = .F. AND This.frx_wholepage = .F. 
+		
+		    #define PHYSICALOFFSETX 112
+		    #define PHYSICALOFFSETY 113
+		
+		    DECLARE LONG CreateDC IN WIN32API AS WinApi_CreateDC STRING cDriver, STRING cDevice, STRING cOutput, STRING @cInitData
+		    DECLARE LONG DeleteDC IN WIN32API AS WinApi_DeleteDC LONG hdc
+		    DECLARE LONG GetDeviceCaps IN WIN32API AS WinApi_GetDeviceCaps LONG hdc, LONG nIndex 
+		
+		    LOCAL lnPrinterDPI
+		    lnPrinterDPI = EVL(MAX(PRTINFO(11, This.PrintEnv.Printer),0), 600)
+		
+		    LOCAL lhPrinterDC
+		    lhPrinterDC = WinApi_CreateDC(NULL, This.PrintEnv.Printer + CHR(0), NULL, NULL)
+		
+		    IF EMPTY(lhPrinterDC) = .F.
+		        TRY
+		            This.frx_offsetx = WinApi_GetDeviceCaps(lhPrinterDC, PHYSICALOFFSETX) / lnPrinterDPI
+		            This.frx_offsety = WinApi_GetDeviceCaps(lhPrinterDC, PHYSICALOFFSETY) / lnPrinterDPI
+		        FINALLY
+		            WinApi_DeleteDC(lhPrinterDC)
+		        ENDTRY
+		    ENDIF
+		ENDIF
+		
 		
 	ENDPROC
 
@@ -3399,6 +4850,20 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		HPDF_Page_GSave(lnHPDF_Page)
 		
+		
+		LOCAL lnLineWidth
+		IF loRepObj.PenPat >= 1
+		    lnLineWidth = MAX(loRepObj.PenSize, 0.5) * lnDpiCoef
+		ELSE
+		    lnLineWidth = 0
+		ENDIF
+		
+		LOCAL lnLeft, lnTop, lnWidth, lnHeight
+		lnLeft = loRepObj.Left + IIF(loRepObj.OffSet = 1, 0, loRepObj.PenSize * 0.5)
+		lnTop = loRepObj.TopRev + IIF(loRepObj.OffSet = 1, -loRepObj.PenSize * 0.5, 0)
+		lnWidth = loRepObj.Width + IIF(loRepObj.OffSet = 1, 0, 0)
+		lnHeight = loRepObj.Height + IIF(loRepObj.OffSet = 1, 0, 0)
+		
 		IF EMPTY(loRepObj.Rotate) = .F.
 		    LOCAL lnRad
 		    lnRad = -loRepObj.Rotate * PI() / 180
@@ -3409,17 +4874,16 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		        SIN(lnRad), ;
 		        -SIN(lnRad), ;
 		        COS(lnRad), ;
-		        lnDpiCoef * loRepObj.Left, ;
-		        lnDpiCoef * loRepObj.TopRev)
+		        lnDpiCoef * lnLeft, ;
+		        lnDpiCoef * lnTop)
+		
+		    lnLeft = 0
+		    lnTop = 0
 		ENDIF
 		
 		HPDF_Page_SetRGBStroke(lnHPDF_Page, loRepObj.PenRed / 255, loRepObj.PenGreen / 255, loRepObj.PenBlue / 255)
 		
-		IF loRepObj.PenSize >= 1
-		    HPDF_Page_SetLineWidth(lnHPDF_Page, loRepObj.PenSize * IIF(INLIST(loRepObj.PenPat,1,2,3,4), 0.5, 1) )
-		ELSE
-		    HPDF_Page_SetLineWidth(lnHPDF_Page,  0)
-		ENDIF
+		HPDF_Page_SetLineWidth(lnHPDF_Page,  lnLineWidth)
 		
 		
 		LOCAL lcDash
@@ -3452,36 +4916,26 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		IF loRepObj.OffSet = 1
 		    * Horizontal line
-		    IF EMPTY(loRepObj.Rotate) = .F.
-		        HPDF_Page_MoveTo(lnHPDF_Page, 0, 0)
-		        HPDF_Page_LineTo(lnHPDF_Page, lnDpiCoef * loRepObj.Width, 0)
-		    ELSE
-		        HPDF_Page_MoveTo(lnHPDF_Page, ;
-		            lnDpiCoef * loRepObj.Left, ;
-		            lnDpiCoef * loRepObj.TopRev)
-		            
-		        HPDF_Page_LineTo(lnHPDF_Page, ;
-		            lnDpiCoef * (loRepObj.Left + loRepObj.Width), ;
-		            lnDpiCoef * loRepObj.TopRev)
+		    HPDF_Page_MoveTo(lnHPDF_Page, ;
+		        lnDpiCoef * lnLeft, ;
+		        lnDpiCoef * lnTop)
+		        
+		    HPDF_Page_LineTo(lnHPDF_Page, ;
+		        lnDpiCoef * (lnLeft + lnWidth), ;
+		        lnDpiCoef * lnTop)
 		
-		    ENDIF
 		        
 		ELSE
 		    * Vertical line
-		    IF EMPTY(loRepObj.Rotate) = .F.
-		        HPDF_Page_MoveTo(lnHPDF_Page, 0, 0)
-		        HPDF_Page_LineTo(lnHPDF_Page, 0, lnDpiCoef * -loRepObj.Height)
-		    ELSE
-		        HPDF_Page_MoveTo(lnHPDF_Page, ;
-		            lnDpiCoef * loRepObj.Left, ;
-		            lnDpiCoef * (loRepObj.TopRev - loRepObj.Height)) 
-		            
-		        HPDF_Page_LineTo(lnHPDF_Page, ;
-		            lnDpiCoef * loRepObj.Left, ;
-		            lnDpiCoef * loRepObj.TopRev)
-		    ENDIF
+		    HPDF_Page_MoveTo(lnHPDF_Page, ;
+		        lnDpiCoef * lnLeft, ;
+		        lnDpiCoef * (lnTop - lnHeight)) 
+		        
+		    HPDF_Page_LineTo(lnHPDF_Page, ;
+		        lnDpiCoef * lnLeft, ;
+		        lnDpiCoef * lnTop)
 		ENDIF
-		    
+		
 		
 		HPDF_Page_Stroke(lnHPDF_Page)
 		    
@@ -3504,6 +4958,8 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		LOCAL lcTempFileName
 		lcTempFileName = This.env.GetUniqueTempFileName("png")
 		
+		LOCAL lcTempFileName2
+		lcTempFileName2 = This.env.GetUniqueTempFileName("png")
 		
 		LOCAL loErr
 		loErr = .F.
@@ -3519,7 +4975,22 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		       
 		    CASE EMPTY(loRepObj.FileName) = .F.
 		    
-		        loImage = This.env.System.Drawing.Bitmap.FromVarBinary(FILETOSTR(loRepObj.FileName))
+		        LOCAL lcFileData
+		        lcFileData = This.utils.ExtractFile(loRepObj.FileName)
+		        
+		        IF EMPTY(lcFileData)
+		            ERROR 1, loRepObj.FileName
+		        ENDIF
+		
+		        * GDIPlusX xfcMemoryStream has the error in xfcMemoryStream.capacity_assign ("MemoryStream is not expandable")
+		        * Error occurs when xfcMemoryStream.Handle is accessed
+		        * That's why stream was changed to file 
+		*!*            loImage = This.env.System.Drawing.Bitmap.FromVarBinary(lcFileData)
+		                
+		        This.utils.StrToFile(lcFileData, lcTempFileName2)
+		        loImage = This.env.System.Drawing.Bitmap.FromFile(lcTempFileName2)
+		                
+		        lcFileData = ""
 		
 		    ENDCASE
 		       
@@ -3617,11 +5088,16 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		CATCH TO loErr
 		    This.ErrMsg(loErr)
 		FINALLY
+		
 		    IF FILE(lcTempFileName,1)
 		        DELETE FILE (lcTempFileName)
 		    ENDIF
-		ENDTRY
 		
+		    IF FILE(lcTempFileName2,1)
+		        DELETE FILE (lcTempFileName2)
+		    ENDIF
+		    
+		ENDTRY
 		
 	ENDPROC
 
@@ -3638,6 +5114,19 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		HPDF_Page_GSave(lnHPDF_Page)
 		
+		LOCAL lnLineWidth
+		IF loRepObj.PenPat >= 1
+		    lnLineWidth = MAX(loRepObj.PenSize, 0.5) * lnDpiCoef
+		ELSE
+		    lnLineWidth = 0
+		ENDIF
+		
+		LOCAL lnLeft, lnTop, lnWidth, lnHeight
+		lnLeft = loRepObj.Left + loRepObj.PenSize * 0.5
+		lnTop = loRepObj.TopRev - loRepObj.PenSize * 0.5
+		lnWidth = loRepObj.Width - loRepObj.PenSize
+		lnHeight = loRepObj.Height - loRepObj.PenSize
+		
 		IF EMPTY(loRepObj.Rotate) = .F.
 		    LOCAL lnRad
 		    lnRad = -loRepObj.Rotate * PI() / 180
@@ -3648,20 +5137,18 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		        SIN(lnRad), ;
 		        -SIN(lnRad), ;
 		        COS(lnRad), ;
-		        lnDpiCoef * loRepObj.Left, ;
-		        lnDpiCoef * loRepObj.TopRev)
+		        lnDpiCoef * lnLeft, ;
+		        lnDpiCoef * lnTop)
+		        
+		    lnLeft = 0
+		    lnTop = 0
 		ENDIF
 		
 		
 		HPDF_Page_SetRGBFill(lnHPDF_Page, loRepObj.FillRed / 255, loRepObj.FillGreen / 255, loRepObj.FillBlue / 255)
 		HPDF_Page_SetRGBStroke(lnHPDF_Page, loRepObj.PenRed / 255, loRepObj.PenGreen / 255, loRepObj.PenBlue / 255)
 		
-		IF loRepObj.PenSize >= 1
-		    HPDF_Page_SetLineWidth(lnHPDF_Page, loRepObj.PenSize  * IIF(INLIST(loRepObj.PenPat,1,2,3,4), 0.5, 1))
-		ELSE
-		    HPDF_Page_SetLineWidth(lnHPDF_Page,  0)
-		ENDIF
-		
+		HPDF_Page_SetLineWidth(lnHPDF_Page,  lnLineWidth)
 		
 		*******************************************************
 		LOCAL lcDash
@@ -3692,41 +5179,32 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*******************************************************
 		
 		
+		
 		DO CASE
 		CASE loRepObj.OffSet = 0 && Normal rectangle
-		    LOCAL lnLeft, lnTop
-		    IF EMPTY(loRepObj.Rotate) = .F.
-		        lnLeft = 0
-		        lnTop = 0
-		    ELSE
-		        lnLeft = loRepObj.Left
-		        lnTop = loRepObj.TopRev
-		    ENDIF
 		
 		    HPDF_Page_Rectangle(lnHPDF_Page, ;
 		        lnDpiCoef * (lnLeft), ;
-		        lnDpiCoef * (lnTop - loRepObj.Height), ;
-		        lnDpiCoef * (loRepObj.Width), ;
-		        lnDpiCoef * (loRepObj.Height))
+		        lnDpiCoef * (lnTop - lnHeight), ;
+		        lnDpiCoef * (lnWidth), ;
+		        lnDpiCoef * (lnHeight))
 		    
 		
-		CASE BETWEEN(loRepObj.OffSet, 1, 98) AND loRepObj.OffSet <= MAX(loRepObj.Width, loRepObj.Height)/2  && Rounded rectangle
+		CASE BETWEEN(loRepObj.OffSet, 1, 98) AND loRepObj.OffSet <= MAX(lnWidth, lnHeight)/2  && Rounded rectangle
 		    LOCAL lnRay
-		    lnRay = ROUND(IIF(loRepObj.Width > loRepObj.Height, MIN(loRepObj.OffSet, INT(loRepObj.Height / 2)), MIN(loRepObj.OffSet, INT(loRepObj.Width / 2))), 0)
+		    lnRay = ROUND(IIF(lnWidth > lnHeight, MIN(loRepObj.OffSet, INT(lnHeight / 2)), MIN(loRepObj.OffSet, INT(lnWidth / 2))), 0)
 		    
-		    LOCAL lnLeft, lnRight, lnTop, lnBottom
-		
-		    LOCAL lnLeft, lnTop
+		    LOCAL lnRight, lnBottom
 		    IF EMPTY(loRepObj.Rotate) = .F.
-		        lnLeft = 0
-		        lnRight = lnDpiCoef * loRepObj.Width
-		        lnTop = 0
-		        lnBottom = lnDpiCoef * -loRepObj.Height
+		        lnRight = lnDpiCoef * lnWidth
+		        lnBottom = lnDpiCoef * -lnHeight
+		        lnLeft = lnDpiCoef * lnLeft
+		        lnTop = lnDpiCoef * lnTop
 		    ELSE
-		        lnLeft = lnDpiCoef * (loRepObj.Left)
-		        lnRight = lnDpiCoef * (loRepObj.Left + loRepObj.Width)
-		        lnTop = lnDpiCoef * (loRepObj.TopRev)
-		        lnBottom = lnDpiCoef * (loRepObj.TopRev - loRepObj.Height)
+		        lnRight = lnDpiCoef * (lnLeft + lnWidth)
+		        lnBottom = lnDpiCoef * (lnTop - lnHeight)
+		        lnLeft = lnDpiCoef * lnLeft
+		        lnTop = lnDpiCoef * lnTop
 		    ENDIF
 		
 		    
@@ -3741,20 +5219,12 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    HPDF_Page_CurveTo(lnHPDF_Page, lnLeft, lnBottom, lnLeft, lnBottom, lnLeft + lnRay, lnBottom)
 		
 		OTHERWISE && Ellipsis
-		    LOCAL lnLeft, lnTop
-		    IF EMPTY(loRepObj.Rotate) = .F.
-		        lnLeft = 0
-		        lnTop = 0
-		    ELSE
-		        lnLeft = loRepObj.Left
-		        lnTop = loRepObj.TopRev
-		    ENDIF
 		
 		    HPDF_Page_Ellipse(lnHPDF_Page, ;
-		        lnDpiCoef * (lnLeft + loRepObj.Width / 2), ;
-		        lnDpiCoef * (lnTop - loRepObj.Height / 2), ;
-		        lnDpiCoef * (loRepObj.Width / 2), ;
-		        lnDpiCoef * (loRepObj.Height / 2))
+		        lnDpiCoef * (lnLeft + lnWidth / 2), ;
+		        lnDpiCoef * (lnTop - lnHeight / 2), ;
+		        lnDpiCoef * (lnWidth / 2), ;
+		        lnDpiCoef * (lnHeight / 2))
 		
 		ENDCASE
 		
@@ -3863,7 +5333,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		
 		IF loRepObj.ObjType = FRX_OBJ_LABEL
-		    loRepObj.Width = loRepObj.Width + loGDIFont.HeightCeil
+		    loRepObj.Width = loRepObj.Width + loGDIFont.HeightCeil * 2
 		ENDIF
 		
 		*******************************************************
@@ -4084,19 +5554,33 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 	ENDPROC
 
+	PROCEDURE saveas_pdfmeta_access
+		
+		IF VARTYPE(This._SaveAs_PDFMeta) <> "O"
+		    This._SaveAs_PDFMeta = NEWOBJECT("pdfium_pdfmeta", This.ClassLibrary)
+		ENDIF
+		
+		RETURN This._SaveAs_PDFMeta
+		
+	ENDPROC
+
+	PROCEDURE saveas_pdfmeta_assign
+		LPARAMETERS vNewVal
+		
+		ERROR 1740, TEXTMERGE("<<This.Class>>.SaveAs_PDFMeta")
+		
+	ENDPROC
+
 	PROCEDURE UnloadReport
 		This.env.declaredll()
+		
+		This.PrintEnv.DefaultPrinter_Restore() && Before Finalize because user may change default printer in Report Preview or in Report Printer Prompt
 		
 		IF This.BatchModeAuto = .F. AND This.BatchMode = .F.
 		    This.Finalize()
 		ENDIF
 		
-		IF VARTYPE(_PdfiumReport) = "O" AND _PdfiumReport = This
-		    IF This.BatchModeAuto = .F.
-		        _PdfiumReport = .F.
-		    ENDIF
-		ENDIF
-		
+		This.env.FoxEnv_Restore()
 		
 	ENDPROC
 
@@ -4115,7 +5599,6 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 	*< OBJECTDATA: ObjPath="cmdClose" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdFitWidth" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdFitPage" UniqueID="" Timestamp="" />
-	*< OBJECTDATA: ObjPath="PrintEnv" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmbScale" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="lblPageInfo" UniqueID="" Timestamp="" />
 
@@ -4150,7 +5633,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		Visible = .T.
 		Width = 747
 		WindowState = 0
-		WindowType = 1
+		WindowType = 0
 		_memberdata = <VFPData>
 			<memberdata name="openpdf" type="method" display="OpenPDF"/>
 			<memberdata name="setreport" type="method" display="SetReport"/>
@@ -4191,7 +5674,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		Height = 32, ;
 		Left = 685, ;
 		Name = "cmdClose", ;
-		Picture = ("images\close.bmp"), ;
+		Picture = (NVL(EVL(JUSTPATH(Thisform.ClassLibrary),NULL)+"\images\close.bmp","")), ;
 		PictureMargin = 0, ;
 		PicturePosition = 1, ;
 		PictureSpacing = 0, ;
@@ -4211,7 +5694,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		Height = 32, ;
 		Left = 483, ;
 		Name = "cmdFitPage", ;
-		Picture = ("images\fitpage.bmp"), ;
+		Picture = (NVL(EVL(JUSTPATH(Thisform.ClassLibrary),NULL)+"\images\fitpage.bmp","")), ;
 		PictureMargin = 0, ;
 		PicturePosition = 1, ;
 		PictureSpacing = 0, ;
@@ -4231,7 +5714,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		Height = 32, ;
 		Left = 437, ;
 		Name = "cmdFitWidth", ;
-		Picture = ("images\fitwidth.bmp"), ;
+		Picture = (NVL(EVL(JUSTPATH(Thisform.ClassLibrary),NULL)+"\images\fitwidth.bmp","")), ;
 		PictureMargin = 0, ;
 		PicturePosition = 1, ;
 		PictureSpacing = 0, ;
@@ -4251,7 +5734,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		Height = 32, ;
 		Left = 237, ;
 		Name = "cmdPrint", ;
-		Picture = ("images\print.bmp"), ;
+		Picture = (NVL(EVL(JUSTPATH(Thisform.ClassLibrary),NULL)+"\images\print.bmp","")), ;
 		PictureMargin = 0, ;
 		PicturePosition = 1, ;
 		PictureSpacing = 0, ;
@@ -4271,7 +5754,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		Height = 32, ;
 		Left = 384, ;
 		Name = "cmdSaveAs", ;
-		Picture = ("images\saveas.bmp"), ;
+		Picture = (NVL(EVL(JUSTPATH(Thisform.ClassLibrary),NULL)+"\images\saveas.bmp","")), ;
 		PictureMargin = 0, ;
 		PicturePosition = 1, ;
 		PictureSpacing = 0, ;
@@ -4290,7 +5773,7 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		Height = 32, ;
 		Left = 189, ;
 		Name = "cmdSearch", ;
-		Picture = ("images\search.bmp"), ;
+		Picture = (NVL(EVL(JUSTPATH(Thisform.ClassLibrary),NULL)+"\images\search.bmp","")), ;
 		PictureMargin = 0, ;
 		PicturePosition = 14, ;
 		PictureSpacing = 0, ;
@@ -4338,12 +5821,6 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		UIState.Name = "UIState"
 		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="control" />
 
-	ADD OBJECT 'PrintEnv' AS pdfium_print_env WITH ;
-		Left = 228, ;
-		Name = "PrintEnv", ;
-		Top = 72
-		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="custom" />
-
 	ADD OBJECT 'txtSearch' AS pdfium_textbox WITH ;
 		Anchor = 0, ;
 		InputMask = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", ;
@@ -4367,16 +5844,17 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 	PROCEDURE Destroy
 		This.Pdfiumviewer.Destroy()
 		
-		
 	ENDPROC
 
 	PROCEDURE Init
-		LPARAMETERS toEnv as pdfium_env of pdfium-vfp
+		LPARAMETERS toEnv as pdfium_env of pdfium-vfp, toPrintEnv as Pdfium_print_env of pdfium-vfp.vcx
 		
 		This.Pdfiumviewer.Init(m.toEnv)
 		
-		BINDEVENT(This.PdfiumViewer, "scale", This, "scalechanged", 1)
+		This.Pdfiumviewer.PrintEnv.Setup(m.toPrintEnv)
 		
+		
+		BINDEVENT(This.PdfiumViewer, "scale", This, "scalechanged", 1)
 		
 		This.Caption = This.i18n.text("REPORTVIEWER_TITLE")
 		
@@ -4449,9 +5927,9 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 	ENDPROC
 
 	PROCEDURE openpdf		&& Open pdf file
-		LPARAMETERS tcFilename
+		LPARAMETERS tcFilename, tcPassword
 		
-		RETURN This.pdfiumviewer.OpenPDF(m.tcFilename)
+		RETURN This.pdfiumviewer.OpenPDF(m.tcFilename, m.tcPassword)
 		
 	ENDPROC
 
@@ -4654,6 +6132,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*m: openpdf		&& Open pdf file. Returns: .T. on success, .F. if file was not loaded
 		*m: pagepick
 		*m: printdocument		&& Send document to printer with preceding setup dialog
+		*m: printenv_access
+		*m: printenv_assign
 		*m: redraw
 		*m: renderpagefromcache
 		*m: renderpages
@@ -4688,7 +6168,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*p: fpdf_page_first_visible		&& Index of the page that appears first after rendering
 		*p: fpdf_page_last_visible
 		*p: isfocused		&& .T. if control has input focus
-		*p: printenv
+		*p: printenv		&& Print configuration state (pdfium_print_env object); Read-Only
 		*p: scale
 		*p: scrollbars		&& Specifies the type of scroll bars that an EditBox control, Form object, or Grid control has. 0 - None (Default); 1 - Horizontal; 2 - Vertical; 3 - Both vertical and horizontal
 		*p: searchbrush
@@ -4720,9 +6200,10 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*a: fpdf_pages_size[1,4]
 		*a: fpdf_text_pages[1,0]
 		*p: _memberdata		&& XML Metadata for customizable properties
+		*p: _printenv
 	*</DefinedPropArrayMethod>
 
-	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,ClassLibrary,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,DragDrop,DragIcon,DragMode,DragOver,Drag,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,fpdf_doc,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_render_cache,fpdf_pages_search,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Moved,Objects,OLECompleteDrag,OLEDragDrop,OLEDragMode,OLEDragOver,OLEDragPicture,OLEDrag,OLEDropEffects,OLEDropHasData,OLEDropMode,OLEGiveFeedback,OLESetData,OLEStartDrag,ParentClass,Picture,printenv,ReadExpression,ReadMethod,Refresh,ResetToDefault,Resize,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_flags,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,ShowWhatsThis,SpecialEffect,Style,Tag,tplclickbegin,UIEnable,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,WriteExpression,WriteMethod,ZOrder
+	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,DragDrop,DragIcon,DragMode,DragOver,Drag,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,fpdf_doc,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_render_cache,fpdf_pages_search,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Moved,Objects,OLECompleteDrag,OLEDragDrop,OLEDragMode,OLEDragOver,OLEDragPicture,OLEDrag,OLEDropEffects,OLEDropHasData,OLEDropMode,OLEGiveFeedback,OLESetData,OLEStartDrag,ParentClass,Picture,ReadExpression,ReadMethod,Refresh,ResetToDefault,Resize,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_flags,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,ShowWhatsThis,SpecialEffect,Style,Tag,tplclickbegin,UIEnable,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,WriteExpression,WriteMethod,ZOrder,_printenv
 	*<PropValue>
 		backcolorbrush = .F.
 		BackStyle = 1
@@ -4773,79 +6254,84 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
 			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
 			<memberdata name="drawbufdib" type="property" display="DrawBufDIB"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
-			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu"/>
-			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
-			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBufDIB"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
-			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu"/>
-			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
-			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBufDIB"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
-			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu"/>
-			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
-			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBufDIB"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
-			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu"/>
-			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
-			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBufDIB"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
-			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu"/>
-			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
-			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBufDIB"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
-			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu"/>
-			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
-			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBufDIB"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
-			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu"/>
-			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
-			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBufDIB"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
-			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu"/>
-			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
-			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBufDIB"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
-			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu"/>
-			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
-			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBufDIB"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
-			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu"/>
-			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
-			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBufDIB"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
+			<memberdata name="drawbufgfx" type="property" display="DrawBufGFX"/>
+			<memberdata name="drawbufrelease" type="method" display="DrawBufRelease"/>
+			<memberdata name="errmsg" type="method" display="ErrMsg"/>
+			<memberdata name="fpdf_doc" type="property" display="fpdf_doc"/>
+			<memberdata name="fpdf_opened" type="property" display="fpdf_opened"/>
+			<memberdata name="fpdf_pagecount" type="property" display="fpdf_pagecount"/>
+			<memberdata name="fpdf_pages" type="property" display="fpdf_pages"/>
+			<memberdata name="fpdf_pages_pos" type="property" display="fpdf_pages_pos"/>
+			<memberdata name="fpdf_pages_render_cache" type="property" display="fpdf_pages_render_cache"/>
+			<memberdata name="fpdf_pages_selection" type="property" display="fpdf_pages_selection"/>
+			<memberdata name="fpdf_pages_size" type="property" display="fpdf_pages_size"/>
+			<memberdata name="fpdf_page_first_visible" type="property" display="fpdf_page_first_visible"/>
+			<memberdata name="fpdf_page_last_visible" type="property" display="fpdf_page_last_visible"/>
+			<memberdata name="fpdf_text_pages" type="property" display="fpdf_text_pages"/>
+			<memberdata name="getcurrentpage" type="method" display="GetCurrentPage"/>
+			<memberdata name="getpagecount" type="method" display="GetPageCount"/>
+			<memberdata name="getpagesize" type="method" display="GetPageSize"/>
+			<memberdata name="keypress" type="method" display="KeyPress"/>
+			<memberdata name="openpdf" type="method" display="OpenPDF" favorites="True"/>
+			<memberdata name="pagepick" type="method" display="PagePick"/>
+			<memberdata name="redraw" type="method" display="Redraw"/>
+			<memberdata name="renderpages" type="method" display="RenderPages"/>
+			<memberdata name="renderpagefromcache" type="method" display="RenderPageFromCache"/>
+			<memberdata name="renderselection" type="method" display="RenderSelection"/>
+			<memberdata name="scale" type="property" display="Scale"/>
+			<memberdata name="scale_assign" type="method" display="Scale_Assign"/>
+			<memberdata name="scrollbars" type="property" display="ScrollBars"/>
+			<memberdata name="scrollbars_assign" type="method" display="ScrollBars_Assign"/>
+			<memberdata name="scrollhorz" type="method" display="ScrollHorz"/>
+			<memberdata name="scrollvert" type="method" display="ScrollVert"/>
+			<memberdata name="selectionbrush" type="property" display="SelectionBrush"/>
+			<memberdata name="selectioncharindexprev" type="property" display="SelectionCharIndexPrev"/>
+			<memberdata name="selectioncharindexstart" type="property" display="SelectionCharIndexStart"/>
+			<memberdata name="selectioncopy" type="method" display="SelectionCopy"/>
+			<memberdata name="selecttext" type="method" display="SelectText"/>
+			<memberdata name="viewportmaxx" type="property" display="ViewPortMaxX"/>
+			<memberdata name="viewportmaxy" type="property" display="ViewPortMaxY"/>
+			<memberdata name="viewportsizex" type="property" display="ViewPortSizeX"/>
+			<memberdata name="viewportsizey" type="property" display="ViewPortSizeY"/>
+			<memberdata name="viewportupdate" type="method" display="ViewPortUpdate"/>
+			<memberdata name="viewportx" type="property" display="ViewPortX"/>
+			<memberdata name="viewporty" type="property" display="ViewPortY"/>
+			<memberdata name="wndclassname" type="property" display="WndClassName"/>
+			<memberdata name="wndcreate" type="method" display="WndCreate"/>
+			<memberdata name="wnddc" type="property" display="WndDC"/>
+			<memberdata name="wndhandle" type="property" display="WndHandle"/>
+			<memberdata name="wndproc" type="method" display="WndProc"/>
+			<memberdata name="wndredraw" type="method" display="WndRedraw"/>
+			<memberdata name="wndrelease" type="method" display="WndRelease"/>
+			<memberdata name="wndresize" type="method" display="WndResize"/>
+			<memberdata name="wndshow" type="method" display="WndShow"/>
+			<memberdata name="selecttextall" type="method" display="SelectTextAll"/>
+			<memberdata name="dblclickbegin" type="property" display="DblClickBegin"/>
+			<memberdata name="tplclickbegin" type="property" display="TplClickBegin"/>
+			<memberdata name="rendersearch" type="method" display="RenderSearch"/>
+			<memberdata name="searchbrush" type="property" display="SearchBrush"/>
+			<memberdata name="searchclose" type="method" display="SearchClose"/>
+			<memberdata name="searchstate_findwhat" type="property" display="SearchState_FindWhat"/>
+			<memberdata name="searchstate_flags" type="property" display="SearchState_Flags"/>
+			<memberdata name="searchstate_rescount" type="property" display="SearchState_ResCount"/>
+			<memberdata name="searchstate_resindex" type="property" display="SearchState_ResIndex"/>
+			<memberdata name="searchstate_respage" type="property" display="SearchState_ResPage"/>
+			<memberdata name="searchstate_resrect" type="property" display="SearchState_ResRect"/>
+			<memberdata name="searchtext" type="method" display="SearchText"/>
+			<memberdata name="searchstate_dir" type="property" display="SearchState_Dir"/>
+			<memberdata name="fpdf_pages_search" type="property" display="fpdf_pages_search"/>
+			<memberdata name="savedocument" type="method" display="SaveDocument"/>
+			<memberdata name="fitwidth" type="property" display="FitWidth"/>
+			<memberdata name="fitwidth_assign" type="method" display="FitWidth_Assign"/>
+			<memberdata name="isfocused" type="property" display="IsFocused"/>
+			<memberdata name="printdocument" type="method" display="PrintDocument"/>
+			<memberdata name="afterviewportupdate" type="method" display="AfterViewportUpdate"/>
+			<memberdata name="printenv" type="property" display="PrintEnv"/>
+			<memberdata name="printenv_assign" type="method" display="PrintEnv_Assign"/>
+			<memberdata name="printenv_access" type="method" display="PrintEnv_Access"/>
+			<memberdata name="_printenv" type="property" display="_PrintEnv"/>
 		</VFPData>
+		_printenv = .F.
 	*</PropValue>
 
 	ADD OBJECT 'cmdFocus' AS pdfiumviewer_cmdfocus WITH ;
@@ -4896,6 +6382,10 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 	PROCEDURE closepdf		&& Close pdf file, previously opened by PdfiumViewer.openpdf
 		IF This.env.ok() = .F.
 		    RETURN
+		ENDIF
+		
+		IF This.fpdf_opened
+		    This._PrintEnv = .F.
 		ENDIF
 		
 		This.fpdf_opened = .F.
@@ -4952,7 +6442,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		ENDIF
 		
 		This.ViewPortUpdate()
-		This.wndredraw()
+		This.WndRedraw()
 		
 	ENDPROC
 
@@ -5004,14 +6494,13 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 
 	PROCEDURE Destroy
 		
-		This.PrintEnv = .F.
-		
-		This.ClosePdf()
+		This.ClosePDF()
 		
 		This.DrawBufRelease()
 		
 		This.WndRelease()
 		
+		This._PrintEnv = .F.
 		
 	ENDPROC
 
@@ -5190,8 +6679,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		IF This.env.ok() = .F.
 		    RETURN
 		ENDIF
-		
-		This.PrintEnv = NEWOBJECT("pdfium_print_env", This.ClassLibrary, "")
 		
 		*********************************************************
 		This.BorderWidth = 0
@@ -5528,14 +7015,13 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 	ENDPROC
 
 	PROCEDURE openpdf		&& Open pdf file. Returns: .T. on success, .F. if file was not loaded
-		LPARAMETERS tcFilename
+		LPARAMETERS tcFilename, tcPassword
 		
 		IF This.env.ok() = .F.
 		    RETURN
 		ENDIF
 		
-		This.closepdf()
-		
+		This.ClosePDF()
 		
 		LOCAL lcFilename
 		lcFilename = ALLTRIM(EVL(NVL(m.tcFilename,""),""))
@@ -5549,13 +7035,40 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN .F.
 		ENDIF    
 		
-		This.fpdf_doc = FPDF_LoadDocument(STRCONV(lcFilename,9)+CHR(0), "")
+		LOCAL lcPassword
+		lcPassword = IIF(VARTYPE(m.tcPassword)<>"C", "", m.tcPassword)
 		
 		
+		#define FPDF_ERR_PASSWORD 4
 		
-		IF EMPTY(This.fpdf_doc)
+		DO WHILE .T.
+		    This.fpdf_doc = FPDF_LoadDocument(STRCONV(lcFilename,9)+CHR(0), STRCONV(lcPassword,9)+CHR(0))
+		
+		    IF EMPTY(This.fpdf_doc) = .F.
+		        EXIT
+		    ENDIF
+		    
+		    LOCAL lnLoadError
+		    lnLoadError = FPDF_GetLastError()
+		    
+		    IF lnLoadError = FPDF_ERR_PASSWORD
+		        LOCAL loPasswordInput
+		        loPasswordInput = NEWOBJECT("pdfium_password_input", This.ClassLibrary)
+		        loPasswordInput.out_password = lcPassword
+		        loPasswordInput.in_incorrect = EMPTY(lcPassword)=.F.
+		        loPasswordInput.Show(1)
+		        
+		        IF VARTYPE(loPasswordInput) = "O" AND loPasswordInput.out_ok = .T.
+		            lcPassword = loPasswordInput.out_password
+		            loPasswordInput = .F.
+		            LOOP
+		        ENDIF
+		        loPasswordInput = .F.
+		    ENDIF
+		    
 		    RETURN .F.
-		ENDIF
+		ENDDO
+		
 		
 		This.fpdf_pagecount = FPDF_GetPageCount(This.fpdf_doc)
 		
@@ -5627,6 +7140,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 	ENDPROC
 
 	PROCEDURE printdocument		&& Send document to printer with preceding setup dialog
+		
 		IF This.env.ok() = .F.
 		    RETURN
 		ENDIF
@@ -5635,23 +7149,27 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN
 		ENDIF
 		
+		
 		*********************************************************************
-		LOCAL loFrmSetup
-		loFrmSetup = NEWOBJECT("Pdfium_print_env_setup", This.ClassLibrary, "", This.PrintEnv)
-		loFrmSetup.Show(1)
+		IF This.PrintEnv.AllowPrintSetupUI = .T.
 		
-		This.SetFocus()
+		    LOCAL loFrmSetup
+		    loFrmSetup = NEWOBJECT("pdfium_print_settings", This.ClassLibrary, "", This.PrintEnv)
+		    loFrmSetup.Show(1)
 		
-		IF VARTYPE(loFrmSetup)<>"O"
-		    RETURN
-		ENDIF    
+		    This.SetFocus()
 		
-		IF loFrmSetup.out_ok = .F.
-		    RETURN
+		    IF VARTYPE(loFrmSetup)<>"O"
+		        RETURN
+		    ENDIF
+		
+		    IF loFrmSetup.out_ok = .F.
+		        RETURN
+		    ENDIF
+		
+		    loFrmSetup = .F.
+		
 		ENDIF
-		
-		This.PrintEnv.Setup(loFrmSetup.PrintEnv)
-		loFrmSetup = .F.
 		
 		IF EMPTY(This.PrintEnv.Printer)
 		    RETURN
@@ -5677,7 +7195,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		#define FPDF_PRINTING 0x800
 		
 		#define PHYSICALOFFSETX 112
-		#define PHYSICALOFFSETY 113    
+		#define PHYSICALOFFSETY 113
 		
 		#define DM_ORIENTATION  1
 		#define DM_PAPERSIZE    2
@@ -5947,14 +7465,19 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		            LOCAL lnPrintX, lnPrintY, lnPrintWidth, lnPrintHeight
 		            lnPrintX = IIF(lnOrientation = DMORIENT_LANDSCAPE, WinApi_GetDeviceCaps(lhPrinterDC, PHYSICALOFFSETY), WinApi_GetDeviceCaps(lhPrinterDC, PHYSICALOFFSETX))
 		            lnPrintY = IIF(lnOrientation = DMORIENT_LANDSCAPE, WinApi_GetDeviceCaps(lhPrinterDC, PHYSICALOFFSETX), WinApi_GetDeviceCaps(lhPrinterDC, PHYSICALOFFSETY))
-		            
+		
 		            lnPrintWidth = IIF(lnOrientation = DMORIENT_LANDSCAPE, laPrnForm[lnPaperSize,4], laPrnForm[lnPaperSize,3])
 		            lnPrintHeight = IIF(lnOrientation = DMORIENT_LANDSCAPE, laPrnForm[lnPaperSize,3], laPrnForm[lnPaperSize,4])
 		            lnPrintWidth = (lnPrintWidth / (25.4 * 1000)) * lnPrinterDPI
 		            lnPrintHeight = (lnPrintHeight / (25.4 * 1000)) * lnPrinterDPI
+		
+		            #if .F. && pdfium style scaling "fill printable area" (not implemented). Only print without scaling is implemented
+		            lnPrintWidth = lnPrintWidth - lnPrintX * 2
+		            lnPrintHeight = lnPrintHeight - lnPrintY * 2
+		            #endif
 		            
-		            lnPrintWidth = lnPrintWidth - lnPrintX 
-		            lnPrintHeight = lnPrintHeight - lnPrintY 
+		            lnPrintX = 0
+		            lnPrintY = 0
 		            
 		            LOCAL lnPrintRotate
 		            lnPrintRotate = IIF(lnOrientation = DMORIENT_LANDSCAPE, IIF(lnPageWidth > lnPageHeight, 0, 1), IIF(lnPageWidth > lnPageHeight, 1, 0))
@@ -5969,12 +7492,13 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		                
 		                FPDF_RenderPage(lhPrinterDC, ;
 		                    lnFPDF_Page, ;
-		                    -lnPrintX * 0.5, ;
-		                    -lnPrintY * 0.5, ;
+		                    lnPrintX, ;
+		                    lnPrintY, ;
 		                    lnPrintWidth, ;
 		                    lnPrintHeight, ;
 		                    lnPrintRotate, ;
 		                    FPDF_PRINTING)
+		
 		            ENDIF
 		            
 		            WinApi_EndPage(lhPrinterDC)
@@ -5987,9 +7511,10 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		    ENDFOR
 		    
-		    
+		
 		CATCH TO loErr
 		    This.ErrMsg(loErr)
+		
 		FINALLY
 		    IF EMPTY(lhPrinterDC) = .F.
 		        IF llStartDoc = .F.
@@ -6005,6 +7530,23 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		ENDTRY
 		
 		
+		
+	ENDPROC
+
+	PROCEDURE printenv_access
+		
+		IF VARTYPE(This._PrintEnv) <> "O"
+		    This._PrintEnv = NEWOBJECT("pdfium_print_env", This.ClassLibrary)
+		ENDIF
+		
+		RETURN This._PrintEnv
+		
+	ENDPROC
+
+	PROCEDURE printenv_assign
+		LPARAMETERS vNewVal
+		
+		ERROR 1740, TEXTMERGE("<<This.Class>>.PrintEnv")
 		
 	ENDPROC
 
