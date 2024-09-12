@@ -3,7 +3,7 @@
 本工具和其他很多种组件工具由 <a href="https://vfpx.github.io/">VFPX 社区</a> 提供。
 
 # pdfium-vfp 
-[English](README.md)|[简体中文](README_CN.md)
+[English](README.md) | [简体中文](README_CN.md)
 
 pdfium-vfp 是一款开源 PDF 查看控件，同时也是 Visual Fox Pro 9 SP2 和 VFP Advanced 的 ReportOutput + ReportPreview 实现，它基于 
 * [PDFium](https://pdfium.googlesource.com/pdfium/) 
