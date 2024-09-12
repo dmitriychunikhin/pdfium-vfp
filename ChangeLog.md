@@ -17,7 +17,7 @@
 
     PdfiumReport.SaveAs_PdfMeta is being applied when report is saving to the pdf file.
 
-    A little usage guide was added in [README.md](README.md#PDFMeta)
+    A little usage guide was added in [README.md](README.md#pdfiumreport-pdf-metadata-and-password-protection)
     
   - UI localization to Simplified Chinese. Made by [Xinjie](https://github.com/vfp9)
 
