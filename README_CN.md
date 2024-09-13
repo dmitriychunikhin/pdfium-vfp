@@ -21,7 +21,7 @@ pdfium-vfp 是一款开源 PDF 查看控件，同时也是 Visual Fox Pro 9 SP2 
 * VFP frx 报表的预览、打印和保存(PDF 格式)无需忍受高 DPI 带来的痛苦
 * Frx 报表渲染支持专用字体（非系统字体）
 * Frx 报表渲染支持动态和旋转属性
-* 支持 VFP Advanced x64 
+* 支持 VFP Advanced 32位/64位 
 
 ### 系统最低要求
 #### Windows
@@ -239,7 +239,41 @@ DO pdfiumreport.app WITH loPdfiumEnv
 * 使用专用字体运行报表
 REPORT FORM Report1.frx PREVIEW
 ```
+### <a name="PDFMeta">PdfiumReport PDF 元数据和密码保护</a>
 
+```foxpro
+
+LOCAL loPdfiumReport
+
+loPdfiumReport = _PdfiumReport
+* 或者 *
+loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app")
+
+********************************************************************************************** 
+* _PdfiumReport 是由 pdfiumreport.app 在初始化时创建的全局变量
+**********************************************************************************************
+
+loPdfiumReport.SaveAs_Filename = "myreport" && 预览模式下 “另存为” 对话框的建议文件名，非强制
+
+* PDF 元数据设置示例，元数据设置不是强制性的 
+loPdfiumReport.SaveAs_PDFMeta.Author = "Me"
+loPdfiumReport.SaveAs_PDFMeta.Creator = "Pdfium-vfp sample app"
+loPdfiumReport.SaveAs_PDFMeta.Keywords = "pdfium-vfp,sample"
+loPdfiumReport.SaveAs_PDFMeta.Subject = "report1.frx and report2.frx batch"
+loPdfiumReport.SaveAs_PDFMeta.Title = "Sample report"
+
+* PDF 密码保护，可输入任何所有者密码和用户密码进行测试
+loPdfiumReport.SaveAs_PDFMeta.OwnerPassword = "" && 所有者密码用于保护文档的权限。如果设置了用户密码，则必须输入。所有者密码不能等于用户密码
+loPdfiumReport.SaveAs_PDFMeta.UserPassword = "" && 用户在打开 pdf 文件时输入的密码
+
+* PDF 阅读器权限（仅当设置了所有者密码时才有效）
+loPdfiumReport.SaveAs_PDFMeta.Permit_Print = .T. && 允许打印文件
+loPdfiumReport.SaveAs_PDFMeta.Permit_Edit_All = .T. && 允许编辑注释和表单之外的内容
+loPdfiumReport.SaveAs_PDFMeta.Permit_Copy = .T. && 允许复制文件内容
+loPdfiumReport.SaveAs_PDFMeta.Permit_Edit = .T. && 允许批注和填写表单
+**********************************************************************************************
+
+```
 
 ### 二进制文件
 要运行所有程序(或您自己的最新版本)，您需要以下二进制文件：
