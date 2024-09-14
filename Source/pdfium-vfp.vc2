@@ -379,17 +379,23 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		    SET COMPATIBLE &lcVal
 		ENDIF
 		
+		lcVal = loFoxEnv.SET_CONSOLE
+		SET CONSOLE &lcVal
+		
 	ENDPROC
 
 	PROCEDURE foxenv_set		&& Sets VFP environment to fit pdfium-vfp requirements
 		IF VARTYPE(This.FoxEnv_Prev) <> "O"
 		    This.FoxEnv_Prev = NEWOBJECT("Empty")
 		    ADDPROPERTY(This.FoxEnv_Prev, "SET_COMPATIBLE", SET("Compatible"))
+		    ADDPROPERTY(This.FoxEnv_Prev, "SET_CONSOLE", SET("Console"))
 		ENDIF
 		
 		IF UPPER(SET("Compatible")) <> "OFF"
 		    SET COMPATIBLE OFF
 		ENDIF
+		
+		SET CONSOLE OFF
 		
 	ENDPROC
 
@@ -4797,7 +4803,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		ENDIF
 		
 		IF BETWEEN(m.lnFRXRecNo, 1, RECCOUNT("FRX"))
-		    GO m.lnFRXRecNo IN FRX
+		    GO (m.lnFRXRecNo) IN FRX
 		ENDIF
 		
 		SET DATASESSION TO (This.CurrentDataSession)

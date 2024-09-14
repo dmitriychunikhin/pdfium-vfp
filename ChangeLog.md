@@ -1,3 +1,6 @@
+1.10
+  - SET CONSOLE OFF is added to PdfiumReport before report rendering and is being restored after report rendering
+
 1.9
   - PdfiumViewer.OpenPDF accepts PDF password as the second parameter
       
