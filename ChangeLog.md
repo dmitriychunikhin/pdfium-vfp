@@ -1,3 +1,8 @@
+1.11
+  - Fixed Known Issue "PdfiumViewer doesn't support case insensitive searching for non-ASCII character range"
+  it is pdfium bug https://issues.chromium.org/issues/42270374, so nothing to do but avoid using pdfium search API and implement homebrew text searching
+
+
 1.10
   - SET CONSOLE OFF is added to PdfiumReport before report rendering and is being restored after report rendering
 
