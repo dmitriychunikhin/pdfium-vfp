@@ -1,3 +1,6 @@
+1.10
+  - SET CONSOLE OFF 已在报表渲染前添加到 PdfiumReport 中，并在报告渲染后恢复。
+
 1.9
   - PdfiumViewer.OpenPDF 接受 PDF 密码作为第二个参数
       
