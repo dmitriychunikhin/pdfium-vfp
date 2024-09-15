@@ -7962,12 +7962,12 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 	ENDPROC
 
 	PROCEDURE searchtext		&& Text for searching. SearchClose must be called to stop search results rendering
-		LPARAMETERS tcFindWhat, tnDirection, tlMatchCase, tlMatchWholeWorld
+		LPARAMETERS tcFindWhat, tnDirection, tlMatchCase, tlMatchWholeWord
 		
 		* tcFindWhat - text to find
 		* tnDirection - search direction: 1 - forward (default), 2 - backward
 		* tlMatchCase - .T. - case sensitive, .F. - case insensitive (default)
-		* tlMatchWholeWorld - .T. match whole word, .F. - not match whole word (default)
+		* tlMatchWholeWord - .T. match whole word, .F. - not match whole word (default)
 		
 		* return value: -1 - error, 0 - not found, 1 - found, 2 - search ended
 		
@@ -7987,12 +7987,12 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		ENDIF
 		
 		
-		LOCAL lcFindWhat, lnDirection, llMatchCase, llMatchWholeWorld
+		LOCAL lcFindWhat, lnDirection, llMatchCase, llMatchWholeWord
 		
 		lcFindWhat = CHRTRAN(ALLTRIM(EVL(NVL(m.tcFindWhat,""),"")), CHR(10)+CHR(13)+CHR(9),"")
 		lnDirection = EVL(NVL(m.tnDirection,0), SCH_FWD)
 		llMatchCase = EMPTY(NVL(m.tlMatchCase,.F.))=.F.
-		llMatchWholeWorld = EMPTY(NVL(m.tlMatchWholeWorld,.F.))=.F.
+		llMatchWholeWord = EMPTY(NVL(m.tlMatchWholeWord,.F.))=.F.
 		
 		#define LOCALE_USER_DEFAULT       0x0400
 		
@@ -8107,7 +8107,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    ENDCASE
 		
 		
-		    IF llMatchWholeWorld = .T. AND lnFindResIndex >= 0 AND lnFindResCount > 0
+		    IF llMatchWholeWord = .T. AND lnFindResIndex >= 0 AND lnFindResCount > 0
 		        LOCAL lcNextChar
 		        lcNextChar = BINTOC(FPDFText_GetUnicode(lnFPDF_Text_Page, lnFindResIndex + lnFindResCount), "2RS")
 		
