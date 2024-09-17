@@ -1,3 +1,7 @@
+1.11
+  - 修正了已知问题 “PdfiumViewer 不支持非 ASCII 字符范围的大小写不敏感搜索”。
+  这是 pdfium bug https://issues.chromium.org/issues/42270374 ，所以除了避免使用 pdfium 搜索 API 和实现自己的文本搜索外，别无他法。
+
 1.10
   - SET CONSOLE OFF 已在报表渲染前添加到 PdfiumReport 中，并在报告渲染后恢复。
 
