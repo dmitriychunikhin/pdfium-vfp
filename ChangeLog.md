@@ -1,3 +1,11 @@
+1.12
+  - Added wrappers for dependency API calls (Pdfium, LibHaru, WinApi) to avoid DECLARE-DLL conflicts with other components
+
+  - Fixed know issue 
+    >Dependencies declaration conflict with gpimage2.prg that used in [FoxBarcode](https://github.com/VFPX/FoxBarcode) library (to solve this just remove clear dlls section in gpimage2.prg and compile it)
+
+  - Source code mDotting 
+
 1.11
   - Fixed Known Issue "PdfiumViewer doesn't support case insensitive searching for non-ASCII character range"
   it is pdfium bug https://issues.chromium.org/issues/42270374, so nothing to do but avoid using pdfium search API and implement homebrew text searching

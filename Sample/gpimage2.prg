@@ -561,56 +561,56 @@
    PROTECTED PROCEDURE DESTROY
     GdiplusShutdown(THIS.gdiplusToken)
 
-*!*        #IF VERSION(5) >= 700
-*!*          CLEAR DLLS "PathFindOnPath", "UuidFromString"
-*!*          CLEAR DLLS "LocalAlloc", "LocalFree", "LoadLibrary", "FreeLibrary"
-*!*          CLEAR DLLS "GdiplusStartup", "GdiplusShutdown", ;
-*!*            "GdipLoadImageFromFile", "GdipSaveImageToFile", "GdipSaveAddImage", ;
-*!*            "GdipCreateBitmapFromScan0", "GdipCreateBitmapFromResource", "GdipCreateBitmapFromHBITMAP", ;
-*!*            "GdipCreateBitmapFromHICON", "GdipCreateMetafileFromWmf", "GdipCreateMetafileFromEmf", ;
-*!*            "GdipCreateHBITMAPFromBitmap", "GdipCreateHICONFromBitmap"
-*!*          CLEAR DLLS "GdipGetImageRawFormat", "GdipGetImagePixelFormat", ;
-*!*            "GdipGetImageWidth", "GdipGetImageHeight", "GdipGetImageThumbnail", "GdipDisposeImage"
-*!*          CLEAR DLLS "GdipBitmapGetPixel", "GdipBitmapSetPixel", "GdipGetImageHorizontalResolution", ;
-*!*            "GdipGetImageVerticalResolution", "GdipBitmapSetResolution", "GdipCloneImage", ;
-*!*            "GdipCloneBitmapAreaI", "GdipImageRotateFlip"
-*!*          CLEAR DLLS "GdipGetImageGraphicsContext", "GdipSetInterpolationMode", "GdipDrawImageRectI"
-*!*          CLEAR DLLS "GdipImageGetFrameCount", "GdipImageSelectActiveFrame"
-*!*          CLEAR DLLS "OpenClipboard", "CloseClipboard", "EmptyClipboard", "GetClipboardData", "SetClipboardData", ;
-*!*            "CopyImage", "DeleteObject", "GetObjectType", "OleCreatePictureIndirect"
-*!*          CLEAR DLLS "GetDesktopWindow", "GetWindowDC", "GetWindowRect", "CreateCompatibleDC", ;
-*!*            "CreateCompatibleBitmap", "SelectObject", "ReleaseDC", "DeleteDC", "BitBlt", "RtlMoveMemory"
+    #IF VERSION(5) >= 700
+      CLEAR DLLS "PathFindOnPath", "UuidFromString"
+      CLEAR DLLS "LocalAlloc", "LocalFree", "LoadLibrary", "FreeLibrary"
+      CLEAR DLLS "GdiplusStartup", "GdiplusShutdown", ;
+        "GdipLoadImageFromFile", "GdipSaveImageToFile", "GdipSaveAddImage", ;
+        "GdipCreateBitmapFromScan0", "GdipCreateBitmapFromResource", "GdipCreateBitmapFromHBITMAP", ;
+        "GdipCreateBitmapFromHICON", "GdipCreateMetafileFromWmf", "GdipCreateMetafileFromEmf", ;
+        "GdipCreateHBITMAPFromBitmap", "GdipCreateHICONFromBitmap"
+      CLEAR DLLS "GdipGetImageRawFormat", "GdipGetImagePixelFormat", ;
+        "GdipGetImageWidth", "GdipGetImageHeight", "GdipGetImageThumbnail", "GdipDisposeImage"
+      CLEAR DLLS "GdipBitmapGetPixel", "GdipBitmapSetPixel", "GdipGetImageHorizontalResolution", ;
+        "GdipGetImageVerticalResolution", "GdipBitmapSetResolution", "GdipCloneImage", ;
+        "GdipCloneBitmapAreaI", "GdipImageRotateFlip"
+      CLEAR DLLS "GdipGetImageGraphicsContext", "GdipSetInterpolationMode", "GdipDrawImageRectI"
+      CLEAR DLLS "GdipImageGetFrameCount", "GdipImageSelectActiveFrame"
+      CLEAR DLLS "OpenClipboard", "CloseClipboard", "EmptyClipboard", "GetClipboardData", "SetClipboardData", ;
+        "CopyImage", "DeleteObject", "GetObjectType", "OleCreatePictureIndirect"
+      CLEAR DLLS "GetDesktopWindow", "GetWindowDC", "GetWindowRect", "CreateCompatibleDC", ;
+        "CreateCompatibleBitmap", "SelectObject", "ReleaseDC", "DeleteDC", "BitBlt", "RtlMoveMemory"
 
-*!*          *** Clearing DLLS used in Graphics class
-*!*          *!*	GRAPHICS
-*!*          CLEAR DLLS "GdipCreateFromHWND", "GdipDeleteGraphics", "GdipTranslateWorldTransform", ;
-*!*            "GdipRotateWorldTransform", "GdipResetWorldTransform", "GdipDrawString", ;
-*!*            "GdipMeasureString", "GdipDrawLine", "GdipDrawRectangle", "GdipFillRectangle", ;
-*!*            "GdipDrawEllipse", "GdipFillEllipse", "GdipDrawPie", "GdipFillPie", "GdipDrawArc", ;
-*!*            "GdipDrawPolygon", "GdipFillPolygon", "GdipDrawImage", "GdipDrawImageRect", ;
-*!*            "GdipDrawImageRectRect"
+      *** Clearing DLLS used in Graphics class
+      *!*	GRAPHICS
+      CLEAR DLLS "GdipCreateFromHWND", "GdipDeleteGraphics", "GdipTranslateWorldTransform", ;
+        "GdipRotateWorldTransform", "GdipResetWorldTransform", "GdipDrawString", ;
+        "GdipMeasureString", "GdipDrawLine", "GdipDrawRectangle", "GdipFillRectangle", ;
+        "GdipDrawEllipse", "GdipFillEllipse", "GdipDrawPie", "GdipFillPie", "GdipDrawArc", ;
+        "GdipDrawPolygon", "GdipFillPolygon", "GdipDrawImage", "GdipDrawImageRect", ;
+        "GdipDrawImageRectRect"
 
-*!*          *!*	FONT FUNCTIONS
-*!*          CLEAR DLLS "GdipCreateFont", "GdipDeleteFont"
+      *!*	FONT FUNCTIONS
+      CLEAR DLLS "GdipCreateFont", "GdipDeleteFont"
 
-*!*          *!*	FONTFAMILY FUNCTIONS
-*!*          CLEAR DLLS "GdipCreateFontFamilyFromName", "GdipDeleteFontFamily"
+      *!*	FONTFAMILY FUNCTIONS
+      CLEAR DLLS "GdipCreateFontFamilyFromName", "GdipDeleteFontFamily"
 
-*!*          *!*	STRING FORMAT FUNCTIONS
-*!*          CLEAR DLLS "GdipCreateStringFormat", "GdipSetStringFormatAlign", "GdipSetStringFormatLineAlign"
+      *!*	STRING FORMAT FUNCTIONS
+      CLEAR DLLS "GdipCreateStringFormat", "GdipSetStringFormatAlign", "GdipSetStringFormatLineAlign"
 
-*!*          *!*	PEN FUNCTIONS
-*!*          CLEAR DLLS "GdipCreatePen1", "GdipSetPenDashStyle", "GdipDeletePen"
+      *!*	PEN FUNCTIONS
+      CLEAR DLLS "GdipCreatePen1", "GdipSetPenDashStyle", "GdipDeletePen"
 
-*!*          *!*	BRUSH FUNCTIONS
-*!*          CLEAR DLLS "GdipCreateSolidFill", "GdipDeleteBrush", "GdipCreateHatchBrush", "GdipCreateTexture"
+      *!*	BRUSH FUNCTIONS
+      CLEAR DLLS "GdipCreateSolidFill", "GdipDeleteBrush", "GdipCreateHatchBrush", "GdipCreateTexture"
 
-*!*          *!*	IMAGE ATTRIBUTES
-*!*          CLEAR DLLS "GdipCreateImageAttributes", "GdipDisposeImageAttributes", ;
-*!*            "GdipSetImageAttributesColorMatrix", "GdipSetImageAttributesRemapTable", ;
-*!*            "GdipResetImageAttributes"
-*!*          ***
-*!*        #ENDIF
+      *!*	IMAGE ATTRIBUTES
+      CLEAR DLLS "GdipCreateImageAttributes", "GdipDisposeImageAttributes", ;
+        "GdipSetImageAttributesColorMatrix", "GdipSetImageAttributesRemapTable", ;
+        "GdipResetImageAttributes"
+      ***
+    #ENDIF
   ENDPROC
 
  ENDDEFINE

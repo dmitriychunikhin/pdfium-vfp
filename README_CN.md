@@ -82,7 +82,6 @@ WINEDLLOVERRIDES="gdiplus=n" wine sample.exe
 * 预览报表时如果报表使用了组件不支持的字体，则被替换为使用 Helvetica 字体，并且不能进行更改
 * 报表预览只能处理 ttf/ttc 字体，非 ttf 字体（fon）将以图像形式呈现
 * 界面语言总是系统语言
-* 依赖关系声明与 [FoxBarcode](https://github.com/VFPX/FoxBarcode) 库中使用的 gpimage2.prg 冲突(要解决此问题，只需删除 gpimage2.prg 中的 clear dlls )
 
 
 ### PdfiumViewer 的基本用法

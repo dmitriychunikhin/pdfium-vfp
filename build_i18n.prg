@@ -42,7 +42,7 @@ FOR i = 1 TO loLocales.Count
         <<lcLocaleCases>>
         
         CASE This.LocaleID = <<lnLocaleID>>
-            RETURN This.<<lcMethod>>(lcTxtID)    
+            RETURN This.<<lcMethod>>(m.lcTxtID)    
     ENDTEXT
     
 
@@ -152,9 +152,9 @@ TEXT TO lcMethodText NOSHOW TEXTMERGE PRETEXT 1
     LPARAMETERS tcTxtID
 
     LOCAL lcTxtID
-    lcTxtID = UPPER(ALLTRIM(EVL(NVL(m.tcTxtID,""),"")))
+    m.lcTxtID = UPPER(ALLTRIM(EVL(NVL(m.tcTxtID,""),"")))
 
-    IF EMPTY(lcTxtID)
+    IF EMPTY(m.lcTxtID)
         RETURN ""
     ENDIF
 
@@ -164,7 +164,7 @@ TEXT TO lcMethodText NOSHOW TEXTMERGE PRETEXT 1
     <<lcLocaleCases>>
     
     OTHERWISE
-        RETURN This.text_en(lcTxtID)
+        RETURN This.text_en(m.lcTxtID)
 
     ENDCASE
     

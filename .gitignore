@@ -77,3 +77,4 @@ bin2txt.*
 .vscode/
 buildlog.txt
 !/build.fxp
+!/build_i18n.fxp
