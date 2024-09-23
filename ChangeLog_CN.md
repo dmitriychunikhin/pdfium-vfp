@@ -1,3 +1,11 @@
+1.12
+  - 为依赖性 API 调用（Pdfium、LibHaru、WinApi）添加了封装程序，以避免 DECLARE-DLL 与其他组件发生冲突
+
+  - 修复已知问题 
+    >依赖关系声明与 [FoxBarcode](https://github.com/VFPX/FoxBarcode) 库中使用的 gpimage2.prg 冲突(要解决此问题，只需删除 gpimage2.prg 中的 clear dlls )
+
+  - 源代码中变量添加 m. 前缀 
+
 1.11
   - 修正了已知问题 “PdfiumViewer 不支持非 ASCII 字符范围的大小写不敏感搜索”。
   这是 pdfium bug https://issues.chromium.org/issues/42270374 ，所以除了避免使用 pdfium 搜索 API 和实现自己的文本搜索外，别无他法。
