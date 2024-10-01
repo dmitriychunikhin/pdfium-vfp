@@ -1,6 +1,7 @@
 1.13
   - Folder structure reorganization
   - All binaries were moved to the Release folder
+  - Thor's files were moved from ...\Thor\Tools\Components\pdfium-vfp\source to ...\Thor\Tools\Components\pdfium-vfp\. 
   - Added unit tests
 
 1.12
