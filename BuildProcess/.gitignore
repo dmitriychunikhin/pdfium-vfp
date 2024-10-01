@@ -1,8 +1,0 @@
-#.gitignore for pdfium-vfp/BuildProcess
-# a .gitignore for BuildProcess to publish to Thor.
-# enable some files that are in general not under git control for VFP projects to publish to Thor
-
-*.fxp
-!*.prg
-!*.txt
-!README.md

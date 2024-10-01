@@ -1,3 +1,8 @@
+1.13
+  - Folder structure reorganization
+  - All binaries were moved to the Release folder
+  - Added unit tests
+
 1.12
   - Added wrappers for dependency API calls (Pdfium, LibHaru, WinApi) to avoid DECLARE-DLL conflicts with other components
 

@@ -73,8 +73,7 @@ desktop.ini
 # code ref files
 *_ref.*
 
+Source/*.app
+Source/*.exe
 bin2txt.*
 .vscode/
-buildlog.txt
-!/build.fxp
-!/build_i18n.fxp

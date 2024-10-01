@@ -1,6 +1,9 @@
-<a href="https://vfpx.github.io/projects/"><img alt="VFPX" src="docs/images/vfpxpoweredby_alternative.gif" /></a>
+[![VFPX](docs/images/vfpxpoweredby_alternative.gif)](https://vfpx.github.io/projects/)
 
 本工具和其他很多种组件工具由 <a href="https://vfpx.github.io/">VFPX 社区</a> 提供。
+
+[![Latest release](https://img.shields.io/github/v/release/dmitriychunikhin/pdfium-vfp?display_name=release&label=release&color=default)](https://github.com/dmitriychunikhin/pdfium-vfp/releases/latest/)
+[![Test coverage](.github/Tests/coverage.svg)](.github/Tests/out.jacoco.xml)
 
 # pdfium-vfp 
 [English](README.md) | [简体中文](README_CN.md)
@@ -85,11 +88,11 @@ WINEDLLOVERRIDES="gdiplus=n" wine sample.exe
 
 
 ### PdfiumViewer 的基本用法
-1) 将 Source 文件夹中的 pdfium-vfp.vcx 和 pdfium-vfp.vct 复制到项目文件夹中
+1) 将 Release 文件夹中的 pdfium-vfp.vcx 和 pdfium-vfp.vct 复制到项目文件夹中
 2) <br/>
-    <b>VFP:</b> 将 <i>Source</i> 文件夹中的二进制依赖文件 <i>pdfium.dll、pdfium-vfp.dll、system.app</i> 复制到项目文件夹中
+    <b>VFP:</b> 将 <i>Release</i> 文件夹中的二进制依赖文件 <i>pdfium.dll、pdfium-vfp.dll、system.app</i> 复制到项目文件夹中
     
-    <b>VFPA x64:</b> 将 <i>Source</i> 文件夹中的二进制依赖文件 <i>pdfium64.dll、pdfium-vfp64.dll、system.app</i> 复制到项目文件夹中
+    <b>VFPA x64:</b> 将 <i>Release</i> 文件夹中的二进制依赖文件 <i>pdfium64.dll、pdfium-vfp64.dll、system.app</i> 复制到项目文件夹中
 
 3) 在表单中添加 pdfium-vfp.vcx 中的 PdfiumViewer 对象
 
@@ -115,11 +118,11 @@ Thisform.PdfiumViewer.ClosePdf()
 
 
 ### PdfiumReport 的基本用法
-1) 将 Source 文件夹中的 PdfiumReport.app 复制到项目文件夹中
+1) 将 Release 文件夹中的 PdfiumReport.app 复制到项目文件夹中
 2) <br/>
-    <b>VFP:</b> 将 <i>Source</i> 文件夹中的二进制依赖文件 <i>libhpdf.dll、pdfium.dll、pdfium-vfp.dll、system.app</i> 复制到项目文件夹中
+    <b>VFP:</b> 将 <i>Release</i> 文件夹中的二进制依赖文件 <i>libhpdf.dll、pdfium.dll、pdfium-vfp.dll、system.app</i> 复制到项目文件夹中
     
-    <b>VFPA x64:</b> 将 <i>Source</i> 文件夹中的二进制依赖文件 <i>libhpdf64.dll、pdfium64.dll、pdfium-vfp64.dll、system.app</i> 复制到项目文件夹中
+    <b>VFPA x64:</b> 将 <i>Release</i> 文件夹中的二进制依赖文件 <i>libhpdf64.dll、pdfium64.dll、pdfium-vfp64.dll、system.app</i> 复制到项目文件夹中
 
 更多示例请参见 `pdfium-vfp/Sample/sample.scx`
 
@@ -275,16 +278,16 @@ loPdfiumReport.SaveAs_PDFMeta.Permit_Edit = .T. && 允许批注和填写表单
 ### 二进制文件
 要运行所有程序(或您自己的最新版本)，您需要以下二进制文件：
 #### VFP
-* [pdfium-vfp/Source/pdfium.dll](Source/pdfium.dll)
-* [pdfium-vfp/Source/pdfium-vfp.dll](Source/pdfium-vfp.dll)
-* [pdfium-vfp/Source/libhpdf.dll](Source/libhpdf.dll) - for PdfiumReport.app only
-* [pdfium-vfp/Source/system.app](Source/system.app)
+* [pdfium-vfp/Release/pdfium.dll](Release/pdfium.dll)
+* [pdfium-vfp/Release/pdfium-vfp.dll](Release/pdfium-vfp.dll)
+* [pdfium-vfp/Release/libhpdf.dll](Release/libhpdf.dll) - for PdfiumReport.app only
+* [pdfium-vfp/Release/system.app](Release/system.app)
 
 #### VFPA x64
-* [pdfium-vfp/Source/pdfium64.dll](Source/pdfium64.dll)
-* [pdfium-vfp/Source/pdfium-vfp64.dll](Source/pdfium-vfp64.dll)
-* [pdfium-vfp/Source/libhpdf64.dll](Source/libhpdf64.dll) - for PdfiumReport.app only
-* [pdfium-vfp/Source/system.app](Source/system.app)
+* [pdfium-vfp/Release/pdfium64.dll](Release/pdfium64.dll)
+* [pdfium-vfp/Release/pdfium-vfp64.dll](Release/pdfium-vfp64.dll)
+* [pdfium-vfp/Release/libhpdf64.dll](Release/libhpdf64.dll) - for PdfiumReport.app only
+* [pdfium-vfp/Release/system.app](Release/system.app)
 
 #### 源代码库
 * [pdfium.dll](https://github.com/bblanchon/pdfium-binaries) 

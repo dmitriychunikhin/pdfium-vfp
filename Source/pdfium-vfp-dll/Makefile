@@ -16,11 +16,11 @@ endif
 DLL_OBJS = out/obj/${ARCH}/pdfium-vfp.o
 
 ifeq (${ARCH}, x64)
-    DLL = ../pdfium-vfp64.dll
-    PDFIUM_DLL = ../pdfium64.dll
+    DLL = ../../Release/pdfium-vfp64.dll
+    PDFIUM_DLL = ../../Release/pdfium64.dll
 else
-    DLL = ../pdfium-vfp.dll
-    PDFIUM_DLL = ../pdfium.dll
+    DLL = ../../Release/pdfium-vfp.dll
+    PDFIUM_DLL = ../../Release/pdfium.dll
 endif
 
 DLL_DEF = out/lib/${ARCH}/pdfium-vfp.def

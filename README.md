@@ -1,6 +1,10 @@
-<a href="https://vfpx.github.io/projects/"><img alt="VFPX" src="docs/images/vfpxpoweredby_alternative.gif" /></a>
+[![VFPX](docs/images/vfpxpoweredby_alternative.gif)](https://vfpx.github.io/projects/)
 
 This and a dozen other components and tools are provided to you by <a href="https://vfpx.github.io/">VFPX community</a> 
+
+[![Latest release](https://img.shields.io/github/v/release/dmitriychunikhin/pdfium-vfp?display_name=release&label=release&color=default)](https://github.com/dmitriychunikhin/pdfium-vfp/releases/latest/)
+[![Test coverage](.github/Tests/coverage.svg)](.github/Tests/out.jacoco.xml)
+
 
 # pdfium-vfp 
 [English](README.md) | [简体中文](README_CN.md)
@@ -85,11 +89,11 @@ Open sample.pjx project from `pdfium-vfp/Sample` folder or just run Sample/sampl
 
 
 ### Basic usage of PdfiumViewer
-1) Copy pdfium-vfp.vcx, pdfium-vfp.vct from Source folder to your project folder
+1) Copy pdfium-vfp.vcx, pdfium-vfp.vct from Release folder to your project folder
 2) <br/>
-    <b>VFP:</b> Copy dependency binaries <i>pdfium.dll, pdfium-vfp.dll, system.app</i> from <i>Source</i> folder to your project's folder
+    <b>VFP:</b> Copy dependency binaries <i>pdfium.dll, pdfium-vfp.dll, system.app</i> from <i>Release</i> folder to your project's folder
     
-    <b>VFPA x64:</b> Copy dependency binaries <i>pdfium64.dll, pdfium-vfp64.dll, system.app</i> from <i>Source</i> folder to your project's folder
+    <b>VFPA x64:</b> Copy dependency binaries <i>pdfium64.dll, pdfium-vfp64.dll, system.app</i> from <i>Release</i> folder to your project's folder
 
 3) Add PdfiumViewer object from pdfium-vfp.vcx on the form
 
@@ -115,11 +119,11 @@ Thisform.PdfiumViewer.ClosePdf()
 
 
 ### Basic usage of PdfiumReport 
-1) Copy PdfiumReport.app from Source folder to your project folder
+1) Copy PdfiumReport.app from Release folder to your project folder
 2) <br/>
-    <b>VFP:</b> Copy dependency binaries <i>libhpdf.dll, pdfium.dll, pdfium-vfp.dll, system.app</i> from <i>Source</i> folder to your project's folder
+    <b>VFP:</b> Copy dependency binaries <i>libhpdf.dll, pdfium.dll, pdfium-vfp.dll, system.app</i> from <i>Release</i> folder to your project's folder
     
-    <b>VFPA x64:</b> Copy dependency binaries <i>libhpdf64.dll, pdfium64.dll, pdfium-vfp64.dll, system.app</i> from <i>Source</i> folder to your project's folder
+    <b>VFPA x64:</b> Copy dependency binaries <i>libhpdf64.dll, pdfium64.dll, pdfium-vfp64.dll, system.app</i> from <i>Release</i> folder to your project's folder
 
 More examples can be found at `pdfium-vfp/Sample/sample.scx`
 
@@ -278,16 +282,16 @@ loPdfiumReport.SaveAs_PDFMeta.Permit_Edit = .T. && Allow to make annotations and
 ### Binaries
 What binaries exactly do you need to run all the stuff (or your own latest version of it)
 #### VFP
-* [pdfium-vfp/Source/pdfium.dll](Source/pdfium.dll)
-* [pdfium-vfp/Source/pdfium-vfp.dll](Source/pdfium-vfp.dll)
-* [pdfium-vfp/Source/libhpdf.dll](Source/libhpdf.dll) - for PdfiumReport.app only
-* [pdfium-vfp/Source/system.app](Source/system.app)
+* [pdfium-vfp/Release/pdfium.dll](Release/pdfium.dll)
+* [pdfium-vfp/Release/pdfium-vfp.dll](Release/pdfium-vfp.dll)
+* [pdfium-vfp/Release/libhpdf.dll](Release/libhpdf.dll) - for PdfiumReport.app only
+* [pdfium-vfp/Release/system.app](Release/system.app)
 
 #### VFPA x64
-* [pdfium-vfp/Source/pdfium64.dll](Source/pdfium64.dll)
-* [pdfium-vfp/Source/pdfium-vfp64.dll](Source/pdfium-vfp64.dll)
-* [pdfium-vfp/Source/libhpdf64.dll](Source/libhpdf64.dll) - for PdfiumReport.app only
-* [pdfium-vfp/Source/system.app](Source/system.app)
+* [pdfium-vfp/Release/pdfium64.dll](Release/pdfium64.dll)
+* [pdfium-vfp/Release/pdfium-vfp64.dll](Release/pdfium-vfp64.dll)
+* [pdfium-vfp/Release/libhpdf64.dll](Release/libhpdf64.dll) - for PdfiumReport.app only
+* [pdfium-vfp/Release/system.app](Release/system.app)
 
 #### Source repositories
 * [pdfium.dll](https://github.com/bblanchon/pdfium-binaries) 

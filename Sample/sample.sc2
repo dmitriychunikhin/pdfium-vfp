@@ -305,7 +305,13 @@ DEFINE CLASS sample AS form
 		Visible = .T., ;
 		Width = 480, ;
 		cmdFocus.Name = "cmdFocus", ;
+		env.API_FPDF.CONST.Name = "CONST", ;
+		env.API_FPDF.Name = "API_FPDF", ;
+		env.API_HPDF.CONST.Name = "CONST", ;
+		env.API_HPDF.Name = "API_HPDF", ;
+		env.API_WIN.Name = "API_WIN", ;
 		env.Name = "env", ;
+		i18n.API_WIN.Name = "API_WIN", ;
 		i18n.Name = "i18n", ;
 		UIState.Name = "UIState"
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
@@ -324,7 +330,13 @@ DEFINE CLASS sample AS form
 		Visible = .T., ;
 		Width = 441, ;
 		cmdFocus.Name = "cmdFocus", ;
+		env.API_FPDF.CONST.Name = "CONST", ;
+		env.API_FPDF.Name = "API_FPDF", ;
+		env.API_HPDF.CONST.Name = "CONST", ;
+		env.API_HPDF.Name = "API_HPDF", ;
+		env.API_WIN.Name = "API_WIN", ;
 		env.Name = "env", ;
+		i18n.API_WIN.Name = "API_WIN", ;
 		i18n.Name = "i18n", ;
 		UIState.Name = "UIState"
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
@@ -343,18 +355,29 @@ DEFINE CLASS sample AS form
 		Visible = .T., ;
 		Width = 480, ;
 		cmdFocus.Name = "cmdFocus", ;
+		env.API_FPDF.CONST.Name = "CONST", ;
+		env.API_FPDF.Name = "API_FPDF", ;
+		env.API_HPDF.CONST.Name = "CONST", ;
+		env.API_HPDF.Name = "API_HPDF", ;
+		env.API_WIN.Name = "API_WIN", ;
 		env.Name = "env", ;
+		i18n.API_WIN.Name = "API_WIN", ;
 		i18n.Name = "i18n", ;
 		UIState.Name = "UIState"
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
 
 	ADD OBJECT 'Pdfium_env' AS pdfium_env WITH ;
 		Left = 612, ;
-		libhpdf_dll_path = (IIF(ATC("x64", SYS(17))<>0 , "..\Source\libhpdf64.dll", "..\Source\libhpdf.dll")), ;
+		libhpdf_dll_path = (IIF(ATC("x64", SYS(17))<>0 , "..\Release\libhpdf64.dll", "..\Release\libhpdf.dll")), ;
 		Name = "Pdfium_env", ;
-		pdfium_dll_path = (IIF(ATC("x64", SYS(17))<>0, "..\Source\pdfium64.dll", "..\Source\pdfium.dll")), ;
-		system_app_path = ("..\Source\system.app"), ;
-		Top = 12
+		pdfium_dll_path = (IIF(ATC("x64", SYS(17))<>0, "..\Release\pdfium64.dll", "..\Release\pdfium.dll")), ;
+		system_app_path = ("..\Release\system.app"), ;
+		Top = 12, ;
+		API_FPDF.CONST.Name = "CONST", ;
+		API_FPDF.Name = "API_FPDF", ;
+		API_HPDF.CONST.Name = "CONST", ;
+		API_HPDF.Name = "API_HPDF", ;
+		API_WIN.Name = "API_WIN"
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="custom" />
 
 	ADD OBJECT 'PdfiumViewer' AS pdfiumviewer WITH ;
@@ -371,7 +394,13 @@ DEFINE CLASS sample AS form
 		Visible = .T., ;
 		Width = 696, ;
 		cmdFocus.Name = "cmdFocus", ;
+		env.API_FPDF.CONST.Name = "CONST", ;
+		env.API_FPDF.Name = "API_FPDF", ;
+		env.API_HPDF.CONST.Name = "CONST", ;
+		env.API_HPDF.Name = "API_HPDF", ;
+		env.API_WIN.Name = "API_WIN", ;
 		env.Name = "env", ;
+		i18n.API_WIN.Name = "API_WIN", ;
 		i18n.Name = "i18n", ;
 		UIState.Name = "UIState"
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
@@ -736,7 +765,7 @@ DEFINE CLASS sample AS form
 		    lSave_REPORTOUTPUT = _REPORTOUTPUT
 		    
 		    TRY
-		        _REPORTOUTPUT = "../source/pdfiumreport.app"
+		        _REPORTOUTPUT = "../Release/pdfiumreport.app"
 		
 		        DO (_REPORTOUTPUT) WITH Thisform.pdfium_env && Execute on initialization step of your application
 		        
@@ -745,7 +774,7 @@ DEFINE CLASS sample AS form
 		        **********************************************************************************************
 		        #if .F.
 		        * just for intellisense
-		        PUBLIC _PdfiumReport as pdfiumreport OF ..\Source\pdfium-vfp.vcx
+		        PUBLIC _PdfiumReport as pdfiumreport OF ..\Release\pdfium-vfp.vcx
 		        #endif
 		        
 		        _PdfiumReport.SaveAs_Filename = "myreport" && Filename suggestion for save as dialog in preview mode, not mandatory
@@ -779,8 +808,8 @@ DEFINE CLASS sample AS form
 		
 		CASE 2 = REPOBJ_VARIANT && local scope batch
 		
-		    LOCAL loPdfiumReport as PdfiumReport OF "..\Source\pdfium-vfp.vcx"
-		    loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "../source/pdfiumreport.app", Thisform.Pdfium_env)
+		    LOCAL loPdfiumReport as PdfiumReport OF "..\Release\pdfium-vfp.vcx"
+		    loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "../Release/pdfiumreport.app", Thisform.Pdfium_env)
 		    loPdfiumReport.SaveAs_Filename = "myreport" && Filename suggestion for save as dialog, not mandatory
 		
 		    loPdfiumReport.BatchBegin()
@@ -794,8 +823,8 @@ DEFINE CLASS sample AS form
 		
 		CASE 3 = REPOBJ_VARIANT && local scope single
 		
-		    LOCAL loPdfiumReport as PdfiumReport OF "..\Source\pdfium-vfp.vcx"
-		    loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "../source/pdfiumreport.app", Thisform.Pdfium_env)
+		    LOCAL loPdfiumReport as PdfiumReport OF "..\Release\pdfium-vfp.vcx"
+		    loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "../Release/pdfiumreport.app", Thisform.Pdfium_env)
 		    loPdfiumReport.SaveAs_Filename = "myreport" && Filename suggestion for save as dialog, not mandatory
 		
 		    REPORT FORM Report1.frx OBJECT loPdfiumReport NOPAGEEJECT
