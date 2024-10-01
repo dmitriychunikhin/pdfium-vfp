@@ -13,6 +13,8 @@ return toUpdateObject
 * Get the notes for the project.
 
 procedure GetNotes
+local lcNotes
+text to lcNotes noshow
 https://github.com/dmitriychunikhin/pdfium-vfp/blob/main/ChangeLog.md
 https://github.com/dmitriychunikhin/pdfium-vfp/blob/main/ChangeLog_CN.md
 endtext
