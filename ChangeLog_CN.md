@@ -1,3 +1,9 @@
+1.13
+  - 重新组织文件夹
+  - 所有二进制文件都移到了 Release 文件夹中
+  - Thor 的文件从 ...\Thor\Tools\Components\pdfium-vfp\source移到了 ...\Thor\Tools\Components\pdfium-vfp\
+  - 添加单元测试
+
 1.12
   - 为依赖性 API 调用（Pdfium、LibHaru、WinApi）添加了封装程序，以避免 DECLARE-DLL 与其他组件发生冲突
 
