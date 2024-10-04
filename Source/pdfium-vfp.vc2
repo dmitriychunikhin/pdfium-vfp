@@ -5961,7 +5961,10 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		**
 		** This replaces OBJTOCLIENT that has bugs with pageframes and SP2
 		*********************************************************************
-		PARAMETERS tnType && 1 = Top  2 = Left
+		LPARAMETERS tnType 
+		
+		* tnType:  1 = Top  2 = Left
+		
 		
 		IF This.GetIsPageframe() = .F.
 		    RETURN OBJTOCLIENT(This.Parent, m.tnType)
@@ -6106,66 +6109,6 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 
 ENDDEFINE
 
-DEFINE CLASS pdfium_utils AS custom 		&& Utility class; Library consumer shouldn't use this class directly
- 	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
-
-	*<DefinedPropArrayMethod>
-		*m: extractfile		&& Extract file contents from application executable (exe,app), return empty string if file wast not found. Pdfium-vfp.vcx must be included in the application executable or this method will  alwaysreturn empty string
-		*m: filetostr		&& FileToStr wrapper for ExtractFile mehtod
-		*m: strtofile
-		*p: _memberdata		&& XML Metadata for customizable properties
-	*</DefinedPropArrayMethod>
-
-	*<PropValue>
-		Name = "pdfium_utils"
-		_memberdata = <VFPData>
-			<memberdata name="extractfile" type="method" display="ExtractFile"/>
-			<memberdata name="filetostr" type="method" display="FileToStr"/>
-			<memberdata name="strtofile" type="method" display="StrToFile"/>
-		</VFPData>
-	*</PropValue>
-	
-	PROCEDURE extractfile		&& Extract file contents from application executable (exe,app), return empty string if file wast not found. Pdfium-vfp.vcx must be included in the application executable or this method will  alwaysreturn empty string
-		LPARAMETERS tcFileName
-		
-		IF EMPTY(NVL(m.tcFileName,""))
-		    RETURN ""
-		ENDIF
-		
-		IF FILE(m.tcFileName)
-		    RETURN This.FileToStr(m.tcFileName)
-		ENDIF
-		
-		RETURN ""
-		
-	ENDPROC
-
-	PROCEDURE filetostr		&& FileToStr wrapper for ExtractFile mehtod
-		LPARAMETERS tcFileName
-		
-		RETURN FILETOSTR(m.tcFileName)
-		
-	ENDPROC
-
-	PROCEDURE strtofile
-		LPARAMETERS tcStr, tcFileName
-		
-		LOCAL lSaveSafety
-		m.lSaveSafety = SET("Safety")
-		SET SAFETY OFF
-		
-		LOCAL lnBytesWritten
-		m.lnBytesWritten = STRTOFILE(m.tcStr, m.tcFileName)
-		
-		SET SAFETY &lSaveSafety
-		
-		RETURN m.lnBytesWritten
-		
-		
-	ENDPROC
-
-ENDDEFINE
-
 DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated report preview based on PdfiumViewer control
  	*< CLASSDATA: Baseclass="reportlistener" Timestamp="" Scale="Pixels" Uniqueid="" />
 
@@ -6199,6 +6142,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*p: batchmodeauto		&& .T. if report was created by  _REPORTOUTPUT (= PdfiumReport.app)  and NOPAGEEJECT was set
 		*p: env		&& pdfium_env object
 		*p: errlog
+		*p: ext_func_getfiledata		&& User's function name with signature String (String). That accepts the filename at return file data. Example: return FILETOSTR(m.cFileName) where cFileName is the function's parameter
 		*p: frx_offsetx
 		*p: frx_offsety
 		*p: frx_pagecount
@@ -6213,7 +6157,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*p: saveas_filename		&& Filename suggestion for "save as" dialog
 		*p: saveas_pdfmeta		&& Pdfium_pdfmeta object; Output PDF metadata + encryption (password) and reader permissions
 		*p: toprinternative		&& TO PRINTER clause handing mode:: .T. - report is printed by VFP (PdfiumReport does nothing) ; .F. (default) - report is printed by PdfiumReport (renders report to PDF and prints PDF)
-		*p: utils		&& pdfium_utils object
 		*a: hpdf_pages[1,0]
 		*p: _memberdata		&& XML Metadata for customizable properties
 		*p: _printenv		&& Print configuration state (pdfium_print_env object)
@@ -6221,7 +6164,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*p: _saveas_pdfmeta
 	*</DefinedPropArrayMethod>
 
-	HIDDEN batchmodeauto,batchmode,env,errlog,frx_offsetx,frx_offsety,frx_pagecount,frx_wholepage,gdi_fonts,hpdf_doc,hpdf_fonts,hpdf_pagecount,hpdf_pages,ogfx,utils,_printenvdefault,_printenv,_saveas_pdfmeta
+	HIDDEN batchmodeauto,batchmode,env,errlog,frx_offsetx,frx_offsety,frx_pagecount,frx_wholepage,gdi_fonts,hpdf_doc,hpdf_fonts,hpdf_pagecount,hpdf_pages,ogfx,_printenvdefault,_printenv,_saveas_pdfmeta
 	*<PropValue>
 		AllowModalMessages = .T.
 		batchmode = .F.
@@ -6229,6 +6172,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		DynamicLineHeight = .T.
 		env = .F.
 		errlog = ("")
+		ext_func_getfiledata = ("")
 		FRXDataSession = 0
 		frx_offsetx = 0
 		frx_offsety = 0
@@ -6250,7 +6194,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		SendGDIPlusImage = 1
 		toprinternative = .F.
 		TwoPassProcess = .T.
-		utils = .F.
 		Width = 23
 		_memberdata = <VFPData>
 			<memberdata name="hpdf_pages" type="property" display="hpdf_pages"/>
@@ -6283,7 +6226,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 			<memberdata name="batchmodeauto" type="property" display="BatchModeAuto"/>
 			<memberdata name="saveas_filename" type="property" display="SaveAs_Filename"/>
 			<memberdata name="render_frxdynamics" type="method" display="Render_FrxDynamics"/>
-			<memberdata name="utils" type="property" display="utils"/>
 			<memberdata name="printenv" type="property" display="PrintEnv"/>
 			<memberdata name="printenv_access" type="method" display="PrintEnv_Access"/>
 			<memberdata name="printenv_assign" type="method" display="PrintEnv_Assign"/>
@@ -6301,6 +6243,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 			<memberdata name="frx_offsety" type="property" display="frx_offsety"/>
 			<memberdata name="frx_wholepage" type="property" display="frx_wholepage"/>
 			<memberdata name="render_frxheader" type="method" display="Render_FrxHeader"/>
+			<memberdata name="ext_func_getfiledata" type="method" display="Ext_Func_GetFileData"/>
 		</VFPData>
 		_printenv = .F.
 		_printenvdefault = .F.
@@ -6378,7 +6321,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		This.env = .F.
 		This._PrintEnv = .F.
 		This._PrintEnvDefault = .F.
-		This.utils = .F.
 		This.oGfx = .F.
 		
 		This._SaveAs_PDFMeta = .F.
@@ -6915,8 +6857,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		IF This.env.ok() = .F.
 		    RETURN
 		ENDIF
-		
-		This.utils = NEWOBJECT("pdfium_utils", This.ClassLibrary)
 		
 		This.oGfx = This.env.System.Drawing.Graphics.FromHWND(_SCREEN.HWnd)
 		
@@ -7546,8 +7486,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		LOCAL lcTempFileName
 		m.lcTempFileName = This.env.GetUniqueTempFileName("png")
 		
-		LOCAL lcTempFileName2
-		m.lcTempFileName2 = This.env.GetUniqueTempFileName("png")
 		
 		LOCAL loErr
 		m.loErr = .F.
@@ -7558,35 +7496,42 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		    DO CASE
 		    CASE EMPTY(m.loRepObj.GDIPlusImage)=.F.
-		        
 		        m.loImage = This.env.System.Drawing.Bitmap.FromHbitmap(m.loRepObj.GDIPlusImage)
-		       
-		    CASE EMPTY(m.loRepObj.FileName) = .F.
 		    
-		        LOCAL lcFileData
-		        m.lcFileData = This.utils.ExtractFile(m.loRepObj.FileName)
+		    CASE EMPTY(m.loRepObj.FileName) = .T. 
+		    
+		    CASE FILE(m.loRepObj.FileName)
+		        m.loImage = This.env.System.Drawing.Bitmap.FromFile(m.loRepObj.FileName)
+		    
+		    CASE EMPTY(This.Ext_Func_GetFileData) = .F.
 		        
-		        IF EMPTY(m.lcFileData)
-		            ERROR 1, m.loRepObj.FileName
-		        ENDIF
+		        LOCAL lSaveSafety
+		        m.lSaveSafety = SET("Safety")
+		        SET SAFETY OFF
+		        
+		        TRY
+		            LOCAL lcExt_Func_GetFileData
+		            lcExt_Func_GetFileData = ALLTRIM(This.Ext_Func_GetFileData)
 		
-		        * GDIPlusX xfcMemoryStream has the error in xfcMemoryStream.capacity_assign ("MemoryStream is not expandable")
-		        * Error occurs when xfcMemoryStream.Handle is accessed
-		        * That's why stream was changed to file 
-		*!*            loImage = This.env.System.Drawing.Bitmap.FromVarBinary(lcFileData)
-		                
-		        This.utils.StrToFile(m.lcFileData, m.lcTempFileName2)
-		        m.loImage = This.env.System.Drawing.Bitmap.FromFile(m.lcTempFileName2)
-		                
-		        m.lcFileData = ""
+		            STRTOFILE(&lcExt_Func_GetFileData.(m.loRepObj.FileName), m.lcTempFileName, 0)
 		
+		            m.loImage = This.env.System.Drawing.Bitmap.FromFile(m.lcTempFileName)
+		            
+		        FINALLY
+		            SET SAFETY &lSaveSafety
+		        ENDTRY
+		
+		
+		    OTHERWISE
+		        ERROR 1, m.loRepObj.FileName
+		    
 		    ENDCASE
 		       
 		    IF VARTYPE(m.loImage) <> "O"
 		        EXIT
 		    ENDIF
-		
-		
+		    
+		    
 		    **************************************************
 		    * Image scaling
 		    **************************************************
@@ -7594,46 +7539,34 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    STORE 0 TO m.lnImgWidth, m.lnImgHeight
 		
 		    DO CASE
-		    CASE m.loRepObj.General = 0 && Crop
+		    CASE m.loRepObj.General = 0 && Clip
 		        m.lnImgWidth = MIN(m.loImage.Width, m.loRepObj.Width)
 		        m.lnImgHeight = MIN(m.loImage.Height, m.loRepObj.Height)
+		
+		        LOCAL loImageClipped, loGfxClipped
+		        m.loImageClipped = This.env.System.Drawing.Bitmap.New(m.lnImgWidth, m.lnImgHeight, m.loImage.PixelFormat)
+		
+		        m.loGfxClipped = This.env.System.Drawing.Graphics.New()
+		        m.loGfxClipped = m.loGfxClipped.FromImage(m.loImageClipped)
+		
+		        m.loGfxClipped.DrawImageUnscaled(m.loImage, 0, 0, m.lnImgWidth, m.lnImgHeight)
+		        m.loImage = m.loImageClipped
+		
+		        m.loGfxClipped = .F.
+		        m.loImageClipped = .F.
 		        
 		    CASE m.loRepObj.General = 1 && Scale Keep shape
 		        LOCAL lnScale
-		        m.lnScale = MIN(m.loRepObj.Width / EVL(m.loImage.Width,1), m.loRepObj.Height / EVL(m.loImage.Height,1))
-		
-		        m.lnImgWidth = m.loImage.Width * m.lnScale
-		        m.lnImgHeight = m.loImage.Height * m.lnScale
+		        m.lnScale = MIN(IIF(EMPTY(m.loImage.Width), 0, m.loRepObj.Width / m.loImage.Width), IIF(EMPTY(m.loImage.Height), 0, m.loRepObj.Height / m.loImage.Height))
+		        
+		        m.lnImgWidth = INT(m.loImage.Width * m.lnScale)
+		        m.lnImgHeight = INT(m.loImage.Height * m.lnScale)
 		
 		    OTHERWISE && Scale Stretch
 		        m.lnImgWidth = m.loRepObj.Width
 		        m.lnImgHeight = m.loRepObj.Height
 		
 		    ENDCASE
-		
-		
-		    **************************************************
-		    * Image compression
-		    **************************************************
-		    LOCAL loImageScaled, loGfxScaled
-		    m.loImageScaled = This.env.System.Drawing.Bitmap.New(m.lnImgWidth, m.lnImgHeight, m.loImage.PixelFormat)
-		
-		    m.loGfxScaled = This.env.System.Drawing.Graphics.New()
-		    m.loGfxScaled = m.loGfxScaled.FromImage(m.loImageScaled)
-		
-		    DO CASE
-		    CASE m.loRepObj.General = 0 && Crop
-		        m.loGfxScaled.DrawImageUnscaled(m.loImage, 0, 0, m.lnImgWidth, m.lnImgHeight)
-		        m.loImage = m.loImageScaled
-		        
-		    CASE m.loImage.Width * m.loImage.Height > m.lnImgWidth * m.lnImgHeight && Scale and compress
-		        m.loGfxScaled.DrawImage(m.loImage, 0, 0, m.lnImgWidth, m.lnImgHeight)
-		        m.loImage = m.loImageScaled
-		        
-		    ENDCASE
-		
-		    m.loGfxScaled = .F.
-		    m.loImageScaled = .F.
 		
 		
 		    m.loImage.Save(m.lcTempFileName, This.env.System.Drawing.Imaging.ImageFormat.Png)
@@ -7679,10 +7612,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		    IF FILE(m.lcTempFileName,1)
 		        DELETE FILE (m.lcTempFileName)
-		    ENDIF
-		
-		    IF FILE(m.lcTempFileName2,1)
-		        DELETE FILE (m.lcTempFileName2)
 		    ENDIF
 		    
 		ENDTRY
@@ -8061,16 +7990,22 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    IF m.loRepObj.ObjType = FRX_OBJ_LABEL
 		        m.loRepObj.Width = m.loRepObj.Width + m.loGDIFont.HeightCeil
 		    ENDIF
+		    
+		    LOCAL lnImgScale, lnImgWidth, lnImgHeight
+		    lnImgScale = 2
+		    m.lnImgWidth = m.loRepObj.Width * m.lnImgScale
+		    m.lnImgHeight = m.loRepObj.Height * m.lnImgScale
 		
 		    LOCAL loImage, loGfx, loColor, loBrush
-		    m.loImage = This.env.System.Drawing.Bitmap.New(m.loRepObj.Width, m.loRepObj.Height, This.env.System.Drawing.Imaging.PixelFormat.Format32bppARGB)
+		    m.loImage = This.env.System.Drawing.Bitmap.New(m.lnImgWidth, m.lnImgHeight, This.env.System.Drawing.Imaging.PixelFormat.Format32bppARGB)
 		    m.loGfx = This.env.System.Drawing.Graphics.New()
 		    m.loGfx = m.loGfx.FromImage(m.loImage)
 		    m.loGfx.CompositingMode = 0
 		    m.loGfx.CompositingQuality = 2
 		    m.loGfx.PixelOffsetMode = 2
 		    m.loGfx.TextRenderingHint = 4
-		    m.loGfx.TextContrast = 0    
+		    m.loGfx.TextContrast = 0
+		    m.loGfx.ScaleTransform(m.lnImgScale, m.lnImgScale)
 		    
 		    
 		    *******************************************************
@@ -8078,7 +8013,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    IF m.loRepObj.Mode = 0
 		        m.loColor = This.env.System.Drawing.Color.FromARGB(m.loRepObj.FillAlpha, m.loRepObj.FillRed, m.loRepObj.FillGreen, m.loRepObj.FillBlue)
 		        m.loBrush = This.env.System.Drawing.SolidBrush.New(m.loColor)
-		        m.loGfx.FillRectangle(m.loBrush, 0, 0, m.loRepObj.Width, m.loRepObj.Height)
+		        m.loGfx.FillRectangle(m.loBrush, 0, 0, m.lnImgWidth, m.lnImgHeight)
 		    ENDIF
 		    *******************************************************
 		    
@@ -8728,7 +8663,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*m: printenv_access
 		*m: printenv_assign
 		*m: redraw
-		*m: renderpagefromcache
 		*m: renderpages
 		*m: rendersearch
 		*m: renderselection
@@ -8786,7 +8720,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*p: wndhandle		&& Specifies the Window handle of the Window.
 		*a: fpdf_pages[1,0]
 		*a: fpdf_pages_pos[1,4]
-		*a: fpdf_pages_render_cache[1,4]
 		*a: fpdf_pages_selection[1,3]
 		*a: fpdf_pages_size[1,4]
 		*a: fpdf_text_pages[1,0]
@@ -8794,7 +8727,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*p: _printenv
 	*</DefinedPropArrayMethod>
 
-	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,DragDrop,DragIcon,DragMode,DragOver,Drag,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,fpdf_doc,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_render_cache,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Moved,Objects,OLECompleteDrag,OLEDragDrop,OLEDragMode,OLEDragOver,OLEDragPicture,OLEDrag,OLEDropEffects,OLEDropHasData,OLEDropMode,OLEGiveFeedback,OLESetData,OLEStartDrag,ParentClass,Picture,ReadExpression,ReadMethod,Refresh,ResetToDefault,Resize,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,ShowWhatsThis,SpecialEffect,Style,Tag,tplclickbegin,UIEnable,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,WriteExpression,WriteMethod,ZOrder,_printenv
+	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,DragDrop,DragIcon,DragMode,DragOver,Drag,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,fpdf_doc,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Moved,Objects,OLECompleteDrag,OLEDragDrop,OLEDragMode,OLEDragOver,OLEDragPicture,OLEDrag,OLEDropEffects,OLEDropHasData,OLEDropMode,OLEGiveFeedback,OLESetData,OLEStartDrag,ParentClass,Picture,ReadExpression,ReadMethod,Refresh,ResetToDefault,Resize,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,ShowWhatsThis,SpecialEffect,Style,Tag,tplclickbegin,UIEnable,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,WriteExpression,WriteMethod,ZOrder,_printenv
 	*<PropValue>
 		backcolorbrush = .F.
 		BackStyle = 1
@@ -8852,7 +8785,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 			<memberdata name="fpdf_pagecount" type="property" display="fpdf_pagecount"/>
 			<memberdata name="fpdf_pages" type="property" display="fpdf_pages"/>
 			<memberdata name="fpdf_pages_pos" type="property" display="fpdf_pages_pos"/>
-			<memberdata name="fpdf_pages_render_cache" type="property" display="fpdf_pages_render_cache"/>
 			<memberdata name="fpdf_pages_selection" type="property" display="fpdf_pages_selection"/>
 			<memberdata name="fpdf_pages_size" type="property" display="fpdf_pages_size"/>
 			<memberdata name="fpdf_page_first_visible" type="property" display="fpdf_page_first_visible"/>
@@ -8866,7 +8798,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 			<memberdata name="pagepick" type="method" display="PagePick"/>
 			<memberdata name="redraw" type="method" display="Redraw"/>
 			<memberdata name="renderpages" type="method" display="RenderPages"/>
-			<memberdata name="renderpagefromcache" type="method" display="RenderPageFromCache"/>
 			<memberdata name="renderselection" type="method" display="RenderSelection"/>
 			<memberdata name="scale" type="property" display="Scale"/>
 			<memberdata name="scale_assign" type="method" display="Scale_Assign"/>
@@ -9017,11 +8948,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    This.fpdf_pages_selection[m.lnPage,1] = ""
 		    This.fpdf_pages_selection[m.lnPage,2] = 0
 		    This.fpdf_pages_selection[m.lnPage,3] = 0
-		    
-		    LOCAL j
-		    FOR m.j = 1 TO ALEN(This.fpdf_pages_render_cache,2)
-		        This.fpdf_pages_render_cache[m.lnPage,m.j] = .F.
-		    ENDFOR
 		ENDFOR
 		
 		DIMENSION This.fpdf_pages(1)
@@ -9029,7 +8955,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		DIMENSION This.fpdf_pages_selection(1,3)
 		DIMENSION This.fpdf_pages_pos(1,4)
 		DIMENSION This.fpdf_pages_size(1,2)
-		DIMENSION This.fpdf_pages_render_cache(1, ALEN(This.fpdf_pages_render_cache,2))
 		
 		STORE 0 TO This.fpdf_pages_pos, This.fpdf_pages_size
 		
@@ -9254,7 +9179,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN m.lnPageHeight
 		
 		CASE m.tnPosition = 5
-		    RETURN m.lnPdfPageWidth / EVL(m.lnPdfPageHeight,1)
+		    RETURN IIF(EMPTY(m.lnPdfPageHeight), 0, m.lnPdfPageWidth / m.lnPdfPageHeight)
 		
 		ENDCASE
 		
@@ -9683,9 +9608,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    DIMENSION This.fpdf_pages_pos(This.fpdf_pagecount,4)
 		    DIMENSION This.fpdf_pages_size(This.fpdf_pagecount,2)
 		    STORE 0 TO This.fpdf_pages, This.fpdf_text_pages, This.fpdf_pages_pos, This.fpdf_pages_size
-		    
-		    DIMENSION This.fpdf_pages_render_cache(This.fpdf_pagecount,4) && Max 4 rendered samples for page
-		    STORE .F. TO This.fpdf_pages_render_cache
 		ENDIF
 		
 		LOCAL lnPage
@@ -10189,98 +10111,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 	ENDPROC
 
-	HIDDEN PROCEDURE renderpagefromcache
-		LPARAMETERS lnPageIndex, lnPageScale
-		
-		IF EMPTY(This.WndDC)
-		    RETURN .F.
-		ENDIF
-		
-		LOCAL loFPDF
-		m.loFPDF = This.env.API_FPDF
-		
-		m.lnPageScale = EVL(m.lnPageScale,1)
-		m.lnPageScale = MIN(m.lnPageScale, ALEN(This.fpdf_pages_render_cache,2))
-		
-		**********************************************************************
-		IF VARTYPE(This.fpdf_pages_render_cache[m.lnPageIndex,m.lnPageScale]) = "O"
-		    RETURN This.fpdf_pages_render_cache[m.lnPageIndex, m.lnPageScale]
-		ENDIF
-		**********************************************************************
-		
-		
-		#DEFINE FF_RGBQUAD_SIZE     4
-		#DEFINE FF_DIB_RGB_COLORS   0
-		#DEFINE FF_BFHDR_SIZE      14
-		#DEFINE FF_BHDR_SIZE       40
-		#DEFINE FF_BI_RGB           0
-		
-		LOCAL lhPageDC
-		m.lhPageDC = This.env.API_WIN.CreateCompatibleDC(This.WndDC)
-		
-		IF EMPTY(m.lhPageDC)
-		    RETURN .F.
-		ENDIF
-		
-		
-		LOCAL lnPageWidth, lnPageHeight
-		m.lnPageWidth = m.lnPageScale * This.GetPageSize(m.lnPageIndex,3)
-		m.lnPageHeight = m.lnPageScale * This.GetPageSize(m.lnPageIndex,4)
-		
-		
-		LOCAL lnBitsPerPixel
-		m.lnBitsPerPixel = 16
-		
-		LOCAL lcBMI
-		m.lcBMI = BINTOC(FF_BHDR_SIZE ,"4RS") + BINTOC(m.lnPageWidth,"4RS") + BINTOC(m.lnPageHeight, "4RS") + ;
-		        (CHR(MOD(1,256)) + CHR(INT(1/256))) + (CHR(MOD(m.lnBitsPerPixel,256))+ CHR(INT(m.lnBitsPerPixel/256))) +;
-		        BINTOC(FF_BI_RGB, "4RS") + REPLICATE(0h00, 20)
-		
-		
-		LOCAL lnDibDataPtr
-		m.lnDibDataPtr = 0
-		
-		LOCAL lhPageDIB
-		m.lhPageDIB = This.env.API_WIN.CreateDIBSection(m.lhPageDC, m.lcBMI, FF_DIB_RGB_COLORS, @m.lnDibDataPtr, 0, 0)
-		
-		IF EMPTY(m.lhPageDIB)=.T.
-		    This.env.API_WIN.DeleteDC(m.lhPageDC)
-		    RETURN .F.
-		ENDIF
-		
-		This.env.API_WIN.SelectObject(m.lhPageDC, m.lhPageDIB)
-		
-		LOCAL loGfx
-		m.loGfx = This.env.System.Drawing.Graphics.FromHDC(m.lhPageDC)
-		m.loGfx.FillRectangle(This.env.System.Drawing.Brushes.White, 0, 0, m.lnPageWidth, m.lnPageHeight)
-		
-		LOCAL lnFPDF_Page 
-		m.lnFPDF_Page = This.fpdf_pages[m.lnPageIndex]
-		
-		m.loFPDF.FPDF_RenderPage(m.lhPageDC, m.lnFPDF_Page, 0, 0, m.lnPageWidth, m.lnPageHeight, 0, 0)
-		
-		LOCAL loBmp
-		m.loBmp = This.env.System.Drawing.Bitmap.FromHbitmap(m.lhPageDIB)
-		
-		This.env.API_WIN.DeleteObject(m.lhPageDIB)
-		This.env.API_WIN.DeleteDC(m.lhPageDC)
-		
-		**********************************************************************
-		LOCAL loStream
-		m.loStream = This.env.System.IO.MemoryStream.New()
-		
-		m.loBmp.Save(m.loStream, This.env.System.Drawing.Imaging.ImageFormat.Png)
-		
-		LOCAL loPng
-		m.loPng = This.env.System.Drawing.Image.FromStream(m.loStream)
-		
-		This.fpdf_pages_render_cache[m.lnPageIndex, m.lnPageScale] = m.loPng
-		
-		RETURN m.loPng
-		
-		
-	ENDPROC
-
 	HIDDEN PROCEDURE renderpages
 		IF This.fpdf_opened = .F.
 		    RETURN
@@ -10294,36 +10124,32 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN
 		ENDIF
 		
-		LOCAL lnPageWidthUnscaled, lnPageHeightUnscaled
-		LOCAL lnPageX, lnPageY
-		LOCAL lnPageWidth, lnPageHeight
-		LOCAL lnPageRenderScale
+		LOCAL loFPDF
+		m.loFPDF = This.env.API_FPDF
+		
+		LOCAL loGfx
+		m.loGfx = This.DrawBufGfx
+		
+		
+		LOCAL lnFPDF_Page, lnPageX, lnPageY, lnPageWidth, lnPageHeight
 		
 		LOCAL lnPage
 		FOR m.lnPage = This.fpdf_page_first_visible TO This.fpdf_page_last_visible
-		    m.lnPageWidthUnscaled = This.GetPageSize(m.lnPage,3)
-		    m.lnPageHeightUnscaled = This.GetPageSize(m.lnPage,4)
-		
+		    
+		    m.lnFPDF_Page = This.fpdf_pages[m.lnPage]
 		    m.lnPageX = This.fpdf_pages_pos[m.lnPage,1] - This.ViewPortX
 		    m.lnPageY = This.fpdf_pages_pos[m.lnPage,2] - This.ViewPortY
 		    m.lnPageWidth = This.fpdf_pages_pos[m.lnPage,3]
 		    m.lnPageHeight = This.fpdf_pages_pos[m.lnPage,4]
 		
+		    m.loGfx.FillRectangle(This.env.System.Drawing.Brushes.White, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight)
 		
-		    m.lnPageRenderScale = MAX(CEILING(m.lnPageWidth / EVL(m.lnPageWidthUnscaled,m.lnPageWidth)),1)
-		    m.lnPageRenderScale = MIN(m.lnPageRenderScale, ALEN(This.fpdf_pages_render_cache,2))
-		    
-		    LOCAL loPng
-		    m.loPng = This.RenderPageFromCache(m.lnPage, m.lnPageRenderScale)
-		    
-		    IF VARTYPE(m.loPng)="O"
-		        This.DrawBufGfx.DrawImage(m.loPng, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight)
-		        This.RenderSearch(m.lnPage)
-		        This.RenderSelection(m.lnPage)
-		    ENDIF
+		    m.loFPDF.FPDF_RenderPage(This.DrawBufDC, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, 0, 0)
+		
+		    This.RenderSearch(m.lnPage)
+		    This.RenderSelection(m.lnPage)
 		    
 		ENDFOR
-		
 		
 	ENDPROC
 
@@ -11015,8 +10841,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		        m.lnPageHeight = m.lnPageHeightUnscaled
 		
 		        IF This.FitWidth
-		            m.lnPageWidth = This.ViewPortSizeX * m.lnPageWidthUnscaled / EVL(m.lnPageWidthUnscaledFirst, m.lnPageWidthUnscaled)
-		            m.lnPageHeight = INT(m.lnPageHeight * m.lnPageWidth / EVL(m.lnPageWidthUnscaled,1))
+		            m.lnPageWidth = This.ViewPortSizeX * m.lnPageWidthUnscaled / EVL(m.lnPageWidthUnscaledFirst, EVL(m.lnPageWidthUnscaled, 1))
+		            m.lnPageHeight = INT(m.lnPageHeight * m.lnPageWidth / EVL(m.lnPageWidthUnscaled, EVL(m.lnPageWidth, 1)))
 		        ENDIF
 		        
 		        m.lnPageWidth = m.lnPageWidth * This.scale

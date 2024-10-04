@@ -63,7 +63,7 @@ DEFINE CLASS sample AS form
 		Height = 741
 		Left = 0
 		MinWidth = 1235
-		Name = "sample"
+		Name = "SAMPLE"
 		ScrollBars = 2
 		ShowWindow = 0
 		Top = 0
@@ -795,6 +795,12 @@ DEFINE CLASS sample AS form
 		        _PdfiumReport.SaveAs_PDFMeta.Permit_Edit_All = .T. && Allow to edit contents other than annotations and forms
 		        _PdfiumReport.SaveAs_PDFMeta.Permit_Copy = .T. && Allow copy contents of the document
 		        _PdfiumReport.SaveAs_PDFMeta.Permit_Edit = .T. && Allow to make annotations and fill forms
+		        **********************************************************************************************
+		        
+		        **********************************************************************************************
+		        * Sample function to retrieve pictures embedded in application executable
+		        SET PROCEDURE TO sample_getfiledata.prg ADDITIVE
+		        _PdfiumReport.Ext_Func_GetFileData = "sample_getfiledata"
 		        **********************************************************************************************
 		        
 		        REPORT FORM Report1.frx NOPAGEEJECT

@@ -1,0 +1,3 @@
+LPARAMETERS lcFileName
+
+RETURN FILETOSTR(m.lcFileName)

@@ -1,3 +1,6 @@
 out.*
-!*.fxp
+/*.exe
+/*.app
 /Temp/
+!/Packages/**
+!*.fxp

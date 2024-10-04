@@ -19,13 +19,28 @@ ON ERROR buildError()
 PUBLIC glBuildError
 glBuildError = .F.
 
-DO build_i18n.prg
 
+******************************************
+DO (lcPath + "/build_i18n.prg")
+******************************************
+
+******************************************
 buildProject(lcPath+"/../Source/PdfiumReport.pjx", "app", lcPath+"/../Release/PdfiumReport.app")
 buildProject(lcPath+"/../Sample/sample.pjx", "exe")
+buildProject(lcPath+"/../Tests/tests_run.pjx", "exe")
+******************************************
 
+******************************************
 COPY FILE lcPath+"/../Source/pdfium-vfp.vcx" TO  lcPath+"/../Release/pdfium-vfp.vcx"
 COPY FILE lcPath+"/../Source/pdfium-vfp.vct" TO  lcPath+"/../Release/pdfium-vfp.vct"
+******************************************
+
+******************************************
+LOCAL loConsoleTools
+loConsoleTools = NEWOBJECT("ConsoleTools", lcPath+"/Packages/FoxConsole/FoxConsole.prg")
+loConsoleTools.makeconsoleapp(lcPath+"/../Tests/tests_run.exe")
+******************************************
+
 
 ? TEXTMERGE("Build completed <<IIF(glBuildError, 'with error', 'succesfully')>>")
 

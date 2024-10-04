@@ -1,0 +1,30 @@
+lparameters toUpdateObject
+
+* Set the properties of the passed updater object.
+
+with toUpdateObject
+	.VersionNumber    = '<<VersionNumber>>'
+	.AvailableVersion = '<<AvailableVersion>>'
+	.Notes            = GetNotes()
+*	.RegisterWithThor = GetRegisterWithThor()
+endwith
+return toUpdateObject
+
+* Get the notes for the project.
+
+procedure GetNotes
+local lcNotes
+text to lcNotes noshow
+https://github.com/dmitriychunikhin/pdfium-vfp/blob/main/ChangeLog.md
+https://github.com/dmitriychunikhin/pdfium-vfp/blob/main/ChangeLog_CN.md
+endtext
+return lcNotes
+
+* Register the tool with Thor. Note: Thor replaces ##InstallFolder## with the
+* installation path for the tool when this code is executed.
+
+
+* "pdfium-vfp" is a Component. No procedure GetRegisterWithThor created by VFPX Deployment 
+
+
+*created by VFPX Deployment, 22.09.24 18:53:38

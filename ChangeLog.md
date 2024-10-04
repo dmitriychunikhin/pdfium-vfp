@@ -1,3 +1,36 @@
+1.14
+  - Removed redundant images compression:
+    - PdfiumViewer: removed rendering cache contained page images in png format. Rendering has become a bit faster and less blurry on small scaling
+    - PdfiumReport: removed pictures downscaling when original size of the image is greater than size of the picture control. Now images are stored in the output pdf in their original size that results in a better  quality of image rendering when pdf is viewed.
+
+  - PdfiumReport: Improved quality of rendering text as an image (text in symbol fonts, rotated text). 
+
+  - PdfiumReport: Retrieving pictures embedded in application executable.
+  
+    Added property `PdfiumReport.Ext_Func_GetFileData`
+```
+    * Basic usage
+    **********************************************************************************************
+    _REPORTOUTPUT = "pdfiumreport.app"
+    DO (_REPORTOUTPUT)
+    ...
+
+    * Sample function to retrieve pictures embedded in application executable
+    SET PROCEDURE TO sample_getfiledata.prg ADDITIVE
+    _PdfiumReport.Ext_Func_GetFileData = "sample_getfiledata"
+    **********************************************************************************************
+
+    * sample_getfiledata.prg 
+    **********************************************************************************************
+    LPARAMETERS lcFileName
+
+    RETURN FILETOSTR(m.lcFileName)
+    **********************************************************************************************
+```
+  
+  - Increased test coverage
+
+
 1.13
   - Folder structure reorganization
   - All binaries were moved to the Release folder

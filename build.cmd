@@ -1,5 +1,2 @@
 cd %~dp0
-
-Build\build.fxp 
-
-powershell -Command "Compress-Archive -Path Release/*.* -DestinationPath ./ThorUpdater/pdfium-vfp.zip -Force"
+powershell "-Command" "if((Get-ExecutionPolicy ) -ne 'AllSigned') { Set-ExecutionPolicy -Scope Process Bypass }; & '.\build.ps1'"
