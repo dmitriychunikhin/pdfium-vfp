@@ -4,6 +4,8 @@
 
 [![Latest release](https://img.shields.io/github/v/release/dmitriychunikhin/pdfium-vfp?display_name=release&label=release&color=default)](https://github.com/dmitriychunikhin/pdfium-vfp/releases/latest/)
 [![Test coverage](.github/Tests/coverage.svg)](.github/Tests/out.jacoco.xml)
+[![ChangleLog](https://img.shields.io/github/last-commit/dmitriychunikhin/pdfium-vfp?path=%2FChangeLog.md&label=ChangeLog)](ChangeLog.md)
+[![ChangleLog CN](https://img.shields.io/github/last-commit/dmitriychunikhin/pdfium-vfp?path=%2FChangeLog_CN.md&label=ChangeLog%20CN)](ChangeLog_CN.md)
 
 # pdfium-vfp 
 [English](README.md) | [简体中文](README_CN.md)
