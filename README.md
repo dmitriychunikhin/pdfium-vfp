@@ -5,6 +5,10 @@ This and a dozen other components and tools are provided to you by <a href="http
 [![Latest release](https://img.shields.io/github/v/release/dmitriychunikhin/pdfium-vfp?display_name=release&label=release&color=default)](https://github.com/dmitriychunikhin/pdfium-vfp/releases/latest/)
 [![Test coverage](.github/Tests/coverage.svg)](.github/Tests/out.jacoco.xml)
 
+[![ChangleLog](https://img.shields.io/github/last-commit/dmitriychunikhin/pdfium-vfp?path=%2FChangeLog.md&label=ChangeLog)](ChangeLog.md)
+[![ChangleLog CN](https://img.shields.io/github/last-commit/dmitriychunikhin/pdfium-vfp?path=%2FChangeLog_CN.md&label=ChangeLog%20CN)](ChangeLog_CN.md)
+
+
 
 # pdfium-vfp 
 [English](README.md) | [简体中文](README_CN.md)
@@ -12,7 +16,6 @@ This and a dozen other components and tools are provided to you by <a href="http
 pdfium-vfp is a open source PDF viewer control and ReportOutput + ReportPreview implementation for Visual Fox Pro 9 SP2 and VFP Advanced based on 
 * [PDFium](https://pdfium.googlesource.com/pdfium/) 
 * [libHaru](https://github.com/libharu/) 
-* [GDIPlusX](https://github.com/VFPX/GDIPlusX)
 * [DirectWrite](https://learn.microsoft.com/ru-ru/windows/win32/directwrite/direct-write-portal)
 
 
@@ -91,9 +94,9 @@ Open sample.pjx project from `pdfium-vfp/Sample` folder or just run Sample/sampl
 ### Basic usage of PdfiumViewer
 1) Copy pdfium-vfp.vcx, pdfium-vfp.vct from Release folder to your project folder
 2) <br/>
-    <b>VFP:</b> Copy dependency binaries <i>pdfium.dll, pdfium-vfp.dll, system.app</i> from <i>Release</i> folder to your project's folder
+    <b>VFP:</b> Copy dependency binaries <i>pdfium.dll, pdfium-vfp.dll</i> from <i>Release</i> folder to your project's folder
     
-    <b>VFPA x64:</b> Copy dependency binaries <i>pdfium64.dll, pdfium-vfp64.dll, system.app</i> from <i>Release</i> folder to your project's folder
+    <b>VFPA x64:</b> Copy dependency binaries <i>pdfium64.dll, pdfium-vfp64.dll</i> from <i>Release</i> folder to your project's folder
 
 3) Add PdfiumViewer object from pdfium-vfp.vcx on the form
 
@@ -121,9 +124,9 @@ Thisform.PdfiumViewer.ClosePdf()
 ### Basic usage of PdfiumReport 
 1) Copy PdfiumReport.app from Release folder to your project folder
 2) <br/>
-    <b>VFP:</b> Copy dependency binaries <i>libhpdf.dll, pdfium.dll, pdfium-vfp.dll, system.app</i> from <i>Release</i> folder to your project's folder
+    <b>VFP:</b> Copy dependency binaries <i>libhpdf.dll, pdfium.dll, pdfium-vfp.dll</i> from <i>Release</i> folder to your project's folder
     
-    <b>VFPA x64:</b> Copy dependency binaries <i>libhpdf64.dll, pdfium64.dll, pdfium-vfp64.dll, system.app</i> from <i>Release</i> folder to your project's folder
+    <b>VFPA x64:</b> Copy dependency binaries <i>libhpdf64.dll, pdfium64.dll, pdfium-vfp64.dll</i> from <i>Release</i> folder to your project's folder
 
 More examples can be found at `pdfium-vfp/Sample/sample.scx`
 
@@ -248,12 +251,12 @@ REPORT FORM Report1.frx PREVIEW
 
 LOCAL loPdfiumReport
 
-loPdfiumReport = _PdfiumReport
+loPdfiumReport = Application.PdfiumReport
 * or *
 loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app")
 
 ********************************************************************************************** 
-* _PdfiumReport is global variable created by pdfiumreport.app on initialization
+* Application.PdfiumReport is global variable created by pdfiumreport.app on initialization
 **********************************************************************************************
 
 loPdfiumReport.SaveAs_Filename = "myreport" && Filename suggestion for save as dialog in preview mode, not mandatory
@@ -285,31 +288,26 @@ What binaries exactly do you need to run all the stuff (or your own latest versi
 * [pdfium-vfp/Release/pdfium.dll](Release/pdfium.dll)
 * [pdfium-vfp/Release/pdfium-vfp.dll](Release/pdfium-vfp.dll)
 * [pdfium-vfp/Release/libhpdf.dll](Release/libhpdf.dll) - for PdfiumReport.app only
-* [pdfium-vfp/Release/system.app](Release/system.app)
 
 #### VFPA x64
 * [pdfium-vfp/Release/pdfium64.dll](Release/pdfium64.dll)
 * [pdfium-vfp/Release/pdfium-vfp64.dll](Release/pdfium-vfp64.dll)
 * [pdfium-vfp/Release/libhpdf64.dll](Release/libhpdf64.dll) - for PdfiumReport.app only
-* [pdfium-vfp/Release/system.app](Release/system.app)
 
 #### Source repositories
 * [pdfium.dll](https://github.com/bblanchon/pdfium-binaries) 
 * [libhpdf.dll](https://github.com/libharu/)
-* [system.app](https://github.com/VFPX/GDIPlusX)
+
 
 
 
 ### VFP environment effects
 * Adds Application.Pdfium_instance_count property
-* PdfiumReport.app declares 
-```foxpro
-PUBLIC _PdfiumReportEnv as pdfium_env of pdfium-vfp
-PUBLIC _PdfiumReport as pdfiumreport of pdfium-vfp
-```
-* Declares WIN32API functions via WinApi_* pattern (with aliases)
+* Adds Application.PdfiumReportEnv property as pdfium_env of pdfium-vfp
+* Adds Application.PdfiumReport property as pdfiumreport of pdfium-vfp
+* Declares WIN32API and GDIPlus functions via WinApi_* pattern (with aliases)
 * Declares pdfium.dll functions via FPDF_* pattern (with aliases)
 * Declares pdfium-vfp.dll functions via FPDF_* pattern (with aliases)
 * Declares libhpdf.dll functions via HPDF_* pattern (with aliases)
 * Doesn't perform CLEAR DLLS 
-* Adds fonts from Pdfium_env.PrivateFonts collection to GDI Plus [System.Drawing.Text.PrivateFontCollection](https://learn.microsoft.com/en-us/dotnet/api/system.drawing.text.privatefontcollection?view=net-8.0)
+* Adds fonts from Pdfium_env.PrivateFonts collection to GDIPlus PrivateFontCollection (https://learn.microsoft.com/en-us/dotnet/api/system.drawing.text.privatefontcollection?view=net-8.0)

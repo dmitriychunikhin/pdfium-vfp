@@ -40,7 +40,6 @@ DEFINE CLASS tests_pdfiumreport as tests_pdfium_base OF tests_pdfium_base.prg
         This.pdfium_env = NEWOBJECT("pdfium_env", "pdfium-vfp.vcx", This.pdfium_release+"\pdfiumreport.app")
         This.pdfium_env.pdfium_dll_path = This.pdfium_release+"\pdfium.dll"
         This.pdfium_env.libhpdf_dll_path = This.pdfium_release+"\libhpdf.dll"
-        This.pdfium_env.system_app_path = This.pdfium_release+"\system.app"
 
         This.Pdfium_env.PrivateFonts.Remove(-1) 
         This.Pdfium_env.PrivateFonts.Add(FULLPATH(".\Assets\KurintoSansSC-Rg.ttf"), "Kurinto Sans SC") && Adding private (non system) font 
@@ -111,27 +110,27 @@ DEFINE CLASS tests_pdfiumreport as tests_pdfium_base OF tests_pdfium_base.prg
                 DO (_REPORTOUTPUT) WITH This.pdfium_env && Execute on initialization step of your application
                 
                 **********************************************************************************************
-                * _PdfiumReport is created by pdfiumreport.app on initialization
+                * Application.PdfiumReport is created by pdfiumreport.app on initialization
                 **********************************************************************************************
                 
-                _PdfiumReport.SaveAs_Filename = "myreport" && Filename suggestion for save as dialog in preview mode, not mandatory
+                Application.PdfiumReport.SaveAs_Filename = "myreport" && Filename suggestion for save as dialog in preview mode, not mandatory
                 
                 * PDF metadata setup sample, setting up metadata is not mandatory 
-                _PdfiumReport.SaveAs_PDFMeta.Author = "Me"
-                _PdfiumReport.SaveAs_PDFMeta.Creator = "Pdfium-vfp sample app"
-                _PdfiumReport.SaveAs_PDFMeta.Keywords = "pdfium-vfp,sample"
-                _PdfiumReport.SaveAs_PDFMeta.Subject = "report1.frx and report2.frx batch"
-                _PdfiumReport.SaveAs_PDFMeta.Title = "Sample report"
+                Application.PdfiumReport.SaveAs_PDFMeta.Author = "Me"
+                Application.PdfiumReport.SaveAs_PDFMeta.Creator = "Pdfium-vfp sample app"
+                Application.PdfiumReport.SaveAs_PDFMeta.Keywords = "pdfium-vfp,sample"
+                Application.PdfiumReport.SaveAs_PDFMeta.Subject = "report1.frx and report2.frx batch"
+                Application.PdfiumReport.SaveAs_PDFMeta.Title = "Sample report"
 
                 * PDF password protection, input any owner password and user password for testing
-                _PdfiumReport.SaveAs_PDFMeta.OwnerPassword = "" && Owner Password protects permissions of the doc. Mandatory if User Password was set. Owner password mustn't be equal to user password
-                _PdfiumReport.SaveAs_PDFMeta.UserPassword = "" && This password user inputs when open pdf file
+                Application.PdfiumReport.SaveAs_PDFMeta.OwnerPassword = "" && Owner Password protects permissions of the doc. Mandatory if User Password was set. Owner password mustn't be equal to user password
+                Application.PdfiumReport.SaveAs_PDFMeta.UserPassword = "" && This password user inputs when open pdf file
                 
                 * PDF reader permissions (matter only if Owner passwords is set)
-                _PdfiumReport.SaveAs_PDFMeta.Permit_Print = .T. && Allow to print document
-                _PdfiumReport.SaveAs_PDFMeta.Permit_Edit_All = .T. && Allow to edit contents other than annotations and forms
-                _PdfiumReport.SaveAs_PDFMeta.Permit_Copy = .T. && Allow copy contents of the document
-                _PdfiumReport.SaveAs_PDFMeta.Permit_Edit = .T. && Allow to make annotations and fill forms
+                Application.PdfiumReport.SaveAs_PDFMeta.Permit_Print = .T. && Allow to print document
+                Application.PdfiumReport.SaveAs_PDFMeta.Permit_Edit_All = .T. && Allow to edit contents other than annotations and forms
+                Application.PdfiumReport.SaveAs_PDFMeta.Permit_Copy = .T. && Allow copy contents of the document
+                Application.PdfiumReport.SaveAs_PDFMeta.Permit_Edit = .T. && Allow to make annotations and fill forms
                 **********************************************************************************************
                 
                 REPORT FORM .\Assets\Report1.frx NOPAGEEJECT

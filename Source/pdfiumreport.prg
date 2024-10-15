@@ -20,21 +20,12 @@ CASE PCOUNT() = 0
 ENDCASE
 
 
-IF VARTYPE(m._PdfiumReportEnv) <> "O"
+IF TYPE("Application.PdfiumReport") <> "O" 
     ERROR "PdfiumReport.App was not initialized. Execute DO PdfiumReport.app WITH [ .T. | Pdfium_env object ]"
-ENDIF    
-
-
-LOCAL lcAppPath
-lcAppPath = STREXTRACT(SYS(16)," ","",2,1+2)
-
-IF VARTYPE(m._PdfiumReport) = "O" 
-    m.tvReference = m._PdfiumReport
-    RETURN
 ENDIF
 
-_PdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", lcAppPath, m._PdfiumReportEnv)
-m.tvReference = m._PdfiumReport
+
+m.tvReference = Application.PdfiumReport
 
 
 * Initialization of PdfiumReport.app global resources
@@ -43,27 +34,29 @@ m.tvReference = m._PdfiumReport
 PROCEDURE PdfiumReportAppInit
     LPARAMETERS toEnv as pdfium_env of pdfium-vfp
 
-    IF VARTYPE(m._PdfiumReportEnv)="O"
+    IF TYPE("Application.PdfiumReportEnv") = "O"
         RETURN
     ENDIF
     
     LOCAL lcAppPath
-    lcAppPath = STREXTRACT(SYS(16)," ","",2,1+2)
+    m.lcAppPath = STREXTRACT(SYS(16)," ","",2,1+2)
 
-    PUBLIC _PdfiumReportEnv
-    m._PdfiumReportEnv = NEWOBJECT("Pdfium_env", "pdfium-vfp.vcx", lcAppPath)
-    m._PdfiumReportEnv.setup(m.toEnv)
+    ADDPROPERTY(Application, "PdfiumReportEnv", NEWOBJECT("Pdfium_env", "pdfium-vfp.vcx", m.lcAppPath))
+    Application.PdfiumReportEnv.setup(m.toEnv)
 
-    PUBLIC _PdfiumReport
-    m._PdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", lcAppPath, m._PdfiumReportEnv)
-
+    ADDPROPERTY(Application, "PdfiumReport", NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", m.lcAppPath, Application.PdfiumReportEnv))
+    
 ENDPROC
 
 * Release PdfiumReport.app resources
 PROCEDURE PdfiumReportAppRelease
 
-    RELEASE _PdfiumReport
-    RELEASE _PdfiumReportEnv
-
+    IF TYPE("Application.PdfiumReport") = "O"
+        Application.PdfiumReport = .F.
+    ENDIF
     
+    IF TYPE("Application.PdfiumReportEnv") = "O"
+        Application.PdfiumReportEnv = .F.
+    ENDIF
+
 ENDPROC

@@ -11,7 +11,6 @@
 pdfium-vfp 是一款开源 PDF 查看控件，同时也是 Visual Fox Pro 9 SP2 和 VFP Advanced 的 ReportOutput + ReportPreview 实现，它基于 
 * [PDFium](https://pdfium.googlesource.com/pdfium/) 
 * [libHaru](https://github.com/libharu/) 
-* [GDIPlusX](https://github.com/VFPX/GDIPlusX)
 * [DirectWrite](https://learn.microsoft.com/zh-cn/windows/win32/directwrite/direct-write-portal)
 
 
@@ -90,9 +89,9 @@ WINEDLLOVERRIDES="gdiplus=n" wine sample.exe
 ### PdfiumViewer 的基本用法
 1) 将 Release 文件夹中的 pdfium-vfp.vcx 和 pdfium-vfp.vct 复制到项目文件夹中
 2) <br/>
-    <b>VFP:</b> 将 <i>Release</i> 文件夹中的二进制依赖文件 <i>pdfium.dll、pdfium-vfp.dll、system.app</i> 复制到项目文件夹中
+    <b>VFP:</b> 将 <i>Release</i> 文件夹中的二进制依赖文件 <i>pdfium.dll、pdfium-vfp.dll</i> 复制到项目文件夹中
     
-    <b>VFPA x64:</b> 将 <i>Release</i> 文件夹中的二进制依赖文件 <i>pdfium64.dll、pdfium-vfp64.dll、system.app</i> 复制到项目文件夹中
+    <b>VFPA x64:</b> 将 <i>Release</i> 文件夹中的二进制依赖文件 <i>pdfium64.dll、pdfium-vfp64.dll</i> 复制到项目文件夹中
 
 3) 在表单中添加 pdfium-vfp.vcx 中的 PdfiumViewer 对象
 
@@ -120,9 +119,9 @@ Thisform.PdfiumViewer.ClosePdf()
 ### PdfiumReport 的基本用法
 1) 将 Release 文件夹中的 PdfiumReport.app 复制到项目文件夹中
 2) <br/>
-    <b>VFP:</b> 将 <i>Release</i> 文件夹中的二进制依赖文件 <i>libhpdf.dll、pdfium.dll、pdfium-vfp.dll、system.app</i> 复制到项目文件夹中
+    <b>VFP:</b> 将 <i>Release</i> 文件夹中的二进制依赖文件 <i>libhpdf.dll、pdfium.dll、pdfium-vfp.dll</i> 复制到项目文件夹中
     
-    <b>VFPA x64:</b> 将 <i>Release</i> 文件夹中的二进制依赖文件 <i>libhpdf64.dll、pdfium64.dll、pdfium-vfp64.dll、system.app</i> 复制到项目文件夹中
+    <b>VFPA x64:</b> 将 <i>Release</i> 文件夹中的二进制依赖文件 <i>libhpdf64.dll、pdfium64.dll、pdfium-vfp64.dll</i> 复制到项目文件夹中
 
 更多示例请参见 `pdfium-vfp/Sample/sample.scx`
 
@@ -245,12 +244,12 @@ REPORT FORM Report1.frx PREVIEW
 
 LOCAL loPdfiumReport
 
-loPdfiumReport = _PdfiumReport
+loPdfiumReport = Application.PdfiumReport
 * 或者 *
 loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app")
 
 ********************************************************************************************** 
-* _PdfiumReport 是由 pdfiumreport.app 在初始化时创建的全局变量
+* Application.PdfiumReport 是由 pdfiumreport.app 在初始化时创建的全局变量
 **********************************************************************************************
 
 loPdfiumReport.SaveAs_Filename = "myreport" && 预览模式下 “另存为” 对话框的建议文件名，非强制
@@ -281,31 +280,25 @@ loPdfiumReport.SaveAs_PDFMeta.Permit_Edit = .T. && 允许批注和填写表单
 * [pdfium-vfp/Release/pdfium.dll](Release/pdfium.dll)
 * [pdfium-vfp/Release/pdfium-vfp.dll](Release/pdfium-vfp.dll)
 * [pdfium-vfp/Release/libhpdf.dll](Release/libhpdf.dll) - for PdfiumReport.app only
-* [pdfium-vfp/Release/system.app](Release/system.app)
 
 #### VFPA x64
 * [pdfium-vfp/Release/pdfium64.dll](Release/pdfium64.dll)
 * [pdfium-vfp/Release/pdfium-vfp64.dll](Release/pdfium-vfp64.dll)
 * [pdfium-vfp/Release/libhpdf64.dll](Release/libhpdf64.dll) - for PdfiumReport.app only
-* [pdfium-vfp/Release/system.app](Release/system.app)
 
 #### 源代码库
 * [pdfium.dll](https://github.com/bblanchon/pdfium-binaries) 
 * [libhpdf.dll](https://github.com/libharu/)
-* [system.app](https://github.com/VFPX/GDIPlusX)
 
 
 
 ### 对 VFP 环境的影响
 * 添加 Application.Pdfium_instance_count 属性
-* PdfiumReport.app 声明 
-```foxpro
-PUBLIC _PdfiumReportEnv as pdfium_env of pdfium-vfp
-PUBLIC _PdfiumReport as pdfiumreport of pdfium-vfp
-```
+* 添加 Application.PdfiumReportEnv 属性 as pdfium_env of pdfium-vfp
+* 添加 Application.PdfiumReport 属性 as pdfiumreport of pdfium-vfp
 * 通过 WinApi_* 模式（带别名）声明 WIN32API 函数
 * 通过 FPDF_* 模式（带别名）声明 pdfium.dll 函数
 * 通过 FPDF_* 模式（带别名）声明 pdfium-vfp.dll 函数
 * 通过 HPDF_* 模式（带别名）声明 libhpdf.dll 函数
 * 不执行 CLEAR DLLS 功能 
-* 将 Pdfium_env.PrivateFonts 集合中的字体添加到 GDI Plus  [System.Drawing.Text.PrivateFontCollection](https://learn.microsoft.com/en-us/dotnet/api/system.drawing.text.privatefontcollection?view=net-8.0) 中
+* 将 Pdfium_env.PrivateFonts 集合中的字体添加到 GDIPlus PrivateFontCollection (https://learn.microsoft.com/en-us/dotnet/api/system.drawing.text.privatefontcollection?view=net-8.0) 中

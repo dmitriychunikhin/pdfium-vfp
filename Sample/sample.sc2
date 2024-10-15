@@ -46,6 +46,7 @@ DEFINE CLASS sample AS form
 	*< OBJECTDATA: ObjPath="cmdFit" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdPrint" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdSaveAs" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdOpenPdf" UniqueID="" Timestamp="" />
 
 	*<DefinedPropArrayMethod>
 		*m: closepdf
@@ -63,7 +64,7 @@ DEFINE CLASS sample AS form
 		Height = 741
 		Left = 0
 		MinWidth = 1235
-		Name = "SAMPLE"
+		Name = "sample"
 		ScrollBars = 2
 		ShowWindow = 0
 		Top = 0
@@ -79,7 +80,7 @@ DEFINE CLASS sample AS form
 		Height = 17, ;
 		Left = 199, ;
 		Name = "chkSearchBackward", ;
-		TabIndex = 7, ;
+		TabIndex = 8, ;
 		Top = 82, ;
 		Width = 75
 		*< END OBJECT: BaseClass="checkbox" />
@@ -91,7 +92,7 @@ DEFINE CLASS sample AS form
 		Height = 17, ;
 		Left = 380, ;
 		Name = "chkSearchMatchCase", ;
-		TabIndex = 9, ;
+		TabIndex = 10, ;
 		Top = 82, ;
 		Width = 82
 		*< END OBJECT: BaseClass="checkbox" />
@@ -103,7 +104,7 @@ DEFINE CLASS sample AS form
 		Height = 17, ;
 		Left = 286, ;
 		Name = "chkSearchWholeWord", ;
-		TabIndex = 8, ;
+		TabIndex = 9, ;
 		Top = 82, ;
 		Width = 84
 		*< END OBJECT: BaseClass="checkbox" />
@@ -118,7 +119,7 @@ DEFINE CLASS sample AS form
 		RowSource = "", ;
 		RowSourceType = 0, ;
 		Style = 2, ;
-		TabIndex = 13, ;
+		TabIndex = 14, ;
 		Top = 12, ;
 		Value = , ;
 		Width = 420
@@ -143,10 +144,10 @@ DEFINE CLASS sample AS form
 		Anchor = 0, ;
 		Caption = "Close pdf", ;
 		Height = 27, ;
-		Left = 372, ;
+		Left = 575, ;
 		Name = "cmdClosePdf", ;
-		TabIndex = 4, ;
-		Top = 39, ;
+		TabIndex = 5, ;
+		Top = 40, ;
 		Width = 132, ;
 		WordWrap = .F.
 		*< END OBJECT: BaseClass="commandbutton" />
@@ -157,7 +158,7 @@ DEFINE CLASS sample AS form
 		Height = 29, ;
 		Left = 726, ;
 		Name = "cmdEnable", ;
-		TabIndex = 15, ;
+		TabIndex = 16, ;
 		Top = 65, ;
 		Width = 420, ;
 		WordWrap = .F.
@@ -169,9 +170,21 @@ DEFINE CLASS sample AS form
 		Height = 27, ;
 		Left = 592, ;
 		Name = "cmdFit", ;
-		TabIndex = 12, ;
+		TabIndex = 13, ;
 		Top = 76, ;
-		Width = 106, ;
+		Width = 115, ;
+		WordWrap = .F.
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'cmdOpenPdf' AS commandbutton WITH ;
+		Anchor = 0, ;
+		Caption = "Open any pdf...", ;
+		Height = 27, ;
+		Left = 372, ;
+		Name = "cmdOpenPdf", ;
+		TabIndex = 4, ;
+		Top = 40, ;
+		Width = 132, ;
 		WordWrap = .F.
 		*< END OBJECT: BaseClass="commandbutton" />
 
@@ -182,7 +195,7 @@ DEFINE CLASS sample AS form
 		Left = 12, ;
 		Name = "cmdOpenPdfSample1", ;
 		TabIndex = 2, ;
-		Top = 39, ;
+		Top = 40, ;
 		Width = 132, ;
 		WordWrap = .F.
 		*< END OBJECT: BaseClass="commandbutton" />
@@ -191,10 +204,10 @@ DEFINE CLASS sample AS form
 		Anchor = 0, ;
 		Caption = "Open Sample2.pdf", ;
 		Height = 27, ;
-		Left = 189, ;
+		Left = 191, ;
 		Name = "cmdOpenPdfSample2", ;
 		TabIndex = 3, ;
-		Top = 39, ;
+		Top = 40, ;
 		Width = 132, ;
 		WordWrap = .F.
 		*< END OBJECT: BaseClass="commandbutton" />
@@ -205,7 +218,7 @@ DEFINE CLASS sample AS form
 		Height = 27, ;
 		Left = 467, ;
 		Name = "cmdPrint", ;
-		TabIndex = 10, ;
+		TabIndex = 11, ;
 		Top = 76, ;
 		Width = 53, ;
 		WordWrap = .F.
@@ -218,7 +231,7 @@ DEFINE CLASS sample AS form
 		Left = 1200, ;
 		Name = "cmdReport", ;
 		Picture = images\wwrite.ico, ;
-		TabIndex = 17, ;
+		TabIndex = 18, ;
 		Top = 12, ;
 		Width = 73, ;
 		WordWrap = .T.
@@ -230,7 +243,7 @@ DEFINE CLASS sample AS form
 		Height = 27, ;
 		Left = 525, ;
 		Name = "cmdSaveAs", ;
-		TabIndex = 11, ;
+		TabIndex = 12, ;
 		Top = 76, ;
 		Width = 60, ;
 		WordWrap = .F.
@@ -243,7 +256,7 @@ DEFINE CLASS sample AS form
 		Name = "cmdSearch", ;
 		Picture = images\search16.bmp, ;
 		PicturePosition = 14, ;
-		TabIndex = 6, ;
+		TabIndex = 7, ;
 		Top = 75, ;
 		Width = 37
 		*< END OBJECT: BaseClass="commandbutton" />
@@ -254,7 +267,7 @@ DEFINE CLASS sample AS form
 		Height = 27, ;
 		Left = 726, ;
 		Name = "cmdShow", ;
-		TabIndex = 14, ;
+		TabIndex = 15, ;
 		Top = 38, ;
 		Width = 420, ;
 		WordWrap = .F.
@@ -267,7 +280,7 @@ DEFINE CLASS sample AS form
 		Left = 723, ;
 		Name = "Pageframe1", ;
 		PageCount = 2, ;
-		TabIndex = 18, ;
+		TabIndex = 19, ;
 		Top = 108, ;
 		Width = 550, ;
 		Page1.Caption = "Page1", ;
@@ -307,6 +320,10 @@ DEFINE CLASS sample AS form
 		cmdFocus.Name = "cmdFocus", ;
 		env.API_FPDF.CONST.Name = "CONST", ;
 		env.API_FPDF.Name = "API_FPDF", ;
+		env.API_FRX.CONST.Name = "CONST", ;
+		env.API_FRX.Name = "API_FRX", ;
+		env.API_GDIP.CONST.Name = "CONST", ;
+		env.API_GDIP.Name = "API_GDIP", ;
 		env.API_HPDF.CONST.Name = "CONST", ;
 		env.API_HPDF.Name = "API_HPDF", ;
 		env.API_WIN.Name = "API_WIN", ;
@@ -332,6 +349,10 @@ DEFINE CLASS sample AS form
 		cmdFocus.Name = "cmdFocus", ;
 		env.API_FPDF.CONST.Name = "CONST", ;
 		env.API_FPDF.Name = "API_FPDF", ;
+		env.API_FRX.CONST.Name = "CONST", ;
+		env.API_FRX.Name = "API_FRX", ;
+		env.API_GDIP.CONST.Name = "CONST", ;
+		env.API_GDIP.Name = "API_GDIP", ;
 		env.API_HPDF.CONST.Name = "CONST", ;
 		env.API_HPDF.Name = "API_HPDF", ;
 		env.API_WIN.Name = "API_WIN", ;
@@ -357,6 +378,10 @@ DEFINE CLASS sample AS form
 		cmdFocus.Name = "cmdFocus", ;
 		env.API_FPDF.CONST.Name = "CONST", ;
 		env.API_FPDF.Name = "API_FPDF", ;
+		env.API_FRX.CONST.Name = "CONST", ;
+		env.API_FRX.Name = "API_FRX", ;
+		env.API_GDIP.CONST.Name = "CONST", ;
+		env.API_GDIP.Name = "API_GDIP", ;
 		env.API_HPDF.CONST.Name = "CONST", ;
 		env.API_HPDF.Name = "API_HPDF", ;
 		env.API_WIN.Name = "API_WIN", ;
@@ -371,13 +396,16 @@ DEFINE CLASS sample AS form
 		libhpdf_dll_path = (IIF(ATC("x64", SYS(17))<>0 , "..\Release\libhpdf64.dll", "..\Release\libhpdf.dll")), ;
 		Name = "Pdfium_env", ;
 		pdfium_dll_path = (IIF(ATC("x64", SYS(17))<>0, "..\Release\pdfium64.dll", "..\Release\pdfium.dll")), ;
-		system_app_path = ("..\Release\system.app"), ;
 		Top = 12, ;
 		API_FPDF.CONST.Name = "CONST", ;
 		API_FPDF.Name = "API_FPDF", ;
 		API_HPDF.CONST.Name = "CONST", ;
 		API_HPDF.Name = "API_HPDF", ;
-		API_WIN.Name = "API_WIN"
+		API_WIN.Name = "API_WIN", ;
+		API_FRX.CONST.Name = "CONST", ;
+		API_FRX.Name = "API_FRX", ;
+		API_GDIP.CONST.Name = "CONST", ;
+		API_GDIP.Name = "API_GDIP"
 		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="custom" />
 
 	ADD OBJECT 'PdfiumViewer' AS pdfiumviewer WITH ;
@@ -388,7 +416,7 @@ DEFINE CLASS sample AS form
 		Left = 12, ;
 		Name = "PdfiumViewer", ;
 		scrollbars = 3, ;
-		TabIndex = 16, ;
+		TabIndex = 17, ;
 		TabStop = .T., ;
 		Top = 108, ;
 		Visible = .T., ;
@@ -396,6 +424,10 @@ DEFINE CLASS sample AS form
 		cmdFocus.Name = "cmdFocus", ;
 		env.API_FPDF.CONST.Name = "CONST", ;
 		env.API_FPDF.Name = "API_FPDF", ;
+		env.API_FRX.CONST.Name = "CONST", ;
+		env.API_FRX.Name = "API_FRX", ;
+		env.API_GDIP.CONST.Name = "CONST", ;
+		env.API_GDIP.Name = "API_GDIP", ;
 		env.API_HPDF.CONST.Name = "CONST", ;
 		env.API_HPDF.Name = "API_HPDF", ;
 		env.API_WIN.Name = "API_WIN", ;
@@ -419,7 +451,7 @@ DEFINE CLASS sample AS form
 		Height = 23, ;
 		Left = 12, ;
 		Name = "txtSearch", ;
-		TabIndex = 5, ;
+		TabIndex = 6, ;
 		Top = 78, ;
 		Width = 132
 		*< END OBJECT: BaseClass="textbox" />
@@ -515,6 +547,17 @@ DEFINE CLASS sample AS form
 	PROCEDURE openpdf
 		LPARAMETERS tcFilename
 		
+		LOCAL lcFilename
+		m.lcFilename = m.tcFilename
+		
+		IF EMPTY(m.lcFilename)
+		    m.lcFilename = GETFILE("pdf", "Choose any pdf")
+		ENDIF
+		
+		IF EMPTY(m.lcFilename)
+		    RETURN
+		ENDIF
+		
 		LOCAL i, lnStart, lnEnd
 		lnStart = 2
 		lnEnd = Thisform.cmbPdfiumViewers.ListCount
@@ -526,7 +569,7 @@ DEFINE CLASS sample AS form
 		FOR i = lnStart TO lnEnd 
 		    lcObj = Thisform.cmbPdfiumViewers.ListItem[i]
 		    loObj = Thisform.&lcObj
-		    loObj.openpdf(m.tcFilename)
+		    loObj.openpdf(m.lcFilename)
 		ENDFOR
 		
 		Thisform.Refresh()
@@ -716,6 +759,11 @@ DEFINE CLASS sample AS form
 		
 	ENDPROC
 
+	PROCEDURE cmdOpenPdf.Click
+		Thisform.OpenPdf()
+		
+	ENDPROC
+
 	PROCEDURE cmdOpenPdfSample1.Click
 		Thisform.OpenPdf(".\sample1.pdf")
 		
@@ -770,39 +818,35 @@ DEFINE CLASS sample AS form
 		        DO (_REPORTOUTPUT) WITH Thisform.pdfium_env && Execute on initialization step of your application
 		        
 		        **********************************************************************************************
-		        * _PdfiumReport is created by pdfiumreport.app on initialization
+		        * Application.PdfiumReport is created by pdfiumreport.app on initialization
 		        **********************************************************************************************
-		        #if .F.
-		        * just for intellisense
-		        PUBLIC _PdfiumReport as pdfiumreport OF ..\Release\pdfium-vfp.vcx
-		        #endif
 		        
-		        _PdfiumReport.SaveAs_Filename = "myreport" && Filename suggestion for save as dialog in preview mode, not mandatory
+		        Application.PdfiumReport.SaveAs_Filename = "myreport" && Filename suggestion for save as dialog in preview mode, not mandatory
 		        
 		        * PDF metadata setup sample, setting up metadata is not mandatory 
-		        _PdfiumReport.SaveAs_PDFMeta.Author = "Me"
-		        _PdfiumReport.SaveAs_PDFMeta.Creator = "Pdfium-vfp sample app"
-		        _PdfiumReport.SaveAs_PDFMeta.Keywords = "pdfium-vfp,sample"
-		        _PdfiumReport.SaveAs_PDFMeta.Subject = "report1.frx and report2.frx batch"
-		        _PdfiumReport.SaveAs_PDFMeta.Title = "Sample report"
+		        Application.PdfiumReport.SaveAs_PDFMeta.Author = "Me"
+		        Application.PdfiumReport.SaveAs_PDFMeta.Creator = "Pdfium-vfp sample app"
+		        Application.PdfiumReport.SaveAs_PDFMeta.Keywords = "pdfium-vfp,sample"
+		        Application.PdfiumReport.SaveAs_PDFMeta.Subject = "report1.frx and report2.frx batch"
+		        Application.PdfiumReport.SaveAs_PDFMeta.Title = "Sample report"
 		
 		        * PDF password protection, input any owner password and user password for testing
-		        _PdfiumReport.SaveAs_PDFMeta.OwnerPassword = "" && Owner Password protects permissions of the doc. Mandatory if User Password was set. Owner password mustn't be equal to user password
-		        _PdfiumReport.SaveAs_PDFMeta.UserPassword = "" && This password user inputs when open pdf file
+		        Application.PdfiumReport.SaveAs_PDFMeta.OwnerPassword = "" && Owner Password protects permissions of the doc. Mandatory if User Password was set. Owner password mustn't be equal to user password
+		        Application.PdfiumReport.SaveAs_PDFMeta.UserPassword = "" && This password user inputs when open pdf file
 		        
 		        * PDF reader permissions (matter only if Owner passwords is set)
-		        _PdfiumReport.SaveAs_PDFMeta.Permit_Print = .T. && Allow to print document
-		        _PdfiumReport.SaveAs_PDFMeta.Permit_Edit_All = .T. && Allow to edit contents other than annotations and forms
-		        _PdfiumReport.SaveAs_PDFMeta.Permit_Copy = .T. && Allow copy contents of the document
-		        _PdfiumReport.SaveAs_PDFMeta.Permit_Edit = .T. && Allow to make annotations and fill forms
+		        Application.PdfiumReport.SaveAs_PDFMeta.Permit_Print = .T. && Allow to print document
+		        Application.PdfiumReport.SaveAs_PDFMeta.Permit_Edit_All = .T. && Allow to edit contents other than annotations and forms
+		        Application.PdfiumReport.SaveAs_PDFMeta.Permit_Copy = .T. && Allow copy contents of the document
+		        Application.PdfiumReport.SaveAs_PDFMeta.Permit_Edit = .T. && Allow to make annotations and fill forms
 		        **********************************************************************************************
 		        
 		        **********************************************************************************************
 		        * Sample function to retrieve pictures embedded in application executable
 		        SET PROCEDURE TO sample_getfiledata.prg ADDITIVE
-		        _PdfiumReport.Ext_Func_GetFileData = "sample_getfiledata"
+		        Application.PdfiumReport.Ext_Func_GetFileData = "sample_getfiledata"
 		        **********************************************************************************************
-		        
+		
 		        REPORT FORM Report1.frx NOPAGEEJECT
 		        REPORT FORM Report2.frx PREVIEW
 		        

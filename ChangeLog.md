@@ -1,3 +1,20 @@
+1.15
+  - Removed GDIPlusX dependency
+  - Removed System and system_app_path properties from Pdfium_env class 
+  
+  - Removed public variable _PdfiumReportEnv as pdfium_env of pdfium-vfp, instead added property Application.PdfiumReportEnv as pdfium_env of pdfium-vfp 
+  - Removed public variable _PdfiumReportEnv as pdfiumreport of pdfium-vfp, instead added property Application.PdfiumReport as pdfiumreport of pdfium-vfp
+  
+  - PdfiumReport: labels line spacing and alignment rendering (earlier lables were rendered with single line spacing and left alignment)
+  - PdfiumReport: fixed label control rendering bug - label text might be trimmed in certain conditions (it depends of font face and size)
+
+  - PdfiumReport: fixed bug in rendering Font Style dynamic property - renderer ignored Font Style if it was set to Normal (0 value in FStyle attribute of dynamics)
+
+  - PdfiumReport: report rendering was refactored to implement bridge design pattern, it was needed to implement ODT rendering in future
+  
+  - PdfiumViewer: added "Ctrl + A" keyboard shortcut (selects all text), works only when PdfiumViewer control has input focus
+
+
 1.14
   - Removed redundant images compression:
     - PdfiumViewer: removed rendering cache contained page images in png format. Rendering has become a bit faster and less blurry on small scaling

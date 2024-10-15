@@ -39,7 +39,6 @@ DEFINE CLASS tests_pdfiumviewer as tests_pdfium_base OF tests_pdfium_base.prg
         This.pdfium_env = NEWOBJECT("pdfium_env", This.pdfium_source+"\pdfium-vfp.vcx")
         This.pdfium_env.pdfium_dll_path = This.pdfium_release+"\pdfium.dll"
         This.pdfium_env.libhpdf_dll_path = ""
-        This.pdfium_env.system_app_path = This.pdfium_release+"\system.app"
 
 	ENDFUNC
 	
