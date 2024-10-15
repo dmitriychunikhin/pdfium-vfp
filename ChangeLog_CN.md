@@ -1,3 +1,19 @@
+1.15
+  - 移除 GDIPlusX 的依赖
+  - 从 Pdfium_env 类中移除 System 和 system_app_path 属性  
+  
+  - 移除公共变量 _PdfiumReportEnv，使用 Application.PdfiumReportEnv 予以替代 
+  - 移除公共变量 _PdfiumReportEnv，使用 Application.PdfiumReport 予以替代
+  
+  - PdfiumReport: 标签行间距和对齐方式的渲染（早期的标签为单倍行间距和左对齐方式渲染）
+  - PdfiumReport: 修正标签控件渲染bug--标签文本在某些情况下可能被裁剪（取决于字体大小）
+
+  - PdfiumReport: 修正了字体样式动态属性渲染错误--如果字体样式设置为Normal（动态属性的FStyle属性值为0），渲染器会忽略该字体样式。
+
+  - PdfiumReport: 重构报告渲染以实现桥接设计模式，将来需要实现ODT渲染。
+  
+  - PdfiumViewer: 增加 “Ctrl + A ”快捷键（选择所有文本），仅当 PdfiumViewer 控件有输入焦点时有效。
+
 1.14
   - 删除了多余的图像压缩：
     - PdfiumViewer: 移除了包含 png 格式页面图片的渲染缓存。渲染变得更快，在缩小时也不那么模糊了。
