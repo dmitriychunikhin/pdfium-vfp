@@ -3771,6 +3771,7 @@ DEFINE CLASS pdfium_api_win AS custom
 		*m: showwindow		&& Specifies the Form window to show the Form or Toolbar in at creation time.
 		*m: startdoc
 		*m: startpage
+		*m: uuidcreate
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
@@ -3835,6 +3836,7 @@ DEFINE CLASS pdfium_api_win AS custom
 			<memberdata name="setclipboarddata" type="method" display="SetClipboardData"/>
 			<memberdata name="getopenclipboardwindow" type="method" display="GetOpenClipboardWindow"/>
 			<memberdata name="gettickcount" type="method" display="GetTickCount"/>
+			<memberdata name="uuidcreate" type="method" display="UuidCreate"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -4779,6 +4781,24 @@ DEFINE CLASS pdfium_api_win AS custom
 		
 	ENDPROC
 
+	PROCEDURE uuidcreate
+		LPARAMETERS Uuid
+		
+		m.Uuid = REPLICATE(CHR(0), 16)
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_UuidCreate(@m.Uuid)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE INTEGER UuidCreate IN Rpcrt4.dll AS WinApi_UuidCreate STRING @Uuid
+		    m.lvRes = WinApi_UuidCreate(@m.Uuid)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
 ENDDEFINE
 
 DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. Usage: create, setup and pass as first parameter of PdfiumViewer.Init, PdfiumReport.Init
@@ -4994,6 +5014,9 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 	PROCEDURE getuniquetempfilename		&& Returns uniquie not existent filename in %userprofile%\AppData\Local\Temp
 		LPARAMETERS tcFileExt
 		
+		#define RPC_S_OK 0
+		#define RPC_S_UUID_LOCAL_ONLY 1824
+		
 		LOCAL lcFileExt
 		m.lcFileExt = ALLTRIM(EVL(NVL(m.tcFileExt,""),""), 1, " ", ".")
 		
@@ -5005,7 +5028,15 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		
 		LOCAL i
 		FOR m.i = 1 TO 500
-		    m.lcFilename = m.lcPath + "pdfium_vfp" + SYS(2015) + IIF(EMPTY(m.lcFileExt), "", "." + m.lcFileExt)
+		    
+		    LOCAL lcUuid
+		    m.lcUuid = ""
+		    IF INLIST(This.API_WIN.UuidCreate(@m.lcUuid), RPC_S_OK, RPC_S_UUID_LOCAL_ONLY) = .F.
+		        m.lcUuid = SYS(2015)
+		    ENDIF
+		    m.lcUuid = TRANSFORM(0h + m.lcUuid)
+		    
+		    m.lcFilename = m.lcPath + "pdfium_vfp_" + m.lcUuid + IIF(EMPTY(m.lcFileExt), "", "." + m.lcFileExt)
 		    
 		    IF FILE(m.lcFilename,1) OR DIRECTORY(m.lcFilename,1)
 		        m.lcFilename = ""
@@ -8918,6 +8949,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		        TRY
 		            This.Rep_OffsetX = This.env.API_WIN.GetDeviceCaps(m.lhPrinterDC, PHYSICALOFFSETX) / m.lnPrinterDPI
 		            This.Rep_OffsetY = This.env.API_WIN.GetDeviceCaps(m.lhPrinterDC, PHYSICALOFFSETY) / m.lnPrinterDPI
+		            
 		        FINALLY
 		            This.env.API_WIN.DeleteDC(m.lhPrinterDC)
 		        ENDTRY
@@ -9167,6 +9199,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		m.loRepObj.PosLeft = m.loRepObj.PosLeft - This.Rep_OffsetX * 96
 		m.loRepObj.PosTop = m.loRepObj.PosTop - This.Rep_OffsetY * 96
+		m.loRepObj.PosTopRev = m.loRepObj.PosTopRev + This.Rep_OffsetY * 96
 		
 		m.loRepObj.Font = .F.
 		
@@ -9571,7 +9604,7 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 	ENDPROC
 
 	HIDDEN PROCEDURE getfontpdf
-		LPARAMETERS loRepObj
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
 		
 		IF EMPTY(This.hpdf_doc)
 		    RETURN 0
@@ -9687,7 +9720,7 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 	ENDPROC
 
 	PROCEDURE Init
-		LPARAMETERS toEnv
+		LPARAMETERS toEnv as pdfium_env of pdfium-vfp.vcx
 		
 		This.env = m.toEnv
 		
@@ -9774,14 +9807,14 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 	ENDPROC
 
 	HIDDEN PROCEDURE render_frxfield
-		LPARAMETERS loRepObj
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
 		
 		This.render_text(m.loRepObj)
 		
 	ENDPROC
 
 	HIDDEN PROCEDURE render_frxlabel
-		LPARAMETERS loRepObj
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
 		
 		This.render_text(m.loRepObj)
 		
@@ -9789,7 +9822,7 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 	ENDPROC
 
 	HIDDEN PROCEDURE render_frxline
-		LPARAMETERS loRepObj
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
 		
 		LOCAL loHPDF, loHPDFC
 		m.loHPDF = This.env.API_HPDF
@@ -9899,7 +9932,7 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 	ENDPROC
 
 	HIDDEN PROCEDURE render_frxpicture
-		LPARAMETERS loRepObj
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
 		
 		LOCAL loHPDF, loHPDFC
 		m.loHPDF = This.env.API_HPDF
@@ -9977,7 +10010,7 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 	ENDPROC
 
 	HIDDEN PROCEDURE render_frxrectangle
-		LPARAMETERS loRepObj
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
 		
 		LOCAL loHPDF, loHPDFC
 		m.loHPDF = This.env.API_HPDF
@@ -10122,7 +10155,7 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 	ENDPROC
 
 	HIDDEN PROCEDURE render_text
-		LPARAMETERS loRepObj
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
 		
 		LOCAL loHPDF, loHPDFC
 		m.loHPDF = This.env.API_HPDF
@@ -10303,7 +10336,7 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 	ENDPROC
 
 	HIDDEN PROCEDURE render_textasimage
-		LPARAMETERS loRepObj
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
 		
 		LOCAL loHPDF, loHPDFC
 		m.loHPDF = This.env.API_HPDF
@@ -10637,7 +10670,7 @@ DEFINE CLASS pdfiumreport_repobj AS custom 		&& Input object for Render  method 
 		LOCAL lcObjBBox
 		m.lcObjBBox = 0h + BINTOC(0.0, "F") + BINTOC(0.0, "F") + BINTOC(0.0, "F") + BINTOC(0.0, "F")
 		
-		* Plain Api call because GDIPluxX Graphics.MeasureString performs STRCONV(...,5) on input text while loRepObj.Text is in Unicode
+		
 		This.env.API_GDIP.GdipMeasureString (;
 		    This.ScreenGfx, ;
 		    m.tcTextUnicode + CHR(0), ;
@@ -10929,7 +10962,7 @@ DEFINE CLASS pdfiumreport_repobj AS custom 		&& Input object for Render  method 
 		                BINTOC(0, "F") + ;
 		                BINTOC(0, "F")
 		            
-		            * Plain Api call because GDIPluxX Graphics.DrawString performs STRCONV(...,5) on input text while This.Text is in Unicode
+		
 		            This.env.API_GDIP.GdipDrawString(;
 		                m.lhGfx, ;
 		                m.lcLineText + CHR(0), ;
@@ -10974,7 +11007,7 @@ DEFINE CLASS pdfiumreport_repobj AS custom 		&& Input object for Render  method 
 		            BINTOC(CEILING(m.lnWidth), "F") + ;
 		            BINTOC(CEILING(m.lnHeight), "F")
 		        
-		        * Plain Api call because GDIPluxX Graphics.DrawString performs STRCONV(...,5) on input text while This.Text is in Unicode
+		
 		        This.env.API_GDIP.GdipDrawString(;
 		            m.lhGfx, ;
 		            This.Text + CHR(0), ;

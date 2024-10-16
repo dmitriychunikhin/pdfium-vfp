@@ -4,7 +4,7 @@ $ErrorActionPreference = 'Stop'
 
 Set-Location $ScriptDir
 
-.\Build\build.fxp 
+Start-Process -FilePath .\Build\build.fxp -Wait
 
 Set-Location $ScriptDir
 
@@ -22,3 +22,4 @@ Out-File -InputObject $thor_version_file_data -FilePath $thor_version_file -Enco
 Set-Location $ScriptDir
 
 Compress-Archive -Path Release/*.* -DestinationPath ./ThorUpdater/pdfium-vfp.zip -Force
+

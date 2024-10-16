@@ -1,3 +1,6 @@
+1.16
+  - Fixed error made in 1.15: PdfiumReport adds printer's top physical offset to vertical position of objects in the output pdf, as the result report's bottom line might be cut off when report is being printed
+
 1.15
   - Removed GDIPlusX dependency
   - Removed System and system_app_path properties from Pdfium_env class 
