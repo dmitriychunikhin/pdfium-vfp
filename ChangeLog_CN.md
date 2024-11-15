@@ -1,3 +1,6 @@
+1.16
+  - 修复 1.15 中的错误: PdfiumReport 在输出 pdf 对象的垂直位置上添加了打印机的顶部物理偏移，因此在打印报告时可能会切断报告的底线
+
 1.15
   - 移除 GDIPlusX 的依赖
   - 从 Pdfium_env 类中移除 System 和 system_app_path 属性  
