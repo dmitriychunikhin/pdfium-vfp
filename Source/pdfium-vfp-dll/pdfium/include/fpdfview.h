@@ -844,8 +844,9 @@ typedef struct FPDF_COLORSCHEME_ {
 //          flags       -   0 for normal display, or combination of flags
 //                          defined above.
 // Return value:
-//          None.
-FPDF_EXPORT void FPDF_CALLCONV FPDF_RenderPage(HDC dc,
+//          Returns true if the page is rendered successfully, false otherwise.
+
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDF_RenderPage(HDC dc,
                                                FPDF_PAGE page,
                                                int start_x,
                                                int start_y,
@@ -1148,7 +1149,7 @@ FPDF_EXPORT int FPDF_CALLCONV FPDFBitmap_GetFormat(FPDF_BITMAP bitmap);
 //          color       -   A 32-bit value specifing the color, in 8888 ARGB
 //                          format.
 // Return value:
-//          None.
+//          Returns whether the operation succeeded or not.
 // Comments:
 //          This function sets the color and (optionally) alpha value in the
 //          specified region of the bitmap.
@@ -1158,12 +1159,12 @@ FPDF_EXPORT int FPDF_CALLCONV FPDFBitmap_GetFormat(FPDF_BITMAP bitmap);
 //          background will be replaced by the source color and the alpha.
 //
 //          If the alpha channel is not used, the alpha parameter is ignored.
-FPDF_EXPORT void FPDF_CALLCONV FPDFBitmap_FillRect(FPDF_BITMAP bitmap,
-                                                   int left,
-                                                   int top,
-                                                   int width,
-                                                   int height,
-                                                   FPDF_DWORD color);
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFBitmap_FillRect(FPDF_BITMAP bitmap,
+                                                        int left,
+                                                        int top,
+                                                        int width,
+                                                        int height,
+                                                        FPDF_DWORD color);
 
 // Function: FPDFBitmap_GetBuffer
 //          Get data buffer of a bitmap.

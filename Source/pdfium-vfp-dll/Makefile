@@ -29,10 +29,10 @@ DLL_DEF = out/lib/${ARCH}/pdfium-vfp.def
 WARNS = -Wall
 
 # Compiler flags
-DLL_CFLAGS = -O2 -std=c++20 ${WARNS} -I. -Iinclude
+DLL_CFLAGS = -O2 -std=c++20 ${WARNS} -I. -Iinclude 
 
 # Linker flags
-DLL_LDFLAGS = -static -shared -s -Wl,--subsystem,windows,--out-implib,out/lib/${ARCH}/pdfium-vfp.a,out/lib/${ARCH}/pdfium.a,lib/${ARCH}/dwrite.lib
+DLL_LDFLAGS = -static -shared -s -Wl,--subsystem,windows,--out-implib,out/lib/${ARCH}/pdfium-vfp.a,out/lib/${ARCH}/pdfium.a,lib/${ARCH}/dwrite.lib,harfbuzz/lib/${ARCH}/libharfbuzz.a,harfbuzz/lib/${ARCH}/libharfbuzz-subset.a
 
 # Build DLL 
 all: ${DLL}

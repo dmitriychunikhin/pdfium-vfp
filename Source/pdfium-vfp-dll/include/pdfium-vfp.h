@@ -1,7 +1,7 @@
 #include <windows.h>
 #include <dwrite.h>
+#include <stdint.h>
 #include "pdfium/include/fpdf_save.h"
-
 
 #define PDFIUM_VFP_EXPORT __declspec(dllexport)
 #define PDFIUM_VFP_CALL __stdcall
@@ -30,6 +30,17 @@ PDFIUM_VFP_EXPORT BOOL PDFIUM_VFP_CALL FPDF_SaveDocument(FPDF_DOCUMENT document,
 /// @param bSymbolFont - receive TRUE if font is symbolic (windings, ...)
 /// @return TRUE on success, FALSE on failure
 PDFIUM_VFP_EXPORT BOOL PDFIUM_VFP_CALL FPDF_GetFontFileName(WCHAR* family_name, BOOL is_bold, BOOL is_italic, DWORD nCharset, WCHAR* buffer, LONG buflen, DWRITE_FONT_SIMULATIONS* nFontSimulations, DWORD* bSymbolFont);
+
+/// @brief FPDF_CreateFontSubset 
+PDFIUM_VFP_EXPORT BOOL PDFIUM_VFP_CALL FPDF_CreateFontSubset(
+    const char *font_data, 
+    unsigned int font_data_size, 
+    const WCHAR *char_list, 
+    char **font_subset_data, 
+    unsigned int *font_subset_data_size);
+
+/// @brief FPDF_DestroyFontSubset 
+PDFIUM_VFP_EXPORT void PDFIUM_VFP_CALL FPDF_DestroyFontSubset(unsigned char *font_subset_data);
 
 #ifdef __cplusplus
 } // __cplusplus defined.

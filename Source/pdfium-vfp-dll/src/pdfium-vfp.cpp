@@ -1,7 +1,8 @@
 #include "pdfium-vfp.h"
 #include <strsafe.h>
 #include <list>
-
+#include <memory>
+#include "harfbuzz/include/hb-subset.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void GetErrorMessage(LPCSTR functionName, LPSTR errMsg, DWORD errMsgSize)
@@ -235,5 +236,121 @@ BOOL PDFIUM_VFP_CALL FPDF_GetFontFileName(WCHAR* family_name, BOOL is_bold, BOOL
 
     return TRUE;
 
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Create font subset
+//////////////////////////////////////////////////////////////////////////////////////////////
+BOOL PDFIUM_VFP_CALL FPDF_CreateFontSubset(
+    const char *font_data, 
+    unsigned int font_data_size, 
+    const WCHAR *char_list, 
+    char **font_subset_data, 
+    unsigned int *font_subset_data_size)
+{
+    *font_subset_data = NULL;
+    *font_subset_data_size = 0;
+
+    hb_subset_input_t* input = hb_subset_input_create_or_fail();
+
+    if (!input) {
+        return FALSE;
+    }
+
+    hb_set_t *name_ids = hb_subset_input_set (input, HB_SUBSET_SETS_NAME_ID);
+    hb_set_add (name_ids, 0); //Keep Copyright notice.
+    hb_set_add (name_ids, 11); //Keep URL of Vendor.
+    hb_set_add (name_ids, 12); //Keep URL of Designer.
+    hb_set_add (name_ids, 13); //Keep License Description.
+    hb_set_add (name_ids, 14); //Keep License Info URL. 
+
+    hb_set_t* unicodes = hb_subset_input_unicode_set(input);
+
+    if (!unicodes) {
+        hb_subset_input_destroy(input);
+        return FALSE;
+    }
+
+    hb_set_clear(unicodes);
+
+    for (LPCWSTR c = char_list; *c; c = CharNextW(c))
+    {
+        hb_codepoint_t cu32 = *c;
+        hb_set_add (unicodes, cu32);
+    }
+
+    if (hb_set_is_empty(unicodes)) {
+        hb_subset_input_destroy(input);
+        return FALSE;
+    }
+
+    
+    hb_blob_t* font_blob = hb_blob_create_or_fail(font_data, font_data_size, HB_MEMORY_MODE_READONLY, NULL, NULL);
+
+    if (!font_blob) {
+        hb_subset_input_destroy(input);
+        return FALSE;
+    }
+    
+    hb_face_t* font_face = hb_face_create(font_blob, 0);
+
+    if (!font_face) {
+        hb_blob_destroy(font_blob);
+        hb_subset_input_destroy(input);
+        return FALSE;
+    }
+
+    
+    hb_face_t* subset = hb_subset_or_fail(font_face, input);
+    if (!subset) {
+        hb_face_destroy(font_face);
+        hb_blob_destroy(font_blob);
+        hb_subset_input_destroy(input);
+        return FALSE;
+    }
+    
+    hb_blob_t *subset_blob = hb_face_reference_blob(subset);
+    if (!subset_blob) {
+        hb_face_destroy(subset);
+        hb_face_destroy(font_face);
+        hb_blob_destroy(font_blob);
+        hb_subset_input_destroy(input);
+        return FALSE;
+    }
+
+    BOOL res = FALSE;
+
+    const char* subset_blob_data = NULL;
+    unsigned int subset_blob_size = 0;
+    
+    subset_blob_data = hb_blob_get_data(subset_blob, &subset_blob_size);
+    
+    if (subset_blob_size) {
+        *font_subset_data = (char*) malloc(subset_blob_size);
+        if (*font_subset_data) {
+            *font_subset_data_size = subset_blob_size;
+            if (memcpy_s(*font_subset_data, subset_blob_size, subset_blob_data, subset_blob_size) == 0) {
+                res = TRUE;
+            } else {
+                free(*font_subset_data);
+                *font_subset_data = NULL;
+                *font_subset_data_size = 0;
+            }
+        }
+    }
+
+    hb_blob_destroy(subset_blob);
+    hb_face_destroy(subset);
+    hb_face_destroy(font_face);
+    hb_blob_destroy(font_blob);
+    hb_subset_input_destroy(input);
+
+    return res;
+
+}
+
+void PDFIUM_VFP_CALL FPDF_DestroyFontSubset(unsigned char *font_subset_data)
+{
+    if (font_subset_data) free(font_subset_data);
 }
 

@@ -11,22 +11,49 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 	*< OBJECTDATA: ObjPath="CONST" UniqueID="" Timestamp="" />
 
 	*<DefinedPropArrayMethod>
+		*m: fpdfbitmap_create
+		*m: fpdfbitmap_createex
+		*m: fpdfbitmap_destroy
+		*m: fpdfbitmap_fillrect
+		*m: fpdfbitmap_getbuffer
+		*m: fpdfbitmap_getformat
+		*m: fpdfbitmap_getheight
+		*m: fpdfbitmap_getstride
+		*m: fpdfbitmap_getwidth
 		*m: fpdffont_close
 		*m: fpdffont_getfamilyname
 		*m: fpdffont_getflags
 		*m: fpdffont_getweight
+		*m: fpdfimageobj_setbitmap
+		*m: fpdfpageobj_createnewpath
+		*m: fpdfpageobj_createnewrect
+		*m: fpdfpageobj_createtextobj
+		*m: fpdfpageobj_destroy
 		*m: fpdfpageobj_getbounds
 		*m: fpdfpageobj_getmatrix
 		*m: fpdfpageobj_gettype
+		*m: fpdfpageobj_newimageobj
+		*m: fpdfpageobj_setdasharray
+		*m: fpdfpageobj_setfillcolor
+		*m: fpdfpageobj_setstrokecolor
+		*m: fpdfpageobj_setstrokewidth
+		*m: fpdfpageobj_transform
+		*m: fpdfpageobj_transformf
 		*m: fpdfpage_countobjects
 		*m: fpdfpage_delete
+		*m: fpdfpage_generatecontent
 		*m: fpdfpage_getobject
 		*m: fpdfpage_insertobject
 		*m: fpdfpage_new
 		*m: fpdfpage_removeobject
+		*m: fpdfpath_bezierto
+		*m: fpdfpath_lineto
+		*m: fpdfpath_moveto
+		*m: fpdfpath_setdrawmode
 		*m: fpdftextobj_getfont
 		*m: fpdftextobj_getfontsize
 		*m: fpdftextobj_gettext
+		*m: fpdftextobj_settextrendermode
 		*m: fpdftext_closepage
 		*m: fpdftext_countchars
 		*m: fpdftext_countrects
@@ -34,7 +61,10 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 		*m: fpdftext_getrect
 		*m: fpdftext_gettext
 		*m: fpdftext_getunicode
+		*m: fpdftext_loadfont
 		*m: fpdftext_loadpage
+		*m: fpdftext_loadstandardfont
+		*m: fpdftext_settext
 		*m: fpdf_closedocument
 		*m: fpdf_closepage
 		*m: fpdf_createnewdocument
@@ -45,12 +75,15 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 		*m: fpdf_getpageheight
 		*m: fpdf_getpagesizebyindex
 		*m: fpdf_getpagewidth
+		*m: fpdf_importpages
 		*m: fpdf_initlibrarywithconfig
 		*m: fpdf_loaddocument
 		*m: fpdf_loadmemdocument
 		*m: fpdf_loadpage
 		*m: fpdf_pagetodevice
 		*m: fpdf_renderpage
+		*m: vfpdf_createfontsubset
+		*m: vfpdf_destroyfontsubset
 		*m: vfpdf_getfontfilename		&& pdfium-vfp.dll function; Gets font face name and returns font filename and simulations
 		*m: vfpdf_savedocument		&& pdfium-vfp.dll function; Save pdf to the file
 		*p: pdfium_dll_path		&& Path to file pdfium.dll
@@ -107,6 +140,39 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 			<memberdata name="fpdffont_getfamilyname" type="method" display="FPDFFont_GetFamilyName"/>
 			<memberdata name="fpdffont_getflags" type="method" display="FPDFFont_GetFlags"/>
 			<memberdata name="fpdffont_getweight" type="method" display="FPDFFont_GetWeight"/>
+			<memberdata name="fpdftext_loadfont" type="method" display="FPDFText_LoadFont"/>
+			<memberdata name="fpdftext_loadstandardfont" type="method" display="FPDFText_LoadStandardFont"/>
+			<memberdata name="fpdfpageobj_createnewrect" type="method" display="FPDFPageObj_CreateNewRect"/>
+			<memberdata name="fpdfpageobj_destroy" type="method" display="FPDFPageObj_Destroy"/>
+			<memberdata name="fpdfpageobj_setfillcolor" type="method" display="FPDFPageObj_SetFillColor"/>
+			<memberdata name="fpdfpageobj_setstrokecolor" type="method" display="FPDFPageObj_SetStrokeColor"/>
+			<memberdata name="fpdfpageobj_setstrokewidth" type="method" display="FPDFPageObj_SetStrokeWidth"/>
+			<memberdata name="fpdfpageobj_createtextobj" type="method" display="FPDFPageObj_CreateTextObj"/>
+			<memberdata name="fpdfpath_setdrawmode" type="method" display="FPDFPath_SetDrawMode"/>
+			<memberdata name="fpdfpage_generatecontent" type="method" display="FPDFPage_GenerateContent"/>
+			<memberdata name="fpdfpageobj_transform" type="method" display="FPDFPageObj_Transform"/>
+			<memberdata name="fpdfpageobj_transformf" type="method" display="FPDFPageObj_TransformF"/>
+			<memberdata name="fpdftextobj_settextrendermode" type="method" display="FPDFTextObj_SetTextRenderMode"/>
+			<memberdata name="fpdftext_settext" type="method" display="FPDFText_SetText"/>
+			<memberdata name="fpdfpageobj_createnewpath" type="method" display="FPDFPageObj_CreateNewPath"/>
+			<memberdata name="fpdfpath_lineto" type="method" display="FPDFPath_LineTo"/>
+			<memberdata name="fpdfpath_moveto" type="method" display="FPDFPath_MoveTo"/>
+			<memberdata name="fpdfbitmap_create" type="method" display="FPDFBitmap_Create"/>
+			<memberdata name="fpdfbitmap_destroy" type="method" display="FPDFBitmap_Destroy"/>
+			<memberdata name="fpdfbitmap_createex" type="method" display="FPDFBitmap_CreateEx"/>
+			<memberdata name="fpdfbitmap_getformat" type="method" display="FPDFBitmap_GetFormat"/>
+			<memberdata name="fpdfbitmap_getbuffer" type="method" display="FPDFBitmap_GetBuffer"/>
+			<memberdata name="fpdfbitmap_getwidth" type="method" display="FPDFBitmap_GetWidth"/>
+			<memberdata name="fpdfbitmap_getheight" type="method" display="FPDFBitmap_GetHeight"/>
+			<memberdata name="fpdfbitmap_getstride" type="method" display="FPDFBitmap_GetStride"/>
+			<memberdata name="fpdfbitmap_fillrect" type="method" display="FPDFBitmap_FillRect"/>
+			<memberdata name="fpdfpageobj_newimageobj" type="method" display="FPDFPageObj_NewImageObj"/>
+			<memberdata name="fpdfimageobj_setbitmap" type="method" display="FPDFImageObj_SetBitmap"/>
+			<memberdata name="fpdfpageobj_setdasharray" type="method" display="FPDFPageObj_SetDashArray"/>
+			<memberdata name="fpdfpath_bezierto" type="method" display="FPDFPath_BezierTo"/>
+			<memberdata name="vfpdf_createfontsubset" type="method" display="VFPDF_CreateFontSubset"/>
+			<memberdata name="vfpdf_destroyfontsubset" type="method" display="VFPDF_DestroyFontSubset"/>
+			<memberdata name="fpdf_importpages" type="method" display="FPDF_ImportPages"/>
 		</VFPData>
 	*</PropValue>
 
@@ -118,6 +184,150 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 		Width = 0
 		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="custom" />
 	
+	PROCEDURE fpdfbitmap_create
+		LPARAMETERS width as Long, height as Long, alpha as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFBitmap_Create(m.width, m.height, m.alpha)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFBitmap_Create IN (This.pdfium_dll_path) AS FPDFBitmap_Create LONG width, LONG height, LONG alpha
+		    m.lvRes = FPDFBitmap_Create(m.width, m.height, m.alpha)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfbitmap_createex
+		LPARAMETERS width as Long, height as Long, format as Long, first_scan as Long, stride as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFBitmap_CreateEx(m.width, m.height, m.format, m.first_scan, m.stride)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFBitmap_CreateEx IN (This.pdfium_dll_path) AS FPDFBitmap_CreateEx LONG width, LONG height, LONG format, LONG first_scan, LONG stride
+		    m.lvRes = FPDFBitmap_CreateEx(m.width, m.height, m.format, m.first_scan, m.stride)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfbitmap_destroy
+		LPARAMETERS bitmap as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFBitmap_Destroy(m.bitmap)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE FPDFBitmap_Destroy IN (This.pdfium_dll_path) AS FPDFBitmap_Destroy LONG bitmap
+		    m.lvRes = FPDFBitmap_Destroy(m.bitmap)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfbitmap_fillrect
+		LPARAMETERS bitmap as Long, left as Integer, top as Integer, width as Integer, height as Integer, color as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFBitmap_FillRect(m.bitmap, m.left, m.top, m.width, m.height, m.color)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE FPDFBitmap_FillRect IN (This.pdfium_dll_path) AS FPDFBitmap_FillRect LONG bitmap, INTEGER left, INTEGER top, INTEGER width, INTEGER height, LONG color
+		    m.lvRes = FPDFBitmap_FillRect(m.bitmap, m.left, m.top, m.width, m.height, m.color)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfbitmap_getbuffer
+		LPARAMETERS bitmap as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFBitmap_GetBuffer(m.bitmap)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFBitmap_GetBuffer IN (This.pdfium_dll_path) AS FPDFBitmap_GetBuffer LONG bitmap
+		    m.lvRes = FPDFBitmap_GetBuffer(m.bitmap)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfbitmap_getformat
+		LPARAMETERS bitmap as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFBitmap_GetFormat(m.bitmap)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE INTEGER FPDFBitmap_GetFormat IN (This.pdfium_dll_path) AS FPDFBitmap_GetFormat LONG bitmap
+		    m.lvRes = FPDFBitmap_GetFormat(m.bitmap)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfbitmap_getheight
+		LPARAMETERS bitmap as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFBitmap_GetHeight(m.bitmap)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFBitmap_GetHeight IN (This.pdfium_dll_path) AS FPDFBitmap_GetHeight LONG bitmap
+		    m.lvRes = FPDFBitmap_GetHeight(m.bitmap)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfbitmap_getstride
+		LPARAMETERS bitmap as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFBitmap_GetStride(m.bitmap)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFBitmap_GetStride IN (This.pdfium_dll_path) AS FPDFBitmap_GetStride LONG bitmap
+		    m.lvRes = FPDFBitmap_GetStride(m.bitmap)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfbitmap_getwidth
+		LPARAMETERS bitmap as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFBitmap_GetWidth(m.bitmap)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFBitmap_GetWidth IN (This.pdfium_dll_path) AS FPDFBitmap_GetWidth LONG bitmap
+		    m.lvRes = FPDFBitmap_GetWidth(m.bitmap)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
 	PROCEDURE fpdffont_close
 		LPARAMETERS font as Long
 		
@@ -182,6 +392,86 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 		
 	ENDPROC
 
+	PROCEDURE fpdfimageobj_setbitmap
+		LPARAMETERS pages as Long, count as Integer, image_object as Long, bitmap as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFImageObj_SetBitmap(m.pages, m.count, m.image_object, m.bitmap)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFImageObj_SetBitmap IN (This.pdfium_dll_path) AS FPDFImageObj_SetBitmap LONG pages, INTEGER count, LONG image_object, LONG bitmap
+		    m.lvRes = FPDFImageObj_SetBitmap(m.pages, m.count, m.image_object, m.bitmap)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfpageobj_createnewpath
+		LPARAMETERS x as Single, y as Single
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFPageObj_CreateNewPath(m.x, m.y)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFPageObj_CreateNewPath IN (This.pdfium_dll_path) AS FPDFPageObj_CreateNewPath SINGLE x, SINGLE y
+		    m.lvRes = FPDFPageObj_CreateNewPath(m.x, m.y)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfpageobj_createnewrect
+		LPARAMETERS x as Single, y as Single, w as Single, h as Single
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFPageObj_CreateNewRect(m.x, m.y, m.w, m.h)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFPageObj_CreateNewRect IN (This.pdfium_dll_path) AS FPDFPageObj_CreateNewRect SINGLE x, SINGLE y, SINGLE w, SINGLE h
+		    m.lvRes = FPDFPageObj_CreateNewRect(m.x, m.y, m.w, m.h)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfpageobj_createtextobj
+		LPARAMETERS page_object as Long, font as Long, font_size as Single
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFPageObj_CreateTextObj(m.page_object, m.font, m.font_size)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFPageObj_CreateTextObj IN (This.pdfium_dll_path) AS FPDFPageObj_CreateTextObj LONG page_object, LONG font, SINGLE font_size
+		    m.lvRes = FPDFPageObj_CreateTextObj(m.page_object, m.font, m.font_size)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfpageobj_destroy
+		LPARAMETERS page_object as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFPageObj_Destroy(m.page_object)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE FPDFPageObj_Destroy IN (This.pdfium_dll_path) AS FPDFPageObj_Destroy LONG page_object
+		    m.lvRes = FPDFPageObj_Destroy(m.page_object)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
 	PROCEDURE fpdfpageobj_getbounds
 		LPARAMETERS page_object as Long, left as Single, bottom as Single, right as Single, top as Single
 		
@@ -230,6 +520,118 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 		
 	ENDPROC
 
+	PROCEDURE fpdfpageobj_newimageobj
+		LPARAMETERS document as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFPageObj_NewImageObj(m.document)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFPageObj_NewImageObj IN (This.pdfium_dll_path) AS FPDFPageObj_NewImageObj LONG document
+		    m.lvRes = FPDFPageObj_NewImageObj(m.document)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfpageobj_setdasharray
+		LPARAMETERS page_object as Long, dash_array as String, dash_count as Long, phase as Single
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFPageObj_SetDashArray(m.page_object, m.dash_array, m.dash_count, m.phase)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFPageObj_SetDashArray IN (This.pdfium_dll_path) AS FPDFPageObj_SetDashArray LONG page_object, STRING dash_array, LONG dash_count, SINGLE phase
+		    m.lvRes = FPDFPageObj_SetDashArray(m.page_object, m.dash_array, m.dash_count, m.phase)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfpageobj_setfillcolor
+		LPARAMETERS page_object as Long, R as Long, G as Long, B as Long, A as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFPageObj_SetFillColor(m.page_object, m.R, m.G, m.B, m.A)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFPageObj_SetFillColor IN (This.pdfium_dll_path) AS FPDFPageObj_SetFillColor LONG page_object, LONG R, LONG G, LONG B, LONG A
+		    m.lvRes = FPDFPageObj_SetFillColor(m.page_object, m.R, m.G, m.B, m.A)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfpageobj_setstrokecolor
+		LPARAMETERS page_object as Long, R as Long, G as Long, B as Long, A as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFPageObj_SetStrokeColor(m.page_object, m.R, m.G, m.B, m.A)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFPageObj_SetStrokeColor IN (This.pdfium_dll_path) AS FPDFPageObj_SetStrokeColor LONG page_object, LONG R, LONG G, LONG B, LONG A
+		    m.lvRes = FPDFPageObj_SetStrokeColor(m.page_object, m.R, m.G, m.B, m.A)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfpageobj_setstrokewidth
+		LPARAMETERS page_object as Long, width as Single
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFPageObj_SetStrokeWidth(m.page_object, m.width)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFPageObj_SetStrokeWidth IN (This.pdfium_dll_path) AS FPDFPageObj_SetStrokeWidth LONG page_object, SINGLE width
+		    m.lvRes = FPDFPageObj_SetStrokeWidth(m.page_object, m.width)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfpageobj_transform
+		LPARAMETERS page_object as Long, a as Double, b as Double, c as Double, d as Double, e as Double, f as Double
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFPageObj_Transform(m.page_object, m.a, m.b, m.c, m.d, m.e, m.f)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE FPDFPageObj_Transform IN (This.pdfium_dll_path) AS FPDFPageObj_Transform LONG page_object, DOUBLE a, DOUBLE b, DOUBLE c, DOUBLE d, DOUBLE e, DOUBLE f
+		    m.lvRes = FPDFPageObj_Transform(m.page_object, m.a, m.b, m.c, m.d, m.e, m.f)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfpageobj_transformf
+		LPARAMETERS page_object as Long, matrix as String
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFPageObj_TransformF(m.page_object, m.matrix)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFPageObj_TransformF IN (This.pdfium_dll_path) AS FPDFPageObj_TransformF LONG page_object, STRING matrix
+		    m.lvRes = FPDFPageObj_TransformF(m.page_object, m.matrix)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
 	PROCEDURE fpdfpage_countobjects
 		LPARAMETERS page as Long
 		
@@ -256,6 +658,22 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 		    SET CONSOLE OFF    
 		    DECLARE FPDFPage_Delete IN (This.pdfium_dll_path) AS FPDFPage_Delete LONG document, INTEGER page_index
 		    m.lvRes = FPDFPage_Delete(m.document, m.page_index)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfpage_generatecontent
+		LPARAMETERS page as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFPage_GenerateContent(m.page)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFPage_GenerateContent IN (This.pdfium_dll_path) AS FPDFPage_GenerateContent LONG page
+		    m.lvRes = FPDFPage_GenerateContent(m.page)
 		ENDTRY
 		
 		RETURN m.lvRes
@@ -326,6 +744,70 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 		
 	ENDPROC
 
+	PROCEDURE fpdfpath_bezierto
+		LPARAMETERS path as Long, x1 as Single, y1 as Single, x2 as Single, y2 as Single, x3 as Single, y3 as Single
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFPath_BezierTo(m.path, m.x1, m.y1, m.x2, m.y2, m.x3, m.y3)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFPath_BezierTo IN (This.pdfium_dll_path) AS FPDFPath_BezierTo LONG path, SINGLE x1, SINGLE y1, SINGLE x2, SINGLE y2, SINGLE x3, SINGLE y3
+		    m.lvRes = FPDFPath_BezierTo(m.path, m.x1, m.y1, m.x2, m.y2, m.x3, m.y3)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfpath_lineto
+		LPARAMETERS path as Long, x as Single, y as Single
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFPath_LineTo(m.path, m.x, m.y)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFPath_LineTo IN (This.pdfium_dll_path) AS FPDFPath_LineTo LONG path, SINGLE x, SINGLE y
+		    m.lvRes = FPDFPath_LineTo(m.path, m.x, m.y)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfpath_moveto
+		LPARAMETERS path as Long, x as Single, y as Single
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFPath_MoveTo(m.path, m.x, m.y)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFPath_MoveTo IN (This.pdfium_dll_path) AS FPDFPath_MoveTo LONG path, SINGLE x, SINGLE y
+		    m.lvRes = FPDFPath_MoveTo(m.path, m.x, m.y)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfpath_setdrawmode
+		LPARAMETERS page_object as Long, fillmode as Integer, stoke as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFPath_SetDrawMode(m.page_object, m.fillmode, m.stoke)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFPath_SetDrawMode IN (This.pdfium_dll_path) AS FPDFPath_SetDrawMode LONG page_object, INTEGER fillmode, LONG stroke
+		    m.lvRes = FPDFPath_SetDrawMode(m.page_object, m.fillmode, m.stoke)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
 	PROCEDURE fpdftextobj_getfont
 		LPARAMETERS text as Long
 		
@@ -368,6 +850,22 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 		    SET CONSOLE OFF    
 		    DECLARE LONG FPDFTextObj_GetText IN (This.pdfium_dll_path) AS FPDFTextObj_GetText LONG text_object, LONG text_page, STRING @buffer, LONG length
 		    m.lvRes = FPDFTextObj_GetText(m.text_object, m.text_page, @m.buffer, m.length)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdftextobj_settextrendermode
+		LPARAMETERS text as Long, render_mode as Integer
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFTextObj_SetTextRenderMode(m.text, m.render_mode)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFTextObj_SetTextRenderMode IN (This.pdfium_dll_path) AS FPDFTextObj_SetTextRenderMode LONG text, INTEGER render_mode
+		    m.lvRes = FPDFTextObj_SetTextRenderMode(m.text, m.render_mode)
 		ENDTRY
 		
 		RETURN m.lvRes
@@ -488,6 +986,22 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 		
 	ENDPROC
 
+	PROCEDURE fpdftext_loadfont
+		LPARAMETERS document as Long, data as Long, size as Long, font_type as Integer, cid as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFText_LoadFont(m.document, m.data, m.size, m.font_type, m.cid)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFText_LoadFont IN (This.pdfium_dll_path) AS FPDFText_LoadFont LONG document, LONG data, LONG size, INTEGER font_type, LONG cid
+		    m.lvRes = FPDFText_LoadFont(m.document, m.data, m.size, m.font_type, m.cid)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
 	PROCEDURE fpdftext_loadpage
 		LPARAMETERS page as Long
 		
@@ -498,6 +1012,38 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 		    SET CONSOLE OFF    
 		    DECLARE LONG FPDFText_LoadPage IN (This.pdfium_dll_path) AS FPDFText_LoadPage LONG page
 		    m.lvRes = FPDFText_LoadPage(m.page)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdftext_loadstandardfont
+		LPARAMETERS document as Long, font as String
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFText_LoadStandardFont(m.document, m.font)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFText_LoadStandardFont IN (This.pdfium_dll_path) AS FPDFText_LoadStandardFont LONG document, STRING font
+		    m.lvRes = FPDFText_LoadStandardFont(m.document, m.font)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdftext_settext
+		LPARAMETERS text_object as Long, text as String
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFText_SetText(m.text_object, m.text)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDFText_SetText IN (This.pdfium_dll_path) AS FPDFText_SetText LONG text_object, STRING text
+		    m.lvRes = FPDFText_SetText(m.text_object, m.text)
 		ENDTRY
 		
 		RETURN m.lvRes
@@ -661,6 +1207,22 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 		
 	ENDPROC
 
+	PROCEDURE fpdf_importpages
+		LPARAMETERS dest_doc as Long, src_doc as Long, pagerange as String, index as Integer
+		
+		LOCAL m.lvRes
+		TRY
+		   m.lvRes = FPDF_ImportPages(m.dest_doc, m.src_doc, m.pagerange, m.index)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG FPDF_ImportPages IN (This.pdfium_dll_path) AS FPDF_ImportPages LONG dest_doc, LONG src_doc, STRING pagerange, INTEGER index
+		    m.lvRes = FPDF_ImportPages(m.dest_doc, m.src_doc, m.pagerange, m.index)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
 	PROCEDURE fpdf_initlibrarywithconfig
 		LPARAMETERS config as String
 		
@@ -706,14 +1268,14 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 	ENDPROC
 
 	PROCEDURE fpdf_loadmemdocument
-		LPARAMETERS data_buf as String, size as Integer, password as String
+		LPARAMETERS data_buf as Long, size as Integer, password as String
 		
 		LOCAL m.lvRes
 		TRY
 		    m.lvRes = FPDF_LoadMemDocument(m.data_buf, m.size, m.password)
 		CATCH
 		    SET CONSOLE OFF    
-		    DECLARE LONG FPDF_LoadMemDocument IN (This.pdfium_dll_path) AS FPDF_LoadMemDocument STRING data_buf, INTEGER size, STRING password
+		    DECLARE LONG FPDF_LoadMemDocument IN (This.pdfium_dll_path) AS FPDF_LoadMemDocument LONG data_buf, INTEGER size, STRING password
 		    m.lvRes = FPDF_LoadMemDocument(m.data_buf, m.size, m.password)
 		ENDTRY
 		
@@ -769,6 +1331,48 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 		    SET CONSOLE OFF    
 		    DECLARE FPDF_RenderPage IN (This.pdfium_dll_path) AS FPDF_RenderPage LONG dc, LONG page, integer start_x, integer start_y, integer size_x, integer size_y, integer rotate, integer flags
 		    m.lvRes = FPDF_RenderPage(m.dc, m.page, m.start_x, m.start_y, m.size_x, m.size_y, m.rotate, m.flags)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE vfpdf_createfontsubset
+		LPARAMETERS font_data as Long, font_data_size as Long, char_list as String, font_subset_data as Long, font_subset_data_size as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = VFPDF_CreateFontSubset(m.font_data, m.font_data_size, m.char_list, @m.font_subset_data, @m.font_subset_data_size)
+		CATCH
+		    SET CONSOLE OFF    
+		    
+		    LOCAL m.lcPdfiumVfpDll
+		    m.lcPdfiumVfpDll = ADDBS(JUSTPATH(This.pdfium_dll_path)) + IIF(ATC("x64", SYS(17))<>0, "pdfium-vfp64.dll", "pdfium-vfp.dll")
+		    
+		    DECLARE LONG FPDF_CreateFontSubset IN (m.lcPdfiumVfpDll) AS VFPDF_CreateFontSubset LONG font_data, LONG font_data_size, STRING char_list, LONG @font_subset_data, LONG @font_subset_data_size
+		     
+		    m.lvRes = VFPDF_CreateFontSubset(m.font_data, m.font_data_size, m.char_list, @m.font_subset_data, @m.font_subset_data_size)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE vfpdf_destroyfontsubset
+		LPARAMETERS font_subset_data as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = VFPDF_DestroyFontSubset(m.font_subset_data)
+		CATCH
+		    SET CONSOLE OFF    
+		    
+		    LOCAL m.lcPdfiumVfpDll
+		    m.lcPdfiumVfpDll = ADDBS(JUSTPATH(This.pdfium_dll_path)) + IIF(ATC("x64", SYS(17))<>0, "pdfium-vfp64.dll", "pdfium-vfp.dll")
+		    
+		    DECLARE LONG FPDF_DestroyFontSubset IN (m.lcPdfiumVfpDll) AS VFPDF_DestroyFontSubset LONG font_subset_data
+		    
+		    m.lvRes = VFPDF_DestroyFontSubset(m.font_subset_data)
 		ENDTRY
 		
 		RETURN m.lvRes
@@ -840,7 +1444,17 @@ DEFINE CLASS pdfium_api_fpdf_const AS custom 		&& Pdfium API constants
  	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
 
 	*<DefinedPropArrayMethod>
+		*m: fpdfbitmap_bgr
+		*m: fpdfbitmap_bgra
+		*m: fpdfbitmap_bgrx
+		*m: fpdfbitmap_gray
+		*m: fpdfbitmap_unknown
 		*m: fpdf_err_password
+		*m: fpdf_fillmode_alternate
+		*m: fpdf_fillmode_none
+		*m: fpdf_fillmode_winding
+		*m: fpdf_font_truetype
+		*m: fpdf_font_type1
 		*m: fpdf_pageobj_form
 		*m: fpdf_pageobj_image
 		*m: fpdf_pageobj_path
@@ -848,6 +1462,10 @@ DEFINE CLASS pdfium_api_fpdf_const AS custom 		&& Pdfium API constants
 		*m: fpdf_pageobj_text
 		*m: fpdf_pageobj_unknown
 		*m: fpdf_printing
+		*m: fpdf_textrendermode_fill
+		*m: fpdf_textrendermode_fill_stroke
+		*m: fpdf_textrendermode_stroke
+		*m: fpdf_textrendermode_unknown
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
@@ -865,11 +1483,75 @@ DEFINE CLASS pdfium_api_fpdf_const AS custom 		&& Pdfium API constants
 			<memberdata name="fpdf_pageobj_shading" type="method" display="FPDF_PAGEOBJ_SHADING"/>
 			<memberdata name="fpdf_pageobj_text" type="method" display="FPDF_PAGEOBJ_TEXT"/>
 			<memberdata name="fpdf_pageobj_unknown" type="method" display="FPDF_PAGEOBJ_UNKNOWN"/>
+			<memberdata name="fpdf_font_truetype" type="method" display="FPDF_FONT_TRUETYPE"/>
+			<memberdata name="fpdf_font_type1" type="method" display="FPDF_FONT_TYPE1"/>
+			<memberdata name="fpdf_fillmode_alternate" type="method" display="FPDF_FILLMODE_ALTERNATE"/>
+			<memberdata name="fpdf_fillmode_none" type="method" display="FPDF_FILLMODE_NONE"/>
+			<memberdata name="fpdf_fillmode_winding" type="method" display="FPDF_FILLMODE_WINDING"/>
+			<memberdata name="fpdf_textrendermode_fill" type="method" display="FPDF_TEXTRENDERMODE_FILL"/>
+			<memberdata name="fpdf_textrendermode_fill_stroke" type="method" display="FPDF_TEXTRENDERMODE_FILL_STROKE"/>
+			<memberdata name="fpdf_textrendermode_stroke" type="method" display="FPDF_TEXTRENDERMODE_STROKE"/>
+			<memberdata name="fpdf_textrendermode_unknown" type="method" display="FPDF_TEXTRENDERMODE_UNKNOWN"/>
+			<memberdata name="fpdfbitmap_bgr" type="method" display="FPDFBitmap_BGR"/>
+			<memberdata name="fpdfbitmap_bgra" type="method" display="FPDFBitmap_BGRA"/>
+			<memberdata name="fpdfbitmap_bgrx" type="method" display="FPDFBitmap_BGRx"/>
+			<memberdata name="fpdfbitmap_gray" type="method" display="FPDFBitmap_Gray"/>
+			<memberdata name="fpdfbitmap_unknown" type="method" display="FPDFBitmap_Unknown"/>
 		</VFPData>
 	*</PropValue>
 	
+	PROCEDURE fpdfbitmap_bgr
+		RETURN 2
+		
+	ENDPROC
+
+	PROCEDURE fpdfbitmap_bgra
+		RETURN 4
+		
+	ENDPROC
+
+	PROCEDURE fpdfbitmap_bgrx
+		RETURN 3
+		
+	ENDPROC
+
+	PROCEDURE fpdfbitmap_gray
+		RETURN 1
+		
+	ENDPROC
+
+	PROCEDURE fpdfbitmap_unknown
+		RETURN 0
+		
+	ENDPROC
+
 	PROCEDURE fpdf_err_password
 		RETURN 4
+		
+	ENDPROC
+
+	PROCEDURE fpdf_fillmode_alternate
+		RETURN 1
+		
+	ENDPROC
+
+	PROCEDURE fpdf_fillmode_none
+		RETURN 0
+		
+	ENDPROC
+
+	PROCEDURE fpdf_fillmode_winding
+		RETURN 2
+		
+	ENDPROC
+
+	PROCEDURE fpdf_font_truetype
+		RETURN 2
+		
+	ENDPROC
+
+	PROCEDURE fpdf_font_type1
+		RETURN 1
 		
 	ENDPROC
 
@@ -905,6 +1587,26 @@ DEFINE CLASS pdfium_api_fpdf_const AS custom 		&& Pdfium API constants
 
 	PROCEDURE fpdf_printing
 		RETURN 0x800
+		
+	ENDPROC
+
+	PROCEDURE fpdf_textrendermode_fill
+		RETURN 0
+		
+	ENDPROC
+
+	PROCEDURE fpdf_textrendermode_fill_stroke
+		RETURN 2
+		
+	ENDPROC
+
+	PROCEDURE fpdf_textrendermode_stroke
+		RETURN 1
+		
+	ENDPROC
+
+	PROCEDURE fpdf_textrendermode_unknown
+		RETURN -1
 		
 	ENDPROC
 
@@ -954,6 +1656,8 @@ DEFINE CLASS pdfium_api_frx_const AS custom 		&& FRX (VFP Reports) API constants
 		*m: frx_obj_picture
 		*m: frx_obj_rectangle
 		*m: frx_obj_variable
+		*m: outputto_file
+		*m: outputto_printer
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
@@ -973,6 +1677,8 @@ DEFINE CLASS pdfium_api_frx_const AS custom 		&& FRX (VFP Reports) API constants
 			<memberdata name="align_center" type="method" display="ALIGN_CENTER"/>
 			<memberdata name="align_left" type="method" display="ALIGN_LEFT"/>
 			<memberdata name="align_right" type="method" display="ALIGN_RIGHT"/>
+			<memberdata name="outputto_file" type="method" display="OUTPUTTO_FILE"/>
+			<memberdata name="outputto_printer" type="method" display="OUTPUTTO_PRINTER"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -1026,6 +1732,16 @@ DEFINE CLASS pdfium_api_frx_const AS custom 		&& FRX (VFP Reports) API constants
 		
 	ENDPROC
 
+	PROCEDURE outputto_file
+		RETURN 2
+		
+	ENDPROC
+
+	PROCEDURE outputto_printer
+		RETURN 1
+		
+	ENDPROC
+
 ENDDEFINE
 
 DEFINE CLASS pdfium_api_gdip AS custom 
@@ -1037,6 +1753,8 @@ DEFINE CLASS pdfium_api_gdip AS custom
 	*<DefinedPropArrayMethod>
 		*m: argb
 		*m: checkerror
+		*m: gdipbitmaplockbits
+		*m: gdipbitmapunlockbits
 		*m: gdipclonefontfamily
 		*m: gdipclonestringformat
 		*m: gdipcreatebitmapfromfile
@@ -1163,6 +1881,8 @@ DEFINE CLASS pdfium_api_gdip AS custom
 			<memberdata name="gdipsettextrenderinghint" type="method" display="GdipSetTextRenderingHint"/>
 			<memberdata name="gdipsettextcontrast" type="method" display="GdipSetTextContrast"/>
 			<memberdata name="gdipscaleworldtransform" type="method" display="GdipScaleWorldTransform"/>
+			<memberdata name="gdipbitmaplockbits" type="method" display="GdipBitmapLockBits"/>
+			<memberdata name="gdipbitmapunlockbits" type="method" display="GdipBitmapUnlockBits"/>
 		</VFPData>
 	*</PropValue>
 
@@ -1236,6 +1956,42 @@ DEFINE CLASS pdfium_api_gdip AS custom
 
 	PROCEDURE Destroy
 		This.ImageEncoders = .F.
+		
+	ENDPROC
+
+	PROCEDURE gdipbitmaplockbits
+		LPARAMETERS bitmap as Long, rect as String, flags as Long, format as Long, lockedBitmapData as String
+		    
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_GdipBitmapLockBits(m.bitmap, m.rect, m.flags, m.format, @m.lockedBitmapData)
+		CATCH
+		    SET CONSOLE OFF    
+		    
+		    DECLARE Long GdipBitmapLockBits IN GDIPLUS.DLL AS WinApi_GdipBitmapLockBits Long bitmap, String rect, Long flags, Long format, String @lockedBitmapData
+		
+		    m.lvRes = WinApi_GdipBitmapLockBits(m.bitmap, m.rect, m.flags, m.format, @m.lockedBitmapData)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE gdipbitmapunlockbits
+		LPARAMETERS bitmap as Long, lockedBitmapData as String
+		    
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_GdipBitmapUnlockBits(m.bitmap, m.lockedBitmapData)
+		CATCH
+		    SET CONSOLE OFF    
+		    
+		    DECLARE Long GdipBitmapUnlockBits IN GDIPLUS.DLL AS WinApi_GdipBitmapUnlockBits Long bitmap, String lockedBitmapData
+		
+		    m.lvRes = WinApi_GdipBitmapUnlockBits(m.bitmap, m.lockedBitmapData)
+		ENDTRY
+		
+		RETURN m.lvRes
 		
 	ENDPROC
 
@@ -2409,6 +3165,9 @@ DEFINE CLASS pdfium_api_gdip_const AS custom 		&& Gdiplus constants
 		*m: gdip_fontstyleregular
 		*m: gdip_fontstylestrikeout
 		*m: gdip_fontstyleunderline
+		*m: gdip_imagelockmoderead
+		*m: gdip_imagelockmodeuserinputbuf
+		*m: gdip_imagelockmodewrite
 		*m: gdip_pixelformat32bppargb
 		*m: gdip_stringalignmentcenter
 		*m: gdip_stringalignmentfar
@@ -2447,6 +3206,9 @@ DEFINE CLASS pdfium_api_gdip_const AS custom 		&& Gdiplus constants
 			<memberdata name="gdip_stringtrimmingnone" type="method" display="Gdip_StringTrimmingNone"/>
 			<memberdata name="gdip_stringtrimmingword" type="method" display="Gdip_StringTrimmingWord"/>
 			<memberdata name="gdip_pixelformat32bppargb" type="method" display="Gdip_PixelFormat32bppARGB"/>
+			<memberdata name="gdip_imagelockmoderead" type="method" display="Gdip_ImageLockModeRead"/>
+			<memberdata name="gdip_imagelockmodewrite" type="method" display="Gdip_ImageLockModeWrite"/>
+			<memberdata name="gdip_imagelockmodeuserinputbuf" type="method" display="Gdip_ImageLockModeUserInputBuf"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -2472,6 +3234,21 @@ DEFINE CLASS pdfium_api_gdip_const AS custom 		&& Gdiplus constants
 
 	PROCEDURE gdip_fontstyleunderline
 		RETURN 4
+		
+	ENDPROC
+
+	PROCEDURE gdip_imagelockmoderead
+		RETURN 0x0001
+		
+	ENDPROC
+
+	PROCEDURE gdip_imagelockmodeuserinputbuf
+		RETURN 0x0004
+		
+	ENDPROC
+
+	PROCEDURE gdip_imagelockmodewrite
+		RETURN 0x0002
 		
 	ENDPROC
 
@@ -3716,6 +4493,16 @@ DEFINE CLASS pdfium_api_win AS custom
  	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
 
 	*<DefinedPropArrayMethod>
+		*m: bcryptclosealgorithmprovider
+		*m: bcryptcreatehash
+		*m: bcryptdestroyhash
+		*m: bcryptdestroykey
+		*m: bcryptencrypt
+		*m: bcryptfinishhash
+		*m: bcryptgeneratesymmetrickey
+		*m: bcryptgetproperty
+		*m: bcrypthashdata
+		*m: bcryptopenalgorithmprovider
 		*m: beginpaint
 		*m: bitblt
 		*m: callwindowproc
@@ -3744,6 +4531,7 @@ DEFINE CLASS pdfium_api_win AS custom
 		*m: getkeystate
 		*m: getmodulehandle
 		*m: getopenclipboardwindow
+		*m: getsavefilenamea
 		*m: getscrollinfo
 		*m: getsystemdefaultlcid
 		*m: gettickcount
@@ -3837,9 +4625,180 @@ DEFINE CLASS pdfium_api_win AS custom
 			<memberdata name="getopenclipboardwindow" type="method" display="GetOpenClipboardWindow"/>
 			<memberdata name="gettickcount" type="method" display="GetTickCount"/>
 			<memberdata name="uuidcreate" type="method" display="UuidCreate"/>
+			<memberdata name="bcryptopenalgorithmprovider" type="method" display="BCryptOpenAlgorithmProvider"/>
+			<memberdata name="bcryptgeneratesymmetrickey" type="method" display="BCryptGenerateSymmetricKey"/>
+			<memberdata name="bcryptencrypt" type="method" display="BCryptEncrypt"/>
+			<memberdata name="bcryptdestroykey" type="method" display="BCryptDestroyKey"/>
+			<memberdata name="bcryptclosealgorithmprovider" type="method" display="BCryptCloseAlgorithmProvider"/>
+			<memberdata name="bcryptdestroyhash" type="method" display="BCryptDestroyHash"/>
+			<memberdata name="bcryptfinishhash" type="method" display="BCryptFinishHash"/>
+			<memberdata name="bcrypthashdata" type="method" display="BCryptHashData"/>
+			<memberdata name="bcryptcreatehash" type="method" display="BCryptCreateHash"/>
+			<memberdata name="bcryptgetproperty" type="method" display="BCryptGetProperty"/>
+			<memberdata name="getsavefilenamea" type="method" display="GetSaveFileNameA"/>
 		</VFPData>
 	*</PropValue>
 	
+	PROCEDURE bcryptclosealgorithmprovider
+		LPARAMETERS hAlgorithm as Long, dwFlags as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_BCryptCloseAlgorithmProvider(m.hAlgorithm, m.dwFlags)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG BCryptCloseAlgorithmProvider IN BCrypt.DLL AS WinApi_BCryptCloseAlgorithmProvider LONG hAlgorithm, LONG dwFlags
+		    m.lvRes = WinApi_BCryptCloseAlgorithmProvider(m.hAlgorithm, m.dwFlags)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE bcryptcreatehash
+		LPARAMETERS hAlgorithm as Long, phHash as Long, pbHashObject as Long, cbHashObject as Long, pbSecret as String, cbSecret as Long, dwFlags as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_BCryptCreateHash(m.hAlgorithm, @m.phHash, m.pbHashObject, m.cbHashObject, m.pbSecret, m.cbSecret, m.dwFlags)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG BCryptCreateHash IN BCrypt.DLL AS WinApi_BCryptCreateHash LONG hAlgorithm, LONG @phHash, LONG pbHashObject, LONG cbHashObject, STRING pbSecret, LONG cbSecret, LONG dwFlags
+		    m.lvRes = WinApi_BCryptCreateHash(m.hAlgorithm, @m.phHash, m.pbHashObject, m.cbHashObject, m.pbSecret, m.cbSecret, m.dwFlags)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE bcryptdestroyhash
+		LPARAMETERS hHash as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_BCryptDestroyHash(m.hHash)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG BCryptDestroyHash IN BCrypt.DLL AS WinApi_BCryptDestroyHash LONG hHash
+		    m.lvRes = WinApi_BCryptDestroyHash(m.hHash)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE bcryptdestroykey
+		LPARAMETERS hKey as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_BCryptDestroyKey(m.hKey)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG BCryptDestroyKey IN BCrypt.DLL AS WinApi_BCryptDestroyKey LONG hKey
+		    m.lvRes = WinApi_BCryptDestroyKey(m.hKey)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE bcryptencrypt
+		LPARAMETERS hKey as Long, pbInput as String, cbInput as Long, pPaddingInfo as String, pbIV as String, cbIV as Long, pbOutput as String, cbOutput as Long, pcbResult as Long, dwFlags as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_BCryptEncrypt(@m.hKey, m.pbInput, m.cbInput, m.pPaddingInfo, @m.pbIV, m.cbIV, @m.pbOutput, m.cbOutput, @m.pcbResult, m.dwFlags)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG BCryptEncrypt IN BCrypt.DLL AS WinApi_BCryptEncrypt LONG hKey, STRING pbInput, LONG cbInput, STRING pPaddingInfo, STRING @pbIV, LONG cbIV, STRING @pbOutput, LONG cbOutput, LONG @pcbResult, LONG dwFlags
+		    m.lvRes = WinApi_BCryptEncrypt(@m.hKey, m.pbInput, m.cbInput, m.pPaddingInfo, @m.pbIV, m.cbIV, @m.pbOutput, m.cbOutput, @m.pcbResult, m.dwFlags)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE bcryptfinishhash
+		LPARAMETERS hHash as Long, pbOutput as String, cbOutput as Long, dwFlags as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_BCryptFinishHash(m.hHash, @m.pbOutput, m.cbOutput, m.dwFlags)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG BCryptFinishHash IN BCrypt.DLL AS WinApi_BCryptFinishHash LONG hHash, STRING @pbOutput, LONG cbOutput, LONG dwFlags
+		    m.lvRes = WinApi_BCryptFinishHash(m.hHash, @m.pbOutput, m.cbOutput, m.dwFlags)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE bcryptgeneratesymmetrickey
+		LPARAMETERS phAlgorithm as Long, phKey as Long, pbKeyObject as String, cbKeyObject as Long, pbSecret as String, cbSecret as Long, dwFlags as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_BCryptGenerateSymmetricKey(m.phAlgorithm, @m.phKey, m.pbKeyObject, m.cbKeyObject, m.pbSecret, m.cbSecret, m.dwFlags)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG BCryptGenerateSymmetricKey IN BCrypt.DLL AS WinApi_BCryptGenerateSymmetricKey LONG phAlgorithm, LONG @phKey, STRING pbKeyObject, LONG cbKeyObject, STRING pbSecret, LONG cbSecret, LONG dwFlags
+		    m.lvRes = WinApi_BCryptGenerateSymmetricKey(m.phAlgorithm, @m.phKey, m.pbKeyObject, m.cbKeyObject, m.pbSecret, m.cbSecret, m.dwFlags)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE bcryptgetproperty
+		LPARAMETERS hObject as Long, pszProperty as String, pbOutput as Long, cbOutput as Long, pcbResult as Long, dwFlags as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_BCryptGetProperty(m.hObject, m.pszProperty, @m.pbOutput, m.cbOutput, @m.pcbResult, m.dwFlags)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG BCryptGetProperty IN BCrypt.DLL AS WinApi_BCryptGetProperty LONG hObject, STRING pszProperty, LONG @pbOutput, LONG cbOutput, LONG @pcbResult, LONG dwFlags
+		    m.lvRes = WinApi_BCryptGetProperty(m.hObject, m.pszProperty, @m.pbOutput, m.cbOutput, @m.pcbResult, m.dwFlags)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE bcrypthashdata
+		LPARAMETERS hHash as Long, pbInput as String, cbInput as Long, dwFlags as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_BCryptHashData(m.hHash, m.pbInput, m.cbInput, m.dwFlags)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG BCryptHashData IN BCrypt.DLL AS WinApi_BCryptHashData LONG hHash, STRING pbInput, LONG cbInput, LONG dwFlags
+		    m.lvRes = WinApi_BCryptHashData(m.hHash, m.pbInput, m.cbInput, m.dwFlags)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE bcryptopenalgorithmprovider
+		LPARAMETERS phAlgorithm as Long, pszAlgId as String, pszImplementation as String, dwFlags as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_BCryptOpenAlgorithmProvider(@m.phAlgorithm, m.pszAlgId, m.pszImplementation, m.dwFlags)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG BCryptOpenAlgorithmProvider IN BCrypt.DLL AS WinApi_BCryptOpenAlgorithmProvider LONG @phAlgorithm, STRING pszAlgId, STRING pszImplementation, LONG dwFlags
+		    m.lvRes = WinApi_BCryptOpenAlgorithmProvider(@m.phAlgorithm, m.pszAlgId, m.pszImplementation, m.dwFlags)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
 	PROCEDURE beginpaint
 		LPARAMETERS hWnd as Long, lpPaint as String
 		
@@ -4351,6 +5310,22 @@ DEFINE CLASS pdfium_api_win AS custom
 		
 	ENDPROC
 
+	PROCEDURE getsavefilenamea
+		LPARAMETERS LPOPENFILENAMEA as String
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_GetSaveFileNameA(@m.LPOPENFILENAMEA)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG GetSaveFileNameA IN Comdlg32.dll AS WinApi_GetSaveFileNameA STRING @LPOPENFILENAMEA
+		    m.lvRes = WinApi_GetSaveFileNameA(@m.LPOPENFILENAMEA)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
 	PROCEDURE getscrollinfo
 		LPARAMETERS hwnd as Long, nBar as Integer, lpsi as String
 		
@@ -4817,6 +5792,7 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		*m: foxenv_set		&& Sets VFP environment to fit pdfium-vfp requirements
 		*m: getappname		&& Returns file name of application executable (app, exe) from the top of the call stack. Returns empty string if there is no application executable in stack
 		*m: getpdfdpi		&& PDF standart resolution (72 DPI)
+		*m: getsavefilename		&& SaveAs dialog
 		*m: getscreendpix		&& Screen horizontal DPI (constant 96 DPI)
 		*m: getscreendpiy		&& Screen vertical DPI (constant 96 DPI)
 		*m: getuniquetempfilename		&& Returns uniquie not existent filename in %userprofile%\AppData\Local\Temp
@@ -4858,6 +5834,7 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 			<memberdata name="foxenv_restore" type="method" display="FoxEnv_Restore"/>
 			<memberdata name="foxenv_set" type="method" display="FoxEnv_Set"/>
 			<memberdata name="setup_ok" type="property" display="Setup_Ok"/>
+			<memberdata name="getsavefilename" type="method" display="GetSaveFileName"/>
 		</VFPData>
 	*</PropValue>
 
@@ -4998,6 +5975,128 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 
 	PROCEDURE getpdfdpi		&& PDF standart resolution (72 DPI)
 		RETURN 72
+		
+	ENDPROC
+
+	PROCEDURE getsavefilename		&& SaveAs dialog
+		LPARAMETERS cFileName, cDefaultExtension, cFileExtensions
+		
+		#define OPENFILENAME_SIZE 88
+		#define OFN_EXPLORER 0x00080000  
+		#define OFN_OVERWRITEPROMPT 0x00000002
+		
+		
+		LOCAL lcFile, lcDefExt, lcFilter
+		m.lcFile = PADR(EVL(m.cFileName,""), 48000, CHR(0)) + CHR(0)+CHR(0)
+		m.lcDefExt = EVL(m.cDefaultExtension, "")
+		m.lcFilter = EVL(m.cFileExtensions, "*." + EVL(m.lcDefExt, "*")) + CHR(0) + EVL(m.cFileExtensions, "*." + EVL(m.lcDefExt, "*")) + CHR(0) + CHR(0)
+		
+		LOCAL lhHeap, lnPtrFile, lnPtrDefExt, lnPtrFilter, lnLenFile  
+		STORE 0 TO m.lhHeap, m.lnPtrFile, m.lnPtrDefExt, m.lnPtrFilter, m.lnLenFile
+		
+		LOCAL lcSavePath
+		m.lcSavePath = FULLPATH(".")
+		
+		LOCAL llRes
+		m.llRes = .F.
+		
+		LOCAL lcResFile
+		m.lcResFile = ""
+		
+		TRY
+		    m.lhHeap = This.API_WIN.HeapCreate(0, 0, 0)
+		    IF EMPTY(m.lhHeap)
+		        EXIT
+		    ENDIF
+		
+		    m.lnLenFile = LEN(m.lcFile)
+		    m.lnPtrFile = This.API_WIN.HeapAlloc(m.lhHeap, 0, m.lnLenFile)
+		    IF EMPTY(m.lnPtrFile)
+		        EXIT
+		    ENDIF
+		    SYS(2600, m.lnPtrFile, m.lnLenFile, m.lcFile)
+		
+		    IF EMPTY(m.lcDefExt)=.F.
+		        m.lnPtrDefExt = This.API_WIN.HeapAlloc(m.lhHeap, 0, LEN(m.lcDefExt))  
+		        IF EMPTY(m.lnPtrDefExt)
+		            EXIT
+		        ENDIF  
+		        SYS(2600, m.lnPtrDefExt, LEN(m.lcDefExt), m.lcDefExt)
+		    ENDIF
+		
+		    IF EMPTY(m.lcFilter)=.F.
+		        m.lnPtrFilter = This.API_WIN.HeapAlloc(m.lhHeap, 0, LEN(m.lcFilter))  
+		        IF EMPTY(m.lnPtrFilter)
+		            EXIT
+		        ENDIF  
+		        SYS(2600, m.lnPtrFilter, LEN(m.lcFilter), m.lcFilter)
+		    ENDIF
+		      
+		    LOCAL lpOFN As String  
+		      m.lpOFN = BINTOC(OPENFILENAME_SIZE, "4RS") ; && DWORD lStructSize  
+		      + BINTOC(0, "4RS") ; && HWND hwndOwner  
+		      + BINTOC(0, "4RS") ; && HINSTANCE hInstance  
+		      + BINTOC(m.lnPtrFilter, "4RS") ; && LPCTSTR lpstrFilter  
+		      + BINTOC(0, "4RS") ; && LPTSTR lpstrCustomFilter  
+		      + BINTOC(0, "4RS") ; && DWORD nMaxCustFilter  
+		      + BINTOC(0, "4RS") ; && DWORD nFilterIndex  
+		      + BINTOC(m.lnPtrFile, "4RS") ; && LPTSTR lpstrFile  
+		      + BINTOC(m.lnLenFile, "4RS") ; && DWORD nMaxFile  
+		      + BINTOC(0, "4RS") ; && LPTSTR lpstrFileTitle  
+		      + BINTOC(0, "4RS") ; && DWORD nMaxFileTitle  
+		      + BINTOC(0, "4RS") ; && LPCTSTR lpstrInitialDir  
+		      + BINTOC(0, "4RS") ; && LPCTSTR lpstrTitle  
+		      + BINTOC(OFN_EXPLORER + OFN_OVERWRITEPROMPT, "4RS") ; && DWORD Flags  
+		      + BINTOC(0, "2RS") ; && WORD nFileOffset  
+		      + BINTOC(0, "2RS") ; && WORD nFileExtension  
+		      + BINTOC(m.lnPtrDefExt, "4RS") ; && LPCTSTR lpstrDefExt  
+		      + BINTOC(0, "4RS") ; && LPARAM lCustData  
+		      + BINTOC(0, "4RS") ; && LPOFNHOOKPROC lpfnHook  
+		      + BINTOC(0, "4RS") ; && LPCTSTR lpTemplateName  
+		      + BINTOC(0, "4RS") ; && void * pvReserved  
+		      + BINTOC(0, "4RS") ; && DWORD dwReserved  
+		      + BINTOC(0, "4RS") && DWORD FlagsEx  
+		      
+		
+		
+		    IF EMPTY(This.API_WIN.GetSaveFileNameA(@m.lpOFN))
+		        EXIT
+		    ENDIF
+		    
+		    m.llRes = .T.
+		
+		    m.lcResFile = SYS(2600, m.lnPtrFile, m.lnLenFile)
+		    m.lcResFile = LEFT(m.lcResFile, AT(CHR(0), m.lcResFile)-1)
+		    
+		
+		FINALLY
+		
+		    IF EMPTY(m.lnPtrFile) = .F.
+		        This.API_WIN.HeapFree(m.lhHeap, 0, m.lnPtrFile)
+		        m.lnPtrFile = 0
+		    ENDIF
+		
+		    IF EMPTY(m.lnPtrDefExt) = .F.
+		        This.API_WIN.HeapFree(m.lhHeap, 0, m.lnPtrDefExt)
+		        m.lnPtrDefExt = 0
+		    ENDIF
+		    
+		    IF EMPTY(m.lnPtrFilter) = .F.
+		        This.API_WIN.HeapFree(m.lhHeap, 0, m.lnPtrFilter)
+		        m.lnPtrFilter = 0
+		    ENDIF
+		    
+		    IF EMPTY(m.lhHeap) = .F.
+		        This.API_WIN.HeapDestroy(m.lhHeap)
+		        m.lhHeap = 0
+		    ENDIF
+		ENDTRY
+		
+		CD (m.lcSavePath)
+		
+		
+		RETURN IIF(m.llRes, m.lcResFile, "")
+		
 		
 	ENDPROC
 
@@ -7896,7 +8995,7 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 
 	PROCEDURE objtoclient
 		*********************************************************************
-		** Ñopied from GDPIPlusX xfcBitmap.ObjToClientEx
+		** Copied from GDPIPlusX xfcBitmap.ObjToClientEx
 		**
 		** This replaces OBJTOCLIENT that has bugs with pageframes and SP2
 		*********************************************************************
@@ -8061,6 +9160,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*m: gdipprivatefontsload
 		*m: gdipprivatefontsrelease
 		*m: getfont
+		*m: getfontsubset
 		*m: printenvdefault_access
 		*m: printenvdefault_assign
 		*m: printenv_access
@@ -8070,6 +9170,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*m: process_frxpicture
 		*m: saveas_pdfmeta_access
 		*m: saveas_pdfmeta_assign
+		*m: setrenderer		&& Set renderer object (subclass of pdfiumreport_renderer_base)
 		*p: batchmode
 		*p: batchmodeauto		&& .T. if report was created by  _REPORTOUTPUT (= PdfiumReport.app)  and NOPAGEEJECT was set
 		*p: batchpagecount		&& Total page count of a batch
@@ -8077,6 +9178,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*p: errlog
 		*p: ext_func_getfiledata		&& User's function name with signature String (String). That accepts the filename at return file data. Example: return FILETOSTR(m.cFileName) where cFileName is the function's parameter
 		*p: fonts
+		*p: fontsubset
 		*p: gdipprivatefontshandle
 		*p: printenv		&& Print configuration state (pdfium_print_env object). ; Read-only; Overrides default print settings when report is printed from preview window or by TO PRINTER clause with This.ToPrinterNative=.T.
 		*p: printenvdefault
@@ -8089,13 +9191,14 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*p: saveas_pdfmeta		&& Pdfium_pdfmeta object; Output PDF metadata + encryption (password) and reader permissions
 		*p: screengfx
 		*p: toprinternative		&& TO PRINTER clause handing mode:: .T. - report is printed by VFP (PdfiumReport does nothing) ; .F. (default) - report is printed by PdfiumReport (renders report to PDF and prints PDF)
+		*a: rep_objects[1,0]
 		*p: _memberdata		&& XML Metadata for customizable properties
 		*p: _printenv		&& Print configuration state (pdfium_print_env object)
 		*p: _printenvdefault
 		*p: _saveas_pdfmeta
 	*</DefinedPropArrayMethod>
 
-	HIDDEN batchmodeauto,batchmode,batchpagecount,env,errlog,fonts,gdipprivatefontshandle,renderer,rep_offsetx,rep_offsety,rep_pagecount,rep_wholepage,screengfx,_printenvdefault,_printenv,_saveas_pdfmeta
+	HIDDEN batchmodeauto,batchmode,batchpagecount,env,errlog,fontsubset,fonts,gdipprivatefontshandle,renderer,rep_objects,rep_offsetx,rep_offsety,rep_pagecount,rep_wholepage,screengfx,_printenvdefault,_printenv,_saveas_pdfmeta
 	*<PropValue>
 		AllowModalMessages = .T.
 		batchmode = .F.
@@ -8106,6 +9209,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		errlog = ("")
 		ext_func_getfiledata = ("")
 		fonts = .F.
+		fontsubset = .F.
 		FRXDataSession = 0
 		gdipprivatefontshandle = 0
 		Height = 23
@@ -8167,6 +9271,10 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 			<memberdata name="gdipprivatefontsrelease" type="method" display="GdipPrivateFontsRelease"/>
 			<memberdata name="batchpagecount" type="property" display="BatchPageCount"/>
 			<memberdata name="fontsrelease" type="method" display="FontsRelease"/>
+			<memberdata name="fontsubset" type="property" display="FontSubset"/>
+			<memberdata name="rep_objects" type="property" display="Rep_Objects"/>
+			<memberdata name="getfontsubset" type="method" display="GetFontSubset"/>
+			<memberdata name="setrenderer" type="method" display="SetRenderer"/>
 		</VFPData>
 		_printenv = .F.
 		_printenvdefault = .F.
@@ -8205,7 +9313,11 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		This._PrintEnv = .F.
 		This._PrintEnvDefault = .F.
 		This.Fonts = .F.
+		This.FontSubset = .F.
 		This.ScreenGfx = 0
+		
+		DIMENSION This.Rep_Objects(1)
+		This.Rep_Objects[1] = .F.
 		
 		This._SaveAs_PDFMeta = .F.
 		
@@ -8263,49 +9375,46 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 
 	HIDDEN PROCEDURE finalize
 		
-		This.errLogShow()
-		
-		LOCAL lcTempFileName
-		m.lcTempFileName = This.Renderer.Finalize(This.SaveAs_PDFMeta)
-		
 		LOCAL loErr
 		m.loErr = .F.
 		TRY
-		    IF This.CommandClauses.OUTPUTTO = 1 AND This.ToPrinterNative = .T. && VFP native output to the printer, do nothing
+		    IF This.Rep_PageCount = 0
+		        EXIT
+		    ENDIF
+		    
+		    IF This.CommandClauses.OUTPUTTO = This.env.API_FRX.CONST.OUTPUTTO_PRINTER() AND This.ToPrinterNative = .T. && VFP native output to the printer, do nothing
 		        EXIT
 		    ENDIF
 		
-		    IF This.CommandClauses.PREVIEW = .F. AND INLIST(This.CommandClauses.OUTPUTTO,1,2)=.F. && not preview or output to the printer or to the file
+		    IF This.CommandClauses.PREVIEW = .F. AND ;
+		       INLIST(This.CommandClauses.OUTPUTTO,This.env.API_FRX.CONST.OUTPUTTO_PRINTER(),This.env.API_FRX.CONST.OUTPUTTO_FILE())=.F. 
+		
+		        ** not preview or output to the printer or to the file
 		        EXIT
 		    ENDIF
 		
 		
-		    DO CASE
-		    CASE This.CommandClauses.OUTPUTTO = 2 && output to the file
-		        IF EMPTY(This.CommandClauses.TOFILE) = .F.
-		            COPY FILE (m.lcTempFileName) TO (This.CommandClauses.TOFILE)
-		        ENDIF
+		    *************************************************
+		    * Rendering report in This.Renderer specific format
+		    *************************************************
+		    LOCAL lnRepObjCnt, liRepObj
+		    m.lnRepObjCnt = ALEN(This.Rep_Objects)
+		    
+		    IF m.lnRepObjCnt = 1 AND VARTYPE(This.Rep_Objects[m.liRepObj]) <> "O"
+		        EXIT
+		    ENDIF
+		    
+		    This.Renderer.Begin(This)
 		
-		    CASE This.CommandClauses.OUTPUTTO = 1 && output to the printer
-		        This.PreviewContainer = NEWOBJECT("PdfiumReportViewer", This.ClassLibrary, "", This.env, This.PrintEnv)
-		        This.PreviewContainer.SetReport(This)
-		        This.PreviewContainer.OpenPDF(m.lcTempFileName, This.SaveAs_PDFMeta.UserPassword)
+		    FOR m.liRepObj = 1 TO m.lnRepObjCnt
+		        This.Renderer.Render(This.Rep_Objects[m.liRepObj])
+		    ENDFOR
+		    
+		    
+		    This.Renderer.Finalize(This)
+		    *************************************************
 		
-		        IF This.CommandClauses.PROMPT
-		            This.PreviewContainer.Show()
-		        ENDIF
-		        
-		        This.PreviewContainer.PrintReport()
-		    
-		    
-		    CASE This.CommandClauses.PREVIEW
-		        This.PreviewContainer = NEWOBJECT("PdfiumReportViewer", This.ClassLibrary, "", This.env, This.PrintEnv)
-		        This.PreviewContainer.SetReport(This)
-		        This.PreviewContainer.OpenPDF(m.lcTempFileName, This.SaveAs_PDFMeta.UserPassword)
-		        This.PreviewContainer.SaveAs_Filename = EVL(NVL(This.SaveAs_Filename,""),"")
-		        This.PreviewContainer.Show(1)
-		    
-		    ENDCASE
+		
 		
 		CATCH TO m.loErr
 		    This.ErrMsg(m.loErr)
@@ -8313,14 +9422,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		FINALLY
 		
-		    TRY
-		        IF FILE(m.lcTempFileName,1)
-		            DELETE FILE (m.lcTempFileName)
-		        ENDIF
-		    CATCH
-		    ENDTRY
-		
-		    
 		    This.PreviewContainer = NULL
 		    
 		    This._PrintEnv = .F.
@@ -8328,6 +9429,9 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    This.FontsRelease()
 		    This.GdipPrivateFontsRelease()
 		
+		    DIMENSION This.Rep_Objects(1)
+		    This.Rep_Objects[1] = .F.
+		    
 		ENDTRY
 		
 	ENDPROC
@@ -8352,11 +9456,11 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		ENDFOR
 		
 		This.Fonts.Remove(-1)
+		This.FontSubset.Remove(-1)
 		
 	ENDPROC
 
 	HIDDEN PROCEDURE gdipprivatefontsload
-		
 		This.GdipPrivateFontsRelease()
 		
 		IF This.env.PrivateFonts.Count = 0
@@ -8383,8 +9487,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    ENDIF
 		    
 		ENDFOR
-		
-		
 		
 	ENDPROC
 
@@ -8622,6 +9724,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		This.env.API_GDIP.CheckError(This.env.API_GDIP.GdipGetFontHeightGivenDPI(m.lhGdipFont, 96, @m.lnFontHeight))
 		
+		m.loFont.FontSize = m.loRepObj.FontSize
 		m.loFont.FontHeight = MAX(m.lnFontHeight, 0)
 		m.loFont.FontHeightCeil = CEILING(m.loFont.FontHeight)
 		
@@ -8629,7 +9732,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		
 		
-		LOCAL lnCellDescent, lnCellAscent, lnEmHeight
+		LOCAL lnCellDescent, lnCellAscent, lnLineSpacing, lnEmHeight
 		
 		m.lnCellDescent = 0
 		IF This.env.API_GDIP.GdipGetCellDescent(m.lhGdipFontFamily, 0, @m.lnCellDescent) != 0
@@ -8642,6 +9745,12 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    m.lnCellAscent = 0
 		ENDIF
 		
+		m.lnLineSpacing = 0
+		IF This.env.API_GDIP.GdipGetLineSpacing(m.lhGdipFontFamily, 0, @m.lnLineSpacing) != 0
+		    m.lnLineSpacing = 0
+		ENDIF
+		
+		
 		m.lnEmHeight = 0
 		IF This.env.API_GDIP.GdipGetEmHeight(m.lhGdipFontFamily, 0, @m.lnEmHeight) != 0
 		    m.lnEmHeight = 0
@@ -8650,9 +9759,11 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		IF EMPTY(m.lnEmHeight) = .F.
 		    m.loFont.FontDescent = m.loFont.LineHeight * m.lnCellDescent / m.lnEmHeight
 		    m.loFont.FontAscent = m.loFont.LineHeight * m.lnCellAscent / m.lnEmHeight
+		    m.loFont.LineSpacing = m.loFont.LineHeight * m.lnLineSpacing / m.lnEmHeight
 		ELSE
 		    m.loFont.FontDescent = 0
 		    m.loFont.FontAscent = 0
+		    m.loFont.LineSpacing = 0
 		ENDIF
 		
 		
@@ -8666,6 +9777,39 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		This.Fonts.Add(m.loFont, m.lcFontID)
 		
 		RETURN m.loFont
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE getfontsubset
+		LPARAMETERS loRepObj
+		
+		IF EMPTY(m.loRepObj.Font.FontFileName) = .T.
+		    RETURN .F.
+		ENDIF
+		
+		LOCAL loFontSubset
+		IF This.FontSubset.GetKey(m.loRepObj.Font.FontFileName) = 0
+		    m.loFontSubset = NEWOBJECT("Empty")
+		    ADDPROPERTY(m.loFontSubset, "CharSubset", "")
+		    ADDPROPERTY(m.loFontSubset, "FontFileName", m.loRepObj.Font.FontFileName)
+		    This.FontSubset.Add(m.loFontSubset, m.loRepObj.Font.FontFileName)
+		ELSE
+		    m.loFontSubset = This.FontSubset.Item(m.loRepObj.Font.FontFileName)
+		ENDIF
+		
+		LOCAL liChar, lcChar
+		m.liChar = 1
+		FOR m.liChar = 1 TO LEN(m.loRepObj.Text)/2
+		    m.lcChar = SUBSTR(m.loRepObj.Text, m.liChar * 2 - 1, 2)
+		    IF INLIST(m.lcChar, 0h0A00, 0h0D00)
+		        LOOP
+		    ENDIF
+		    IF AT(m.lcChar, m.loFontSubset.CharSubset) = 0
+		        m.loFontSubset.CharSubset = m.loFontSubset.CharSubset + m.lcChar
+		    ENDIF
+		ENDFOR
+		
+		RETURN m.loFontSubset
 		
 	ENDPROC
 
@@ -8683,9 +9827,10 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		This.env.API_GDIP.CheckError(This.env.API_GDIP.GdipCreateFromHWND(Application.HWnd, @m.lnScreenGfx))
 		This.ScreenGfx = m.lnScreenGfx
 		
-		This.Renderer = NEWOBJECT("PdfiumReport_renderer_pdf", This.ClassLibrary, "", This.env)
+		This.Renderer = NEWOBJECT("PdfiumReport_renderer_odt", This.ClassLibrary, "", This.env)
 		
 		This.Fonts = NEWOBJECT("Collection")
+		This.FontSubset = NEWOBJECT("Collection")
 		
 	ENDPROC
 
@@ -8704,21 +9849,17 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		This.PrintEnv.Setup(m.loPrintEnv, .T.)
 		m.loPrintEnv = .F.
 		
-		IF This.CommandClauses.OUTPUTTO = 1
+		IF This.CommandClauses.OUTPUTTO = This.env.API_FRX.CONST.OUTPUTTO_PRINTER()
 		    This.PrintEnv.AllowPrintSetupUI = This.CommandClauses.PROMPT
 		ENDIF
 		
 		********************************************************
 		
 		********************************************************
-		DO CASE
-		CASE This.CommandClauses.ISDESIGNERLOADED
-		    This.CommandClauses.PREVIEW = .T.
-		 
-		CASE This.CommandClauses.OUTPUTTO = 1 AND This.ToPrinterNative = .T. && VFP native output to the printer, do nothing
+		IF This.CommandClauses.OUTPUTTO = This.env.API_FRX.CONST.OUTPUTTO_PRINTER() AND This.ToPrinterNative = .T. && VFP native output to the printer, do nothing
 		    This.ListenerType = 0
 		    RETURN
-		ENDCASE
+		ENDIF
 		********************************************************
 		
 		IF This.BatchModeAuto = .F. AND This.BatchMode = .F.
@@ -9230,7 +10371,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		m.loRepObj.FillPat = m.loFrx.FillPat
 		
-		m.loRepObj.Transparent = m.loFrx.Mode && Transparency: 0 - Opaque, 1 - Transparent
+		m.loRepObj.Transparent = IIF(BITTEST(m.loFrx.Mode,0),1,0) && Transparency: 0 - Opaque, 1 - Transparent
 		
 		DO CASE
 		CASE m.loFrx.ObjType = m.loFRXC.FRX_OBJ_FIELD()
@@ -9271,6 +10412,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		CASE INLIST(m.loFrx.ObjType, m.loFRXC.FRX_OBJ_FIELD(), m.loFRXC.FRX_OBJ_LABEL()) && Text
 		    
 		    m.loRepObj.Font = This.GetFont(m.loRepObj) && Font object assignment
+		    m.loRepObj.FontSubset = This.GetFontSubset(m.loRepObj)
 		
 		
 		CASE m.loFrx.ObjType = m.loFRXC.FRX_OBJ_PICTURE() && Picture
@@ -9284,7 +10426,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    m.loRepObj.PosTop = m.loRepObj.PosTop + IIF(m.loRepObj.LineType = 1, m.loRepObj.PenSize * 0.5, 0)
 		    m.loRepObj.PosTopRev = m.loRepObj.PosTopRev - IIF(m.loRepObj.LineType = 1, m.loRepObj.PenSize * 0.5, 0)
 		
-		
+		    
 		CASE m.loFrx.ObjType = m.loFRXC.FRX_OBJ_RECTANGLE() && Rectangle
 		
 		    m.loRepObj.PosLeft = m.loRepObj.PosLeft + m.loRepObj.PenSize * 0.5
@@ -9296,20 +10438,17 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		ENDCASE
 		
 		
+		LOCAL lnRepObjCnt
+		m.lnRepObjCnt = ALEN(This.Rep_Objects)
 		
+		IF m.lnRepObjCnt = 1 AND VARTYPE(This.Rep_Objects[1]) <> "O"
+		    m.lnRepObjCnt = 0
+		ENDIF
 		
-		*************************************************
-		* Rendering
-		*************************************************
-		LOCAL loErr
-		m.loErr = .F.
-		TRY
+		m.lnRepObjCnt = m.lnRepObjCnt + 1
+		DIMENSION This.Rep_Objects(m.lnRepObjCnt)
 		
-		    This.Renderer.Render(m.loRepObj)
-		
-		CATCH TO m.loErr
-		    This.ErrMsg(m.loErr)
-		ENDTRY
+		This.Rep_Objects[m.lnRepObjCnt] = m.loRepObj
 		
 		
 	ENDPROC
@@ -9331,6 +10470,13 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 	ENDPROC
 
+	PROCEDURE setrenderer		&& Set renderer object (subclass of pdfiumreport_renderer_base)
+		LPARAMETERS toRenderer
+		
+		This.Renderer = m.toRenderer
+		
+	ENDPROC
+
 	PROCEDURE UnloadReport
 		
 		IF This.BatchModeAuto = .F. AND This.BatchMode = .F.
@@ -9347,24 +10493,43 @@ DEFINE CLASS pdfiumreport_renderer_base AS custom 		&& PdfiumReport renderer imp
  	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
 
 	*<DefinedPropArrayMethod>
+		*m: begin
 		*m: finalize
 		*m: render		&& Occurs when Report Engine is ready to provide output for each layout object in a band.
+		*p: env
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
 	HIDDEN AddObject,AddProperty,CloneObject,Comment,ControlCount,Controls,Error,HelpContextID,NewObject,Objects,Picture,ReadExpression,ReadMethod,RemoveObject,SaveAsClass,ShowWhatsThis,Tag,WhatsThisHelpID,WriteExpression,WriteMethod
+	PROTECTED env
 	*<PropValue>
+		env = .F.
 		Height = 27
 		Name = "pdfiumreport_renderer_base"
 		Width = 27
 		_memberdata = <VFPData>
 			<memberdata name="finalize" type="method" display="Finalize"/>
 			<memberdata name="render" type="method" display="Render"/>
+			<memberdata name="begin" type="method" display="Begin"/>
+			<memberdata name="env" type="property" display="env"/>
 		</VFPData>
 	*</PropValue>
 	
+	PROCEDURE begin
+		LPARAMETERS loPdfiumReport as PdfiumReport of pdfium-vfp.vcx
+		
+	ENDPROC
+
 	PROCEDURE finalize
-		LPARAMETERS loPDFMeta as pdfium_pdfmeta of pdfium-vfp.vcx
+		LPARAMETERS loPdfiumReport as PdfiumReport of pdfium-vfp.vcx
+		
+	ENDPROC
+
+	PROCEDURE Init
+		LPARAMETERS toEnv as pdfium_env of pdfium-vfp.vcx
+		
+		This.env = NEWOBJECT("pdfium_env", This.ClassLibrary)
+		This.env.Setup(m.toEnv)
 		
 	ENDPROC
 
@@ -9380,14 +10545,860 @@ ENDDEFINE
 DEFINE CLASS pdfiumreport_renderer_odt AS pdfiumreport_renderer_base OF "pdfium-vfp.vcx" 		&& ODT rendering implementation
  	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
 
-	HIDDEN AddObject,AddProperty,CloneObject,Comment,ControlCount,Controls,Error,HelpContextID,NewObject,Objects,Picture,ReadExpression,ReadMethod,RemoveObject,SaveAsClass,ShowWhatsThis,Tag,WhatsThisHelpID,WriteExpression,WriteMethod
+	*<DefinedPropArrayMethod>
+		*m: render_frxfield
+		*m: render_frxlabel
+		*m: render_frxline
+		*m: render_frxpicture
+		*m: render_frxrectangle
+		*m: render_text
+		*m: write_content
+		*m: write_manifest
+		*m: write_meta
+		*m: write_mimetype
+		*m: write_settings
+		*m: write_styles
+		*m: xmlescape
+		*p: fontstyles
+		*p: odt_pagecount
+		*p: pages		&& An array used to access individual Pages in a PageFrame object.
+		*p: pagestyles
+		*p: textstyles
+		*p: workdir
+	*</DefinedPropArrayMethod>
+
+	HIDDEN AddObject,AddProperty,CloneObject,Comment,ControlCount,Controls,Error,fontstyles,HelpContextID,NewObject,Objects,odt_pagecount,pagestyles,pages,Picture,ReadExpression,ReadMethod,RemoveObject,SaveAsClass,ShowWhatsThis,Tag,textstyles,WhatsThisHelpID,workdir,WriteExpression,WriteMethod
 	*<PropValue>
+		fontstyles = .F.
 		Name = "pdfiumreport_renderer_odt"
+		odt_pagecount = 0
+		pages = .F.
+		pagestyles = .F.
+		textstyles = .F.
+		workdir = ("")
+		_memberdata = <VFPData>
+			<memberdata name="odt_pagecount" type="property" display="odt_pagecount"/>
+			<memberdata name="pagestyles" type="property" display="PageStyles"/>
+			<memberdata name="pages" type="property" display="Pages"/>
+			<memberdata name="textstyles" type="property" display="TextStyles"/>
+			<memberdata name="render_frxfield" type="method" display="Render_FrxField"/>
+			<memberdata name="render_frxlabel" type="method" display="Render_FrxLabel"/>
+			<memberdata name="render_frxline" type="method" display="Render_FrxLine"/>
+			<memberdata name="render_frxrectangle" type="method" display="Render_FrxRectangle"/>
+			<memberdata name="render_frxpicture" type="method" display="Render_FrxPicture"/>
+			<memberdata name="render_text" type="method" display="Render_Text"/>
+			<memberdata name="write_content" type="method" display="Write_Content"/>
+			<memberdata name="write_manifest" type="method" display="Write_Manifest"/>
+			<memberdata name="write_meta" type="method" display="Write_Meta"/>
+			<memberdata name="write_mimetype" type="method" display="Write_Mimetype"/>
+			<memberdata name="write_settings" type="method" display="Write_Settings"/>
+			<memberdata name="write_styles" type="method" display="Write_Styles"/>
+			<memberdata name="xmlescape" type="method" display="XmlEscape"/>
+			<memberdata name="workdir" type="property" display="workdir"/>
+			<memberdata name="fontstyles" type="property" display="FontStyles"/>
+		</VFPData>
 	*</PropValue>
+	
+	PROCEDURE begin
+		LPARAMETERS loPdfiumReport as PdfiumReport of pdfium-vfp.vcx
+		
+		This.workdir = "..\odt"
+		
+		
+		IF DIRECTORY(This.workdir,1) = .F.
+		    MKDIR (This.workdir)
+		ENDIF
+		
+		
+		This.PageStyles = NEWOBJECT("Collection")
+		This.Pages = NEWOBJECT("Collection")
+		This.FontStyles = NEWOBJECT("Collection")
+		This.TextStyles = NEWOBJECT("Collection")
+		
+	ENDPROC
+
+	PROCEDURE finalize
+		LPARAMETERS loPdfiumReport as PdfiumReport of pdfium-vfp.vcx
+		
+		
+		LOCAL loPage
+		FOR EACH m.loPage IN This.Pages FOXOBJECT
+		    TEXT TO m.loPage.ContentXML ADDITIVE TEXTMERGE NOSHOW FLAGS 1 PRETEXT 15
+		    <text:p text:style-name="<<m.loPage.Style.layout_name>>">
+		        <<m.loPage.TextBlockXML>>
+		    </text:p>
+		    ENDTEXT
+		ENDFOR
+		
+		
+		LOCAL lSaveSafety
+		m.lSaveSafety = SET("Safety")
+		
+		LOCAL lSaveCurDir
+		m.lSaveCurDir = FULLPATH(".")
+		
+		SET SAFETY OFF 
+		This.write_content()
+		This.write_manifest()
+		This.write_meta()
+		This.write_mimetype()
+		This.write_settings()
+		This.write_styles()
+		
+		SET SAFETY &lSaveSafety
+		
+		CD (This.workdir)
+		
+		DELETE FILE test.odt
+		RUN pwsh -File comp.ps1
+		
+		CD (m.lSaveCurDir)
+		
+		
+		This.PageStyles.Remove(-1)
+		This.Pages.Remove(-1)
+		This.FontStyles.Remove(-1)
+		This.TextStyles.Remove(-1)
+		
+	ENDPROC
+
+	PROCEDURE render
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
+		
+		LOCAL lnDpiCoef
+		m.lnDpiCoef = 1 / 96
+		
+		LOCAL loFRXC
+		m.loFRXC = This.env.API_FRX.CONST
+		
+		
+		*************************************************
+		* Create new page
+		*************************************************
+		IF m.loRepObj.Batch_PageNo > This.odt_pagecount
+		
+		    This.odt_pagecount = This.odt_pagecount + 1
+		
+		    LOCAL loPage
+		    m.loPage = NEWOBJECT("empty")
+		    ADDPROPERTY(m.loPage, "ContentXML", "")
+		    ADDPROPERTY(m.loPage, "TextBlockXML", "")
+		
+		    This.Pages.Add(m.loPage)
+		
+		
+		    LOCAL lnPageWidth, lnPageHeight
+		    m.lnPageWidth = m.loRepObj.Rep_PageWidth * m.lnDpiCoef
+		    m.lnPageHeight = m.loRepObj.Rep_PageHeight * m.lnDpiCoef
+		        
+		    LOCAL lcPageStyleID
+		    m.lcPageStyleID = TEXTMERGE("w<<m.lnPageWidth>>;h<<m.lnPageHeight>>")
+		        
+		    LOCAL loPageStyle
+		    IF This.PageStyles.GetKey(m.lcPageStyleID) = 0
+		        m.loPageStyle = NEWOBJECT("empty")
+		        ADDPROPERTY(m.loPageStyle, "layout_name", TEXTMERGE("PL<<This.odt_pagecount>>"))
+		        ADDPROPERTY(m.loPageStyle, "layout", "")
+		        ADDPROPERTY(m.loPageStyle, "master_name", TEXTMERGE("MP<<This.odt_pagecount>>"))
+		        ADDPROPERTY(m.loPageStyle, "master", "")
+		        
+		        TEXT TO m.loPageStyle.layout TEXTMERGE NOSHOW FLAGS 1 PRETEXT 15    
+		        <style:page-layout style:name="<<m.loPageStyle.layout_name>>">
+		            <style:page-layout-properties fo:page-width="<<m.lnPageWidth>>in" fo:page-height="<<m.lnPageHeight>>in"
+		                style:print-orientation="portrait" fo:margin-top="0.25in" fo:margin-left="0.25in" fo:margin-bottom="0.25in" fo:margin-right="0.25in" 
+		                style:num-format="1" style:writing-mode="lr-tb">
+		                <style:footnote-sep style:width="0.007in" style:rel-width="33%" style:color="#000000" style:line-style="solid" style:adjustment="left" />
+		            </style:page-layout-properties>
+		        </style:page-layout>
+		        ENDTEXT
+		        
+		        TEXT TO m.loPageStyle.master TEXTMERGE NOSHOW FLAGS 1 PRETEXT 15    
+		        <style:master-page style:name="<<m.loPageStyle.master_name>>" style:page-layout-name="<<m.loPageStyle.layout_name>>" />
+		        ENDTEXT
+		        
+		        This.PageStyles.Add(m.loPageStyle, m.lcPageStyleID)
+		    ELSE
+		        m.loPageStyle = This.PageStyles.Item(m.lcPageStyleID)
+		    ENDIF
+		
+		    ADDPROPERTY(m.loPage, "style", m.loPageStyle)
+		
+		ENDIF
+		
+		
+		*************************************************
+		
+		DO CASE
+		CASE m.loRepObj.ObjType = m.loFRXC.FRX_OBJ_FIELD()
+		    This.Render_FrxField(m.loRepObj)
+		   
+		CASE m.loRepObj.ObjType = m.loFRXC.FRX_OBJ_LABEL()
+		    This.Render_FrxLabel(m.loRepObj)
+		
+		CASE m.loRepObj.ObjType = m.loFRXC.FRX_OBJ_LINE()
+		    This.Render_FrxLine(m.loRepObj)
+		
+		CASE m.loRepObj.ObjType = m.loFRXC.FRX_OBJ_RECTANGLE()
+		    This.Render_FrxRectangle(m.loRepObj)
+		
+		CASE m.loRepObj.ObjType = m.loFRXC.FRX_OBJ_PICTURE()
+		    This.Render_FrxPicture(m.loRepObj)
+		
+		ENDCASE
+		*************************************************
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE render_frxfield
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
+		
+		This.Render_Text(m.loRepObj)
+		
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE render_frxlabel
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
+		
+		This.Render_Text(m.loRepObj)
+		
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE render_frxline
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE render_frxpicture
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE render_frxrectangle
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE render_text
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
+		
+		LOCAL lnTopMargin
+		m.lnTopMargin = 0.25
+		
+		
+		LOCAL loFRXC
+		m.loFRXC = This.env.API_FRX.CONST
+		
+		
+		LOCAL loPage
+		m.loPage = This.Pages.Item(This.odt_pagecount)
+		
+		
+		LOCAL lnDpiCoef
+		m.lnDpiCoef = 1 / 96
+		
+		LOCAL lnLeft, lnTop, lnWidth, lnHeight
+		m.lnLeft = ROUND(m.loRepObj.PosLeft * m.lnDpiCoef, 1)
+		m.lnTop = ROUND(m.loRepObj.PosTop * m.lnDpiCoef, 1)
+		m.lnWidth = ROUND(m.loRepObj.SizeWidth * m.lnDpiCoef, 1)
+		m.lnHeight = ROUND(m.loRepObj.SizeHeight * m.lnDpiCoef, 1)
+		
+		*!*    LOCAL lnX, lnY
+		*!*    m.lnX = ABS(m.lnPageObjWidth * COS(m.lnRot) + m.lnPageObjHeight * SIN(m.lnRot))
+		*!*    m.lnY = ABS(-m.lnPageObjWidth * SIN(m.lnRot) + m.lnPageObjHeight * COS(m.lnRot)) 
+		
+		*!*    m.lnPageObjWidth = m.lnX
+		*!*    m.lnPageObjHeight = m.lnY
+		
+		
+		LOCAL lnRotate
+		m.lnRotate = -m.loRepObj.Rotate * PI() / 180
+		
+		LOCAL lcFontStyleID
+		m.lcFontStyleID = TEXTMERGE("<<m.loRepObj.FontFace>>")
+		LOCAL loFontStyle
+		IF This.FontStyles.GetKey(m.lcFontStyleID) = 0
+		    m.loFontStyle = NEWOBJECT("empty")
+		    ADDPROPERTY(m.loFontStyle, "name", m.loRepObj.FontFace)
+		    ADDPROPERTY(m.loFontStyle, "stylexml", "")
+		    
+		    TEXT TO m.loFontStyle.stylexml TEXTMERGE NOSHOW FLAGS 1 PRETEXT 15
+		    <style:font-face style:name="<<This.XmlEscape(m.loFontStyle.name)>>" svg:font-family="<<This.XmlEscape(m.loRepObj.FontFace)>>"/>
+		    ENDTEXT
+		    
+		    This.FontStyles.Add(m.loFontStyle, m.lcFontStyleID)
+		ELSE
+		    m.loFontStyle = This.FontStyles.Item(m.lcFontStyleID)
+		ENDIF
+		
+		
+		LOCAL lcTextStyleID
+		m.lcTextStyleID = TEXTMERGE("<<m.loRepObj.FontFace>>;<<m.loRepObj.FontSize>>")
+		
+		LOCAL loTextStyle
+		IF This.TextStyles.GetKey(m.lcTextStyleID) = 0
+		    m.loTextStyle = NEWOBJECT("empty")
+		    ADDPROPERTY(m.loTextStyle, "name", TEXTMERGE("P<<This.TextStyles.Count + 1>>"))
+		    ADDPROPERTY(m.loTextStyle, "stylexml", "")
+		    
+		    TEXT TO m.loTextStyle.stylexml TEXTMERGE NOSHOW FLAGS 1 PRETEXT 15
+		    <style:style style:name="<<m.loTextStyle.name>>" style:parent-style-name="_Default" style:family="paragraph">
+		        <style:text-properties style:font-name="<<This.XmlEscape(m.loRepObj.FontFace)>>" fo:font-size="<<m.loRepObj.FontSize>>pt"/>
+		    </style:style>
+		    ENDTEXT
+		    
+		    This.TextStyles.Add(m.loTextStyle, m.lcTextStyleID)
+		ELSE
+		    m.loTextStyle = This.TextStyles.Item(m.lcTextStyleID)
+		ENDIF
+		
+		
+		LOCAL lcText
+		m.lcText = This.XmlEscape(STRCONV(m.loRepObj.Text, 10))
+		
+		
+		TEXT TO m.loPage.TextBlockXML ADDITIVE TEXTMERGE NOSHOW FLAGS 1 PRETEXT 15
+		<draw:frame text:anchor-type="paragraph" draw:z-index="1" 
+		    draw:style-name="gr1"
+		    draw:transform="rotate(<<m.lnRotate>>) translate(<<m.lnLeft>>in <<m.lnTop - m.lnTopMargin>>in)"
+		    svg:width="<<m.lnWidth>>in"
+		    svg:height="<<m.lnHeight>>in">
+		    <draw:text-box>
+		        <text:p text:style-name="<<m.loTextStyle.name>>">
+		            <<m.lcText>>
+		        </text:p>
+		    </draw:text-box>
+		</draw:frame>
+		ENDTEXT
+		
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE write_content
+		
+		LOCAL lcPageParagraphStyles
+		STORE "" TO m.lcPageParagraphStyles
+		
+		LOCAL loPageStyle
+		FOR EACH m.loPageStyle IN This.PageStyles FOXOBJECT
+		
+		    TEXT TO m.lcPageParagraphStyles ADDITIVE TEXTMERGE NOSHOW FLAGS 1 PRETEXT 15
+		    <style:style 
+		        style:name="<<m.loPageStyle.layout_name>>" 
+		        style:parent-style-name="_Default" 
+		        style:master-page-name="<<m.loPageStyle.master_name>>"
+		        style:family="paragraph">
+		        
+		        <style:paragraph-properties fo:break-before="page" />
+		        
+		    </style:style>
+		    ENDTEXT
+		
+		ENDFOR
+		
+		LOCAL lcFontStyles
+		STORE "" TO m.lcFontStyles
+		
+		LOCAL loFontStyle
+		FOR EACH m.loFontStyle IN This.FontStyles FOXOBJECT
+		
+		    TEXT TO m.lcFontStyles ADDITIVE TEXTMERGE NOSHOW FLAGS 1 PRETEXT 15
+		    <<m.loFontStyle.stylexml>>
+		    ENDTEXT
+		
+		ENDFOR
+		
+		
+		LOCAL lcTextStyles
+		STORE "" TO m.lcTextStyles
+		
+		LOCAL loTextStyle
+		FOR EACH m.loTextStyle IN This.TextStyles FOXOBJECT
+		
+		    TEXT TO m.lcTextStyles ADDITIVE TEXTMERGE NOSHOW FLAGS 1 PRETEXT 15
+		    <<m.loTextStyle.stylexml>>
+		    ENDTEXT
+		
+		ENDFOR
+		
+		LOCAL lcPagesXML
+		STORE "" TO m.lcPagesXML
+		
+		LOCAL loPage
+		FOR EACH m.loPage IN This.Pages FOXOBJECT
+		    m.lcPagesXML = m.lcPagesXML + m.loPage.ContentXML
+		ENDFOR
+		
+		
+		LOCAL lcXml
+		m.lcXml = ""
+		
+		TEXT TO m.lcXml ADDITIVE NOSHOW FLAGS 1 PRETEXT 15
+		<?xml version="1.0" encoding="UTF-8"?>
+		<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+		    xmlns:ooo="http://openoffice.org/2004/office"
+		    xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
+		    xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/"
+		    xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"
+		    xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
+		    xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+		    xmlns:rpt="http://openoffice.org/2005/report"
+		    xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+		    xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0"
+		    xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
+		    xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0"
+		    xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0"
+		    xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0"
+		    xmlns:ooow="http://openoffice.org/2004/writer" xmlns:oooc="http://openoffice.org/2004/calc"
+		    xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2"
+		    xmlns:xforms="http://www.w3.org/2002/xforms" xmlns:tableooo="http://openoffice.org/2009/table"
+		    xmlns:calcext="urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0"
+		    xmlns:drawooo="http://openoffice.org/2010/draw" xmlns:xhtml="http://www.w3.org/1999/xhtml"
+		    xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0"
+		    xmlns:field="urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0"
+		    xmlns:math="http://www.w3.org/1998/Math/MathML"
+		    xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0"
+		    xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0"
+		    xmlns:formx="urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0"
+		    xmlns:dom="http://www.w3.org/2001/xml-events" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		    xmlns:grddl="http://www.w3.org/2003/g/data-view#" xmlns:css3t="http://www.w3.org/TR/css3-text/"
+		    xmlns:officeooo="http://openoffice.org/2009/office" office:version="1.3">
+		    <office:scripts/>
+		ENDTEXT
+		
+		
+		TEXT TO m.lcXml ADDITIVE TEXTMERGE NOSHOW FLAGS 1 PRETEXT 15
+		    <office:font-face-decls>
+		        <<m.lcFontStyles>>
+		    </office:font-face-decls>
+		
+		    <office:automatic-styles>
+		        
+		        <<m.lcPageParagraphStyles>>
+		        
+		        <<m.lcTextStyles>>
+		
+		        <style:style style:family="graphic" style:name="gr1">
+		            <style:graphic-properties 
+		                draw:stroke="none" 
+		                svg:stroke-color="#000000" 
+		                draw:fill="none" 
+		                draw:fill-color="#ffffff" 
+		                style:run-through="foreground" 
+		                style:wrap="run-through" 
+		                style:number-wrapped-paragraphs="no-limit" 
+		                style:vertical-pos="from-top" 
+		                style:vertical-rel="paragraph" 
+		                style:horizontal-pos="from-left" 
+		                style:horizontal-rel="paragraph"/>
+		            
+		            <style:paragraph-properties style:writing-mode="lr-tb" />
+		        </style:style>
+		        
+		    </office:automatic-styles>
+		
+		    <office:body>
+		        <office:text>
+		        
+		            <<m.lcPagesXML>>
+		
+		        </office:text>
+		    </office:body>
+		ENDTEXT
+		
+		TEXT TO m.lcXml ADDITIVE NOSHOW FLAGS 1 PRETEXT 15 
+		</office:document-content>
+		ENDTEXT
+		
+		
+		STRTOFILE(m.lcXml, This.workdir + "\content.xml", 0)
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE write_manifest
+		
+		LOCAL lcXml
+		m.lcXml = ""
+		
+		TEXT TO m.lcXml ADDITIVE NOSHOW FLAGS 1 PRETEXT 15
+		<?xml version="1.0" encoding="UTF-8"?>
+		<manifest:manifest xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0" manifest:version="1.3">
+		 <manifest:file-entry manifest:full-path="/" manifest:version="1.3" manifest:media-type="application/vnd.oasis.opendocument.text"/>
+		 <manifest:file-entry manifest:full-path="manifest.rdf" manifest:media-type="application/rdf+xml"/>
+		 <manifest:file-entry manifest:full-path="styles.xml" manifest:media-type="text/xml"/>
+		 <manifest:file-entry manifest:full-path="meta.xml" manifest:media-type="text/xml"/>
+		 <manifest:file-entry manifest:full-path="settings.xml" manifest:media-type="text/xml"/>
+		 <manifest:file-entry manifest:full-path="content.xml" manifest:media-type="text/xml"/>
+		</manifest:manifest>
+		ENDTEXT
+		
+		IF DIRECTORY(This.workdir + "\META-INF",1)=.F.
+		    MKDIR (This.workdir + "\META-INF")
+		ENDIF
+		
+		STRTOFILE(m.lcXml, This.workdir + "\META-INF\manifest.xml", 0)
+		
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE write_meta
+		
+		LOCAL lcXml
+		m.lcXml = ""
+		
+		TEXT TO m.lcXml ADDITIVE TEXTMERGE NOSHOW FLAGS 1 PRETEXT 15
+		<?xml version="1.0" encoding="UTF-8"?>
+		<office:document-meta xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+		    xmlns:ooo="http://openoffice.org/2004/office" xmlns:xlink="http://www.w3.org/1999/xlink"
+		    xmlns:dc="http://purl.org/dc/elements/1.1/"
+		    xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"
+		    xmlns:grddl="http://www.w3.org/2003/g/data-view#" office:version="1.3">
+		    <office:meta>
+		        <meta:creation-date>2024-10-09T22:21:16.816000000</meta:creation-date>
+		        <meta:editing-duration>P0D</meta:editing-duration>
+		        <meta:editing-cycles>1</meta:editing-cycles>
+		        <meta:generator>LibreOffice/24.8.2.1$Windows_X86_64
+		            LibreOffice_project/0f794b6e29741098670a3b95d60478a65d05ef13</meta:generator>
+		        <meta:document-statistic meta:table-count="0" meta:image-count="0" meta:object-count="0"
+		            meta:page-count="1" meta:paragraph-count="0" meta:word-count="0"
+		            meta:character-count="0" meta:non-whitespace-character-count="0" />
+		    </office:meta>
+		</office:document-meta>
+		ENDTEXT
+		
+		STRTOFILE(m.lcXml, This.workdir + "\meta.xml", 0)
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE write_mimetype
+		
+		STRTOFILE("application/vnd.oasis.opendocument.text", This.workdir + "\mimetype", 0)
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE write_settings
+		
+		LOCAL lcXml
+		m.lcXml = ""
+		
+		TEXT TO m.lcXml ADDITIVE NOSHOW FLAGS 1 PRETEXT 15
+		<?xml version="1.0" encoding="UTF-8"?>
+		<office:document-settings xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+		    xmlns:ooo="http://openoffice.org/2004/office" xmlns:xlink="http://www.w3.org/1999/xlink"
+		    xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0" office:version="1.3">
+		    <office:settings>
+		        <config:config-item-set config:name="ooo:view-settings">
+		            <config:config-item config:name="ViewAreaTop" config:type="long">0</config:config-item>
+		            <config:config-item config:name="ViewAreaLeft" config:type="long">0</config:config-item>
+		            <config:config-item config:name="ViewAreaWidth" config:type="long">25058</config:config-item>
+		            <config:config-item config:name="ViewAreaHeight" config:type="long">10532</config:config-item>
+		            <config:config-item config:name="ShowRedlineChanges" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="InBrowseMode" config:type="boolean">false</config:config-item>
+		            <config:config-item-map-indexed config:name="Views">
+		                <config:config-item-map-entry>
+		                    <config:config-item config:name="ViewId" config:type="string">view2</config:config-item>
+		                    <config:config-item config:name="ViewLeft" config:type="long">4029</config:config-item>
+		                    <config:config-item config:name="ViewTop" config:type="long">2501</config:config-item>
+		                    <config:config-item config:name="VisibleLeft" config:type="long">0</config:config-item>
+		                    <config:config-item config:name="VisibleTop" config:type="long">0</config:config-item>
+		                    <config:config-item config:name="VisibleRight" config:type="long">25056</config:config-item>
+		                    <config:config-item config:name="VisibleBottom" config:type="long">10530</config:config-item>
+		                    <config:config-item config:name="ZoomType" config:type="short">0</config:config-item>
+		                    <config:config-item config:name="ViewLayoutColumns" config:type="short">1</config:config-item>
+		                    <config:config-item config:name="ViewLayoutBookMode" config:type="boolean">false</config:config-item>
+		                    <config:config-item config:name="ZoomFactor" config:type="short">200</config:config-item>
+		                    <config:config-item config:name="IsSelectedFrame" config:type="boolean">false</config:config-item>
+		                    <config:config-item config:name="KeepRatio" config:type="boolean">false</config:config-item>
+		                    <config:config-item config:name="AnchoredTextOverflowLegacy"
+		                        config:type="boolean">true</config:config-item>
+		                    <config:config-item config:name="LegacySingleLineFontwork" config:type="boolean">
+		                        true</config:config-item>
+		                    <config:config-item config:name="ConnectorUseSnapRect" config:type="boolean">
+		                        false</config:config-item>
+		                    <config:config-item config:name="IgnoreBreakAfterMultilineField"
+		                        config:type="boolean">false</config:config-item>
+		                </config:config-item-map-entry>
+		            </config:config-item-map-indexed>
+		        </config:config-item-set>
+		        <config:config-item-set config:name="ooo:configuration-settings">
+		            <config:config-item config:name="ProtectForm" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="PrinterName" config:type="string" />
+		            <config:config-item config:name="EmbeddedDatabaseName" config:type="string" />
+		            <config:config-item config:name="CurrentDatabaseDataSource" config:type="string" />
+		            <config:config-item config:name="LinkUpdateMode" config:type="short">1</config:config-item>
+		            <config:config-item config:name="AddParaTableSpacingAtStart" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="UnbreakableNumberings" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="FieldAutoUpdate" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="AddVerticalFrameOffsets" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="BackgroundParaOverDrawings" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="AddParaTableSpacing" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="ChartAutoUpdate" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="CurrentDatabaseCommand" config:type="string" />
+		            <config:config-item config:name="PrinterSetup" config:type="base64Binary" />
+		            <config:config-item config:name="AlignTabStopPosition" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="PrinterPaperFromSetup" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="IsKernAsianPunctuation" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="CharacterCompressionType" config:type="short">0</config:config-item>
+		            <config:config-item config:name="ApplyUserData" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="DoNotJustifyLinesWithManualBreak" config:type="boolean">
+		                false</config:config-item>
+		            <config:config-item config:name="SaveThumbnail" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="SaveGlobalDocumentLinks" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="SmallCapsPercentage66" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="CurrentDatabaseCommandType" config:type="int">0</config:config-item>
+		            <config:config-item config:name="SaveVersionOnClose" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="UpdateFromTemplate" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="DoNotCaptureDrawObjsOnPage" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="UseFormerObjectPositioning" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="EmbedSystemFonts" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="PrinterIndependentLayout" config:type="string">
+		                high-resolution</config:config-item>
+		            <config:config-item config:name="IsLabelDocument" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="AddFrameOffsets" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="AddExternalLeading" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="MsWordCompMinLineHeightByFly" config:type="boolean">
+		                false</config:config-item>
+		            <config:config-item config:name="UseOldNumbering" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="OutlineLevelYieldsNumbering" config:type="boolean">
+		                false</config:config-item>
+		            <config:config-item config:name="DoNotResetParaAttrsForNumFont" config:type="boolean">
+		                false</config:config-item>
+		            <config:config-item config:name="IgnoreFirstLineIndentInNumbering" config:type="boolean">
+		                false</config:config-item>
+		            <config:config-item config:name="AllowPrintJobCancel" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="UseFormerLineSpacing" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="AddParaSpacingToTableCells" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="AddParaLineSpacingToTableCells" config:type="boolean">
+		                true</config:config-item>
+		            <config:config-item config:name="UseFormerTextWrapping" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="RedlineProtectionKey" config:type="base64Binary" />
+		            <config:config-item config:name="ConsiderTextWrapOnObjPos" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="NoGapAfterNoteNumber" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="TableRowKeep" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="TabsRelativeToIndent" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="IgnoreTabsAndBlanksForLineCalculation"
+		                config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="RsidRoot" config:type="int">1013947</config:config-item>
+		            <config:config-item config:name="LoadReadonly" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="ClipAsCharacterAnchoredWriterFlyFrames"
+		                config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="UnxForceZeroExtLeading" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="UseOldPrinterMetrics" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="TabAtLeftIndentForParagraphsInList"
+		                config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="Rsid" config:type="int">1013947</config:config-item>
+		            <config:config-item config:name="MsWordCompTrailingBlanks" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="MathBaselineAlignment" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="InvertBorderSpacing" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="CollapseEmptyCellPara" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="TabOverflow" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="StylesNoDefault" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="ClippedPictures" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="EmbedFonts" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="EmbedOnlyUsedFonts" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="EmbedLatinScriptFonts" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="EmbedAsianScriptFonts" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="EmptyDbFieldHidesPara" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="EmbedComplexScriptFonts" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="TabOverMargin" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="TabOverSpacing" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="TreatSingleColumnBreakAsPageBreak"
+		                config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="SurroundTextWrapSmall" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="ApplyParagraphMarkFormatToNumbering"
+		                config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="PropLineSpacingShrinksFirstLine" config:type="boolean">
+		                true</config:config-item>
+		            <config:config-item config:name="SubtractFlysAnchoredAtFlys" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="DisableOffPagePositioning" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="ContinuousEndnotes" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="ProtectBookmarks" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="ProtectFields" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="HyphenateURLs" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="HeaderSpacingBelowLastPara" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="FrameAutowidthWithMorePara" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="GutterAtTop" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="FootnoteInColumnToPageEnd" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="ImagePreferredDPI" config:type="int">0</config:config-item>
+		            <config:config-item config:name="AutoFirstLineIndentDisregardLineSpace"
+		                config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="JustifyLinesWithShrinking" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="NoNumberingShowFollowBy" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="DropCapPunctuation" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="UseVariableWidthNBSP" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="PrintBlackFonts" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="ApplyTextAttrToEmptyLineAtEndOfParagraph"
+		                config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="PaintHellOverHeaderFooter" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="PrintAnnotationMode" config:type="short">0</config:config-item>
+		            <config:config-item config:name="PrintGraphics" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="PrintLeftPages" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="PrintControls" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="PrintPageBackground" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="PrintTextPlaceholder" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="PrintDrawings" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="PrintHiddenText" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="PrintProspect" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="PrintTables" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="PrintProspectRTL" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="PrintReversed" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="PrintRightPages" config:type="boolean">true</config:config-item>
+		            <config:config-item config:name="PrintFaxName" config:type="string" />
+		            <config:config-item config:name="PrintPaperFromSetup" config:type="boolean">false</config:config-item>
+		            <config:config-item config:name="PrintEmptyPages" config:type="boolean">true</config:config-item>
+		        </config:config-item-set>
+		    </office:settings>
+		</office:document-settings>
+		ENDTEXT
+		
+		
+		STRTOFILE(m.lcXml, This.workdir + "\settings.xml", 0)
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE write_styles
+		LOCAL lcPageLayoutStyles, lcPageMasterStyles
+		STORE "" TO m.lcPageLayoutStyles, m.lcPageMasterStyles
+		
+		LOCAL loPageStyle
+		FOR EACH m.loPageStyle IN This.PageStyles FOXOBJECT
+		    m.lcPageLayoutStyles = m.lcPageLayoutStyles + m.loPageStyle.layout
+		    m.lcPageMasterStyles = m.lcPageMasterStyles + m.loPageStyle.master
+		ENDFOR
+		
+		
+		LOCAL lcXml
+		m.lcXml = ""
+		
+		TEXT TO m.lcXml ADDITIVE TEXTMERGE NOSHOW FLAGS 1 PRETEXT 15
+		<?xml version="1.0" encoding="UTF-8"?>
+		<office:document-styles xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+		    xmlns:ooo="http://openoffice.org/2004/office"
+		    xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
+		    xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/"
+		    xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"
+		    xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
+		    xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+		    xmlns:rpt="http://openoffice.org/2005/report"
+		    xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+		    xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0"
+		    xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
+		    xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0"
+		    xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0"
+		    xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0"
+		    xmlns:ooow="http://openoffice.org/2004/writer" xmlns:oooc="http://openoffice.org/2004/calc"
+		    xmlns:css3t="http://www.w3.org/TR/css3-text/"
+		    xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2"
+		    xmlns:tableooo="http://openoffice.org/2009/table"
+		    xmlns:calcext="urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0"
+		    xmlns:drawooo="http://openoffice.org/2010/draw" xmlns:xhtml="http://www.w3.org/1999/xhtml"
+		    xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0"
+		    xmlns:grddl="http://www.w3.org/2003/g/data-view#"
+		    xmlns:field="urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0"
+		    xmlns:math="http://www.w3.org/1998/Math/MathML"
+		    xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0"
+		    xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0"
+		    xmlns:dom="http://www.w3.org/2001/xml-events"
+		    xmlns:officeooo="http://openoffice.org/2009/office" office:version="1.3">
+		    <office:font-face-decls>
+		        <style:font-face style:name="Calibri" svg:font-family="Calibri"
+		            style:font-family-generic="swiss" style:font-pitch="variable"
+		            svg:panose-1="2 15 5 2 2 2 4 3 2 4" />
+		        <style:font-face style:name="Times New Roman" svg:font-family="Times New Roman"
+		            style:font-family-generic="roman" style:font-pitch="variable"
+		            svg:panose-1="2 2 6 3 5 4 5 2 3 4" />
+		        <style:font-face style:name="Calibri Light" svg:font-family="Calibri Light"
+		            style:font-family-generic="swiss" style:font-pitch="variable"
+		            svg:panose-1="2 15 3 2 2 2 4 3 2 4" />
+		    </office:font-face-decls>
+		    <office:styles>
+		        <style:default-style style:family="table">
+		            <style:table-properties fo:margin-left="0in" table:border-model="collapsing"
+		                style:writing-mode="lr-tb" table:align="left" />
+		        </style:default-style>
+		        <style:default-style style:family="table-column">
+		            <style:table-column-properties style:use-optimal-column-width="true" />
+		        </style:default-style>
+		        <style:default-style style:family="table-row">
+		            <style:table-row-properties style:min-row-height="0in"
+		                style:use-optimal-row-height="true" fo:keep-together="auto" />
+		        </style:default-style>
+		        <style:default-style style:family="table-cell">
+		            <style:table-cell-properties fo:background-color="transparent"
+		                style:glyph-orientation-vertical="auto" style:vertical-align="top"
+		                fo:wrap-option="wrap" />
+		        </style:default-style>
+		        
+		        <style:default-style style:family="paragraph">
+		            <style:paragraph-properties fo:keep-with-next="auto" fo:keep-together="auto"
+		                fo:widows="2" fo:orphans="2" fo:break-before="auto" text:number-lines="true"
+		                fo:border="none" fo:padding="0in" style:shadow="none" style:line-break="strict"
+		                style:punctuation-wrap="hanging" style:text-autospace="ideograph-alpha"
+		                style:snap-to-layout-grid="true" fo:text-align="start" style:writing-mode="lr-tb"
+		                fo:margin-bottom="0n" fo:line-height="100%" fo:background-color="transparent"
+		                style:tab-stop-distance="0.5in" />
+		        </style:default-style>
+		        
+		        <style:style style:name="_Default" style:display-name="_Default" style:family="paragraph">
+		            <style:text-properties fo:hyphenate="false" />
+		        </style:style>
+		        
+		        <text:notes-configuration text:note-class="footnote" text:start-value="0"
+		            style:num-format="1" text:start-numbering-at="document" text:footnotes-position="page" />
+		        
+		        <text:notes-configuration text:note-class="endnote" text:start-value="0"
+		            style:num-format="i" text:start-numbering-at="document"
+		            text:footnotes-position="document" />
+		        
+		        <style:default-page-layout>
+		            <style:page-layout-properties style:layout-grid-standard-mode="true" />
+		        </style:default-page-layout>
+		
+		        <style:style style:family="graphic" style:name="Graphics" />
+		        
+		        <style:default-style style:family="graphic">
+		            <style:graphic-properties draw:fill="solid" draw:fill-color="#4472c4"
+		                draw:opacity="100%" draw:stroke="solid" svg:stroke-width="0.01389in"
+		                svg:stroke-color="#172c51" svg:stroke-opacity="100%" draw:stroke-linejoin="miter"
+		                svg:stroke-linecap="butt" />
+		        </style:default-style>
+		    
+		    </office:styles>
+		
+		
+		    <office:automatic-styles>
+		        
+		        <<m.lcPageLayoutStyles>>
+		        
+		    </office:automatic-styles>
+		
+		
+		    <office:master-styles>
+		        
+		        <<m.lcPageMasterStyles>>
+		        
+		    </office:master-styles>
+		
+		</office:document-styles>
+		ENDTEXT
+		
+		
+		STRTOFILE(STRCONV(m.lcXml,9), This.workdir + "\styles.xml", 0)
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE xmlescape
+		LPARAMETERS lcText
+		
+		RETURN STRTRAN(STRTRAN(STRTRAN(STRTRAN(STRTRAN(m.lcText, "<", "&lt;"), ">", "&gt;"), "&", "&amp;"), '"', "&quot;"), "'", "&apos;")
+		
+	ENDPROC
 
 ENDDEFINE
 
-DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-vfp.vcx" 		&& PDF rendering implementation
+DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-vfp.vcx" 		&& PDF rendering implementation (LibHARU)
  	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
 
 	*<DefinedPropArrayMethod>
@@ -9401,16 +11412,14 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 		*m: render_frxrectangle
 		*m: render_text
 		*m: render_textasimage
-		*p: env
 		*p: hpdf_doc
 		*p: hpdf_fonts		&& Font collection for caching purporses
 		*p: hpdf_pagecount
 		*a: hpdf_pages[1,0]
 	*</DefinedPropArrayMethod>
 
-	HIDDEN AddObject,AddProperty,CloneObject,Comment,ControlCount,Controls,env,Error,HelpContextID,hpdf_doc,hpdf_fonts,hpdf_pagecount,hpdf_pages,NewObject,Objects,Picture,ReadExpression,ReadMethod,RemoveObject,SaveAsClass,ShowWhatsThis,Tag,WhatsThisHelpID,WriteExpression,WriteMethod
+	HIDDEN AddObject,AddProperty,CloneObject,Comment,ControlCount,Controls,Error,HelpContextID,hpdf_doc,hpdf_fonts,hpdf_pagecount,hpdf_pages,NewObject,Objects,Picture,ReadExpression,ReadMethod,RemoveObject,SaveAsClass,ShowWhatsThis,Tag,WhatsThisHelpID,WriteExpression,WriteMethod
 	*<PropValue>
-		env = .F.
 		hpdf_doc = 0
 		hpdf_fonts = .F.
 		hpdf_pagecount = 0
@@ -9430,10 +11439,15 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 			<memberdata name="render_frxrectangle" type="method" display="Render_FrxRectangle"/>
 			<memberdata name="render_text" type="method" display="Render_Text"/>
 			<memberdata name="render_textasimage" type="method" display="Render_TextAsImage"/>
-			<memberdata name="env" type="property" display="env"/>
 		</VFPData>
 	*</PropValue>
 	
+	PROCEDURE begin
+		LPARAMETERS loPdfiumReport as PdfiumReport of pdfium-vfp.vcx
+		
+		This.CreatePDF(m.loPdfiumReport)
+	ENDPROC
+
 	HIDDEN PROCEDURE closepdf
 		IF EMPTY(This.hpdf_doc)
 		    RETURN
@@ -9454,6 +11468,7 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 	ENDPROC
 
 	HIDDEN PROCEDURE createpdf
+		LPARAMETERS loPdfiumReport as PdfiumReport of pdfium-vfp.vcx
 		
 		This.ClosePDF()
 		
@@ -9461,10 +11476,9 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 		m.loHPDF = This.env.API_HPDF
 		m.loHPDFC = m.loHPDF.CONST
 		
-		This.hpdf_doc = m.loHPDF.HPDF_New(0,0)
-		
 		This.hpdf_fonts = NEWOBJECT("Collection")
 		
+		This.hpdf_doc = m.loHPDF.HPDF_New(0,0)
 		
 		IF EMPTY(This.hpdf_doc) = .F.
 		    m.loHPDF.HPDF_SetCompressionMode(This.hpdf_doc, m.loHPDFC.HPDF_COMP_ALL())
@@ -9474,6 +11488,84 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 		    m.loHPDF.HPDF_SetCurrentEncoder(This.hpdf_doc, m.loHPDFC.UTF8())
 		ENDIF
 		
+		LOCAL m.loPDFMeta
+		m.loPDFMeta = m.loPdfiumReport.SaveAs_PDFMeta
+		
+		IF VARTYPE(m.loPDFMeta) = "O"
+		    *******************************************************
+		    IF EMPTY(NVL(m.loPDFMeta.Author,"")) = .F.
+		        m.loHPDF.HPDF_SetInfoAttr(This.hpdf_doc, m.loHPDFC.HPDF_INFO_AUTHOR(), m.loPDFMeta.Author)
+		        m.loHPDF.HPDF_ResetError(This.hpdf_doc)
+		    ENDIF
+		    
+		    IF EMPTY(NVL(m.loPDFMeta.Creator,"")) = .F.
+		        m.loHPDF.HPDF_SetInfoAttr(This.hpdf_doc, m.loHPDFC.HPDF_INFO_CREATOR(), m.loPDFMeta.Creator)
+		        m.loHPDF.HPDF_ResetError(This.hpdf_doc)
+		    ENDIF
+		    
+		    IF EMPTY(NVL(m.loPDFMeta.Producer,"")) = .F.
+		        m.loHPDF.HPDF_SetInfoAttr(This.hpdf_doc, m.loHPDFC.HPDF_INFO_PRODUCER(), m.loPDFMeta.Producer)
+		        m.loHPDF.HPDF_ResetError(This.hpdf_doc)
+		    ENDIF
+		
+		    IF EMPTY(NVL(m.loPDFMeta.Title,"")) = .F.
+		        m.loHPDF.HPDF_SetInfoAttr(This.hpdf_doc, m.loHPDFC.HPDF_INFO_TITLE(), m.loPDFMeta.Title)
+		        m.loHPDF.HPDF_ResetError(This.hpdf_doc)
+		    ENDIF
+		
+		    IF EMPTY(NVL(m.loPDFMeta.Subject,"")) = .F.
+		        m.loHPDF.HPDF_SetInfoAttr(This.hpdf_doc, m.loHPDFC.HPDF_INFO_SUBJECT(), m.loPDFMeta.Subject)
+		        m.loHPDF.HPDF_ResetError(This.hpdf_doc)
+		    ENDIF
+		
+		    IF EMPTY(NVL(m.loPDFMeta.Keywords,"")) = .F.
+		        m.loHPDF.HPDF_SetInfoAttr(This.hpdf_doc, m.loHPDFC.HPDF_INFO_KEYWORDS(), m.loPDFMeta.Keywords)
+		        m.loHPDF.HPDF_ResetError(This.hpdf_doc)
+		    ENDIF
+		    *******************************************************
+		    
+		
+		    *******************************************************
+		    m.loPDFMeta.OwnerPassword = NVL(m.loPDFMeta.OwnerPassword,"")
+		    m.loPDFMeta.UserPassword = NVL(m.loPDFMeta.UserPassword,"")
+		    DO CASE
+		    CASE LEN(m.loPDFMeta.OwnerPassword) = 0 AND LEN(m.loPDFMeta.UserPassword) = 0
+		    
+		    CASE LEN(m.loPDFMeta.OwnerPassword) = 0 AND LEN(m.loPDFMeta.UserPassword) > 0
+		        ERROR "Owner Password cannot be empty when User Password is not empty"
+		    
+		    CASE m.loPDFMeta.OwnerPassword == m.loPDFMeta.UserPassword
+		        ERROR "Owner Password cannot be equal to User Password"
+		    
+		    OTHERWISE
+		
+		        IF m.loHPDF.HPDF_SetPassword(This.hpdf_doc, m.loPDFMeta.OwnerPassword, m.loPDFMeta.UserPassword) = 0
+		            LOCAL lnErrCode
+		            m.lnErrCode = m.loHPDF.HPDF_SetEncryptionMode(This.hpdf_doc, m.loHPDFC.HPDF_ENCRYPT_R3(), 16) 
+		            IF m.lnErrCode <> 0
+		                ERROR "HPDF_SetEncryptionMode returned error code " + TRANSFORM(m.lnErrCode)
+		            ENDIF
+		        ENDIF
+		        
+		        
+		        LOCAL lnPermit
+		        m.lnPermit = ;
+		            IIF(m.loPDFMeta.Permit_Print, m.loHPDFC.HPDF_ENABLE_PRINT(), 0) + ;
+		            IIF(m.loPDFMeta.Permit_Edit_All, m.loHPDFC.HPDF_ENABLE_EDIT_ALL(), 0) + ;
+		            IIF(m.loPDFMeta.Permit_Copy, m.loHPDFC.HPDF_ENABLE_COPY(), 0) + ;
+		            IIF(m.loPDFMeta.Permit_Edit, m.loHPDFC.HPDF_ENABLE_EDIT(), 0) 
+		        
+		        IF m.lnPermit <> 0
+		            m.loHPDF.HPDF_SetPermission(This.hpdf_doc, m.lnPermit)
+		        ENDIF
+		        
+		        m.loHPDF.HPDF_ResetError(This.hpdf_doc)
+		    ENDCASE
+		    *******************************************************
+		ENDIF    
+		
+		*******************************************************
+		m.loHPDF.HPDF_ResetError(This.hpdf_doc)    
 		
 	ENDPROC
 
@@ -9486,7 +11578,7 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 	ENDPROC
 
 	PROCEDURE finalize
-		LPARAMETERS loPDFMeta as pdfium_pdfmeta of pdfium-vfp.vcx
+		LPARAMETERS loPdfiumReport as PdfiumReport of pdfium-vfp.vcx
 		
 		IF EMPTY(This.hpdf_doc)
 		    RETURN
@@ -9507,82 +11599,6 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 		
 		    m.loHPDF.HPDF_ResetError(This.hpdf_doc)
 		    
-		    IF VARTYPE(m.loPDFMeta) = "O"
-		        *******************************************************
-		        IF EMPTY(NVL(m.loPDFMeta.Author,"")) = .F.
-		            m.loHPDF.HPDF_SetInfoAttr(This.hpdf_doc, m.loHPDFC.HPDF_INFO_AUTHOR(), m.loPDFMeta.Author)
-		            m.loHPDF.HPDF_ResetError(This.hpdf_doc)
-		        ENDIF
-		        
-		        IF EMPTY(NVL(m.loPDFMeta.Creator,"")) = .F.
-		            m.loHPDF.HPDF_SetInfoAttr(This.hpdf_doc, m.loHPDFC.HPDF_INFO_CREATOR(), m.loPDFMeta.Creator)
-		            m.loHPDF.HPDF_ResetError(This.hpdf_doc)
-		        ENDIF
-		        
-		        IF EMPTY(NVL(m.loPDFMeta.Producer,"")) = .F.
-		            m.loHPDF.HPDF_SetInfoAttr(This.hpdf_doc, m.loHPDFC.HPDF_INFO_PRODUCER(), m.loPDFMeta.Producer)
-		            m.loHPDF.HPDF_ResetError(This.hpdf_doc)
-		        ENDIF
-		
-		        IF EMPTY(NVL(m.loPDFMeta.Title,"")) = .F.
-		            m.loHPDF.HPDF_SetInfoAttr(This.hpdf_doc, m.loHPDFC.HPDF_INFO_TITLE(), m.loPDFMeta.Title)
-		            m.loHPDF.HPDF_ResetError(This.hpdf_doc)
-		        ENDIF
-		
-		        IF EMPTY(NVL(m.loPDFMeta.Subject,"")) = .F.
-		            m.loHPDF.HPDF_SetInfoAttr(This.hpdf_doc, m.loHPDFC.HPDF_INFO_SUBJECT(), m.loPDFMeta.Subject)
-		            m.loHPDF.HPDF_ResetError(This.hpdf_doc)
-		        ENDIF
-		
-		        IF EMPTY(NVL(m.loPDFMeta.Keywords,"")) = .F.
-		            m.loHPDF.HPDF_SetInfoAttr(This.hpdf_doc, m.loHPDFC.HPDF_INFO_KEYWORDS(), m.loPDFMeta.Keywords)
-		            m.loHPDF.HPDF_ResetError(This.hpdf_doc)
-		        ENDIF
-		        *******************************************************
-		        
-		
-		        *******************************************************
-		        m.loPDFMeta.OwnerPassword = NVL(m.loPDFMeta.OwnerPassword,"")
-		        m.loPDFMeta.UserPassword = NVL(m.loPDFMeta.UserPassword,"")
-		        DO CASE
-		        CASE LEN(m.loPDFMeta.OwnerPassword) = 0 AND LEN(m.loPDFMeta.UserPassword) = 0
-		        
-		        CASE LEN(m.loPDFMeta.OwnerPassword) = 0 AND LEN(m.loPDFMeta.UserPassword) > 0
-		            ERROR "Owner Password cannot be empty when User Password is not empty"
-		        
-		        CASE m.loPDFMeta.OwnerPassword == m.loPDFMeta.UserPassword
-		            ERROR "Owner Password cannot be equal to User Password"
-		        
-		        OTHERWISE
-		
-		            IF m.loHPDF.HPDF_SetPassword(This.hpdf_doc, m.loPDFMeta.OwnerPassword, m.loPDFMeta.UserPassword) = 0
-		                LOCAL lnErrCode
-		                m.lnErrCode = m.loHPDF.HPDF_SetEncryptionMode(This.hpdf_doc, m.loHPDFC.HPDF_ENCRYPT_R3(), 16) 
-		                IF m.lnErrCode <> 0
-		                    ERROR "HPDF_SetEncryptionMode returned error code " + TRANSFORM(m.lnErrCode)
-		                ENDIF
-		            ENDIF
-		            
-		            
-		            LOCAL lnPermit
-		            m.lnPermit = ;
-		                IIF(m.loPDFMeta.Permit_Print, m.loHPDFC.HPDF_ENABLE_PRINT(), 0) + ;
-		                IIF(m.loPDFMeta.Permit_Edit_All, m.loHPDFC.HPDF_ENABLE_EDIT_ALL(), 0) + ;
-		                IIF(m.loPDFMeta.Permit_Copy, m.loHPDFC.HPDF_ENABLE_COPY(), 0) + ;
-		                IIF(m.loPDFMeta.Permit_Edit, m.loHPDFC.HPDF_ENABLE_EDIT(), 0) 
-		            
-		            IF m.lnPermit <> 0
-		                m.loHPDF.HPDF_SetPermission(This.hpdf_doc, m.lnPermit)
-		            ENDIF
-		            
-		            m.loHPDF.HPDF_ResetError(This.hpdf_doc)
-		        ENDCASE
-		        *******************************************************
-		    ENDIF    
-		
-		    *******************************************************
-		    m.loHPDF.HPDF_ResetError(This.hpdf_doc)    
-		    
 		    
 		    m.lcTempFileName = This.env.GetUniqueTempFileName("pdf")
 		    
@@ -9590,16 +11606,51 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 		        m.lcTempFileName = ""
 		        EXIT
 		    ENDIF
+		
+		
+		    DO CASE
+		    CASE m.loPdfiumReport.CommandClauses.OUTPUTTO = This.env.API_FRX.CONST.OUTPUTTO_FILE() && output to the file
+		        IF EMPTY(m.loPdfiumReport.CommandClauses.TOFILE) = .F.
+		            COPY FILE (m.lcTempFileName) TO (m.loPdfiumReport.CommandClauses.TOFILE)
+		        ENDIF
+		
+		    CASE m.loPdfiumReport.CommandClauses.OUTPUTTO = This.env.API_FRX.CONST.OUTPUTTO_PRINTER() AND m.loPdfiumReport.CommandClauses.ISDESIGNERLOADED = .F. && output to the printer
+		        m.loPdfiumReport.PreviewContainer = NEWOBJECT("PdfiumReportViewer", This.ClassLibrary, "", This.env, m.loPdfiumReport.PrintEnv)
+		        m.loPdfiumReport.PreviewContainer.SetReport(m.loPdfiumReport)
+		        m.loPdfiumReport.PreviewContainer.OpenPDF(m.lcTempFileName, m.loPdfiumReport.SaveAs_PDFMeta.UserPassword)
+		
+		        IF m.loPdfiumReport.CommandClauses.PROMPT
+		            m.loPdfiumReport.PreviewContainer.Show()
+		        ENDIF
+		        
+		        m.loPdfiumReport.PreviewContainer.PrintReport()
+		    
+		    
+		    CASE m.loPdfiumReport.CommandClauses.PREVIEW OR m.loPdfiumReport.CommandClauses.ISDESIGNERLOADED
+		        m.loPdfiumReport.PreviewContainer = NEWOBJECT("PdfiumReportViewer", This.ClassLibrary, "", This.env, m.loPdfiumReport.PrintEnv)
+		        m.loPdfiumReport.PreviewContainer.SetReport(m.loPdfiumReport)
+		        m.loPdfiumReport.PreviewContainer.OpenPDF(m.lcTempFileName, m.loPdfiumReport.SaveAs_PDFMeta.UserPassword)
+		        m.loPdfiumReport.PreviewContainer.SaveAs_Filename = EVL(NVL(m.loPdfiumReport.SaveAs_Filename,""),"")
+		        m.loPdfiumReport.PreviewContainer.Show(1)
+		    
+		    ENDCASE
 		    
 		
 		FINALLY
+		
+		    TRY
+		        IF FILE(m.lcTempFileName,1)
+		            DELETE FILE (m.lcTempFileName)
+		        ENDIF
+		    CATCH
+		    ENDTRY
+		
 		    
 		    This.ClosePDF()
 		    
 		
 		ENDTRY
 		
-		RETURN m.lcTempFileName
 		
 	ENDPROC
 
@@ -9719,24 +11770,9 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 		
 	ENDPROC
 
-	PROCEDURE Init
-		LPARAMETERS toEnv as pdfium_env of pdfium-vfp.vcx
-		
-		This.env = m.toEnv
-		
-		IF VARTYPE(This.env) != "O"
-		    RETURN .F.
-		ENDIF
-		
-	ENDPROC
-
 	PROCEDURE render
 		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
 		
-		
-		IF EMPTY(This.hpdf_pagecount)
-		    This.CreatePDF()
-		ENDIF
 		
 		IF EMPTY(This.hpdf_doc)
 		    RETURN
@@ -10103,7 +12139,7 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 		
 		CASE BETWEEN(m.loRepObj.RectCurvature, 1, 98) AND m.loRepObj.RectCurvature <= MAX(m.lnWidth, m.lnHeight)/2  && Rounded rectangle
 		    LOCAL lnRay
-		    m.lnRay = ROUND(IIF(m.lnWidth > m.lnHeight, MIN(m.loRepObj.RectCurvature, INT(m.lnHeight / 2)), MIN(m.loRepObj.RectCurvature, INT(m.lnWidth / 2))), 0)
+		    m.lnRay = m.lnDpiCoef * ROUND(IIF(m.lnWidth > m.lnHeight, MIN(m.loRepObj.RectCurvature, INT(m.lnHeight / 2)), MIN(m.loRepObj.RectCurvature, INT(m.lnWidth / 2))), 0)
 		    
 		    LOCAL lnRight, lnBottom
 		    IF EMPTY(m.loRepObj.Rotate) = .F.
@@ -10419,6 +12455,1597 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 
 ENDDEFINE
 
+DEFINE CLASS pdfiumreport_renderer_pdf_experimental AS pdfiumreport_renderer_base OF "pdfium-vfp.vcx" 		&& PDF rendering implementation (Pdfium)
+ 	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
+
+	*<DefinedPropArrayMethod>
+		*m: closepdf
+		*m: createpdf
+		*m: encrypt
+		*m: getfontpdf
+		*m: hash_md5
+		*m: render_frxfield
+		*m: render_frxlabel
+		*m: render_frxline
+		*m: render_frxpicture
+		*m: render_frxrectangle
+		*m: render_text
+		*m: render_textasimage
+		*p: fpdf_doc
+		*p: fpdf_fonts		&& Font collection for caching purporses
+		*p: fpdf_pagecount
+		*p: pdftemplateheap
+		*p: pdftemplateptr
+		*a: fpdf_pages[1,0]
+	*</DefinedPropArrayMethod>
+
+	HIDDEN AddObject,AddProperty,CloneObject,Comment,ControlCount,Controls,Error,fpdf_doc,fpdf_fonts,fpdf_pagecount,fpdf_pages,HelpContextID,NewObject,Objects,pdftemplateheap,pdftemplateptr,Picture,ReadExpression,ReadMethod,RemoveObject,SaveAsClass,ShowWhatsThis,Tag,WhatsThisHelpID,WriteExpression,WriteMethod
+	*<PropValue>
+		fpdf_doc = 0
+		fpdf_fonts = .F.
+		fpdf_pagecount = 0
+		Name = "pdfiumreport_renderer_pdf_experimental"
+		pdftemplateheap = 0
+		pdftemplateptr = 0
+		_memberdata = <VFPData>
+			<memberdata name="closepdf" type="method" display="ClosePDF"/>
+			<memberdata name="createpdf" type="method" display="CreatePDF"/>
+			<memberdata name="getfontpdf" type="method" display="GetFontPDF"/>
+			<memberdata name="render_frxfield" type="method" display="Render_FrxField"/>
+			<memberdata name="render_frxlabel" type="method" display="Render_FrxLabel"/>
+			<memberdata name="render_frxline" type="method" display="Render_FrxLine"/>
+			<memberdata name="render_frxpicture" type="method" display="Render_FrxPicture"/>
+			<memberdata name="render_frxrectangle" type="method" display="Render_FrxRectangle"/>
+			<memberdata name="render_text" type="method" display="Render_Text"/>
+			<memberdata name="render_textasimage" type="method" display="Render_TextAsImage"/>
+			<memberdata name="fpdf_doc" type="property" display="fpdf_doc"/>
+			<memberdata name="fpdf_fonts" type="property" display="fpdf_fonts"/>
+			<memberdata name="fpdf_pagecount" type="property" display="fpdf_pagecount"/>
+			<memberdata name="fpdf_pages" type="property" display="fpdf_pages"/>
+			<memberdata name="hash_md5" type="method" display="Hash_MD5"/>
+			<memberdata name="encrypt" type="method" display="Encrypt"/>
+			<memberdata name="pdftemplateheap" type="property" display="PDFTemplateHeap"/>
+			<memberdata name="pdftemplateptr" type="property" display="PDFTemplatePtr"/>
+		</VFPData>
+	*</PropValue>
+	
+	PROCEDURE begin
+		LPARAMETERS loPdfiumReport as PdfiumReport of pdfium-vfp.vcx
+		
+		This.CreatePDF(m.loPdfiumReport)
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE closepdf
+		IF EMPTY(This.fpdf_doc)
+		    RETURN
+		ENDIF
+		
+		**************************************************
+		* Release resources
+		**************************************************
+		LOCAL liPage, lnPage
+		m.liPage = 1 
+		FOR m.liPage = 1 TO This.fpdf_pagecount
+		    m.lnPage = This.fpdf_pages[m.liPage]
+		    IF EMPTY(m.lnPage) = .F.
+		        This.env.API_FPDF.FPDF_ClosePage(m.lnPage)
+		    ENDIF
+		ENDFOR
+		
+		
+		LOCAL loFont
+		FOR EACH m.loFont IN This.fpdf_fonts FOXOBJECT
+		    IF EMPTY(m.loFont.FontHandle) = .F.
+		        This.env.API_FPDF.FPDFFont_Close(m.loFont.FontHandle)
+		    ENDIF
+		ENDFOR
+		
+		
+		This.env.API_FPDF.FPDF_CloseDocument(This.fpdf_doc)
+		
+		
+		DIMENSION This.fpdf_pages(1)
+		This.fpdf_pages[1] = 0
+		
+		This.fpdf_pagecount = 0
+		This.fpdf_doc = 0
+		This.fpdf_fonts = .F.
+		
+		
+		IF EMPTY(This.PDFTemplatePtr)=.F.
+		    This.env.API_WIN.HeapFree(This.PDFTemplateHeap, 0, This.PDFTemplatePtr)
+		    This.PDFTemplatePtr = 0 
+		ENDIF
+		
+		IF EMPTY(This.PDFTemplateHeap)=.F.
+		    This.env.API_WIN.HeapDestroy(This.PDFTemplateHeap)
+		    This.PDFTemplateHeap = 0 
+		ENDIF
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE createpdf
+		LPARAMETERS loPdfiumReport as PdfiumReport of pdfium-vfp.vcx
+		
+		This.ClosePDF()
+		
+		LOCAL loFPDF, loFPDFC
+		m.loFPDF = This.env.API_FPDF
+		m.loFPDFC = m.loFPDF.CONST
+		
+		This.fpdf_fonts = NEWOBJECT("Collection")
+		
+		#define PWD_PAD 0h28BF4E5E4E758A4164004E56FFFA01082E2E00B6D0683E802F0CA9FE6453697A
+		#define PWD_LEN 32
+		
+		
+		TRY
+		    LOCAL m.loPDFMeta
+		    m.loPDFMeta = m.loPdfiumReport.SaveAs_PDFMeta
+		
+		    IF VARTYPE(m.loPDFMeta) != "O"
+		        This.fpdf_doc = m.loFPDF.FPDF_CreateNewDocument()
+		
+		        IF EMPTY(This.fpdf_doc)
+		            ERROR "FPDF_CreateNewDocument returned empty value"
+		        ENDIF
+		
+		        EXIT
+		    ENDIF
+		
+		    *******************************************************
+		    LOCAL lcFileID
+		    m.lcFileID = ""
+		    This.Hash_MD5(;
+		        BINTOC(DATETIME() - DATETIME(1970,1,1,0,0,0), "4RS") + ;
+		        TRANSFORM(NVL(m.loPDFMeta.Author,"")) + ;
+		        TRANSFORM(NVL(m.loPDFMeta.Creator,"")) + ;
+		        TRANSFORM(NVL(m.loPDFMeta.Producer,"")) + ;
+		        TRANSFORM(NVL(m.loPDFMeta.Title,"")) + ;
+		        TRANSFORM(NVL(m.loPDFMeta.Subject,"")) + ;
+		        TRANSFORM(NVL(m.loPDFMeta.Keywords,"")) ;
+		        , @m.lcFileID)
+		        
+		
+		
+		    *******************************************************    
+		
+		    LOCAL lcOwnerPassword, lcUserPassword
+		    m.lcUserPassword = NVL(m.loPDFMeta.UserPassword,"")
+		    m.lcOwnerPassword = EVL(NVL(m.loPDFMeta.OwnerPassword,""), m.lcUserPassword)
+		
+		    IF LEN(m.lcUserPassword) > PWD_LEN
+		        ERROR TEXTMERGE("User password cannot be more than <<PWD_LEN>> characters")
+		    ENDIF
+		
+		    IF LEN(m.lcOwnerPassword) > PWD_LEN
+		        ERROR TEXTMERGE("Owner password cannot be more than <<PWD_LEN>> characters")
+		    ENDIF
+		
+		    LOCAL llEncrypt
+		    m.llEncrypt = (LEN(m.lcOwnerPassword) = 0 AND LEN(m.lcUserPassword) = 0) = .F.
+		
+		
+		    IF m.llEncrypt
+		        LOCAL lnPermit as Integer
+		        m.lnPermit = BITCLEAR(BITCLEAR(0xFFFFFFFF,0),1)
+		        m.lnPermit = IIF(m.loPDFMeta.Permit_Print, m.lnPermit, BITCLEAR(m.lnPermit,2))
+		        m.lnPermit = IIF(m.loPDFMeta.Permit_Edit_All, m.lnPermit, BITCLEAR(m.lnPermit,3))
+		        m.lnPermit = IIF(m.loPDFMeta.Permit_Copy, m.lnPermit, BITCLEAR(m.lnPermit,4))
+		        m.lnPermit = IIF(m.loPDFMeta.Permit_Edit, m.lnPermit, BITCLEAR(m.lnPermit,5)) 
+		
+		        m.lcUserPassword = LEFT(m.lcUserPassword + PWD_PAD, PWD_LEN)
+		        m.lcOwnerPassword = LEFT(m.lcOwnerPassword + PWD_PAD, PWD_LEN)
+		
+		
+		        LOCAL lcOwnerPasswordHash, lcOwnerKey
+		        STORE "" TO m.lcOwnerPasswordHash, m.lcOwnerKey
+		        This.Hash_MD5(m.lcOwnerPassword, @m.lcOwnerPasswordHash)
+		        
+		        LOCAL liRepeat
+		        FOR m.liRepeat = 1 TO 50
+		            This.Hash_MD5(m.lcOwnerPasswordHash, @m.lcOwnerPasswordHash)
+		        ENDFOR
+		        
+		        
+		        m.lcOwnerKey = LEFT(m.lcOwnerPasswordHash, PWD_LEN)
+		        This.Encrypt("RC4", m.lcUserPassword, m.lcOwnerKey,  @m.lcOwnerKey)
+		        
+		        LOCAL i
+		        FOR m.i = 1 TO 19
+		            LOCAL j, lcTempKey
+		            m.lcTempKey = ""
+		            FOR m.j = 1 TO LEN(m.lcOwnerPasswordHash)
+		                m.lcTempKey = m.lcTempKey + BINTOC(BITXOR(CTOBIN(SUBSTR(m.lcOwnerPasswordHash, m.j, 1), "1"), m.i), "1")
+		            ENDFOR
+		            
+		            This.Encrypt("RC4", m.lcOwnerKey, m.lcTempKey,  @m.lcOwnerKey)
+		        ENDFOR
+		        
+		
+		        LOCAL lcEncryptionKey
+		        STORE "" TO m.lcEncryptionKey
+		        This.Hash_MD5(;
+		            m.lcUserPassword +;
+		            m.lcOwnerKey + ;
+		            BINTOC(m.lnPermit,"4RS") +;
+		            m.lcFileID, ;
+		            @m.lcEncryptionKey)
+		            
+		        LOCAL liRepeat
+		        FOR m.liRepeat = 1 TO 50
+		            This.Hash_MD5(LEFT(m.lcEncryptionKey, 16), @m.lcEncryptionKey)
+		        ENDFOR
+		        
+		        
+		        LOCAL lcUserHash, lcUserKey
+		        STORE "" TO m.lcUserHash, m.lcUserKey
+		        This.Hash_MD5(;
+		            PWD_PAD + ;
+		            m.lcFileID, ;
+		            @m.lcUserHash)
+		
+		        This.Encrypt("RC4", m.lcUserHash, m.lcEncryptionKey,  @m.lcUserKey)
+		        
+		        LOCAL i
+		        FOR m.i = 1 TO 19
+		            LOCAL j, lcTempKey
+		            m.lcTempKey = ""
+		            FOR m.j = 1 TO LEN(m.lcEncryptionKey)
+		                m.lcTempKey = m.lcTempKey + BINTOC(BITXOR(CTOBIN(SUBSTR(m.lcEncryptionKey, m.j, 1), "1"), m.i), "1")
+		            ENDFOR
+		            
+		            This.Encrypt("RC4", m.lcUserKey, m.lcTempKey,  @m.lcUserKey)
+		        ENDFOR
+		        
+		        m.lcUserKey = PADR(m.lcUserKey, PWD_LEN, CHR(0))
+		
+		
+		        LOCAL lnInfoObjId, lnInfoObjGen, lcInfoObjEncryptionKey
+		        m.lnInfoObjId = 4
+		        m.lnInfoObjGen = 0
+		        m.lcInfoObjEncryptionKey = m.lcEncryptionKey
+		        m.lcInfoObjEncryptionKey = m.lcInfoObjEncryptionKey + CHR(BITAND(m.lnInfoObjId, 0xFF))
+		        m.lcInfoObjEncryptionKey = m.lcInfoObjEncryptionKey + CHR(BITAND(BITRSHIFT(m.lnInfoObjId, 8), 0xFF))
+		        m.lcInfoObjEncryptionKey = m.lcInfoObjEncryptionKey + CHR(BITAND(BITRSHIFT(m.lnInfoObjId, 16), 0xFF))
+		        m.lcInfoObjEncryptionKey = m.lcInfoObjEncryptionKey + CHR(BITAND(m.lnInfoObjGen, 0xFF))
+		        m.lcInfoObjEncryptionKey = m.lcInfoObjEncryptionKey + CHR(BITAND(BITRSHIFT(m.lnInfoObjGen, 8), 0xFF))
+		        
+		        This.Hash_MD5(m.lcInfoObjEncryptionKey, @m.lcInfoObjEncryptionKey)
+		
+		    ENDIF
+		
+		    LOCAL lcPDFInfo, laPDFInfoTags(6), lcPDFInfoTag, liPDFInfoTag, lcPDFInfoTagValue, lcPDFInfoTagValueUTF16
+		    m.lcPDFInfo = ""
+		    m.laPDFInfoTags[1] = "Title"
+		    m.laPDFInfoTags[2] = "Author"
+		    m.laPDFInfoTags[3] = "Subject"
+		    m.laPDFInfoTags[4] = "Keywords"
+		    m.laPDFInfoTags[5] = "Creator"
+		    m.laPDFInfoTags[6] = "Producer"
+		
+		    m.liPDFInfoTag = 1
+		    FOR m.liPDFInfoTag = 1 TO ALEN(m.laPDFInfoTags,1)
+		        m.lcPDFInfoTag = m.laPDFInfoTags[m.liPDFInfoTag]
+		        IF PEMSTATUS(m.loPDFMeta, m.lcPDFInfoTag, 5) = .F.
+		            LOOP
+		        ENDIF
+		        
+		        m.lcPDFInfoTagValue = m.loPDFMeta.&lcPDFInfoTag
+		        
+		        IF EMPTY(m.lcPDFInfoTagValue) = .T.
+		            LOOP
+		        ENDIF
+		        
+		        
+		        m.lcPDFInfoTagValueUTF16 = ""
+		        LOCAL i
+		        FOR m.i = 1 TO LEN(m.lcPDFInfoTagValue)
+		            m.lcPDFInfoTagValueUTF16 = m.lcPDFInfoTagValueUTF16 + BINTOC(CTOBIN(STRCONV(SUBSTR(m.lcPDFInfoTagValue,m.i,1),5), "2RS"), "2S")
+		        ENDFOR
+		        
+		        m.lcPDFInfoTagValueUTF16 = 0hFEFF + m.lcPDFInfoTagValueUTF16
+		        
+		        IF m.llEncrypt
+		            This.Encrypt("RC4", m.lcPDFInfoTagValueUTF16, m.lcInfoObjEncryptionKey,  @m.lcPDFInfoTagValueUTF16)
+		        ENDIF
+		        
+		        m.lcPDFInfo = m.lcPDFInfo + TEXTMERGE("/{m.lcPDFInfoTag} <{STRCONV(m.lcPDFInfoTagValueUTF16, 15)}>", .F., "{", "}")
+		        
+		    ENDFOR
+		
+		    LOCAL ldtNow, lcCreationDate
+		    m.ldtNow = DATETIME()
+		    m.lcCreationDate = TEXTMERGE("D:<<TTOC(m.ldtNow,1)>>")
+		
+		    IF m.llEncrypt
+		        This.Encrypt("RC4", m.lcCreationDate, m.lcInfoObjEncryptionKey,  @m.lcCreationDate)
+		    ENDIF
+		    m.lcCreationDate = "<" + STRCONV(m.lcCreationDate,15) + ">"    
+		
+		       
+		    *******************************************************    
+		    LOCAL loPDFTemplate
+		    m.loPDFTemplate = NEWOBJECT("Collection")
+		    m.loPDFTemplate.Add("%PDF-1.7")
+		    m.loPDFTemplate.Add("1 0 obj<</Pages 2 0 R>>endobj")
+		    m.loPDFTemplate.Add("2 0 obj<</Kids[3 0 R]/Count 1>>endobj")
+		    m.loPDFTemplate.Add("3 0 obj<</Parent 2 0 R>>endobj")
+		    m.loPDFTemplate.Add(TEXTMERGE("4 0 obj<<{ m.lcPDFInfo }/CreationDate { m.lcCreationDate }/ModDate { m.lcCreationDate }>>endobj", .F., "{", "}"))
+		
+		    IF m.llEncrypt        
+		        LOCAL lcPDFEncrypt
+		        TEXT TO m.lcPDFEncrypt ADDITIVE NOSHOW FLAGS 1 PRETEXT 3
+		        5 0 obj
+		        <<
+		        /Filter /Standard
+		        /V 2
+		        /Length 128
+		        /R 3
+		        /O { "<" + STRCONV(m.lcOwnerKey,15) + ">" }
+		        /U { "<" + STRCONV(m.lcUserKey,15) + ">" }
+		        /P {m.lnPermit}
+		        >> endobj
+		        ENDTEXT
+		        
+		        m.loPDFTemplate.Add(TEXTMERGE(m.lcPDFEncrypt, .F., "{", "}"))
+		    ENDIF
+		
+		    LOCAL lcPDFTemplate
+		    m.lcPDFTemplate = ""
+		
+		    LOCAL lcXRef, m.lnXRefCount
+		    m.lcXRef = "0000000000 65535 f"
+		    m.lnXRefCount = 1
+		
+		    LOCAL lcPDFLine
+		    FOR EACH m.lcPDFLine IN m.loPDFTemplate FOXOBJECT
+		        IF LEFT(m.lcPDFLine,1) != '%'
+		            m.lnXRefCount = m.lnXRefCount + 1
+		            m.lcXRef = m.lcXRef + CHR(13)+CHR(10) + PADL(TRANSFORM(LEN(m.lcPDFTemplate)), 10, '0') + " 00000 n"
+		        ENDIF
+		        m.lcPDFTemplate = m.lcPDFTemplate + m.lcPDFLine + CHR(13)+CHR(10)
+		    ENDFOR
+		
+		    LOCAL lnStartXRef
+		    m.lnStartXRef = LEN(m.lcPDFTemplate)
+		
+		    TEXT TO m.lcPDFTemplate ADDITIVE NOSHOW FLAGS 1 PRETEXT 3
+		    xref
+		    0 { m.lnXRefCount }
+		    { m.lcXREF }
+		    trailer
+		    <<
+		    /Root 1 0 R
+		    /Info 4 0 R
+		    { IIF(m.llEncrypt, "/Encrypt 5 0 R", "") }
+		    /Size { m.lnXRefCount }
+		    /ID { "[<" + STRCONV(m.lcFileID, 15) + "> <" + STRCONV(m.lcFileID, 15) + ">]" }
+		    >>
+		    startxref
+		    { m.lnStartXRef }
+		    %%EOF
+		    ENDTEXT
+		     
+		    m.lcPDFTemplate = TEXTMERGE(m.lcPDFTemplate, .F., "{", "}")
+		
+		    LOCAL lnPDFTemplateSize
+		    m.lnPDFTemplateSize = LEN(m.lcPDFTemplate)
+		    
+		
+		    This.PDFTemplateHeap = This.env.API_WIN.HeapCreate(0, m.lnPDFTemplateSize, 0)
+		    IF EMPTY(This.PDFTemplateHeap)
+		        EXIT
+		    ENDIF
+		
+		    This.PDFTemplatePtr = This.env.API_WIN.HeapAlloc(This.PDFTemplateHeap, 0, m.lnPDFTemplateSize)
+		    IF EMPTY(This.PDFTemplatePtr)
+		        EXIT
+		    ENDIF
+		
+		    SYS(2600, This.PDFTemplatePtr, m.lnPDFTemplateSize, m.lcPDFTemplate)
+		
+		
+		    This.fpdf_doc = m.loFPDF.FPDF_LoadMemDocument(This.PDFTemplatePtr, m.lnPDFTemplateSize, NVL(m.loPDFMeta.UserPassword,"")) 
+		
+		    IF EMPTY(This.fpdf_doc)
+		        ERROR "FPDF_LoadMemDocument returned empty value"
+		    ENDIF
+		
+		    m.loFPDF.FPDFPage_Delete(This.fpdf_doc,0)
+		    
+		    
+		FINALLY
+		
+		    IF EMPTY(This.PDFTemplatePtr)=.F. AND EMPTY(This.fpdf_doc)
+		        This.env.API_WIN.HeapFree(This.PDFTemplateHeap, 0, This.PDFTemplatePtr)
+		        This.PDFTemplatePtr = 0 
+		    ENDIF
+		
+		    IF EMPTY(This.PDFTemplateHeap)=.F. AND EMPTY(This.fpdf_doc)
+		        This.env.API_WIN.HeapDestroy(This.PDFTemplateHeap)
+		        This.PDFTemplateHeap = 0 
+		    ENDIF
+		
+		ENDTRY
+		
+		
+	ENDPROC
+
+	PROCEDURE Destroy
+		
+		This.ClosePDF()
+		
+		This.env = .F.
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE encrypt
+		LPARAMETERS tcAlgorithm, tcData, tcKey, lcDataEncrypted
+		
+		lcDataEncrypted = ""
+		
+		LOCAL loWin
+		m.loWin = This.env.API_WIN
+		
+		
+		#define BCRYPT_BLOCK_PADDING  0x00000001
+		
+		LOCAL lnAlg, lnKey
+		STORE 0 TO m.lnAlg, m.lnKey
+		
+		LOCAL llRes
+		llRes = .F.
+		
+		TRY
+		    IF m.loWin.BCryptOpenAlgorithmProvider(@m.lnAlg, STRCONV(m.tcAlgorithm+CHR(0),5), NULL, 0) != 0
+		        EXIT
+		    ENDIF
+		
+		    IF m.loWin.BCryptGenerateSymmetricKey(m.lnAlg, @m.lnKey, NULL, 0, @m.tcKey, LEN(m.tcKey), 0) != 0
+		        EXIT
+		    ENDIF
+		
+		    LOCAL lnSize
+		    m.lnSize = 0
+		    IF m.loWin.BCryptEncrypt(m.lnKey, m.tcData, LEN(m.tcData), NULL, NULL, 0, NULL, 0, @m.lnSize, BCRYPT_BLOCK_PADDING) != 0
+		        EXIT
+		    ENDIF
+		
+		
+		    m.lcDataEncrypted = REPLICATE(CHR(0), m.lnSize)
+		    
+		    IF m.loWin.BCryptEncrypt(m.lnKey, m.tcData, LEN(m.tcData), NULL, NULL, 0, @m.lcDataEncrypted, LEN(m.lcDataEncrypted), @m.lnSize, BCRYPT_BLOCK_PADDING) != 0
+		       EXIT
+		    ENDIF
+		    
+		    m.llRes = .T.
+		
+		FINALLY
+		    IF EMPTY(m.lnKey) = .F.
+		        m.loWin.BCryptDestroyKey(m.lnKey)
+		        m.lnKey = 0
+		    ENDIF
+		
+		    IF EMPTY(m.lnAlg) = .F.
+		        m.loWin.BCryptCloseAlgorithmProvider(m.lnAlg, 0)
+		        m.lnAlg = 0
+		    ENDIF
+		ENDTRY
+		
+		IF m.llRes = .F.
+		    m.lcDataEncrypted = ""
+		ENDIF
+		
+		RETURN m.llRes
+		
+		
+	ENDPROC
+
+	PROCEDURE finalize
+		LPARAMETERS loPdfiumReport as PdfiumReport of pdfium-vfp.vcx
+		
+		IF EMPTY(This.fpdf_doc)
+		    RETURN
+		ENDIF
+		
+		
+		LOCAL loFPDF, loFPDFC
+		m.loFPDF = This.env.API_FPDF
+		m.loFPDFC = m.loFPDF.CONST
+		
+		LOCAL lcTempFileName
+		m.lcTempFileName = ""
+		
+		LOCAL loErr
+		m.loErr = .F.
+		TRY
+		
+		    LOCAL liPage, lnPage
+		    m.liPage = 1 
+		    FOR m.liPage = 1 TO This.fpdf_pagecount
+		        m.lnPage = This.fpdf_pages[m.liPage]
+		        IF EMPTY(m.lnPage) = .F.
+		            m.loFPDF.FPDFPage_GenerateContent(m.lnPage)
+		        ENDIF
+		    ENDFOR
+		    *******************************************************
+		    
+		
+		    m.lcTempFileName = This.env.GetUniqueTempFileName("pdf")
+		    
+		    LOCAL lcSaveErrMsg
+		    m.lcSaveErrMsg = REPLICATE(CHR(0), 500)
+		    
+		    IF m.loFPDF.VFPDF_SaveDocument(This.fpdf_doc, m.lcTempFileName, @m.lcSaveErrMsg, LEN(m.lcSaveErrMsg)) <> 1
+		        m.lcTempFileName = ""
+		        ERROR (RTRIM(m.lcSaveErrMsg, 1, CHR(0)))
+		        EXIT
+		    ENDIF
+		
+		    DO CASE
+		    CASE m.loPdfiumReport.CommandClauses.OUTPUTTO = This.env.API_FRX.CONST.OUTPUTTO_FILE() && output to the file
+		        IF EMPTY(m.loPdfiumReport.CommandClauses.TOFILE) = .F.
+		            COPY FILE (m.lcTempFileName) TO (m.loPdfiumReport.CommandClauses.TOFILE)
+		        ENDIF
+		
+		    CASE m.loPdfiumReport.CommandClauses.OUTPUTTO = This.env.API_FRX.CONST.OUTPUTTO_PRINTER() AND m.loPdfiumReport.CommandClauses.ISDESIGNERLOADED = .F. && output to the printer
+		        m.loPdfiumReport.PreviewContainer = NEWOBJECT("PdfiumReportViewer", This.ClassLibrary, "", This.env, m.loPdfiumReport.PrintEnv)
+		        m.loPdfiumReport.PreviewContainer.SetReport(m.loPdfiumReport)
+		        m.loPdfiumReport.PreviewContainer.OpenPDF(m.lcTempFileName, m.loPdfiumReport.SaveAs_PDFMeta.UserPassword)
+		
+		        IF m.loPdfiumReport.CommandClauses.PROMPT
+		            m.loPdfiumReport.PreviewContainer.Show()
+		        ENDIF
+		        
+		        m.loPdfiumReport.PreviewContainer.PrintReport()
+		    
+		    
+		    CASE m.loPdfiumReport.CommandClauses.PREVIEW OR m.loPdfiumReport.CommandClauses.ISDESIGNERLOADED
+		        m.loPdfiumReport.PreviewContainer = NEWOBJECT("PdfiumReportViewer", This.ClassLibrary, "", This.env, m.loPdfiumReport.PrintEnv)
+		        m.loPdfiumReport.PreviewContainer.SetReport(m.loPdfiumReport)
+		        m.loPdfiumReport.PreviewContainer.OpenPDF(m.lcTempFileName, m.loPdfiumReport.SaveAs_PDFMeta.UserPassword)
+		        m.loPdfiumReport.PreviewContainer.SaveAs_Filename = EVL(NVL(m.loPdfiumReport.SaveAs_Filename,""),"")
+		        m.loPdfiumReport.PreviewContainer.Show(1)
+		    
+		    ENDCASE
+		    
+		
+		FINALLY
+		
+		
+		    TRY
+		        IF FILE(m.lcTempFileName,1)
+		            DELETE FILE (m.lcTempFileName)
+		        ENDIF
+		    CATCH
+		    ENDTRY
+		    
+		
+		    This.ClosePDF()
+		    
+		
+		ENDTRY
+		
+		
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE getfontpdf
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
+		
+		IF EMPTY(This.fpdf_doc)
+		    RETURN 0
+		ENDIF
+		
+		LOCAL loFPDF, loFPDFC
+		m.loFPDF = This.env.API_FPDF
+		m.loFPDFC = m.loFPDF.CONST
+		
+		
+		LOCAL lcFontID
+		m.lcFontID = ALLTRIM(m.loRepObj.FontFace)
+		IF m.loRepObj.FontBold
+		    m.lcFontID = m.lcFontID + "<B>"
+		ENDIF
+		IF m.loRepObj.FontItalic
+		    m.lcFontID = m.lcFontID + "<I>"
+		ENDIF
+		
+		
+		***********************************************************
+		* Font has been found
+		***********************************************************
+		LOCAL lnFontIndex
+		m.lnFontIndex = This.fpdf_fonts.GetKey(m.lcFontID)
+		IF m.lnFontIndex > 0
+		    RETURN This.fpdf_fonts[m.lnFontIndex]
+		ENDIF
+		***********************************************************
+		
+		***********************************************************
+		* Font hasn't been found, load it from file
+		***********************************************************
+		LOCAL lnFPDF_Font
+		m.lnFPDF_Font = 0
+		
+		DO CASE
+		CASE m.loRepObj.Font.FontSymbol
+		    * Symbol fonts don't work as expected
+		
+		CASE FILE(m.loRepObj.Font.FontFileName,1) = .F.
+		    * Font file doesn't exist OR FILENAME HAS UNICODE SYMBOLS
+		      
+		OTHERWISE
+		    * Check if font file has been loaded earlier
+		    LOCAL loFont
+		    FOR EACH m.loFont IN This.fpdf_fonts FOXOBJECT
+		        IF ALLTRIM(LOWER(m.loFont.FontFileName)) == ALLTRIM(LOWER(m.loRepObj.Font.FontFileName))
+		            m.lnFPDF_Font = m.loFont.FontHandle
+		            EXIT
+		        ENDIF
+		    ENDFOR
+		
+		    * Load font from file if file hasn't been loaded yet
+		    IF EMPTY(m.lnFPDF_Font)
+		
+		        LOCAL lhHeap, lnFontDataPtr, lnSubsetData, lnSubsetDataSize
+		        STORE 0 TO m.lhHeap, m.lnFontDataPtr, m.lnSubsetData, m.lnSubsetDataSize
+		
+		        TRY
+		
+		            LOCAL lcFontData, lnFontDataSize
+		            m.lcFontData = FILETOSTR(m.loRepObj.Font.FontFileName)
+		            m.lnFontDataSize = LEN(m.lcFontData)
+		
+		            m.lhHeap = This.env.API_WIN.HeapCreate(0, m.lnFontDataSize, 0)
+		            IF EMPTY(m.lhHeap)
+		                EXIT
+		            ENDIF
+		
+		            m.lnFontDataPtr = This.env.API_WIN.HeapAlloc(m.lhHeap, 0, m.lnFontDataSize)
+		            IF EMPTY(m.lnFontDataPtr)
+		                EXIT
+		            ENDIF
+		            
+		            SYS(2600, m.lnFontDataPtr, m.lnFontDataSize, m.lcFontData)
+		            
+		            
+		            IF m.loFPDF.VFPDF_CreateFontSubset(m.lnFontDataPtr, m.lnFontDataSize, m.loRepObj.FontSubset.CharSubset + CHR(0), @m.lnSubsetData, @m.lnSubsetDataSize) = 1
+		                m.lnFPDF_Font = m.loFPDF.FPDFText_LoadFont(This.fpdf_doc, m.lnSubsetData, m.lnSubsetDataSize, m.loFPDFC.FPDF_FONT_TRUETYPE(), 1)
+		            ELSE            
+		                m.lnFPDF_Font = m.loFPDF.FPDFText_LoadFont(This.fpdf_doc, m.lnFontDataPtr, m.lnFontDataSize, m.loFPDFC.FPDF_FONT_TRUETYPE(), 1)
+		            ENDIF
+		
+		
+		        FINALLY
+		        
+		            IF EMPTY(m.lnSubsetData)=.F.
+		                m.loFPDF.VFPDF_DestroyFontSubset(m.lnSubsetData)
+		                m.lnSubsetData = 0
+		                m.lnSubsetDataSize = 0
+		            ENDIF
+		            
+		            IF EMPTY(m.lnFontDataPtr)=.F.
+		                This.env.API_WIN.HeapFree(m.lhHeap, 0, m.lnFontDataPtr)
+		                m.lnFontDataPtr = 0 
+		            ENDIF
+		            
+		            IF EMPTY(m.lhHeap)=.F.
+		                This.env.API_WIN.HeapDestroy(m.lhHeap)
+		                m.lhHeap = 0 
+		            ENDIF
+		            
+		        ENDTRY
+		
+		    ENDIF
+		
+		ENDCASE
+		
+		IF EMPTY(m.lnFPDF_Font)=.T. AND m.loRepObj.Font.FontSymbol=.F. && Get Fallback Font
+		
+		    m.lnFPDF_Font = m.loFPDF.FPDFText_LoadStandardFont( ;
+		        This.fpdf_doc, ;
+		        ICASE( ;
+		            m.loRepObj.FontBold and m.loRepObj.FontItalic, "Helvetica-BoldItalic", ;
+		            m.loRepObj.FontBold, "Helvetica-Bold", ;
+		            m.loRepObj.FontItalic, "Helvetica-Italic", ;
+		            "Helvetica"))
+		ENDIF
+		
+		* Create and store font object
+		IF EMPTY(m.lnFPDF_Font)=.F.
+		    LOCAL loPDFFont
+		    m.loPDFFont = NEWOBJECT("Empty")
+		    
+		    ADDPROPERTY(m.loPDFFont, "FontHandle", m.lnFPDF_Font)
+		    ADDPROPERTY(m.loPDFFont, "FontFileName", m.loRepObj.Font.FontFileName)
+		
+		    This.fpdf_fonts.Add(m.loPDFFont, m.lcFontID)
+		ENDIF
+		
+		
+		LOCAL lnFontIndex
+		m.lnFontIndex = This.fpdf_fonts.GetKey(m.lcFontID)
+		IF m.lnFontIndex > 0
+		    RETURN This.fpdf_fonts[m.lnFontIndex]
+		ENDIF
+		
+		RETURN 0
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE hash_md5
+		LPARAMETERS tcData, tcDataHash
+		
+		m.tcDataHash = ""
+		
+		LOCAL loWin
+		m.loWin = This.env.API_WIN
+		
+		LOCAL lcAlgorithm
+		m.lcAlgorithm = "MD5"
+		
+		LOCAL lnAlg, lnHash, lhHashHeap, lnHashObjPtr
+		STORE 0 TO m.lnAlg, m.lnHash, m.lhHashHeap, m.lnHashObjPtr
+		
+		LOCAL llRes
+		m.llRes = .F.
+		
+		TRY
+		
+		    IF m.loWin.BCryptOpenAlgorithmProvider(@m.lnAlg, STRCONV(m.lcAlgorithm+CHR(0),5), NULL, 0) != 0
+		        EXIT
+		    ENDIF
+		
+		    LOCAL lnSizeObj, lnData
+		    m.lnSizeObj = 0
+		    m.lnData = 0
+		    IF m.loWin.BCryptGetProperty(m.lnAlg, STRCONV("ObjectLength"+CHR(0),5), @m.lnSizeObj, 4, @m.lnData, 0 ) != 0
+		        EXIT
+		    ENDIF
+		
+		    LOCAL lnSizeHash
+		    m.lnSizeHash = 0
+		    IF m.loWin.BCryptGetProperty( m.lnAlg, STRCONV("HashDigestLength"+CHR(0),5), @m.lnSizeHash, 4, @m.lnData, 0 ) != 0
+		        EXIT
+		    ENDIF
+		
+		
+		    m.lhHashHeap = m.loWin.HeapCreate(0, m.lnSizeObj, 0)
+		    IF EMPTY(m.lhHashHeap)
+		        EXIT
+		    ENDIF
+		
+		    m.lnHashObjPtr = m.loWin.HeapAlloc(m.lhHashHeap, 0, m.lnSizeObj)
+		    IF EMPTY(m.lnHashObjPtr)
+		        EXIT
+		    ENDIF
+		
+		    IF m.loWin.BCryptCreateHash(m.lnAlg, @m.lnHash, m.lnHashObjPtr, m.lnSizeObj, NULL, 0, 0 ) != 0
+		        EXIT
+		    ENDIF
+		
+		    IF m.loWin.BCryptHashData(m.lnHash, m.tcData, LEN(m.tcData), 0) != 0
+		        EXIT
+		    ENDIF 
+		
+		    m.tcDataHash = REPLICATE(CHR(0), m.lnSizeHash)
+		    IF m.loWin.BCryptFinishHash(m.lnHash, @m.tcDataHash, m.lnSizeHash, 0) != 0
+		        EXIT
+		    ENDIF
+		    
+		    m.llRes = .T.
+		
+		FINALLY
+		
+		    IF EMPTY(m.lnHash) = .F.
+		        m.loWin.BCryptDestroyHash(m.lnHash)
+		        m.lnHash = 0
+		    ENDIF
+		
+		    IF EMPTY(m.lnAlg) = .F.
+		        m.loWin.BCryptCloseAlgorithmProvider(m.lnAlg, 0)
+		        m.lnAlg = 0
+		    ENDIF
+		
+		
+		    IF EMPTY(m.lnHashObjPtr)=.F.
+		        m.loWin.HeapFree(m.lhHashHeap, 0, m.lnHashObjPtr)
+		        m.lnHashObjPtr = 0 
+		    ENDIF
+		    
+		    IF EMPTY(m.lhHashHeap)=.F.
+		        This.env.API_WIN.HeapDestroy(m.lhHashHeap)
+		        m.lhHashHeap = 0 
+		    ENDIF
+		
+		ENDTRY
+		
+		IF m.llRes = .F.
+		    m.tcDataHash = ""
+		ENDIF
+		
+		RETURN m.llRes
+		
+	ENDPROC
+
+	PROCEDURE render
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
+		
+		
+		IF EMPTY(This.fpdf_doc)
+		    RETURN
+		ENDIF
+		
+		
+		LOCAL loFRXC
+		m.loFRXC = This.env.API_FRX.CONST
+		
+		LOCAL loFPDF
+		m.loFPDF = This.env.API_FPDF
+		
+		LOCAL lnDpiCoef
+		m.lnDpiCoef = This.env.GetPDFDPI() / 96
+		
+		
+		*************************************************
+		* Create new page
+		*************************************************
+		IF m.loRepObj.Batch_PageNo > This.fpdf_pagecount
+		
+		    This.fpdf_pagecount = This.fpdf_pagecount + 1
+		
+		    DIMENSION This.fpdf_pages(This.fpdf_pagecount)
+		
+		    LOCAL lnFPDF_Page
+		    m.lnFPDF_Page = m.loFPDF.FPDFPage_New(This.fpdf_doc, This.fpdf_pagecount - 1, m.loRepObj.Rep_PageWidth * m.lnDpiCoef, m.loRepObj.Rep_PageHeight * m.lnDpiCoef)
+		
+		    This.fpdf_pages[This.fpdf_pagecount] = m.lnFPDF_Page
+		    
+		ENDIF
+		
+		IF EMPTY(This.fpdf_pages[This.fpdf_pagecount])
+		    RETURN
+		ENDIF
+		
+		
+		
+		*************************************************
+		
+		DO CASE
+		CASE m.loRepObj.ObjType = m.loFRXC.FRX_OBJ_FIELD()
+		    This.Render_FrxField(m.loRepObj)
+		   
+		CASE m.loRepObj.ObjType = m.loFRXC.FRX_OBJ_LABEL()
+		    This.Render_FrxLabel(m.loRepObj)
+		
+		CASE m.loRepObj.ObjType = m.loFRXC.FRX_OBJ_LINE()
+		    This.Render_FrxLine(m.loRepObj)
+		
+		CASE m.loRepObj.ObjType = m.loFRXC.FRX_OBJ_RECTANGLE()
+		    This.Render_FrxRectangle(m.loRepObj)
+		
+		CASE m.loRepObj.ObjType = m.loFRXC.FRX_OBJ_PICTURE()
+		    This.Render_FrxPicture(m.loRepObj)
+		
+		ENDCASE
+		*************************************************
+		
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE render_frxfield
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
+		
+		This.Render_Text(m.loRepObj)
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE render_frxlabel
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
+		
+		This.Render_Text(m.loRepObj)
+		
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE render_frxline
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
+		
+		LOCAL loFPDF, loFPDFC
+		m.loFPDF = This.env.API_FPDF
+		m.loFPDFC = m.loFPDF.CONST
+		
+		
+		LOCAL lnFPDF_Page
+		m.lnFPDF_Page = This.fpdf_pages[This.fpdf_pagecount]
+		
+		LOCAL lnDpiCoef
+		m.lnDpiCoef = This.env.GetPDFDPI() / 96
+		
+		LOCAL lnLineWidth
+		IF m.loRepObj.PenPat >= 1
+		    m.lnLineWidth = MAX(m.loRepObj.PenSize, 0.5) * m.lnDpiCoef
+		ELSE
+		    m.lnLineWidth = 0
+		ENDIF
+		
+		LOCAL lnLeft, lnTop, lnWidth, lnHeight
+		m.lnLeft = m.loRepObj.PosLeft
+		m.lnTop = m.loRepObj.PosTopRev
+		m.lnWidth = m.loRepObj.SizeWidth
+		m.lnHeight = m.loRepObj.SizeHeight
+		
+		
+		LOCAL lnRad
+		m.lnRad = -m.loRepObj.Rotate * PI() / 180
+		
+		LOCAL lcTrMatrix
+		m.lcTrMatrix = ;
+		    BINTOC(COS(m.lnRad), "F") + ;
+		    BINTOC(SIN(m.lnRad), "F") + ;
+		    BINTOC(-SIN(m.lnRad), "F") + ;
+		    BINTOC(COS(m.lnRad), "F") + ;
+		    BINTOC(m.lnDpiCoef * m.lnLeft, "F") + ;
+		    BINTOC(m.lnDpiCoef * m.lnTop, "F")
+		
+		
+		LOCAL lnLineObj
+		m.lnLineObj = m.loFPDF.FPDFPageObj_CreateNewPath(0, 0)
+		
+		m.loFPDF.FPDFPage_InsertObject(m.lnFPDF_Page, m.lnLineObj)
+		
+		
+		IF m.loRepObj.LineType = 1
+		    * Horizontal line
+		    m.loFPDF.FPDFPath_LineTo(m.lnLineObj, m.lnDpiCoef * m.lnWidth, 0)
+		        
+		ELSE
+		    * Vertical line
+		    m.loFPDF.FPDFPath_LineTo(m.lnLineObj, 0, m.lnDpiCoef * -m.lnHeight)
+		       
+		ENDIF
+		
+		    
+		m.loFPDF.FPDFPageObj_TransformF(m.lnLineObj, m.lcTrMatrix)
+		
+		
+		m.loFPDF.FPDFPageObj_SetStrokeColor(m.lnLineObj, m.loRepObj.PenRed, m.loRepObj.PenGreen, m.loRepObj.PenBlue, m.loRepObj.PenAlpha)
+		m.loFPDF.FPDFPageObj_SetStrokeWidth(m.lnLineObj, m.lnLineWidth)
+		
+		m.loFPDF.FPDFPath_SetDrawMode(m.lnLineObj, m.loFPDFC.FPDF_FILLMODE_NONE(), 1)
+		
+		
+		LOCAL lcDash
+		
+		DO CASE
+		CASE m.loRepObj.PenPat = 8 && Normal
+		    m.loFPDF.FPDFPageObj_SetDashArray(m.lnLineObj, NULL, 0, 0)
+		
+		CASE m.loRepObj.PenPat = 1 && Dot
+		    m.lcDash = BINTOC(1, "F")
+		    m.loFPDF.FPDFPageObj_SetDashArray(m.lnLineObj, m.lcDash, 1, 1)
+		    
+		CASE m.loRepObj.PenPat = 2 && Dash
+		    m.lcDash = BINTOC(6, "F") + BINTOC(6, "F")
+		    m.loFPDF.FPDFPageObj_SetDashArray(m.lnLineObj, m.lcDash, 2, 2)
+		    
+		CASE m.loRepObj.PenPat = 3 && Dash-dot
+		    m.lcDash = BINTOC(6, "F") + BINTOC(6, "F") + BINTOC(1, "F") + BINTOC(6, "F")
+		    m.loFPDF.FPDFPageObj_SetDashArray(m.lnLineObj, m.lcDash, 4, 0)
+		    
+		CASE m.loRepObj.PenPat = 4 && Dash-dot-dot
+		    m.lcDash = BINTOC(6, "F") + BINTOC(3, "F") + BINTOC(1, "F") + BINTOC(3, "F") + BINTOC(1, "F") + BINTOC(3, "F")
+		    m.loFPDF.FPDFPageObj_SetDashArray(m.lnLineObj, m.lcDash, 6, 0)
+		
+		OTHERWISE && Normal
+		    m.loFPDF.FPDFPageObj_SetDashArray(m.lnLineObj, NULL, 0, 0)
+		
+		ENDCASE
+		
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE render_frxpicture
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
+		
+		LOCAL loFPDF, loFPDFC
+		m.loFPDF = This.env.API_FPDF
+		m.loFPDFC = m.loFPDF.CONST
+		
+		LOCAL loGDIP, loGDIPC
+		m.loGDIP = This.env.API_GDIP
+		m.loGDIPC = m.loGDIP.CONST
+		
+		
+		LOCAL lnFPDF_Page
+		m.lnFPDF_Page = This.fpdf_pages[This.fpdf_pagecount]
+		
+		LOCAL lnDpiCoef
+		m.lnDpiCoef = This.env.GetPDFDPI() / 96
+		
+		LOCAL lcTempFileName
+		m.lcTempFileName = This.env.GetUniqueTempFileName("png")
+		
+		LOCAL lSaveSafety
+		m.lSaveSafety = SET("Safety")
+		SET SAFETY OFF
+		
+		LOCAL lhGdipImage, lcImageBitmapData
+		m.lhGdipImage = 0
+		m.lcImageBitmapData = ""
+		
+		LOCAL lnFPDF_Bitmap
+		m.lnFPDF_Bitmap = 0
+		
+		LOCAL loErr
+		m.loErr = .F.
+		TRY
+		
+		    LOCAL lnLeft, lnTop, lnWidth, lnHeight
+		    m.lnLeft = m.loRepObj.PosLeft
+		    m.lnTop = m.loRepObj.PosTopRev
+		    m.lnWidth = m.loRepObj.SizeWidth
+		    m.lnHeight = m.loRepObj.SizeHeight
+		
+		
+		    **************************************************
+		    * Draw image
+		    **************************************************
+		
+		    IF EMPTY(m.loRepObj.PictureVal) = .T.
+		        EXIT
+		    ENDIF
+		
+		    STRTOFILE(m.loRepObj.PictureVal, m.lcTempFileName, 0)
+		    
+		    m.loGDIP.CheckError(m.loGDIP.GdipCreateBitmapFromFile(STRCONV(m.lcTempFileName,5) + CHR(0), @m.lhGdipImage))
+		
+		    LOCAL lnImgWidth, lnImgHeight
+		    STORE 0 TO m.lnImgWidth, m.lnImgHeight
+		    
+		    m.loGDIP.CheckError(m.loGDIP.GdipGetImageWidth(m.lhGdipImage, @m.lnImgWidth))
+		    m.loGDIP.CheckError(m.loGDIP.GdipGetImageHeight(m.lhGdipImage, @m.lnImgHeight))
+		    
+		    LOCAL lcImageRect
+		    m.lcImageRect = BINTOC(0, "4RS") + BINTOC(0, "4RS") + BINTOC(m.lnImgWidth, "4RS") + BINTOC(m.lnImgHeight, "4RS")
+		
+		    m.lcImageBitmapData = REPLICATE(CHR(0), 24)
+		    m.loGDIP.CheckError(m.loGDIP.GdipBitmapLockBits(m.lhGdipImage, m.lcImageRect, m.loGDIPC.Gdip_ImageLockModeRead(), m.loGDIPC.Gdip_PixelFormat32bppARGB(), @m.lcImageBitmapData))
+		    
+		    ************************************
+		    LOCAL lnImageStride, lnImageScan0
+		    m.lnImageStride = CTOBIN(SUBSTR(m.lcImageBitmapData, 9, 4), "4RS")
+		    m.lnImageScan0 = CTOBIN(SUBSTR(m.lcImageBitmapData, 17, 4), "4RS")
+		    
+		    m.lnFPDF_Bitmap = m.loFPDF.FPDFBitmap_CreateEx(m.lnImgWidth, m.lnImgHeight, m.loFPDFC.FPDFBitmap_BGRA(), m.lnImageScan0, m.lnImageStride)
+		
+		    IF EMPTY(m.lnFPDF_Bitmap)
+		        EXIT
+		    ENDIF
+		    
+		    LOCAL lnImageObj
+		    m.lnImageObj = m.loFPDF.FPDFPageObj_NewImageObj(This.fpdf_doc)
+		    
+		    m.loFPDF.FPDFPage_InsertObject(m.lnFPDF_Page, m.lnImageObj)
+		    
+		    m.loFPDF.FPDFImageObj_SetBitmap(0, 0, m.lnImageObj, m.lnFPDF_Bitmap)
+		
+		
+		    LOCAL lnRad
+		    m.lnRad = -m.loRepObj.Rotate * PI() / 180
+		
+		    LOCAL lcTrMatrix
+		    m.lcTrMatrix = ;
+		        BINTOC(COS(m.lnRad), "F") + ;
+		        BINTOC(SIN(m.lnRad), "F") + ;
+		        BINTOC(-SIN(m.lnRad), "F") + ;
+		        BINTOC(COS(m.lnRad), "F") + ;
+		        BINTOC(m.lnDpiCoef * m.lnLeft, "F") + ;
+		        BINTOC(m.lnDpiCoef * m.lnTop, "F")
+		
+		    
+		    m.loFPDF.FPDFPageObj_Transform(m.lnImageObj, m.lnDpiCoef * MAX(m.lnWidth,1), 0, 0, m.lnDpiCoef * MAX(m.lnHeight,1), 0, m.lnDpiCoef * (-m.lnHeight))
+		    m.loFPDF.FPDFPageObj_TransformF(m.lnImageObj, m.lcTrMatrix)
+		    
+		    
+		    
+		FINALLY
+		    
+		    SET SAFETY &lSaveSafety
+		
+		    IF EMPTY(m.lnFPDF_Bitmap) = .F.
+		        m.loFPDF.FPDFBitmap_Destroy(m.lnFPDF_Bitmap)
+		        m.lnFPDF_Bitmap = 0
+		    ENDIF
+		
+		    IF EMPTY(m.lhGdipImage) = .F. AND EMPTY(RTRIM(m.lcImageBitmapData,1, CHR(0))) = .F.
+		        m.loGDIP.GdipBitmapUnlockBits(m.lhGdipImage, m.lcImageBitmapData)
+		        m.lcImageBitmapData = ""
+		    ENDIF
+		
+		    IF EMPTY(m.lhGdipImage) = .F.
+		        m.loGDIP.GdipDisposeImage(m.lhGdipImage)
+		        m.lhGdipImage = 0
+		    ENDIF
+		        
+		    IF FILE(m.lcTempFileName,1)
+		        DELETE FILE (m.lcTempFileName)
+		    ENDIF
+		    
+		ENDTRY
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE render_frxrectangle
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
+		
+		LOCAL loFPDF, loFPDFC
+		m.loFPDF = This.env.API_FPDF
+		m.loFPDFC = m.loFPDF.CONST
+		
+		
+		LOCAL lnFPDF_Page
+		m.lnFPDF_Page = This.fpdf_pages[This.fpdf_pagecount]
+		
+		LOCAL lnDpiCoef
+		m.lnDpiCoef = This.env.GetPDFDPI() / 96
+		
+		
+		LOCAL lnLineWidth
+		IF m.loRepObj.PenPat >= 1
+		    m.lnLineWidth = MAX(m.loRepObj.PenSize, 0.5) * m.lnDpiCoef
+		ELSE
+		    m.lnLineWidth = 0
+		ENDIF
+		
+		LOCAL lnLeft, lnTop, lnWidth, lnHeight
+		m.lnLeft = m.loRepObj.PosLeft
+		m.lnTop = m.loRepObj.PosTopRev
+		m.lnWidth = m.loRepObj.SizeWidth
+		m.lnHeight = m.loRepObj.SizeHeight
+		
+		LOCAL lnRad
+		m.lnRad = -m.loRepObj.Rotate * PI() / 180
+		
+		LOCAL lcTrMatrix
+		m.lcTrMatrix = ;
+		    BINTOC(COS(m.lnRad), "F") + ;
+		    BINTOC(SIN(m.lnRad), "F") + ;
+		    BINTOC(-SIN(m.lnRad), "F") + ;
+		    BINTOC(COS(m.lnRad), "F") + ;
+		    BINTOC(m.lnDpiCoef * m.lnLeft, "F") + ;
+		    BINTOC(m.lnDpiCoef * m.lnTop, "F")
+		
+		
+		LOCAL lnRectObj
+		m.lnRectObj = 0
+		
+		DO CASE
+		CASE m.loRepObj.RectCurvature = 0 && Normal rectangle
+		    
+		    m.lnRectObj = m.loFPDF.FPDFPageObj_CreateNewRect(;
+		        0, ;
+		        m.lnDpiCoef * -m.lnHeight, ;
+		        m.lnDpiCoef * m.lnWidth, ;
+		        m.lnDpiCoef * m.lnHeight)
+		    
+		    m.loFPDF.FPDFPage_InsertObject(m.lnFPDF_Page, m.lnRectObj)
+		
+		
+		CASE BETWEEN(m.loRepObj.RectCurvature, 1, 98) AND m.loRepObj.RectCurvature <= MAX(m.lnWidth, m.lnHeight)/2  && Rounded rectangle
+		
+		    m.lnRectObj = m.loFPDF.FPDFPageObj_CreateNewPath(0, 0)
+		    
+		    m.loFPDF.FPDFPage_InsertObject(m.lnFPDF_Page, m.lnRectObj)
+		    
+		    LOCAL lnRay
+		    m.lnRay = m.lnDpiCoef * ROUND(IIF(m.lnWidth > m.lnHeight, MIN(m.loRepObj.RectCurvature, INT(m.lnHeight / 2)), MIN(m.loRepObj.RectCurvature, INT(m.lnWidth / 2))), 0)
+		    
+		    LOCAL lnRight, lnBottom
+		    m.lnRight = m.lnDpiCoef * m.lnWidth
+		    m.lnBottom = m.lnDpiCoef * -m.lnHeight
+		    
+		    m.loFPDF.FPDFPath_MoveTo(m.lnRectObj, m.lnRay, m.lnBottom)
+		    m.loFPDF.FPDFPath_LineTo(m.lnRectObj, m.lnRight - m.lnRay, m.lnBottom)
+		    m.loFPDF.FPDFPath_BezierTo(m.lnRectObj, m.lnRight, m.lnBottom, m.lnRight, m.lnBottom, m.lnRight, m.lnBottom + m.lnRay) 
+		    m.loFPDF.FPDFPath_LineTo(m.lnRectObj, m.lnRight, -m.lnRay)
+		    m.loFPDF.FPDFPath_BezierTo(m.lnRectObj, m.lnRight, 0, m.lnRight, 0, m.lnRight - m.lnRay, 0)
+		    m.loFPDF.FPDFPath_LineTo(m.lnRectObj, m.lnRay, 0)
+		    m.loFPDF.FPDFPath_BezierTo(m.lnRectObj, 0, 0, 0, 0, 0, -m.lnRay)
+		    m.loFPDF.FPDFPath_LineTo(m.lnRectObj, 0 , m.lnBottom + m.lnRay)
+		    m.loFPDF.FPDFPath_BezierTo(m.lnRectObj, 0, m.lnBottom, 0, m.lnBottom, m.lnRay, m.lnBottom)
+		
+		
+		OTHERWISE && Ellipsis
+		
+		    LOCAL lnKappa
+		    m.lnKappa = 0.552
+		    
+		    LOCAL lnCenterX, lnCenterY, lnRayX, lnRayY
+		    m.lnCenterX = m.lnDpiCoef * m.lnWidth / 2
+		    m.lnCenterY = m.lnDpiCoef * -m.lnHeight / 2
+		    m.lnRayX = m.lnDpiCoef * (m.lnWidth / 2)
+		    m.lnRayY = m.lnDpiCoef * (m.lnHeight / 2)
+		    
+		    m.lnRectObj = m.loFPDF.FPDFPageObj_CreateNewPath(0, 0)
+		    
+		    m.loFPDF.FPDFPage_InsertObject(m.lnFPDF_Page, m.lnRectObj)
+		
+		    m.loFPDF.FPDFPath_MoveTo(m.lnRectObj, m.lnCenterX - m.lnRayX, m.lnCenterY)
+		    m.loFPDF.FPDFPath_BezierTo(m.lnRectObj, m.lnCenterX - m.lnRayX, m.lnCenterY + m.lnRayY * m.lnKappa, m.lnCenterX - m.lnRayX * m.lnKappa, m.lnCenterY + m.lnRayY, m.lnCenterX, m.lnCenterY + m.lnRayY)
+		    m.loFPDF.FPDFPath_BezierTo(m.lnRectObj, m.lnCenterX + m.lnRayX * m.lnKappa, m.lnCenterY + m.lnRayY, m.lnCenterX + m.lnRayX, m.lnCenterY + m.lnRayY * m.lnKappa, m.lnCenterX + m.lnRayX, m.lnCenterY)
+		    m.loFPDF.FPDFPath_BezierTo(m.lnRectObj, m.lnCenterX + m.lnRayX, m.lnCenterY - m.lnRayY * m.lnKappa, m.lnCenterX + m.lnRayX * m.lnKappa, m.lnCenterY - m.lnRayY, m.lnCenterX, m.lnCenterY - m.lnRayY)
+		    m.loFPDF.FPDFPath_BezierTo(m.lnRectObj, m.lnCenterX - m.lnRayX * m.lnKappa, m.lnCenterY - m.lnRayY, m.lnCenterX - m.lnRayX, m.lnCenterY - m.lnRayY * m.lnKappa, m.lnCenterX - m.lnRayX, m.lnCenterY)
+		        
+		ENDCASE
+		
+		IF EMPTY(m.lnRectObj)
+		    RETURN
+		ENDIF
+		
+		
+		m.loFPDF.FPDFPageObj_TransformF(m.lnRectObj, m.lcTrMatrix)
+		
+		
+		m.loFPDF.FPDFPageObj_SetFillColor(m.lnRectObj, m.loRepObj.FillRed, m.loRepObj.FillGreen, m.loRepObj.FillBlue, m.loRepObj.FillAlpha)
+		m.loFPDF.FPDFPageObj_SetStrokeColor(m.lnRectObj, m.loRepObj.PenRed, m.loRepObj.PenGreen, m.loRepObj.PenBlue, m.loRepObj.PenAlpha)
+		m.loFPDF.FPDFPageObj_SetStrokeWidth(m.lnRectObj, m.lnLineWidth)
+		
+		DO CASE
+		CASE m.loRepObj.Transparent = 0 AND m.loRepObj.FillPat > 0 AND m.loRepObj.PenPat = 0
+		    m.loFPDF.FPDFPath_SetDrawMode(m.lnRectObj, m.loFPDFC.FPDF_FILLMODE_ALTERNATE(), 0)
+		    
+		CASE m.loRepObj.Transparent = 0 AND m.loRepObj.FillPat > 0
+		    m.loFPDF.FPDFPath_SetDrawMode(m.lnRectObj, m.loFPDFC.FPDF_FILLMODE_ALTERNATE(), 1)
+		
+		OTHERWISE 
+		    m.loFPDF.FPDFPath_SetDrawMode(m.lnRectObj, m.loFPDFC.FPDF_FILLMODE_NONE(), 1)
+		
+		ENDCASE
+		
+		
+		*******************************************************
+		LOCAL lcDash
+		
+		DO CASE
+		CASE m.loRepObj.PenPat = 8 && Normal
+		    m.loFPDF.FPDFPageObj_SetDashArray(m.lnRectObj, NULL, 0, 0)
+		
+		CASE m.loRepObj.PenPat = 1 && Dot
+		    m.lcDash = BINTOC(1, "F")
+		    m.loFPDF.FPDFPageObj_SetDashArray(m.lnRectObj, m.lcDash, 1, 1)
+		    
+		CASE m.loRepObj.PenPat = 2 && Dash
+		    m.lcDash = BINTOC(6, "F") + BINTOC(6, "F")
+		    m.loFPDF.FPDFPageObj_SetDashArray(m.lnRectObj, m.lcDash, 2, 2)
+		    
+		CASE m.loRepObj.PenPat = 3 && Dash-dot
+		    m.lcDash = BINTOC(6, "F") + BINTOC(6, "F") + BINTOC(1, "F") + BINTOC(6, "F")
+		    m.loFPDF.FPDFPageObj_SetDashArray(m.lnRectObj, m.lcDash, 4, 0)
+		    
+		CASE m.loRepObj.PenPat = 4 && Dash-dot-dot
+		    m.lcDash = BINTOC(6, "F") + BINTOC(3, "F") + BINTOC(1, "F") + BINTOC(3, "F") + BINTOC(1, "F") + BINTOC(3, "F")
+		    m.loFPDF.FPDFPageObj_SetDashArray(m.lnRectObj, m.lcDash, 6, 0)
+		
+		OTHERWISE && Normal
+		    m.loFPDF.FPDFPageObj_SetDashArray(m.lnRectObj, NULL, 0, 0)
+		
+		ENDCASE
+		*******************************************************
+		
+		
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE render_text
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
+		
+		LOCAL loFPDF, loFPDFC
+		m.loFPDF = This.env.API_FPDF
+		m.loFPDFC = m.loFPDF.CONST
+		
+		
+		LOCAL loFRXC
+		m.loFRXC = This.env.API_FRX.CONST
+		
+		
+		LOCAL lnFPDF_Page
+		m.lnFPDF_Page = This.fpdf_pages[This.fpdf_pagecount]
+		
+		LOCAL lnDpiCoef
+		m.lnDpiCoef = This.env.GetPDFDPI() / 96
+		
+		
+		LOCAL loFont
+		m.loFont = m.loRepObj.Font
+		
+		LOCAL loPDFFont
+		m.loPDFFont = This.GetFontPDF(m.loRepObj)
+		
+		IF VARTYPE(m.loPDFFont) <> "O"
+		    This.Render_TextAsImage(m.loRepObj)
+		    RETURN
+		ENDIF
+		
+		
+		LOCAL lnLeft, lnTop, lnWidth, lnHeight
+		m.lnLeft = m.loRepObj.PosLeft
+		m.lnTop = m.loRepObj.PosTopRev
+		m.lnWidth = m.loRepObj.SizeWidth
+		m.lnHeight = m.loRepObj.SizeHeight
+		
+		
+		LOCAL lnRad
+		m.lnRad = -m.loRepObj.Rotate * PI() / 180
+		
+		LOCAL lcTrMatrix
+		m.lcTrMatrix = ;
+		    BINTOC(COS(m.lnRad), "F") + ;
+		    BINTOC(SIN(m.lnRad), "F") + ;
+		    BINTOC(-SIN(m.lnRad), "F") + ;
+		    BINTOC(COS(m.lnRad), "F") + ;
+		    BINTOC(m.lnDpiCoef * m.lnLeft, "F") + ;
+		    BINTOC(m.lnDpiCoef * m.lnTop, "F")
+		
+		
+		*******************************************************
+		* Background mode 0 - Opaque, 1 - Transparent
+		IF m.loRepObj.Transparent = 0 
+		
+		    LOCAL lnTextBgRect
+		    m.lnTextBgRect = m.loFPDF.FPDFPageObj_CreateNewRect(;
+		        0, ;
+		        m.lnDpiCoef * -m.lnHeight, ;
+		        m.lnDpiCoef * m.lnWidth, ;
+		        m.lnDpiCoef * m.lnHeight)
+		
+		    m.loFPDF.FPDFPage_InsertObject(m.lnFPDF_Page, m.lnTextBgRect)
+		    
+		    m.loFPDF.FPDFPageObj_TransformF(m.lnTextBgRect, m.lcTrMatrix)
+		        
+		    m.loFPDF.FPDFPageObj_SetFillColor(m.lnTextBgRect, m.loRepObj.FillRed, m.loRepObj.FillGreen, m.loRepObj.FillBlue, m.loRepObj.FillAlpha)
+		    
+		    m.loFPDF.FPDFPath_SetDrawMode(m.lnTextBgRect, m.loFPDFC.FPDF_FILLMODE_ALTERNATE(), 0)
+		
+		ENDIF
+		*******************************************************
+		
+		
+		
+		*******************************************************
+		LOCAL laLines(1), lnLinesCount, liLine, loLine
+		m.lnLinesCount = m.loRepObj.Render_Text(@m.laLines)
+		m.liLine = 1
+		FOR m.liLine = 1 TO m.lnLinesCount
+		
+		    m.loLine = m.laLines[m.liLine]
+		
+		
+		    LOCAL lnTextObj
+		    m.lnTextObj = m.loFPDF.FPDFPageObj_CreateTextObj(This.fpdf_doc, m.loPDFFont.FontHandle, m.loRepObj.FontSize)
+		    
+		    m.loFPDF.FPDFPage_InsertObject(m.lnFPDF_Page, m.lnTextObj)
+		    
+		    
+		    m.loFPDF.FPDFText_SetText(m.lnTextObj, m.loLine.Text + CHR(0))
+		    
+		    
+		    m.loFPDF.FPDFPageObj_SetFillColor(m.lnTextObj, m.loRepObj.PenRed, m.loRepObj.PenGreen, m.loRepObj.PenBlue, m.loRepObj.PenAlpha)
+		    m.loFPDF.FPDFPageObj_SetStrokeColor(m.lnTextObj, m.loRepObj.PenRed, m.loRepObj.PenGreen, m.loRepObj.PenBlue, m.loRepObj.PenAlpha)
+		    
+		    m.loFPDF.FPDFPath_SetDrawMode(m.lnTextObj, m.loFPDFC.FPDF_FILLMODE_ALTERNATE(), 0)
+		    
+		    m.loFPDF.FPDFTextObj_SetTextRenderMode(m.lnTextObj, m.loFPDFC.FPDF_TEXTRENDERMODE_FILL())
+		    
+		    IF m.loRepObj.FontBold AND m.loRepObj.Font.FontBold = .F.
+		        m.loFPDF.FPDFTextObj_SetTextRenderMode(m.lnTextObj, m.loFPDFC.FPDF_TEXTRENDERMODE_FILL_STROKE()) && Bold imitation
+		        m.loFPDF.FPDFPageObj_SetStrokeWidth(m.lnTextObj, 0.5)
+		    ENDIF
+		    
+		    LOCAL llFakeItalic
+		    m.llFakeItalic = m.loRepObj.FontItalic AND m.loRepObj.Font.FontItalic = .F.
+		    IF m.llFakeItalic
+		        m.loFPDF.FPDFPageObj_Transform(m.lnTextObj, 1, 0, 0.3333, 1, 0, 0) && Italic imitation
+		    ENDIF
+		
+		
+		    LOCAL lnAlignOffsetX
+		    m.lnAlignOffsetX = ICASE(m.loRepObj.Align = m.loFRXC.ALIGN_RIGHT(), m.loLine.Width - m.loLine.TextWidth, m.loRepObj.Align = m.loFRXC.ALIGN_CENTER(), (m.loLine.Width - m.loLine.TextWidth) * 0.5, 0)
+		
+		    m.loFPDF.FPDFPageObj_Transform(m.lnTextObj, ;
+		        1, ;
+		        0, ;
+		        0, ;
+		        1, ;
+		        m.lnDpiCoef * (m.loLine.Left + m.lnAlignOffsetX) + IIF(m.llFakeItalic, m.loRepObj.FontSize * 0.5, 0),;
+		        m.lnDpiCoef * (-m.loLine.Top - m.loLine.Height + m.loFont.FontDescent + 2) )
+		
+		
+		    m.loFPDF.FPDFPageObj_TransformF(m.lnTextObj, m.lcTrMatrix)
+		    
+		    
+		    IF m.loRepObj.FontUnderline
+		        LOCAL lnTextUnderline
+		        m.lnTextUnderline = m.loFPDF.FPDFPageObj_CreateNewPath(;
+		            m.lnDpiCoef * (m.loLine.Left + m.lnAlignOffsetX),;
+		            m.lnDpiCoef * (-m.loLine.Top - m.loLine.Height + m.loFont.FontDescent))
+		        
+		        m.loFPDF.FPDFPage_InsertObject(m.lnFPDF_Page, m.lnTextUnderline)
+		        
+		        m.loFPDF.FPDFPath_LineTo(m.lnTextUnderline, ;
+		            m.lnDpiCoef * (m.loLine.Left + m.lnAlignOffsetX + m.loLine.TextWidth),;
+		            m.lnDpiCoef * (-m.loLine.Top - m.loLine.Height + m.loFont.FontDescent))
+		            
+		        m.loFPDF.FPDFPageObj_TransformF(m.lnTextUnderline, m.lcTrMatrix)
+		
+		        m.loFPDF.FPDFPageObj_SetStrokeColor(m.lnTextUnderline, m.loRepObj.PenRed, m.loRepObj.PenGreen, m.loRepObj.PenBlue, m.loRepObj.PenAlpha)
+		        m.loFPDF.FPDFPageObj_SetStrokeWidth(m.lnTextUnderline, 0.5)
+		        
+		        m.loFPDF.FPDFPath_SetDrawMode(m.lnTextUnderline, m.loFPDFC.FPDF_FILLMODE_NONE(), 1)
+		
+		    ENDIF
+		
+		
+		    IF m.loRepObj.FontStrikeout
+		        LOCAL lnTextStrikeout
+		        m.lnTextStrikeout = m.loFPDF.FPDFPageObj_CreateNewPath(;
+		            m.lnDpiCoef * (m.loLine.Left + m.lnAlignOffsetX),;
+		            m.lnDpiCoef * (-m.loLine.Top - m.loLine.Height + (m.loFont.FontDescent + m.loFont.FontAscent) * 0.5))
+		        
+		        m.loFPDF.FPDFPage_InsertObject(m.lnFPDF_Page, m.lnTextStrikeout)
+		        
+		        m.loFPDF.FPDFPath_LineTo(m.lnTextStrikeout, ;
+		            m.lnDpiCoef * (m.loLine.Left + m.lnAlignOffsetX + m.loLine.TextWidth),;
+		            m.lnDpiCoef * (-m.loLine.Top - m.loLine.Height + (m.loFont.FontDescent + m.loFont.FontAscent) * 0.5))
+		            
+		        m.loFPDF.FPDFPageObj_TransformF(m.lnTextStrikeout, m.lcTrMatrix)
+		
+		        m.loFPDF.FPDFPageObj_SetStrokeColor(m.lnTextStrikeout, m.loRepObj.PenRed, m.loRepObj.PenGreen, m.loRepObj.PenBlue, m.loRepObj.PenAlpha)
+		        m.loFPDF.FPDFPageObj_SetStrokeWidth(m.lnTextStrikeout, 0.5)
+		        
+		        m.loFPDF.FPDFPath_SetDrawMode(m.lnTextStrikeout, m.loFPDFC.FPDF_FILLMODE_NONE(), 1)
+		
+		    ENDIF
+		   
+		    
+		ENDFOR
+		
+		
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE render_textasimage
+		LPARAMETERS loRepObj as pdfiumreport_repobj of pdfium-vfp.vcx
+		
+		LOCAL loFPDF, loFPDFC
+		m.loFPDF = This.env.API_FPDF
+		m.loFPDFC = m.loFPDF.CONST
+		
+		LOCAL loGDIP, loGDIPC
+		m.loGDIP = This.env.API_GDIP
+		m.loGDIPC = m.loGDIP.CONST
+		
+		
+		LOCAL lnFPDF_Page
+		m.lnFPDF_Page = This.fpdf_pages[This.fpdf_pagecount]
+		
+		LOCAL lnDpiCoef
+		m.lnDpiCoef = This.env.GetPDFDPI() / 96
+		
+		
+		LOCAL lcTempFileName
+		m.lcTempFileName = This.env.GetUniqueTempFileName("png")
+		
+		LOCAL lSaveSafety
+		m.lSaveSafety = SET("Safety")
+		SET SAFETY OFF
+		
+		LOCAL lhGdipImage, lcImageBitmapData
+		m.lhGdipImage = 0
+		m.lcImageBitmapData = ""
+		
+		LOCAL lnFPDF_Bitmap
+		m.lnFPDF_Bitmap = 0
+		
+		LOCAL loErr
+		m.loErr = .F.
+		TRY
+		
+		    LOCAL lnLeft, lnTop, lnWidth, lnHeight, lcPictureVal
+		    m.lnLeft = m.loRepObj.PosLeft
+		    m.lnTop = m.loRepObj.PosTopRev
+		    m.lnWidth = m.loRepObj.SizeWidth
+		    m.lnHeight = m.loRepObj.SizeHeight
+		    m.lcPictureVal = ""
+		
+		    ************************************
+		    m.loRepObj.Render_TextAsImage(@m.lcPictureVal, @m.lnWidth, @m.lnHeight)
+		    
+		    STRTOFILE(m.lcPictureVal, m.lcTempFileName, 0)
+		    m.lcPictureVal = ""
+		    
+		    m.loGDIP.CheckError(m.loGDIP.GdipCreateBitmapFromFile(STRCONV(m.lcTempFileName,5) + CHR(0), @m.lhGdipImage))
+		
+		    LOCAL lnImgWidth, lnImgHeight
+		    STORE 0 TO m.lnImgWidth, m.lnImgHeight
+		    
+		    m.loGDIP.CheckError(m.loGDIP.GdipGetImageWidth(m.lhGdipImage, @m.lnImgWidth))
+		    m.loGDIP.CheckError(m.loGDIP.GdipGetImageHeight(m.lhGdipImage, @m.lnImgHeight))
+		    
+		    LOCAL lcImageRect
+		    m.lcImageRect = BINTOC(0, "4RS") + BINTOC(0, "4RS") + BINTOC(m.lnImgWidth, "4RS") + BINTOC(m.lnImgHeight, "4RS")
+		
+		    m.lcImageBitmapData = REPLICATE(CHR(0), 24)
+		    m.loGDIP.CheckError(m.loGDIP.GdipBitmapLockBits(m.lhGdipImage, m.lcImageRect, m.loGDIPC.Gdip_ImageLockModeRead(), m.loGDIPC.Gdip_PixelFormat32bppARGB(), @m.lcImageBitmapData))
+		    
+		    ************************************
+		    LOCAL lnImageStride, lnImageScan0
+		    m.lnImageStride = CTOBIN(SUBSTR(m.lcImageBitmapData, 9, 4), "4RS")
+		    m.lnImageScan0 = CTOBIN(SUBSTR(m.lcImageBitmapData, 17, 4), "4RS")
+		
+		
+		    m.lnFPDF_Bitmap = m.loFPDF.FPDFBitmap_CreateEx(m.lnImgWidth, m.lnImgHeight, m.loFPDFC.FPDFBitmap_BGRA(), m.lnImageScan0, m.lnImageStride)
+		
+		    IF EMPTY(m.lnFPDF_Bitmap)
+		        EXIT
+		    ENDIF
+		    
+		    LOCAL lnImageObj
+		    m.lnImageObj = m.loFPDF.FPDFPageObj_NewImageObj(This.fpdf_doc)
+		    
+		    m.loFPDF.FPDFPage_InsertObject(m.lnFPDF_Page, m.lnImageObj)
+		    
+		    m.loFPDF.FPDFImageObj_SetBitmap(0, 0, m.lnImageObj, m.lnFPDF_Bitmap)
+		
+		
+		    LOCAL lnRad
+		    m.lnRad = -m.loRepObj.Rotate * PI() / 180
+		
+		    LOCAL lcTrMatrix
+		    m.lcTrMatrix = ;
+		        BINTOC(COS(m.lnRad), "F") + ;
+		        BINTOC(SIN(m.lnRad), "F") + ;
+		        BINTOC(-SIN(m.lnRad), "F") + ;
+		        BINTOC(COS(m.lnRad), "F") + ;
+		        BINTOC(m.lnDpiCoef * m.lnLeft, "F") + ;
+		        BINTOC(m.lnDpiCoef * m.lnTop, "F")
+		
+		    
+		    m.loFPDF.FPDFPageObj_Transform(m.lnImageObj, m.lnDpiCoef * MAX(m.lnWidth,1), 0, 0, m.lnDpiCoef * MAX(m.lnHeight,1), 0, m.lnDpiCoef * (-m.lnHeight))
+		    m.loFPDF.FPDFPageObj_TransformF(m.lnImageObj, m.lcTrMatrix)
+		    
+		FINALLY
+		
+		    SET SAFETY &lSaveSafety
+		
+		    IF EMPTY(m.lnFPDF_Bitmap) = .F.
+		        m.loFPDF.FPDFBitmap_Destroy(m.lnFPDF_Bitmap)
+		        m.lnFPDF_Bitmap = 0
+		    ENDIF
+		
+		    IF EMPTY(m.lhGdipImage) = .F. AND EMPTY(RTRIM(m.lcImageBitmapData,1, CHR(0))) = .F.
+		        m.loGDIP.GdipBitmapUnlockBits(m.lhGdipImage, m.lcImageBitmapData)
+		        m.lcImageBitmapData = ""
+		    ENDIF
+		
+		    IF EMPTY(m.lhGdipImage) = .F.
+		        m.loGDIP.GdipDisposeImage(m.lhGdipImage)
+		        m.lhGdipImage = 0
+		    ENDIF
+		
+		    IF FILE(m.lcTempFileName,1)
+		        DELETE FILE (m.lcTempFileName)
+		    ENDIF
+		ENDTRY
+		
+		
+	ENDPROC
+
+ENDDEFINE
+
 DEFINE CLASS pdfiumreport_repfont AS custom 		&& Frx font representation; Referenced in PdfiumReport.Fonts collection and PdfiumReport_repobj.Font
  	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
 
@@ -10432,10 +14059,12 @@ DEFINE CLASS pdfiumreport_repfont AS custom 		&& Frx font representation; Refere
 		*p: fontheightceil
 		*p: fontitalic		&& Specifies if the text is italic.
 		*p: fontprivate
+		*p: fontsize
 		*p: fontsymbol
 		*p: gdipfont
 		*p: gdipfontfamily
 		*p: lineheight
+		*p: linespacing
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
@@ -10450,11 +14079,13 @@ DEFINE CLASS pdfiumreport_repfont AS custom 		&& Frx font representation; Refere
 		fontheightceil = 0
 		fontitalic = .F.
 		fontprivate = .F.
+		fontsize = 0
 		fontsymbol = .F.
 		gdipfont = .F.
 		gdipfontfamily = 0
 		Height = 27
 		lineheight = 0
+		linespacing = 0
 		Name = "pdfiumreport_repfont"
 		Width = 27
 		_memberdata = <VFPData>
@@ -10471,6 +14102,8 @@ DEFINE CLASS pdfiumreport_repfont AS custom 		&& Frx font representation; Refere
 			<memberdata name="fontprivate" type="property" display="FontPrivate"/>
 			<memberdata name="gdipfont" type="property" display="GdipFont"/>
 			<memberdata name="gdipfontfamily" type="property" display="GdipFontFamily"/>
+			<memberdata name="fontsize" type="property" display="FontSize"/>
+			<memberdata name="linespacing" type="property" display="LineSpacing"/>
 		</VFPData>
 	*</PropValue>
 
@@ -10500,6 +14133,7 @@ DEFINE CLASS pdfiumreport_repobj AS custom 		&& Input object for Render  method 
 		*p: fontitalic		&& Specifies if the text is italic.
 		*p: fontsize		&& Specifies the font size for text displayed with an object.
 		*p: fontstrikeout
+		*p: fontsubset
 		*p: fontunderline		&& Specifies if the text is underlined.
 		*p: linespacing		&& Spacing between lines of text: 0 - normal, 1 - normal * 1.5, 2 - double spacing
 		*p: linetype		&& Line object type: 1 - horizontal, 2 - vertical
@@ -10549,6 +14183,7 @@ DEFINE CLASS pdfiumreport_repobj AS custom 		&& Input object for Render  method 
 		fontitalic = .F.
 		fontsize = 0
 		fontstrikeout = .F.
+		fontsubset = .F.
 		fontunderline = .F.
 		Height = 27
 		linespacing = 0
@@ -10627,6 +14262,7 @@ DEFINE CLASS pdfiumreport_repobj AS custom 		&& Input object for Render  method 
 			<memberdata name="screengfx" type="property" display="ScreenGfx"/>
 			<memberdata name="render_text" type="method" display="Render_Text"/>
 			<memberdata name="batch_pageno" type="property" display="Batch_PageNo"/>
+			<memberdata name="fontsubset" type="property" display="FontSubset"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -10754,7 +14390,7 @@ DEFINE CLASS pdfiumreport_repobj AS custom 		&& Input object for Render  method 
 		    IF This.ObjType = m.loFRXC.FRX_OBJ_LABEL()
 		        This.env.API_GDIP.GdipStringFormatGetGenericTypographic(@m.lhStringFormat)
 		    ELSE
-		        IF m.loFont.FontPrivate 
+		        IF m.loFont.FontPrivate
 		            * VFP is unable to use private gdi+ fonts, thus it renders field with fallback font, this font can be smaller than actual report font
 		            * thus GenerericTypographic is used to make resulting text lines more condensed 
 		            This.env.API_GDIP.GdipStringFormatGetGenericTypographic(@m.lhStringFormat)
@@ -10801,29 +14437,31 @@ DEFINE CLASS pdfiumreport_repobj AS custom 		&& Input object for Render  method 
 		
 		        LOCAL loLineTextRect
 		        This.MeasureString(m.lcLineText, m.loLineRect, m.lhStringFormat, @m.loLineTextRect, @m.lnLineCharsFitted)
-		        
-		        m.lcLineText = SUBSTR(m.lcLineText, 1, m.lnLineCharsFitted * 2)
+		
+		        m.lcLineText = RTRIM(SUBSTR(m.lcLineText, 1, m.lnLineCharsFitted * 2), 1, CHR(13)+CHR(0), CHR(10)+CHR(0))
 		        m.lcLineTextUTF8 = STRCONV(m.lcLineText, 10)
 		        
 		        m.lnCharIndex = m.lnCharIndex + m.lnLineCharsFitted
-		        
 		
-		        LOCAL loTextLine
-		        m.loTextLine = NEWOBJECT("Empty")
-		        ADDPROPERTY(m.loTextLine, "TextUTF8", m.lcLineTextUTF8)
-		        ADDPROPERTY(m.loTextLine, "Left", m.lnTextOffsetX)
-		        ADDPROPERTY(m.loTextLine, "Top", (m.liLine-1) * m.lnLineHeight + m.lnTextOffsetY)
-		        ADDPROPERTY(m.loTextLine, "Width", m.lnWidth)
-		        ADDPROPERTY(m.loTextLine, "Height", m.lnLineHeight)
-		        ADDPROPERTY(m.loTextLine, "TextWidth", m.loLineTextRect.Width)    
-		        ADDPROPERTY(m.loTextLine, "TextHeight", m.loLineTextRect.Height)
-		        
+		        IF EMPTY(m.lcLineText) = .F.
+		            LOCAL loTextLine
+		            m.loTextLine = NEWOBJECT("Empty")
+		            ADDPROPERTY(m.loTextLine, "Text", m.lcLineText)
+		            ADDPROPERTY(m.loTextLine, "TextUTF8", m.lcLineTextUTF8)
+		            ADDPROPERTY(m.loTextLine, "Left", m.lnTextOffsetX)
+		            ADDPROPERTY(m.loTextLine, "Top", (m.liLine-1) * m.lnLineHeight + m.lnTextOffsetY)
+		            ADDPROPERTY(m.loTextLine, "Width", m.lnWidth)
+		            ADDPROPERTY(m.loTextLine, "Height", m.lnLineHeight)
+		            ADDPROPERTY(m.loTextLine, "TextWidth", m.loLineTextRect.Width)
+		            ADDPROPERTY(m.loTextLine, "TextHeight", m.loLineTextRect.Height)
+		            
 		
-		        m.lnTextLinesCount = m.lnTextLinesCount + 1
-		        
-		        DIMENSION m.laTextLines(m.lnTextLinesCount)    
-		        m.laTextLines[m.lnTextLinesCount] = m.loTextLine
-		                
+		            m.lnTextLinesCount = m.lnTextLinesCount + 1
+		            
+		            DIMENSION m.laTextLines(m.lnTextLinesCount)    
+		            m.laTextLines[m.lnTextLinesCount] = m.loTextLine
+		        ENDIF
+		                        
 		    ENDDO
 		    *******************************************************
 		
@@ -11292,6 +14930,10 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		cmdFocus.Name = "cmdFocus", ;
 		env.API_FPDF.CONST.Name = "CONST", ;
 		env.API_FPDF.Name = "API_FPDF", ;
+		env.API_FRX.CONST.Name = "CONST", ;
+		env.API_FRX.Name = "API_FRX", ;
+		env.API_GDIP.CONST.Name = "CONST", ;
+		env.API_GDIP.Name = "API_GDIP", ;
 		env.API_HPDF.CONST.Name = "CONST", ;
 		env.API_HPDF.Name = "API_HPDF", ;
 		env.API_WIN.Name = "API_WIN", ;
@@ -11525,8 +15167,11 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 	ENDPROC
 
 	PROCEDURE cmdSaveAs.Click
+		LOCAL loEnv
+		m.loEnv = NEWOBJECT("pdfium_env", Thisform.ClassLibrary)
+		
 		LOCAL lcFilename
-		m.lcFilename = PUTFILE("", Thisform.SaveAs_Filename, "pdf")
+		m.lcFilename = m.loEnv.GetSaveFileName(Thisform.SaveAs_Filename, "pdf")
 		
 		IF EMPTY(m.lcFilename)
 		    RETURN
