@@ -23,9 +23,10 @@ pdfium-vfp is a open source PDF viewer control and ReportOutput + ReportPreview 
 * Printing PDF
 * Multiple control instances
 * VFP frx reports previewing, printing and saving (as pdf) without High DPI pain in the neck
+* Export VFP frx reports to docx (OOXML strict format)
 * Frx report rendering supports private fonts (non system fonts)
 * Frx report rendering supports dynamics and rotation properties
-* Supports VFP Advanced x86 and x64 
+* Supports VFP Advanced x86 and x64
 
 ### Minumum system requirements
 #### Windows
