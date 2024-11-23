@@ -11,8 +11,9 @@
 [English](README.md) | [简体中文](README_CN.md)
 
 pdfium-vfp 是一款开源 PDF 查看控件，同时也是 Visual Fox Pro 9 SP2 和 VFP Advanced 的 ReportOutput + ReportPreview 实现，它基于 
-* [PDFium](https://pdfium.googlesource.com/pdfium/) 
-* [libHaru](https://github.com/libharu/) 
+* [PDFium](https://pdfium.googlesource.com/pdfium/)
+* [PDFium binaries](https://github.com/bblanchon/pdfium-binaries)
+* [HarfBuzz](https://github.com/harfbuzz/harfbuzz) (hb-subset)
 * [DirectWrite](https://learn.microsoft.com/zh-cn/windows/win32/directwrite/direct-write-portal)
 
 
@@ -38,8 +39,6 @@ pdfium-vfp 是一款开源 PDF 查看控件，同时也是 Visual Fox Pro 9 SP2 
 * Wine 9.0
 
 
-
-
 ### 入门
 
 #### Thor 
@@ -51,14 +50,13 @@ pdfium-vfp 是一款开源 PDF 查看控件，同时也是 Visual Fox Pro 9 SP2 
 
 #### Windows (带有示例的完整源代码)
 * 使用 git 工具克隆 https://github.com/dmitriychunikhin/pdfium-vfp
-* 运行 pdfium-vfp/Sample/sample.exe
 * 打开项目 Sample/sample.pjx
 
 #### Linux  (带有示例的完整源代码)
 * 检查 wine 版本
 ```bash
-wine --version
-> wine-9.0
+> wine --version
+wine-9.0
 ```
 
 * 克隆仓库并运行 sample.exe 
@@ -69,12 +67,12 @@ git clone https://github.com/dmitriychunikhin/pdfium-vfp
 cd ~/pdfium-vfp/Sample
 WINEDLLOVERRIDES="gdiplus=n" wine sample.exe
 
-#wine 内置的 gdiplus.dll 不能按预期工作，因此必须予以覆盖。你可以从 pdfium-vfp/Sample 文件夹中提取一个。
+#wine 内置的 gdiplus.dll 不能按预期工作，因此必须予以覆盖。你可以从 C:/Windows/SysWOW64 文件夹中提取一个。
 ```
 
 
 ### Sample VFP 项目
-打开 `pdfium-vfp/Sample` 文件夹中的 sample.pjx 项目，或直接运行 Sample/sample.exe（包含所有必要的二进制文件）。
+打开 `pdfium-vfp/Sample` 文件夹中的 sample.pjx 项目，或直接运行 Sample/sample.exe
 
 <img alt="Sample screen shot" src="Sample/screenshots/pdfium-vfp-screen01.png" />
 
@@ -121,9 +119,9 @@ Thisform.PdfiumViewer.ClosePdf()
 ### PdfiumReport 的基本用法
 1) 将 Release 文件夹中的 PdfiumReport.app 复制到项目文件夹中
 2) <br/>
-    <b>VFP:</b> 将 <i>Release</i> 文件夹中的二进制依赖文件 <i>libhpdf.dll、pdfium.dll、pdfium-vfp.dll</i> 复制到项目文件夹中
+    <b>VFP:</b> 将 <i>Release</i> 文件夹中的二进制依赖文件 <i>pdfium.dll、pdfium-vfp.dll</i> 复制到项目文件夹中
     
-    <b>VFPA x64:</b> 将 <i>Release</i> 文件夹中的二进制依赖文件 <i>libhpdf64.dll、pdfium64.dll、pdfium-vfp64.dll</i> 复制到项目文件夹中
+    <b>VFPA x64:</b> 将 <i>Release</i> 文件夹中的二进制依赖文件 <i>pdfium64.dll、pdfium-vfp64.dll</i> 复制到项目文件夹中
 
 更多示例请参见 `pdfium-vfp/Sample/sample.scx`
 
@@ -281,16 +279,10 @@ loPdfiumReport.SaveAs_PDFMeta.Permit_Edit = .T. && 允许批注和填写表单
 #### VFP
 * [pdfium-vfp/Release/pdfium.dll](Release/pdfium.dll)
 * [pdfium-vfp/Release/pdfium-vfp.dll](Release/pdfium-vfp.dll)
-* [pdfium-vfp/Release/libhpdf.dll](Release/libhpdf.dll) - for PdfiumReport.app only
 
 #### VFPA x64
 * [pdfium-vfp/Release/pdfium64.dll](Release/pdfium64.dll)
 * [pdfium-vfp/Release/pdfium-vfp64.dll](Release/pdfium-vfp64.dll)
-* [pdfium-vfp/Release/libhpdf64.dll](Release/libhpdf64.dll) - for PdfiumReport.app only
-
-#### 源代码库
-* [pdfium.dll](https://github.com/bblanchon/pdfium-binaries) 
-* [libhpdf.dll](https://github.com/libharu/)
 
 
 
@@ -301,6 +293,5 @@ loPdfiumReport.SaveAs_PDFMeta.Permit_Edit = .T. && 允许批注和填写表单
 * 通过 WinApi_* 模式（带别名）声明 WIN32API 函数
 * 通过 FPDF_* 模式（带别名）声明 pdfium.dll 函数
 * 通过 FPDF_* 模式（带别名）声明 pdfium-vfp.dll 函数
-* 通过 HPDF_* 模式（带别名）声明 libhpdf.dll 函数
 * 不执行 CLEAR DLLS 功能 
 * 将 Pdfium_env.PrivateFonts 集合中的字体添加到 GDIPlus PrivateFontCollection (https://learn.microsoft.com/en-us/dotnet/api/system.drawing.text.privatefontcollection?view=net-8.0) 中

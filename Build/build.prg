@@ -1,5 +1,6 @@
-* Builds VFP binaries from source code (../Release/pdfiumreport.app, ../Sample/sample.exe)
 * Runs build_i18n.prg
+* Creates release version of pdfium-vfp.vcx in ../Release folder
+* Builds VFP binaries from source code (../Release/pdfiumreport.app, ../Sample/sample.exe)
 
 _SCREEN.WindowState = 2
 SET SAFETY OFF
@@ -8,98 +9,135 @@ SET TEXTMERGE NOSHOW
 RELEASE WINDOW Properties,Command,View,Document
 
 LOCAL lcPath
-lcPath = SYS(16,1)
-lcPath = FULLPATH(IIF(".fxp" $ LOWER(lcPath), JUSTPATH(lcPath), lcPath))
-SET DEFAULT TO (lcPath)
+m.lcPath = SYS(16,1)
+m.lcPath = FULLPATH(IIF(".fxp" $ LOWER(m.lcPath), JUSTPATH(m.lcPath), m.lcPath))
+SET DEFAULT TO (m.lcPath)
 
 SET ALTERNATE TO "buildlog.txt"
 SET ALTERNATE ON
 ON ERROR buildError()
 
 PUBLIC glBuildError
-glBuildError = .F.
+m.glBuildError = .F.
 
 
 ******************************************
-DO (lcPath + "/build_i18n.prg")
+DO (m.lcPath + "/build_i18n.prg")
+CLEAR CLASSLIB m.lcPath+"/../Source/pdfium-vfp.vcx"
 ******************************************
 
 ******************************************
-buildProject(lcPath+"/../Source/PdfiumReport.pjx", "app", lcPath+"/../Release/PdfiumReport.app")
-buildProject(lcPath+"/../Sample/sample.pjx", "exe")
-buildProject(lcPath+"/../Tests/tests_run.pjx", "exe")
+COPY FILE m.lcPath+"/../Source/pdfium-vfp.vcx" TO  m.lcPath+"/../Release/pdfium-vfp.vcx"
+COPY FILE m.lcPath+"/../Source/pdfium-vfp.vct" TO  m.lcPath+"/../Release/pdfium-vfp.vct"
+
+LOCAL laSelObj(1)
+MODIFY CLASS pdfium_env OF m.lcPath+"/../Release/pdfium-vfp.vcx" NOWAIT METHOD Init
+IF ASELOBJ(laSelObj,1) = 1
+    LOCAL loObj
+    m.loObj = m.laSelObj[1]
+    m.loObj.RemoveObject("API_FRX")
+    m.loObj = .F.
+ENDIF
+RELEASE WINDOWS (WONTOP())
+ACTIVATE WINDOW (WONTOP())
+SYS(1500, "_MFI_SAVE", "_MFILE")
+RELEASE WINDOWS (WONTOP())
+RELEASE laSelObj
+
+MODIFY CLASS pdfiumviewer OF m.lcPath+"/../Release/pdfium-vfp.vcx" NOWAIT METHOD Init
+RELEASE WINDOWS (WONTOP())
+ACTIVATE WINDOW (WONTOP())
+SYS(1500, "_MFI_SAVE", "_MFILE")
+RELEASE WINDOWS (WONTOP())
+
+CLEAR CLASSLIB m.lcPath+"/../Release/pdfium-vfp.vcx"
+
+
+REMOVE CLASS pdfium_api_frx OF m.lcPath+"/../Release/pdfium-vfp.vcx"
+REMOVE CLASS pdfium_api_frx_const OF m.lcPath+"/../Release/pdfium-vfp.vcx"
+REMOVE CLASS pdfiumreport OF m.lcPath+"/../Release/pdfium-vfp.vcx" 
+REMOVE CLASS pdfiumreport_renderer_docx OF m.lcPath+"/../Release/pdfium-vfp.vcx" 
+REMOVE CLASS pdfiumreport_renderer_pdf OF m.lcPath+"/../Release/pdfium-vfp.vcx" 
+REMOVE CLASS pdfiumreport_renderer_base OF m.lcPath+"/../Release/pdfium-vfp.vcx" 
+REMOVE CLASS pdfiumreport_repfont OF m.lcPath+"/../Release/pdfium-vfp.vcx"
+REMOVE CLASS pdfiumreport_repobj OF m.lcPath+"/../Release/pdfium-vfp.vcx"
+REMOVE CLASS pdfiumreportviewer OF m.lcPath+"/../Release/pdfium-vfp.vcx"
+
+PACK m.lcPath+"/../Release/pdfium-vfp.vcx"
 ******************************************
 
+
 ******************************************
-COPY FILE lcPath+"/../Source/pdfium-vfp.vcx" TO  lcPath+"/../Release/pdfium-vfp.vcx"
-COPY FILE lcPath+"/../Source/pdfium-vfp.vct" TO  lcPath+"/../Release/pdfium-vfp.vct"
+buildProject(m.lcPath+"/../Source/PdfiumReport.pjx", "app", m.lcPath+"/../Release/PdfiumReport.app")
+buildProject(m.lcPath+"/../Sample/sample.pjx", "exe")
+buildProject(m.lcPath+"/../Tests/tests_run.pjx", "exe")
 ******************************************
 
 ******************************************
 LOCAL loConsoleTools
-loConsoleTools = NEWOBJECT("ConsoleTools", lcPath+"/Packages/FoxConsole/FoxConsole.prg")
-loConsoleTools.makeconsoleapp(lcPath+"/../Tests/tests_run.exe")
+m.loConsoleTools = NEWOBJECT("ConsoleTools", m.lcPath+"/Packages/FoxConsole/FoxConsole.prg")
+m.loConsoleTools.makeconsoleapp(m.lcPath+"/../Tests/tests_run.exe")
 ******************************************
 
 
 ? TEXTMERGE("Build completed <<IIF(glBuildError, 'with error', 'succesfully')>>")
 
-MESSAGEBOX(TEXTMERGE("pdfium-vfp build completed <<IIF(glBuildError, 'with error', 'succesfully')>>"), 0+IIF(glBuildError,48,64), "Message")
+MESSAGEBOX(TEXTMERGE("pdfium-vfp build completed <<IIF(glBuildError, 'with error', 'succesfully')>>"), 0+IIF(m.glBuildError,48,64), "Message")
 QUIT
 
 PROCEDURE buildProject
-	LPARAMETERS tcPath, tcBuildType, tcTargetPath
-	IF FILE(m.tcPath)=.F.
-		RETURN
-	ENDIF
-	LOCAL lcBuildType
-	lcBuildType = ALLTRIM(LOWER(EVL(m.tcBuildType, "exe")),1,". ")
-	
-	LOCAL lcSavePath
-	lcSavePath = FULLPATH(SET("Default"))
-	
-	SET DEFAULT TO (JUSTPATH(m.tcPath))
-	LOCAL lcProject, lcBuild
-	lcProject = JUSTFNAME(LOWER(m.tcPath))
-	
-    lcBuild = EVL(m.tcTargetPath, lcProject)
+    LPARAMETERS tcPath, tcBuildType, tcTargetPath
+    IF FILE(m.tcPath)=.F.
+        RETURN
+    ENDIF
+    LOCAL lcBuildType
+    m.lcBuildType = ALLTRIM(LOWER(EVL(m.tcBuildType, "exe")),1,". ")
     
-    IF LOWER(JUSTEXT(lcBuild)) == LOWER(JUSTEXT(lcProject)) OR EMPTY(JUSTEXT(lcBuild)) 
-        lcBuild = FORCEEXT(lcBuild, lcBuildType)
+    LOCAL lcSavePath
+    m.lcSavePath = FULLPATH(".")
+    
+    SET DEFAULT TO (JUSTPATH(m.tcPath))
+    LOCAL lcProject, lcBuild
+    m.lcProject = JUSTFNAME(LOWER(m.tcPath))
+    
+    m.lcBuild = EVL(m.tcTargetPath, m.lcProject)
+    
+    IF LOWER(JUSTEXT(m.lcBuild)) == LOWER(JUSTEXT(m.lcProject)) OR EMPTY(JUSTEXT(m.lcBuild)) 
+        m.lcBuild = FORCEEXT(m.lcBuild, m.lcBuildType)
     ENDIF
 
-	? "Building "+lcProject
-	TRY
-		DO CASE
-		 CASE lcBuildType == "app"
-			BUILD APP (lcBuild) FROM (lcProject) RECOMPILE
-			
-		 CASE lcBuildType == "dll"
-			BUILD DLL (lcBuild) FROM (lcProject) RECOMPILE
-			
-		 CASE lcBuildType == "mtdll"
-			BUILD MTDLL (FORCEEXT(lcBuild,"dll")) FROM (lcProject) RECOMPILE
-			
-		 CASE lcBuildType == "exe"
-			BUILD EXE (lcBuild) FROM (lcProject) RECOMPILE
-			
-		 OTHERWISE
-		 	? "Unknown build type: "+lcBuildType
-			
-		ENDCASE
-	CATCH TO loErr
-		? "Build error: "+loErr.Message + " " + loErr.UserValue
-        glBuildError = .T.
-	ENDTRY
-	
-	SET DEFAULT TO (lcSavePath)
-	
+    ? "Building "+m.lcProject
+    TRY
+        DO CASE
+         CASE m.lcBuildType == "app"
+            BUILD APP (m.lcBuild) FROM (m.lcProject) RECOMPILE
+            
+         CASE m.lcBuildType == "dll"
+            BUILD DLL (m.lcBuild) FROM (m.lcProject) RECOMPILE
+            
+         CASE m.lcBuildType == "mtdll"
+            BUILD MTDLL (FORCEEXT(m.lcBuild,"dll")) FROM (m.lcProject) RECOMPILE
+            
+         CASE m.lcBuildType == "exe"
+            BUILD EXE (m.lcBuild) FROM (m.lcProject) RECOMPILE
+            
+         OTHERWISE
+             ? "Unknown build type: "+m.lcBuildType
+            
+        ENDCASE
+    CATCH TO m.loErr
+        ? "Build error: "+m.loErr.Message + " " + m.loErr.UserValue
+        m.glBuildError = .T.
+    ENDTRY
+    
+    SET DEFAULT TO (m.lcSavePath)
+    
 ENDPROC
 
 PROCEDURE buildError
-	LPARAMETER tnError, tcMessage, tcMesasge1, tcProgram, tnLineNo
-	
-	? 'Build error: ' + m.tcMessage
+    LPARAMETER tnError, tcMessage, tcMesasge1, tcProgram, tnLineNo
     
-    glBuildError = .T.
+    ? 'Build error: ' + TRANSFORM(EVL(m.tcMessage,MESSAGE()))
+    
+    m.glBuildError = .T.
 ENDPROC

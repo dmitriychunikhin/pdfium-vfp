@@ -39,7 +39,6 @@ DEFINE CLASS tests_pdfiumreport as tests_pdfium_base OF tests_pdfium_base.prg
         
         This.pdfium_env = NEWOBJECT("pdfium_env", "pdfium-vfp.vcx", This.pdfium_release+"\pdfiumreport.app")
         This.pdfium_env.pdfium_dll_path = This.pdfium_release+"\pdfium.dll"
-        This.pdfium_env.libhpdf_dll_path = This.pdfium_release+"\libhpdf.dll"
 
         This.Pdfium_env.PrivateFonts.Remove(-1) 
         This.Pdfium_env.PrivateFonts.Add(FULLPATH(".\Assets\KurintoSansSC-Rg.ttf"), "Kurinto Sans SC") && Adding private (non system) font 

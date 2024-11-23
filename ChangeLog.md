@@ -1,3 +1,9 @@
+1.17 - 1.18
+  - Removed libHaru dependency. Files libhpdf.dll, libhpdf64.dll are no longer needed.
+  - VFP report PDF rendering is implemented via PDFium API
+  - Added naive implementation of rendering VFP reports to docx in strict OOXML format. This feature is available through preview window of PdfiumReport.app
+  - From release build of pdfium-vfp.vcx removed all classes relevant to VFP report rendering, thus release of pdfium-vfp.vcx contains only PDF viewer implementation.
+
 1.16
   - Fixed error made in 1.15: PdfiumReport adds printer's top physical offset to vertical position of objects in the output pdf, as the result report's bottom line might be cut off when report is being printed
 

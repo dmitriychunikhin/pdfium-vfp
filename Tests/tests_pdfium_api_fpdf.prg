@@ -121,10 +121,41 @@ DEFINE CLASS tests_pdfium_api_fpdf as tests_pdfium_base OF tests_pdfium_base.prg
         lnDataSize = LEN(lcData)
         
         LOCAL lnDoc
-        lnDoc = This.pdfium_api_fpdf.fpdf_loadmemdocument(lcData, lnDataSize, NULL)
-        This.pdfium_api_fpdf.fpdf_closedocument(lnDoc)
-                
-        RETURN This.AssertNotNullOrEmpty(lnDoc)
+        m.lnDoc = 0
+        
+        LOCAL loAPI_WIN
+        m.loAPI_WIN = NEWOBJECT("pdfium_api_win", This.pdfium_source+"\pdfium-vfp.vcx")
+        
+        LOCAL lnDataHeap, lnDataPtr
+        STORE 0 TO m.lnDataHeap, m.lnDataPtr
+        TRY
+            m.lnDataHeap = m.loAPI_WIN.HeapCreate(0, m.lnDataSize, 0)
+            IF NOT This.AssertNotEmpty(m.lnDataHeap)
+                EXIT
+            ENDIF
+
+            m.lnDataPtr = m.loAPI_WIN.HeapAlloc(m.lnDataHeap, 0, m.lnDataSize)
+            IF NOT This.AssertNotEmpty(m.lnDataPtr)
+                EXIT
+            ENDIF
+
+            SYS(2600, m.lnDataPtr, m.lnDataSize, m.lcData)
+
+            m.lnDoc = This.pdfium_api_fpdf.fpdf_loadmemdocument(m.lnDataPtr, m.lnDataSize, NULL)
+            This.pdfium_api_fpdf.fpdf_closedocument(m.lnDoc)
+
+        FINALLY
+
+            IF EMPTY(m.lnDataPtr)=.F.
+                m.loAPI_WIN.HeapFree(m.lnDataHeap, 0, m.lnDataPtr)
+            ENDIF
+
+            IF EMPTY(m.lnDataHeap)=.F.
+                m.loAPI_WIN.HeapDestroy(m.lnDataHeap)
+            ENDIF
+        ENDTRY        
+        
+        RETURN This.AssertNotNullOrEmpty(m.lnDoc)
     ENDFUNC
     
     FUNCTION Test_fpdf_getpagecount

@@ -7,16 +7,14 @@ This and a dozen other components and tools are provided to you by <a href="http
 [![ChangleLog](https://img.shields.io/github/last-commit/dmitriychunikhin/pdfium-vfp?path=%2FChangeLog.md&label=ChangeLog)](ChangeLog.md)
 [![ChangleLog CN](https://img.shields.io/github/last-commit/dmitriychunikhin/pdfium-vfp?path=%2FChangeLog_CN.md&label=ChangeLog%20CN)](ChangeLog_CN.md)
 
-
-
 # pdfium-vfp 
 [English](README.md) | [简体中文](README_CN.md)
 
 pdfium-vfp is a open source PDF viewer control and ReportOutput + ReportPreview implementation for Visual Fox Pro 9 SP2 and VFP Advanced based on 
-* [PDFium](https://pdfium.googlesource.com/pdfium/) 
-* [libHaru](https://github.com/libharu/) 
+* [PDFium](https://pdfium.googlesource.com/pdfium)
+* [PDFium binaries](https://github.com/bblanchon/pdfium-binaries)
+* [HarfBuzz](https://github.com/harfbuzz/harfbuzz) (hb-subset)
 * [DirectWrite](https://learn.microsoft.com/ru-ru/windows/win32/directwrite/direct-write-portal)
-
 
 ### Features:
 * Viewing PDF files
@@ -40,8 +38,6 @@ pdfium-vfp is a open source PDF viewer control and ReportOutput + ReportPreview 
 * Wine 9.0
 
 
-
-
 ### Getting started 
 
 #### Thor 
@@ -53,14 +49,13 @@ pdfium-vfp is a open source PDF viewer control and ReportOutput + ReportPreview 
 
 #### Windows (full sources with samples)
 * git clone https://github.com/dmitriychunikhin/pdfium-vfp
-* run pdfium-vfp/Sample/sample.exe
 * open and explore Sample/sample.pjx
 
 #### Linux  (full sources with samples)
 * Check wine version
 ```bash
-wine --version
-> wine-9.0
+> wine --version
+wine-9.0
 ```
 
 * Clone repo and run sample.exe 
@@ -71,12 +66,12 @@ git clone https://github.com/dmitriychunikhin/pdfium-vfp
 cd ~/pdfium-vfp/Sample
 WINEDLLOVERRIDES="gdiplus=n" wine sample.exe
 
-#wine built-in gdiplus.dll doesn't work as expected, thus it has to be overrided. You can take one from pdfium-vfp/Sample folder.
+#wine built-in gdiplus.dll doesn't work as expected, thus it has to be overrided. You can take one from C:/Windows/SysWOW64 folder.
 ```
 
 
 ### Sample VFP project
-Open sample.pjx project from `pdfium-vfp/Sample` folder or just run Sample/sample.exe (all neccesary binaries are included)
+Open sample.pjx project from `pdfium-vfp/Sample` folder or just run Sample/sample.exe
 
 <img alt="Sample screen shot" src="Sample/screenshots/pdfium-vfp-screen01.png" />
 
@@ -119,13 +114,12 @@ Thisform.PdfiumViewer.SaveDocument("c:\myfolder\mydoc.pdf")
 Thisform.PdfiumViewer.ClosePdf()
 ```
 
-
 ### Basic usage of PdfiumReport 
 1) Copy PdfiumReport.app from Release folder to your project folder
 2) <br/>
-    <b>VFP:</b> Copy dependency binaries <i>libhpdf.dll, pdfium.dll, pdfium-vfp.dll</i> from <i>Release</i> folder to your project's folder
+    <b>VFP:</b> Copy dependency binaries <i>pdfium.dll, pdfium-vfp.dll</i> from <i>Release</i> folder to your project's folder
     
-    <b>VFPA x64:</b> Copy dependency binaries <i>libhpdf64.dll, pdfium64.dll, pdfium-vfp64.dll</i> from <i>Release</i> folder to your project's folder
+    <b>VFPA x64:</b> Copy dependency binaries <i>pdfium64.dll, pdfium-vfp64.dll</i> from <i>Release</i> folder to your project's folder
 
 More examples can be found at `pdfium-vfp/Sample/sample.scx`
 
@@ -286,17 +280,10 @@ What binaries exactly do you need to run all the stuff (or your own latest versi
 #### VFP
 * [pdfium-vfp/Release/pdfium.dll](Release/pdfium.dll)
 * [pdfium-vfp/Release/pdfium-vfp.dll](Release/pdfium-vfp.dll)
-* [pdfium-vfp/Release/libhpdf.dll](Release/libhpdf.dll) - for PdfiumReport.app only
 
 #### VFPA x64
 * [pdfium-vfp/Release/pdfium64.dll](Release/pdfium64.dll)
 * [pdfium-vfp/Release/pdfium-vfp64.dll](Release/pdfium-vfp64.dll)
-* [pdfium-vfp/Release/libhpdf64.dll](Release/libhpdf64.dll) - for PdfiumReport.app only
-
-#### Source repositories
-* [pdfium.dll](https://github.com/bblanchon/pdfium-binaries) 
-* [libhpdf.dll](https://github.com/libharu/)
-
 
 
 
@@ -307,6 +294,5 @@ What binaries exactly do you need to run all the stuff (or your own latest versi
 * Declares WIN32API and GDIPlus functions via WinApi_* pattern (with aliases)
 * Declares pdfium.dll functions via FPDF_* pattern (with aliases)
 * Declares pdfium-vfp.dll functions via FPDF_* pattern (with aliases)
-* Declares libhpdf.dll functions via HPDF_* pattern (with aliases)
 * Doesn't perform CLEAR DLLS 
 * Adds fonts from Pdfium_env.PrivateFonts collection to GDIPlus PrivateFontCollection (https://learn.microsoft.com/en-us/dotnet/api/system.drawing.text.privatefontcollection?view=net-8.0)

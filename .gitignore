@@ -75,5 +75,6 @@ desktop.ini
 
 Source/*.app
 Source/*.exe
+Sample/*.exe
 bin2txt.*
 .vscode/

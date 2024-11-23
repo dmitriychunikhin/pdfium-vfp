@@ -32,7 +32,7 @@ WARNS = -Wall
 DLL_CFLAGS = -O2 -std=c++20 ${WARNS} -I. -Iinclude 
 
 # Linker flags
-DLL_LDFLAGS = -static -shared -s -Wl,--subsystem,windows,--out-implib,out/lib/${ARCH}/pdfium-vfp.a,out/lib/${ARCH}/pdfium.a,lib/${ARCH}/dwrite.lib,harfbuzz/lib/${ARCH}/libharfbuzz.a,harfbuzz/lib/${ARCH}/libharfbuzz-subset.a
+DLL_LDFLAGS = -static -shared -s -Wl,--subsystem,windows,--out-implib,out/lib/${ARCH}/pdfium-vfp.a,out/lib/${ARCH}/pdfium.a,thirdparty/dwrite/lib/${ARCH}/dwrite.lib,thirdparty/harfbuzz/lib/${ARCH}/libharfbuzz.a,thirdparty/harfbuzz/lib/${ARCH}/libharfbuzz-subset.a,thirdparty/zlib/lib/${ARCH}/libz.a
 
 # Build DLL 
 all: ${DLL}
