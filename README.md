@@ -295,6 +295,6 @@ What binaries exactly do you need to run all the stuff (or your own latest versi
 * Adds Application.PdfiumReport property as pdfiumreport of pdfium-vfp
 * Declares WIN32API and GDIPlus functions via WinApi_* pattern (with aliases)
 * Declares pdfium.dll functions via FPDF_* pattern (with aliases)
-* Declares pdfium-vfp.dll functions via FPDF_* pattern (with aliases)
+* Declares pdfium-vfp.dll functions via VFPDF_* pattern (with aliases)
 * Doesn't perform CLEAR DLLS 
 * Adds fonts from Pdfium_env.PrivateFonts collection to GDIPlus PrivateFontCollection (https://learn.microsoft.com/en-us/dotnet/api/system.drawing.text.privatefontcollection?view=net-8.0)
