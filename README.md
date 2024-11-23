@@ -15,6 +15,7 @@ pdfium-vfp is a open source PDF viewer control and ReportOutput + ReportPreview 
 * [PDFium binaries](https://github.com/bblanchon/pdfium-binaries)
 * [HarfBuzz](https://github.com/harfbuzz/harfbuzz) (hb-subset)
 * [DirectWrite](https://learn.microsoft.com/ru-ru/windows/win32/directwrite/direct-write-portal)
+* [zlib](https://www.zlib.net/)
 
 ### Features:
 * Viewing PDF files
