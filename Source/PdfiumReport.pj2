@@ -50,6 +50,7 @@ loProject = _VFP.Projects('pdfiumreport.pjx')
 
 WITH loProject.FILES
 	.ADD('images\close.bmp')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
+	.ADD('images\docx.bmp')		&& *< FileMetadata: Type="x" Cpid="0" Timestamp="0" ID="0" ObjRev="0" User="" />
 	.ADD('images\fitpage.bmp')		&& *< FileMetadata: Type="x" Cpid="0" Timestamp="0" ID="0" ObjRev="0" User="" />
 	.ADD('images\fitwidth.bmp')		&& *< FileMetadata: Type="x" Cpid="0" Timestamp="0" ID="0" ObjRev="0" User="" />
 	.ADD('images\print.bmp')		&& *< FileMetadata: Type="x" Cpid="0" Timestamp="0" ID="0" ObjRev="0" User="" />
