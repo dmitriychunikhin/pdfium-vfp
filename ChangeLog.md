@@ -1,3 +1,6 @@
+1.19
+  - Fixed bug: Font character subset calculation may skip chars
+
 1.17 - 1.18
   - Removed libHaru dependency. Files libhpdf.dll, libhpdf64.dll are no longer needed.
   - VFP report PDF rendering is implemented via PDFium API
