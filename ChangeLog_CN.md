@@ -1,3 +1,6 @@
+1.19
+  - 修正错误：字体字符子集计算可能会跳过字符
+
 1.17 - 1.18
   - 删除了 libHaru 依赖关系。不再需要 libhpdf.dll 和 libhpdf64.dll 文件。
   - 通过 PDFium API 实现 VFP 报表的 PDF 渲染

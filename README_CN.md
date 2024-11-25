@@ -82,7 +82,7 @@ WINEDLLOVERRIDES="gdiplus=n" wine sample.exe
 ### 已知问题
 * PdfiumViewer 不支持页面旋转、书签、注释和活动超链接
 * 预览报表时如果报表使用了组件不支持的字体，则被替换为使用 Helvetica 字体，并且不能进行更改
-* 报表预览只能处理 ttf/ttc 字体，非 ttf 字体（fon）将以图像形式呈现
+* 报告预览器只能处理 ttf/ttc 字体，非 ttf 字体(位图字体)和符号字体将以图像形式呈现
 * 界面语言总是系统语言
 
 
