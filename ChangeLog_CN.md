@@ -1,3 +1,9 @@
+1.17 - 1.18
+  - 删除了 libHaru 依赖关系。不再需要 libhpdf.dll 和 libhpdf64.dll 文件。
+  - 通过 PDFium API 实现 VFP 报表的 PDF 渲染
+  - 添加了以严格的 OOXML 格式将 VFP 报表渲染为 docx 的实现。该功能可通过 PdfiumReport.app 的预览窗口使用
+  - 从 pdfium-vfp.vcx 的发布版中删除了所有与 VFP 报表渲染相关的类，因此发布的 pdfium-vfp.vcx 只包含 PDF 查看器实现。
+
 1.16
   - 修复 1.15 中的错误: PdfiumReport 在输出 pdf 对象的垂直位置上添加了打印机的顶部物理偏移，因此在打印报告时可能会切断报告的底线
 
