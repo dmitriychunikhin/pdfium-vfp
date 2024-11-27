@@ -4730,6 +4730,7 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		*m: getsavefilename		&& SaveAs dialog
 		*m: getscreendpix		&& Screen horizontal DPI (constant 96 DPI)
 		*m: getscreendpiy		&& Screen vertical DPI (constant 96 DPI)
+		*m: getuniquetempcursorname
 		*m: getuniquetempfilename		&& Returns uniquie not existent filename in %userprofile%\AppData\Local\Temp
 		*m: ok		&& Return TRUE if enviroment setup ended up with success
 		*m: setup		&& Setup environment (from external environment if neccessary)
@@ -4768,6 +4769,7 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 			<memberdata name="setup_ok" type="property" display="Setup_Ok"/>
 			<memberdata name="getsavefilename" type="method" display="GetSaveFileName"/>
 			<memberdata name="errfmt" type="method" display="ErrFmt"/>
+			<memberdata name="getuniquetempcursorname" type="method" display="GetUniqueTempCursorName"/>
 		</VFPData>
 	*</PropValue>
 
@@ -5051,6 +5053,38 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 
 	PROCEDURE getscreendpiy		&& Screen vertical DPI (constant 96 DPI)
 		RETURN 96
+		
+	ENDPROC
+
+	PROCEDURE getuniquetempcursorname
+		#define RPC_S_OK 0
+		#define RPC_S_UUID_LOCAL_ONLY 1824
+		
+		LOCAL lcCursorName
+		m.lcCursorName = ""
+		
+		LOCAL i
+		FOR m.i = 1 TO 500
+		    
+		    LOCAL lcUuid
+		    m.lcUuid = ""
+		    IF INLIST(This.API_WIN.UuidCreate(@m.lcUuid), RPC_S_OK, RPC_S_UUID_LOCAL_ONLY) = .F.
+		        m.lcUuid = SYS(2015)
+		    ENDIF
+		    m.lcUuid = CHRTRAN(TRANSFORM(0h + m.lcUuid), '-', '')
+		
+		    m.lcCursorName = This.Class + m.lcUuid
+		    
+		    IF USED(m.lcCursorName)
+		        m.lcCursorName = ""
+		        LOOP
+		    ENDIF
+		
+		    EXIT
+		ENDFOR
+		
+		RETURN m.lcCursorName
+		
 		
 	ENDPROC
 
@@ -8085,6 +8119,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*m: gdipprivatefontsrelease
 		*m: getfont
 		*m: getfontsubset
+		*m: getrenderer		&& Get current renderer object. Not an object return value means that default pdfiumreport_renderer_pdf is used
 		*m: printenvdefault_access
 		*m: printenvdefault_assign
 		*m: printenv_access
@@ -8108,6 +8143,9 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*p: printenv		&& Print configuration state (pdfium_print_env object). ; Read-only; Overrides default print settings when report is printed from preview window or by TO PRINTER clause with This.ToPrinterNative=.T.
 		*p: printenvdefault
 		*p: renderer		&& User set renderer object  (subclass of pdfiumreport_renderer_base). If not an object then default pdfiumreport_renderer_pdf is used
+		*p: repobj
+		*p: repobjcursor
+		*p: repobjdynamicscursor
 		*p: rep_offsetx
 		*p: rep_offsety
 		*p: rep_pagecount
@@ -8116,14 +8154,13 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*p: saveas_pdfmeta		&& Pdfium_pdfmeta object; Output PDF metadata + encryption (password) and reader permissions
 		*p: screengfx
 		*p: toprinternative		&& TO PRINTER clause handing mode:: .T. - report is printed by VFP (PdfiumReport does nothing) ; .F. (default) - report is printed by PdfiumReport (renders report to PDF and prints PDF)
-		*a: rep_objects[1,0]
 		*p: _memberdata		&& XML Metadata for customizable properties
 		*p: _printenv		&& Print configuration state (pdfium_print_env object)
 		*p: _printenvdefault
 		*p: _saveas_pdfmeta
 	*</DefinedPropArrayMethod>
 
-	HIDDEN batchmodeauto,batchmode,batchpagecount,env,errlog,fontsubset,fonts,gdipprivatefontshandle,renderer,rep_objects,rep_offsetx,rep_offsety,rep_pagecount,rep_wholepage,screengfx,_printenvdefault,_printenv,_saveas_pdfmeta
+	HIDDEN batchmodeauto,batchmode,batchpagecount,env,errlog,fontsubset,fonts,gdipprivatefontshandle,renderer,repobjcursor,repobjdynamicscursor,repobj,rep_offsetx,rep_offsety,rep_pagecount,rep_wholepage,screengfx,_printenvdefault,_printenv,_saveas_pdfmeta
 	*<PropValue>
 		AllowModalMessages = .T.
 		batchmode = .F.
@@ -8144,6 +8181,9 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		printenvdefault = .F.
 		QuietMode = .F.
 		renderer = .F.
+		repobj = .F.
+		repobjcursor = ("")
+		repobjdynamicscursor = ("")
 		rep_offsetx = 0
 		rep_offsety = 0
 		rep_pagecount = 0
@@ -8197,10 +8237,13 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 			<memberdata name="batchpagecount" type="property" display="BatchPageCount"/>
 			<memberdata name="fontsrelease" type="method" display="FontsRelease"/>
 			<memberdata name="fontsubset" type="property" display="FontSubset"/>
-			<memberdata name="rep_objects" type="property" display="Rep_Objects"/>
 			<memberdata name="getfontsubset" type="method" display="GetFontSubset"/>
 			<memberdata name="setrenderer" type="method" display="SetRenderer"/>
 			<memberdata name="runrenderer" type="method" display="RunRenderer"/>
+			<memberdata name="repobjcursor" type="property" display="RepObjCursor"/>
+			<memberdata name="repobjdynamicscursor" type="property" display="RepObjDynamicsCursor"/>
+			<memberdata name="repobj" type="property" display="RepObj"/>
+			<memberdata name="getrenderer" type="method" display="GetRenderer"/>
 		</VFPData>
 		_printenv = .F.
 		_printenvdefault = .F.
@@ -8242,8 +8285,17 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		This.FontSubset = .F.
 		This.ScreenGfx = 0
 		
-		DIMENSION This.Rep_Objects(1)
-		This.Rep_Objects[1] = .F.
+		This.RepObj = .F.
+		
+		IF EMPTY(This.RepObjCursor) = .F. AND USED(This.RepObjCursor)
+		    USE IN (This.RepObjCursor)
+		ENDIF
+		This.RepObjCursor = ""
+		
+		IF EMPTY(This.RepObjDynamicsCursor) = .F. AND USED(This.RepObjDynamicsCursor)
+		    USE IN (This.RepObjDynamicsCursor)
+		ENDIF
+		This.RepObjDynamicsCursor = ""
 		
 		This._SaveAs_PDFMeta = .F.
 		
@@ -8387,6 +8439,18 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		        ENDIF
 		    CATCH
 		    ENDTRY
+		    
+		    This.RepObj = .F.
+		
+		    IF EMPTY(This.RepObjCursor) = .F. AND USED(This.RepObjCursor)
+		        USE IN (This.RepObjCursor)
+		    ENDIF
+		    This.RepObjCursor = ""
+		
+		    IF EMPTY(This.RepObjDynamicsCursor) = .F. AND USED(This.RepObjDynamicsCursor)
+		        USE IN (This.RepObjDynamicsCursor)
+		    ENDIF
+		    This.RepObjDynamicsCursor = ""
 		
 		    This.PreviewContainer = NULL
 		    
@@ -8395,8 +8459,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    This.FontsRelease()
 		    This.GdipPrivateFontsRelease()
 		
-		    DIMENSION This.Rep_Objects(1)
-		    This.Rep_Objects[1] = .F.
 		    
 		ENDTRY
 		
@@ -8748,7 +8810,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 	ENDPROC
 
 	HIDDEN PROCEDURE getfontsubset
-		LPARAMETERS loRepObj
+		LPARAMETERS loRepObj, llAddChars
 		
 		IF EMPTY(m.loRepObj.Font.FontFileName) = .T.
 		    RETURN .F.
@@ -8764,19 +8826,26 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    m.loFontSubset = This.FontSubset.Item(m.loRepObj.Font.FontFileName)
 		ENDIF
 		
-		LOCAL liChar, lcChar
-		m.liChar = 1
-		FOR m.liChar = 1 TO LEN(m.loRepObj.Text)/2
-		    m.lcChar = 0h + SUBSTR(m.loRepObj.Text, m.liChar * 2 - 1, 2)
-		    IF INLIST(m.lcChar, 0h0A00, 0h0D00)
-		        LOOP
-		    ENDIF
-		    IF AT(m.lcChar, m.loFontSubset.CharSubset) = 0
-		        m.loFontSubset.CharSubset = m.loFontSubset.CharSubset + m.lcChar
-		    ENDIF
-		ENDFOR
+		IF m.llAddChars = .T.
+		    LOCAL liChar, lcChar
+		    m.liChar = 1
+		    FOR m.liChar = 1 TO LEN(m.loRepObj.Text)/2
+		        m.lcChar = 0h + SUBSTR(m.loRepObj.Text, m.liChar * 2 - 1, 2)
+		        IF INLIST(m.lcChar, 0h0A00, 0h0D00)
+		            LOOP
+		        ENDIF
+		        IF AT(m.lcChar, m.loFontSubset.CharSubset) = 0
+		            m.loFontSubset.CharSubset = m.loFontSubset.CharSubset + m.lcChar
+		        ENDIF
+		    ENDFOR
+		ENDIF
 		
 		RETURN m.loFontSubset
+		
+	ENDPROC
+
+	PROCEDURE getrenderer		&& Get current renderer object. Not an object return value means that default pdfiumreport_renderer_pdf is used
+		RETURN This.Renderer
 		
 	ENDPROC
 
@@ -8883,9 +8952,9 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 	ENDPROC
 
 	HIDDEN PROCEDURE process_frxdynamics
-		LPARAMETERS loRepObj
+		LPARAMETERS loRepObj, m.lcDynamicsXML
 		
-		IF EMPTY(NVL(m.loRepObj.DynamicsXML,""))
+		IF EMPTY(NVL(m.lcDynamicsXML,""))
 		    RETURN
 		ENDIF
 		
@@ -8898,107 +8967,107 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		LOCAL lSetNull
 		m.lSetNull = SET("Null")
 		
-		SET NULL OFF
-		
-		LOCAL lcAliasCursor, llRes
-		m.lcAliasCursor = "curTempFrxDynamics"+SYS(2015)
-		
-		CREATE CURSOR &lcAliasCursor (Name c(100), Execute c(10), ExecWhen M, Script M, FName c(100), FSize c(10), FStyle c(10), Width c(10), Height c(10), penrgb c(10), pena c(5), fillrgb c(10), filla c(5))
-		
-		SET NULL &lSetNull
-		
-		m.llRes = .T.
 		TRY
-		    XMLTOCURSOR(m.loRepObj.DynamicsXML, m.lcAliasCursor,1024+8192)
-		CATCH
-		    m.llRes = .F.
-		FINALLY    
-		    IF m.llRes = .F.
-		        USE IN (m.lcAliasCursor)
-		        SELECT (m.lSaveArea)
-		        
-		        m.loRepObj.DynamicsXML = ""
-		        RETURN
+		    SET NULL OFF
+		
+		    IF EMPTY(This.RepObjDynamicsCursor)
+		        This.RepObjDynamicsCursor = This.env.GetUniqueTempCursorName()
 		    ENDIF
-		ENDTRY
+		
+		    CREATE CURSOR (This.RepObjDynamicsCursor) (Name c(100), Execute c(10), ExecWhen M, Script M, FName c(100), FSize c(10), FStyle c(10), Width c(10), Height c(10), penrgb c(10), pena c(5), fillrgb c(10), filla c(5))
 		
 		
-		SELECT (m.lcAliasCursor)
-		GO TOP
-		SCAN
-		    SELECT (m.lcAliasCursor)
+		    LOCAL lcAliasCursor    
+		    m.lcAliasCursor = This.RepObjDynamicsCursor
+		
+		
+		    LOCAL llRes
+		    m.llRes = .T.
+		    TRY
+		        XMLTOCURSOR(m.lcDynamicsXML, m.lcAliasCursor, 1024+8192)
+		    CATCH
+		        m.llRes = .F.
+		    ENDTRY
+		    IF m.llRes = .F.
+		        EXIT        
+		    ENDIF
 		
 		    LOCAL loDS
-		    SCATTER NAME m.loDS MEMO
-		    
-		    SELECT (m.lSaveArea)
-		
-		    DO CASE
-		    CASE ALLTRIM(m.loDS.Name) == "Microsoft.VFP.Reporting.Builder.Rotate"
-		        m.loRepObj.Rotate = CAST(m.loDS.Execute AS I)
+		    SELECT (m.lcAliasCursor)
+		    GO TOP
+		    SCAN
+		        SELECT (m.lcAliasCursor)
+		        SCATTER NAME m.loDS MEMO
 		        
-		    CASE EMPTY(m.loDS.ExecWhen)
+		        SELECT (m.lSaveArea)
 		
-		    CASE EVALUATE(m.loDS.ExecWhen) = .F.
-		    
-		    
-		    CASE m.loRepObj.ObjType = m.loFRXC.FRX_OBJ_FIELD()
-		        IF EMPTY(m.loDS.Script) = .F.
-		            IF INLIST(m.loRepObj.FontCharset,0,1)=.F.
-		                m.loRepObj.Text = STRCONV(RTRIM(EVALUATE(m.loDS.Script)),5,m.loRepObj.FontCharset,2)
-		            ELSE
-		                m.loRepObj.Text = STRCONV(RTRIM(EVALUATE(m.loDS.Script)),5)
+		        DO CASE
+		        CASE ALLTRIM(m.loDS.Name) == "Microsoft.VFP.Reporting.Builder.Rotate"
+		            m.loRepObj.Rotate = CAST(m.loDS.Execute AS I)
+		            
+		        CASE EMPTY(m.loDS.ExecWhen)
+		
+		        CASE EVALUATE(m.loDS.ExecWhen) = .F.
+		        
+		        
+		        CASE m.loRepObj.ObjType = m.loFRXC.FRX_OBJ_FIELD()
+		            IF EMPTY(m.loDS.Script) = .F.
+		                IF INLIST(m.loRepObj.FontCharset,0,1)=.F.
+		                    m.loRepObj.Text = STRCONV(RTRIM(EVALUATE(m.loDS.Script)),5,m.loRepObj.FontCharset,2)
+		                ELSE
+		                    m.loRepObj.Text = STRCONV(RTRIM(EVALUATE(m.loDS.Script)),5)
+		                ENDIF
 		            ENDIF
-		        ENDIF
+		            
+		            IF EMPTY(m.loDS.FName) = .F.
+		                m.loRepObj.FontFace = LTRIM(ALLTRIM(m.loDS.FName), "@")
+		            ENDIF
+		
+		            IF EMPTY(CAST(m.loDS.FSize as I)) = .F.
+		                m.loRepObj.FontSize = CAST(m.loDS.FSize as I)
+		            ENDIF
+		
+		            IF EMPTY(m.loDS.FStyle)=.F.
+		                m.loRepObj.FontBold = BITTEST(CAST(m.loDS.FStyle as I),0)
+		                m.loRepObj.FontItalic = BITTEST(CAST(m.loDS.FStyle as I),1)
+		                m.loRepObj.FontUnderline = BITTEST(CAST(m.loDS.FStyle as I),2)
+		                m.loRepObj.FontStrikeout = BITTEST(CAST(m.loDS.FStyle as I),7)
+		            ENDIF
+		            
+		            IF CAST(m.loDS.FillRgb as I) >= 0 AND EMPTY(m.loDS.FillRgb)=.F.
+		                m.loRepObj.FillRed = BITRSHIFT(BITAND(CAST(m.loDS.FillRgb as I), 0x0000FF),0)
+		                m.loRepObj.FillGreen = BITRSHIFT(BITAND(CAST(m.loDS.FillRgb as I), 0x00FF00),8)
+		                m.loRepObj.FillBlue = BITRSHIFT(BITAND(CAST(m.loDS.FillRgb as I), 0xFF0000),16)
+		            ENDIF
+		            
+		            IF CAST(m.loDS.PenA as I) >= 0 AND EMPTY(m.loDS.PenA)=.F.
+		                m.loRepObj.PenAlpha = BITAND(CAST(m.loDS.PenA as I), 0xFF)
+		            ENDIF
+		
+		            IF CAST(m.loDS.PenRgb as I) >= 0 AND EMPTY(m.loDS.PenRgb)=.F.
+		                m.loRepObj.PenRed = BITRSHIFT(BITAND(CAST(m.loDS.PenRgb as I), 0x0000FF),0)
+		                m.loRepObj.PenGreen = BITRSHIFT(BITAND(CAST(m.loDS.PenRgb as I), 0x00FF00),8)
+		                m.loRepObj.PenBlue = BITRSHIFT(BITAND(CAST(m.loDS.PenRgb as I), 0xFF0000),16)
+		            ENDIF
+		
+		            IF CAST(m.loDS.FillA as I) >= 0 AND EMPTY(m.loDS.FillA)=.F.
+		                m.loRepObj.FillAlpha = BITAND(CAST(m.loDS.FillA as I), 0xFF)
+		                m.loRepObj.Transparent = IIF(m.loRepObj.FillAlpha = 0, 1, 0)
+		            ENDIF
+		
 		        
-		        IF EMPTY(m.loDS.FName) = .F.
-		            m.loRepObj.FontFace = LTRIM(ALLTRIM(m.loDS.FName), "@")
-		        ENDIF
-		
-		        IF EMPTY(CAST(m.loDS.FSize as I)) = .F.
-		            m.loRepObj.FontSize = CAST(m.loDS.FSize as I)
-		        ENDIF
-		
-		        IF EMPTY(m.loDS.FStyle)=.F.
-		            m.loRepObj.FontBold = BITTEST(CAST(m.loDS.FStyle as I),0)
-		            m.loRepObj.FontItalic = BITTEST(CAST(m.loDS.FStyle as I),1)
-		            m.loRepObj.FontUnderline = BITTEST(CAST(m.loDS.FStyle as I),2)
-		            m.loRepObj.FontStrikeout = BITTEST(CAST(m.loDS.FStyle as I),7)
-		        ENDIF
+		        CASE INLIST(m.loRepObj.ObjType, m.loFRXC.FRX_OBJ_RECTANGLE(), m.loFRXC.FRX_OBJ_PICTURE())
+		            m.loRepObj.SizeWidth = IIF(CAST(m.loDS.Width AS I) >= 0, CAST(m.loDS.Width AS I) / 10, m.loRepObj.SizeWidth)
+		            m.loRepObj.SizeHeight = IIF(CAST(m.loDS.Height AS I) >= 0, CAST(m.loDS.Height AS I) / 10, m.loRepObj.SizeHeight)
 		        
-		        IF CAST(m.loDS.FillRgb as I) >= 0 AND EMPTY(m.loDS.FillRgb)=.F.
-		            m.loRepObj.FillRed = BITRSHIFT(BITAND(CAST(m.loDS.FillRgb as I), 0x0000FF),0)
-		            m.loRepObj.FillGreen = BITRSHIFT(BITAND(CAST(m.loDS.FillRgb as I), 0x00FF00),8)
-		            m.loRepObj.FillBlue = BITRSHIFT(BITAND(CAST(m.loDS.FillRgb as I), 0xFF0000),16)
-		        ENDIF
+		        ENDCASE
 		        
-		        IF CAST(m.loDS.PenA as I) >= 0 AND EMPTY(m.loDS.PenA)=.F.
-		            m.loRepObj.PenAlpha = BITAND(CAST(m.loDS.PenA as I), 0xFF)
-		        ENDIF
+		    ENDSCAN
 		
-		        IF CAST(m.loDS.PenRgb as I) >= 0 AND EMPTY(m.loDS.PenRgb)=.F.
-		            m.loRepObj.PenRed = BITRSHIFT(BITAND(CAST(m.loDS.PenRgb as I), 0x0000FF),0)
-		            m.loRepObj.PenGreen = BITRSHIFT(BITAND(CAST(m.loDS.PenRgb as I), 0x00FF00),8)
-		            m.loRepObj.PenBlue = BITRSHIFT(BITAND(CAST(m.loDS.PenRgb as I), 0xFF0000),16)
-		        ENDIF
-		
-		        IF CAST(m.loDS.FillA as I) >= 0 AND EMPTY(m.loDS.FillA)=.F.
-		            m.loRepObj.FillAlpha = BITAND(CAST(m.loDS.FillA as I), 0xFF)
-		            m.loRepObj.Transparent = IIF(m.loRepObj.FillAlpha = 0, 1, 0)
-		        ENDIF
-		
-		    
-		    CASE INLIST(m.loRepObj.ObjType, m.loFRXC.FRX_OBJ_RECTANGLE(), m.loFRXC.FRX_OBJ_PICTURE())
-		        m.loRepObj.SizeWidth = IIF(CAST(m.loDS.Width AS I) >= 0, CAST(m.loDS.Width AS I) / 10, m.loRepObj.SizeWidth)
-		        m.loRepObj.SizeHeight = IIF(CAST(m.loDS.Height AS I) >= 0, CAST(m.loDS.Height AS I) / 10, m.loRepObj.SizeHeight)
-		    
-		    ENDCASE
-		    
-		ENDSCAN
-		GO TOP
-		
-		USE IN (m.lcAliasCursor)
-		SELECT (m.lSaveArea)
+		FINALLY    
+		    SET NULL &lSetNull
+		    SELECT (m.lSaveArea)
+		ENDTRY
 		
 	ENDPROC
 
@@ -9210,7 +9279,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    RETURN DODEFAULT(m.nFRXRecno, m.nLeft, m.nTop, m.nWidth, m.nHeight, m.nObjectContinuationType, m.cContentsToBeRendered, m.GDIPlusImage)
 		ENDIF
 		
-		
 		IF This.PageNo < This.CommandClauses.RANGEFROM
 		    RETURN 
 		ENDIF
@@ -9226,6 +9294,9 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		LOCAL loFRXC
 		m.loFRXC = This.env.API_FRX.CONST
+		
+		LOCAL lSaveArea
+		m.lSaveArea = SELECT()
 		
 		
 		*************************************************
@@ -9243,6 +9314,11 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    IF This.BatchPageCount = 1
 		        This.FontsRelease()
 		        This.GdipPrivateFontsLoad()
+		        This.RepObj = NEWOBJECT("PdfiumReport_repobj", This.ClassLibrary, "", This.env, This.ScreenGfx)
+		
+		        IF EMPTY(This.RepObjCursor)
+		            This.RepObjCursor = This.env.GetUniqueTempCursorName()
+		        ENDIF
 		    ENDIF
 		ENDIF
 		
@@ -9268,13 +9344,59 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		* RepObj creation
 		*************************************************
 		LOCAL loRepObj as PdfiumReport_repobj OF pdfium-vfp.vcx
-		
-		m.loRepObj = NEWOBJECT("PdfiumReport_repobj", This.ClassLibrary, "", This.env, This.ScreenGfx)
-		
+		m.loRepObj = This.RepObj
 		
 		*************************************************
 		* RepObj setup
 		*************************************************
+		IF USED(This.RepObjCursor) = .F.
+		    CREATE CURSOR (This.RepObjCursor) ( ;
+		        ObjID i, ;
+		        Rep_PageWidth n(12,2), ;
+		        Rep_PageHeight n(12,2), ;
+		        Rep_PageNo i, ;
+		        Rep_PageTotal i, ;
+		        Batch_PageNo i, ;
+		        ObjType i, ;
+		        Text M, ;
+		        PictureFilename M, ;
+		        PictureVal M, ;
+		        PosLeft n(12,2), ;
+		        PosTop n(12,2), ;
+		        PosTopRev n(12,2), ;
+		        SizeWidth n(12,2), ;
+		        SizeHeight n(12,2), ;
+		        FontFace M,;
+		        FontSize i, ;
+		        FontBold l, ;
+		        FontItalic l, ;
+		        FontUnderline l, ;
+		        FontStrikeout l, ;
+		        FontCharset i, ;
+		        LineSpacing n(12,2), ;
+		        FillRed i, ;
+		        FillGreen i, ;
+		        FillBlue i, ;
+		        FillAlpha i, ;
+		        PenRed i, ;
+		        PenGreen i, ;
+		        PenBlue i, ;
+		        PenAlpha i, ;
+		        PenPat i, ;
+		        PenSize i, ;
+		        FillPat i, ;
+		        Transparent i, ;
+		        Align i, ;
+		        LineType i, ;
+		        RectCurvature i, ;
+		        ContinuationType i,;
+		        PictureScale i, ;
+		        Rotate i ;
+		    )
+		    
+		    SELECT (m.lSaveArea)
+		ENDIF
+		
 		m.loRepObj.Rep_PageWidth = This.GetPageWidth() / 10
 		m.loRepObj.Rep_PageHeight = This.GetPageHeight() / 10
 		
@@ -9340,6 +9462,9 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		m.loRepObj.Transparent = IIF(BITTEST(m.loFrx.Mode,0),1,0) && Transparency: 0 - Opaque, 1 - Transparent
 		
+		m.loRepObj.Align = 0
+		m.loRepObj.LineType = 0
+		m.loRepObj.RectCurvature = 0
 		
 		DO CASE
 		CASE m.loFrx.ObjType = m.loFRXC.FRX_OBJ_FIELD()
@@ -9360,8 +9485,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		m.loRepObj.PictureScale = IIF(m.loFrx.ObjType = m.loFRXC.FRX_OBJ_PICTURE(), m.loFrx.General, 0)
 		
-		m.loRepObj.DynamicsXML = m.loFrx.Style
-		
 		m.loRepObj.Rotate = 0
 		
 		
@@ -9369,7 +9492,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*************************************************
 		* Dynamic properties processing 
 		*************************************************
-		This.Process_FrxDynamics(m.loRepObj)
+		This.Process_FrxDynamics(m.loRepObj, m.loFrx.Style)
 		*************************************************
 		
 		
@@ -9380,7 +9503,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		CASE INLIST(m.loFrx.ObjType, m.loFRXC.FRX_OBJ_FIELD(), m.loFRXC.FRX_OBJ_LABEL()) && Text
 		    
 		    m.loRepObj.Font = This.GetFont(m.loRepObj) && Font object assignment
-		    m.loRepObj.FontSubset = This.GetFontSubset(m.loRepObj)
+		    m.loRepObj.FontSubset = This.GetFontSubset(m.loRepObj, .T.)
 		
 		
 		CASE m.loFrx.ObjType = m.loFRXC.FRX_OBJ_PICTURE() && Picture
@@ -9406,19 +9529,12 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		ENDCASE
 		
 		
-		LOCAL lnRepObjCnt
-		m.lnRepObjCnt = ALEN(This.Rep_Objects)
+		m.loRepObj.ObjID = RECCOUNT(This.RepObjCursor) + 1
 		
-		IF m.lnRepObjCnt = 1 AND VARTYPE(This.Rep_Objects[1]) <> "O"
-		    m.lnRepObjCnt = 0
-		ENDIF
-		
-		m.lnRepObjCnt = m.lnRepObjCnt + 1
-		DIMENSION This.Rep_Objects(m.lnRepObjCnt)
-		
-		m.loRepObj.ObjID = m.lnRepObjCnt
-		
-		This.Rep_Objects[m.lnRepObjCnt] = m.loRepObj
+		SELECT (This.RepObjCursor)
+		APPEND BLANK
+		GATHER NAME m.loRepObj MEMO
+		SELECT (m.lSaveArea)
 		
 	ENDPROC
 
@@ -9433,31 +9549,52 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    RETURN ""
 		ENDIF
 		
-		LOCAL lnRepObjCnt
-		m.lnRepObjCnt = ALEN(This.Rep_Objects)
-		
-		IF m.lnRepObjCnt = 1 AND VARTYPE(This.Rep_Objects[1]) <> "O"
+		IF RECCOUNT(This.RepObjCursor) = 0
 		    RETURN ""
 		ENDIF
 		
+		LOCAL loFRXC
+		m.loFRXC = This.env.API_FRX.CONST
 		
-		m.loRenderer.Begin(This.SaveAs_PDFMeta)
-		
-		LOCAL liRepObj
-		FOR m.liRepObj = 1 TO m.lnRepObjCnt
-		    m.loRenderer.Render(This.Rep_Objects[m.liRepObj])
-		ENDFOR
 		
 		LOCAL lcTempFileName
-		m.lcTempFileName = m.loRenderer.Finalize(This.SaveAs_PDFMeta)
+		m.lcTempFileName = ""
 		
-		IF VARTYPE(m.lcTempFileName) != "C" 
-		    m.lcTempFileName = ""
-		ENDIF
+		LOCAL lSaveArea
+		m.lSaveArea = SELECT()
+		TRY
+		    m.loRenderer.Begin(This.SaveAs_PDFMeta)
 		
-		IF FILE(m.lcTempFileName,1) = .F.
-		    m.lcTempFileName = ""
-		ENDIF
+		    LOCAL loRepObj
+		    m.loRepObj = NEWOBJECT("PdfiumReport_repobj", This.ClassLibrary, "", This.env, This.ScreenGfx)
+		
+		    SELECT (This.RepObjCursor)
+		    GO TOP
+		    SCAN
+		        SELECT (This.RepObjCursor)
+		        SCATTER NAME m.loRepObj MEMO ADDITIVE
+		
+		        IF INLIST(m.loRepObj.ObjType, m.loFRXC.FRX_OBJ_FIELD(), m.loFRXC.FRX_OBJ_LABEL()) && Text
+		            m.loRepObj.Font = This.GetFont(m.loRepObj) && Font object assignment
+		            m.loRepObj.FontSubset = This.GetFontSubset(m.loRepObj)
+		        ENDIF
+		        
+		        m.loRenderer.Render(m.loRepObj)
+		    ENDSCAN
+		
+		    m.lcTempFileName = m.loRenderer.Finalize(This.SaveAs_PDFMeta)
+		
+		    IF VARTYPE(m.lcTempFileName) != "C" 
+		        m.lcTempFileName = ""
+		    ENDIF
+		
+		    IF FILE(m.lcTempFileName,1) = .F.
+		        m.lcTempFileName = ""
+		    ENDIF
+		
+		FINALLY
+		    SELECT (m.lSaveArea)
+		ENDTRY
 		
 		RETURN m.lcTempFileName
 		
@@ -11511,6 +11648,7 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 	ENDPROC
 
 	PROCEDURE Destroy
+		DODEFAULT()
 		
 		This.ClosePDF()
 		
@@ -11971,7 +12109,7 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfium-
 		    m.loFPDF.FPDFPath_LineTo(m.lnLineObj, 0, m.lnDpiCoef * -m.lnHeight)
 		ENDIF
 		
-		    
+		
 		m.loFPDF.FPDFPageObj_TransformF(m.lnLineObj, m.lcTrMatrix)
 		
 		
@@ -12682,7 +12820,6 @@ DEFINE CLASS pdfiumreport_repobj AS custom 		&& Input object for Render  method 
 		*p: align		&& Alignment: 0 - left, 1 - right, 2 - center
 		*p: batch_pageno
 		*p: continuationtype		&& Object ContinuationType Indicates the current continuation state for the rendered element. When layout elements span pages, they are rendered in multiple sections
-		*p: dynamicsxml		&& Dynamics XML
 		*p: env		&& Pdfium_env object
 		*p: fillalpha		&& Object background color alpha transparency of RGBA (0 - 255)
 		*p: fillblue		&& Object background color blue component of RGBA (0 - 255)
@@ -12733,7 +12870,6 @@ DEFINE CLASS pdfiumreport_repobj AS custom 		&& Input object for Render  method 
 		align = 0
 		batch_pageno = 0
 		continuationtype = 0
-		dynamicsxml = ("")
 		env = .F.
 		fillalpha = 0
 		fillblue = 0
@@ -12815,7 +12951,6 @@ DEFINE CLASS pdfiumreport_repobj AS custom 		&& Input object for Render  method 
 			<memberdata name="postoprev" type="property" display="PosTopRev"/>
 			<memberdata name="linetype" type="property" display="LineType"/>
 			<memberdata name="rectcurvature" type="property" display="RectCurvature"/>
-			<memberdata name="dynamicsxml" type="property" display="DynamicsXML"/>
 			<memberdata name="transparent" type="property" display="Transparent"/>
 			<memberdata name="font" type="property" display="Font"/>
 			<memberdata name="picturescale" type="property" display="PictureScale"/>

@@ -1,3 +1,6 @@
+1.20
+  - Improved performance of report rendering: keeping report object model in temporary cursor turned out to be faster than keeping it in array of objects
+
 1.19
   - Fixed bug: Font character subset calculation may skip chars
 
