@@ -1,3 +1,6 @@
+1.21
+  - Fixed DPI-aware bug in pdfiumreport.app: incorrect text extent measuring with GdipMeasureString when system DPI is not 96 (DPI scaling > 100%) and application DPI is 96 (app is DPI-aware)
+
 1.20
   - Improved performance of report rendering: keeping report object model in temporary cursor turned out to be faster than keeping it in array of objects
 

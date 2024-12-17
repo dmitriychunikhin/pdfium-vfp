@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.0//EN" "report.dtd">
     <report name="report">
-        <sessioninfo id="_71W0LOW8W" start="1732701990838" dump="1732702017000"/>         
+        <sessioninfo id="_72G0WDMKP" start="1734447939697" dump="1734447965000"/>         
         <package name="PDFIUM-VFP/SOURCE/PDFIUM-VFP.VCX">             
             <class name="pdfiumviewer_cmdfocus">                     
                 <method name="THIS_ACCESS" desc="">
@@ -241,193 +241,9 @@
                 <counter type="METHOD" missed="7" covered="13"/>
                 </class>
                              
-            <class name="pdfium_api_gdip">                     
-                <method name="ARGB" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="CHECKERROR" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPBITMAPLOCKBITS" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPBITMAPUNLOCKBITS" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPCLONEFONTFAMILY" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GDIPCLONESTRINGFORMAT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GDIPCREATEBITMAPFROMFILE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPCREATEBITMAPFROMHBITMAP" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GDIPCREATEBITMAPFROMSCAN0" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPCREATEFONT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPCREATEFONTFAMILYFROMNAME" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPCREATEFROMHDC" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPCREATEFROMHWND" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPCREATESOLIDFILL" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPCREATESTRINGFORMAT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GDIPDELETEBRUSH" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPDELETEFONT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPDELETEFONTFAMILY" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPDELETEGRAPHICS" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPDELETEPRIVATEFONTCOLLECTION" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPDELETESTRINGFORMAT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPDISPOSEIMAGE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPDRAWIMAGEI" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPDRAWSTRING" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GDIPFILLRECTANGLEI" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPFLUSH" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPGETCELLASCENT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPGETCELLDESCENT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPGETEMHEIGHT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPGETFAMILYNAME" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPGETFONTCOLLECTIONFAMILYCOUNT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GDIPGETFONTCOLLECTIONFAMILYLIST" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GDIPGETFONTHEIGHTGIVENDPI" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPGETGENERICFONTFAMILYSANSSERIF" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GDIPGETIMAGEENCODER" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPGETIMAGEENCODERS" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPGETIMAGEENCODERSSIZE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPGETIMAGEGRAPHICSCONTEXT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPGETIMAGEHEIGHT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPGETIMAGEPIXELFORMAT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPGETIMAGEWIDTH" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPGETLINESPACING" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPISSTYLEAVAILABLE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPMEASURESTRING" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPNEWPRIVATEFONTCOLLECTION" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPPRIVATEADDFONTFILE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPSAVEIMAGETOFILE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPSCALEWORLDTRANSFORM" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GDIPSETCOMPOSITINGMODE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GDIPSETCOMPOSITINGQUALITY" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GDIPSETINTERPOLATIONMODE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GDIPSETPIXELOFFSETMODE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GDIPSETSOLIDFILLCOLOR" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GDIPSETSTRINGFORMATALIGN" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPSETSTRINGFORMATFLAGS" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPSETSTRINGFORMATTRIMMING" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPSETTEXTCONTRAST" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GDIPSETTEXTRENDERINGHINT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GDIPSTRINGFORMATGETGENERICDEFAULT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPSTRINGFORMATGETGENERICTYPOGRAPHIC" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <counter type="METHOD" missed="16" covered="44"/>
-                </class>
-                             
             <class name="pdfium_uistate">                     
                 <method name="GETEFFECTIVELYENABLED" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
+                    <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
                 <method name="GETEFFECTIVELYVISIBLE" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
@@ -459,7 +275,7 @@
                 <method name="_ONVISIBLE" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
-                <counter type="METHOD" missed="7" covered="4"/>
+                <counter type="METHOD" missed="6" covered="5"/>
                 </class>
                              
             <class name="pdfiumreport_repfont">                     
@@ -919,7 +735,7 @@
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
                 <method name="BEGINPAINT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
+                    <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
                 <method name="BITBLT" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
@@ -970,7 +786,7 @@
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
                 <method name="ENDPAINT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
+                    <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
                 <method name="ENUMFORMS" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
@@ -1092,7 +908,7 @@
                 <method name="UUIDCREATE" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <counter type="METHOD" missed="24" covered="44"/>
+                <counter type="METHOD" missed="26" covered="42"/>
                 </class>
                              
             <class name="pdfiumreportviewer">                     
@@ -1166,19 +982,6 @@
                 <counter type="METHOD" missed="4" covered="10"/>
                 </class>
                              
-            <class name="pdfiumreport_repobj">                     
-                <method name="MEASURESTRING" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="RENDER_TEXT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="RENDER_TEXTASIMAGE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <counter type="METHOD" missed="1" covered="2"/>
-                </class>
-                             
             <class name="pdfiumreport_renderer_docx">                     
                 <method name="BEGIN" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
@@ -1238,6 +1041,58 @@
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
                 <counter type="METHOD" missed="19" covered="0"/>
+                </class>
+                             
+            <class name="pdfiumreport_renderer_pdf">                     
+                <method name="BEGIN" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="CLOSEPDF" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="CREATEPDF" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="ENCRYPT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FINALIZE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GETFILEEXTENSION" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GETFONTPDF" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="HASH_MD5" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="RENDER" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="RENDER_FRXFIELD" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="RENDER_FRXLABEL" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="RENDER_FRXLINE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="RENDER_FRXPICTURE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="RENDER_FRXRECTANGLE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="RENDER_TEXT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="RENDER_TEXTASIMAGE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <counter type="METHOD" missed="3" covered="13"/>
                 </class>
                              
             <class name="pdfiumreport">                     
@@ -1310,47 +1165,201 @@
                 <counter type="METHOD" missed="9" covered="13"/>
                 </class>
                              
-            <class name="pdfiumreport_renderer_pdf">                     
-                <method name="BEGIN" desc="">
+            <class name="pdfium_api_gdip">                     
+                <method name="ARGB" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="CLOSEPDF" desc="">
+                <method name="CHECKERROR" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="CREATEPDF" desc="">
+                <method name="GDIPBITMAPLOCKBITS" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="ENCRYPT" desc="">
+                <method name="GDIPBITMAPSETRESOLUTION" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
-                <method name="FINALIZE" desc="">
+                <method name="GDIPBITMAPUNLOCKBITS" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="GETFILEEXTENSION" desc="">
+                <method name="GDIPCLONEFONTFAMILY" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
-                <method name="GETFONTPDF" desc="">
+                <method name="GDIPCLONESTRINGFORMAT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GDIPCREATEBITMAPFROMFILE" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="HASH_MD5" desc="">
+                <method name="GDIPCREATEBITMAPFROMHBITMAP" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GDIPCREATEBITMAPFROMSCAN0" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="RENDER" desc="">
+                <method name="GDIPCREATEFONT" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="RENDER_FRXFIELD" desc="">
+                <method name="GDIPCREATEFONTFAMILYFROMNAME" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="RENDER_FRXLABEL" desc="">
+                <method name="GDIPCREATEFROMHDC" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="RENDER_FRXLINE" desc="">
+                <method name="GDIPCREATEFROMHWND" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="RENDER_FRXPICTURE" desc="">
+                <method name="GDIPCREATESOLIDFILL" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="RENDER_FRXRECTANGLE" desc="">
+                <method name="GDIPCREATESTRINGFORMAT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GDIPDELETEBRUSH" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPDELETEFONT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPDELETEFONTFAMILY" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPDELETEGRAPHICS" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPDELETEPRIVATEFONTCOLLECTION" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPDELETESTRINGFORMAT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPDISPOSEIMAGE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPDRAWIMAGEI" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPDRAWSTRING" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GDIPFILLRECTANGLEI" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPFLUSH" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPGETCELLASCENT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPGETCELLDESCENT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPGETDPIX" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPGETDPIY" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPGETEMHEIGHT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPGETFAMILYNAME" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPGETFONTCOLLECTIONFAMILYCOUNT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GDIPGETFONTCOLLECTIONFAMILYLIST" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GDIPGETFONTHEIGHTGIVENDPI" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPGETGENERICFONTFAMILYSANSSERIF" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GDIPGETIMAGEENCODER" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPGETIMAGEENCODERS" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPGETIMAGEENCODERSSIZE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPGETIMAGEGRAPHICSCONTEXT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPGETIMAGEHEIGHT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPGETIMAGEPIXELFORMAT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPGETIMAGEWIDTH" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPGETLINESPACING" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPISSTYLEAVAILABLE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPMEASURESTRING" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPNEWPRIVATEFONTCOLLECTION" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPPRIVATEADDFONTFILE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPSAVEIMAGETOFILE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPSCALEWORLDTRANSFORM" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GDIPSETCOMPOSITINGMODE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GDIPSETCOMPOSITINGQUALITY" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GDIPSETINTERPOLATIONMODE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GDIPSETPIXELOFFSETMODE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GDIPSETSOLIDFILLCOLOR" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GDIPSETSTRINGFORMATALIGN" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPSETSTRINGFORMATFLAGS" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPSETSTRINGFORMATTRIMMING" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPSETTEXTCONTRAST" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GDIPSETTEXTRENDERINGHINT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GDIPSTRINGFORMATGETGENERICDEFAULT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPSTRINGFORMATGETGENERICTYPOGRAPHIC" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <counter type="METHOD" missed="17" covered="46"/>
+                </class>
+                             
+            <class name="pdfiumreport_repobj">                     
+                <method name="MEASURESTRING" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
                 <method name="RENDER_TEXT" desc="">
@@ -1359,7 +1368,7 @@
                 <method name="RENDER_TEXTASIMAGE" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
-                <counter type="METHOD" missed="3" covered="13"/>
+                <counter type="METHOD" missed="1" covered="2"/>
                 </class>
                              
             <class name="pdfium_i18n">                     
@@ -1390,7 +1399,7 @@
                 <counter type="METHOD" missed="8" covered="0"/>
                 </class>
                              
-            <counter type="METHOD" missed="194" covered="235"/>
+            <counter type="METHOD" missed="196" covered="236"/>
         </package>         
-        <counter type="METHOD" missed="194" covered="235"/>
+        <counter type="METHOD" missed="196" covered="236"/>
     </report>

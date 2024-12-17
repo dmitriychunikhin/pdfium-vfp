@@ -1846,6 +1846,7 @@ DEFINE CLASS pdfium_api_gdip AS custom
 		*m: argb
 		*m: checkerror
 		*m: gdipbitmaplockbits
+		*m: gdipbitmapsetresolution
 		*m: gdipbitmapunlockbits
 		*m: gdipclonefontfamily
 		*m: gdipclonestringformat
@@ -1871,6 +1872,8 @@ DEFINE CLASS pdfium_api_gdip AS custom
 		*m: gdipflush
 		*m: gdipgetcellascent
 		*m: gdipgetcelldescent
+		*m: gdipgetdpix
+		*m: gdipgetdpiy
 		*m: gdipgetemheight
 		*m: gdipgetfamilyname
 		*m: gdipgetfontcollectionfamilycount
@@ -1975,6 +1978,9 @@ DEFINE CLASS pdfium_api_gdip AS custom
 			<memberdata name="gdipscaleworldtransform" type="method" display="GdipScaleWorldTransform"/>
 			<memberdata name="gdipbitmaplockbits" type="method" display="GdipBitmapLockBits"/>
 			<memberdata name="gdipbitmapunlockbits" type="method" display="GdipBitmapUnlockBits"/>
+			<memberdata name="gdipbitmapsetresolution" type="method" display="GdipBitmapSetResolution"/>
+			<memberdata name="gdipgetdpix" type="method" display="GdipGetDpiX"/>
+			<memberdata name="gdipgetdpiy" type="method" display="GdipGetDpiY"/>
 		</VFPData>
 	*</PropValue>
 
@@ -2063,6 +2069,24 @@ DEFINE CLASS pdfium_api_gdip AS custom
 		    DECLARE Long GdipBitmapLockBits IN GDIPLUS.DLL AS WinApi_GdipBitmapLockBits Long bitmap, String rect, Long flags, Long format, String @lockedBitmapData
 		
 		    m.lvRes = WinApi_GdipBitmapLockBits(m.bitmap, m.rect, m.flags, m.format, @m.lockedBitmapData)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE gdipbitmapsetresolution
+		LPARAMETERS bitmap as Long, xdpi as Single, ydpi as Single
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_GdipBitmapSetResolution(m.bitmap, m.xdpi, m.ydpi)
+		CATCH
+		    SET CONSOLE OFF    
+		    
+		    DECLARE Long GdipBitmapSetResolution IN GDIPLUS.DLL AS WinApi_GdipBitmapSetResolution LONG bitmap, SINGLE xdpi, SINGLE ydpi
+		
+		    m.lvRes = WinApi_GdipBitmapSetResolution(m.bitmap, m.xdpi, m.ydpi)
 		ENDTRY
 		
 		RETURN m.lvRes
@@ -2539,6 +2563,46 @@ DEFINE CLASS pdfium_api_gdip AS custom
 		    DECLARE Long GdipGetCellDescent IN GDIPLUS.DLL AS WinApi_GdipGetCellDescent Long family, Long style, Long @CellDescent
 		
 		    m.lvRes = WinApi_GdipGetCellDescent(m.family, m.style, @m.CellDescent)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE gdipgetdpix
+		LPARAMETERS graphics as Long, dpi as Single
+		
+		m.dpi = 0
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_GdipGetDpiX(m.graphics, @m.dpi)
+		CATCH
+		    SET CONSOLE OFF    
+		    
+		    DECLARE Long GdipGetDpiX IN GDIPLUS.DLL AS WinApi_GdipGetDpiX LONG graphics, SINGLE @dpi
+		
+		    m.lvRes = WinApi_GdipGetDpiX(m.graphics, @m.dpi)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE gdipgetdpiy
+		LPARAMETERS graphics as Long, dpi as Single
+		
+		m.dpi = 0
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_GdipGetDpiY(m.graphics, @m.dpi)
+		CATCH
+		    SET CONSOLE OFF    
+		    
+		    DECLARE Long GdipGetDpiY IN GDIPLUS.DLL AS WinApi_GdipGetDpiY LONG graphics, SINGLE @dpi
+		
+		    m.lvRes = WinApi_GdipGetDpiY(m.graphics, @m.dpi)
 		ENDTRY
 		
 		RETURN m.lvRes
@@ -8459,6 +8523,10 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    This.FontsRelease()
 		    This.GdipPrivateFontsRelease()
 		
+		    IF EMPTY(This.ScreenGfx) = .F.
+		        This.env.API_GDIP.GdipDeleteGraphics(This.ScreenGfx)
+		        This.ScreenGfx = 0
+		    ENDIF
 		    
 		ENDTRY
 		
@@ -8859,14 +8927,12 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    RETURN
 		ENDIF
 		
-		LOCAL lnScreenGfx
-		This.env.API_GDIP.CheckError(This.env.API_GDIP.GdipCreateFromHWND(Application.HWnd, @m.lnScreenGfx))
-		This.ScreenGfx = m.lnScreenGfx
 		
 		This.Renderer = .F.
 		
 		This.Fonts = NEWOBJECT("Collection")
 		This.FontSubset = NEWOBJECT("Collection")
+		
 		
 	ENDPROC
 
@@ -9314,6 +9380,16 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    IF This.BatchPageCount = 1
 		        This.FontsRelease()
 		        This.GdipPrivateFontsLoad()
+		
+		        IF EMPTY(This.ScreenGfx) = .F.
+		            This.env.API_GDIP.GdipDeleteGraphics(This.ScreenGfx)
+		            This.ScreenGfx = 0
+		        ENDIF
+		
+		        LOCAL lnScreenGfx
+		        This.env.API_GDIP.CheckError(This.env.API_GDIP.GdipCreateFromHWND(Application.HWnd, @m.lnScreenGfx))
+		        This.ScreenGfx = m.lnScreenGfx
+		
 		        This.RepObj = NEWOBJECT("PdfiumReport_repobj", This.ClassLibrary, "", This.env, This.ScreenGfx)
 		
 		        IF EMPTY(This.RepObjCursor)
@@ -13001,8 +13077,18 @@ DEFINE CLASS pdfiumreport_repobj AS custom 		&& Input object for Render  method 
 		ADDPROPERTY(m.toObjRectF, "width", 0.0)
 		ADDPROPERTY(m.toObjRectF, "height", 0.0)
 		
+		LOCAL lnDPICoefX, lnDPICoefY
+		This.env.API_GDIP.GdipGetDpiX(This.ScreenGfx, @m.lnDPICoefX)
+		This.env.API_GDIP.GdipGetDpiY(This.ScreenGfx, @m.lnDPICoefY)
+		m.lnDPICoefX = EVL(m.lnDPICoefX, 96) / 96
+		m.lnDPICoefY = EVL(m.lnDPICoefY, 96) / 96
+		
 		LOCAL lcLayoutRectF
-		m.lcLayoutRectF = 0h + BINTOC(m.toLayoutRectF.x, "F") + BINTOC(m.toLayoutRectF.y, "F") + BINTOC(m.toLayoutRectF.width, "F") + BINTOC(m.toLayoutRectF.height, "F")
+		m.lcLayoutRectF = 0h + ;
+		    BINTOC(m.toLayoutRectF.x * m.lnDPICoefX, "F") + ;
+		    BINTOC(m.toLayoutRectF.y * m.lnDPICoefY, "F") + ;
+		    BINTOC(m.toLayoutRectF.width * m.lnDPICoefX, "F") + ;
+		    BINTOC(m.toLayoutRectF.height * m.lnDPICoefY, "F")
 		
 		LOCAL lcObjBBox
 		m.lcObjBBox = 0h + BINTOC(0.0, "F") + BINTOC(0.0, "F") + BINTOC(0.0, "F") + BINTOC(0.0, "F")
@@ -13020,10 +13106,10 @@ DEFINE CLASS pdfiumreport_repobj AS custom 		&& Input object for Render  method 
 		    @m.tnLinesFitted)
 		
 		
-		m.toObjRectF.x = CTOBIN(SUBSTR(m.lcObjBBox,1,4), "N")
-		m.toObjRectF.y = CTOBIN(SUBSTR(m.lcObjBBox,5,4), "N")
-		m.toObjRectF.width = CTOBIN(SUBSTR(m.lcObjBBox,9,4), "N")
-		m.toObjRectF.height = CTOBIN(SUBSTR(m.lcObjBBox,13,4), "N")
+		m.toObjRectF.x = CTOBIN(SUBSTR(m.lcObjBBox,1,4), "N") / m.lnDPICoefX
+		m.toObjRectF.y = CTOBIN(SUBSTR(m.lcObjBBox,5,4), "N") / m.lnDPICoefY
+		m.toObjRectF.width = CTOBIN(SUBSTR(m.lcObjBBox,9,4), "N") / m.lnDPICoefX
+		m.toObjRectF.height = CTOBIN(SUBSTR(m.lcObjBBox,13,4), "N") / m.lnDPICoefY
 		
 	ENDPROC
 
@@ -13236,6 +13322,7 @@ DEFINE CLASS pdfiumreport_repobj AS custom 		&& Input object for Render  method 
 		
 		    
 		    This.env.API_GDIP.CheckError(This.env.API_GDIP.GdipCreateBitmapFromScan0(m.lnImgWidth, m.lnImgHeight, 0, m.lnImgPixelFormat, NULL, @m.lhImage))
+		    This.env.API_GDIP.CheckError(This.env.API_GDIP.GdipBitmapSetResolution(lhImage, 96, 96))
 		    
 		    This.env.API_GDIP.CheckError(This.env.API_GDIP.GdipGetImageGraphicsContext(m.lhImage, @m.lhGfx))
 		
