@@ -1,3 +1,6 @@
+1.21
+  - 修正了 pdfiumreport.app 中的 DPI 感知错误：当系统 DPI 非 96（DPI 缩放 > 100%）且应用程序 DPI 为 96（应用程序具有 DPI 感知）时，使用 GdipMeasureString 测量的文本范围不正确。
+
 1.20
   - 提高了报表渲染的性能：将报表对象模型保存在临时 Cursor 中比保存在对象数组中更快
 
