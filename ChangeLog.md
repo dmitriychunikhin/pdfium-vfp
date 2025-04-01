@@ -1,3 +1,6 @@
+1.22
+  - Fixed issue #18 Problem running with sys(2335) enabled
+
 1.21
   - Fixed DPI-aware bug in pdfiumreport.app: incorrect text extent measuring with GdipMeasureString when system DPI is not 96 (DPI scaling > 100%) and application DPI is 96 (app is DPI-aware)
 
