@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.0//EN" "report.dtd">
     <report name="report">
-        <sessioninfo id="_75E0V6OU3" start="1743517936572" dump="1743517961000"/>         
+        <sessioninfo id="_75E1487JH" start="1743533119361" dump="1743533149000"/>         
         <package name="PDFIUM-VFP/SOURCE/PDFIUM-VFP.VCX">             
             <class name="pdfiumviewer_cmdfocus">                     
                 <method name="THIS_ACCESS" desc="">
@@ -1112,52 +1112,6 @@
                 <counter type="METHOD" missed="1" covered="2"/>
                 </class>
                              
-            <class name="pdfium_env">                     
-                <method name="ERRFMT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="ERRMSG" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FOXENV_RESTORE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FOXENV_SET" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GETAPPNAME" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GETPDFDPI" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GETSAVEFILENAME" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GETSCREENDPIX" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GETSCREENDPIY" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GETUNIQUETEMPCURSORNAME" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GETUNIQUETEMPFILENAME" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="OK" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="SETUP" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="SETUPRELEASE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <counter type="METHOD" missed="4" covered="10"/>
-                </class>
-                             
             <class name="pdfiumreportviewer">                     
                 <method name="CLOSE" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
@@ -1181,6 +1135,76 @@
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
                 <counter type="METHOD" missed="7" covered="0"/>
+                </class>
+                             
+            <class name="pdfiumreport">                     
+                <method name="BATCHBEGIN" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="BATCHEND" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="ERRLOGSHOW" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="ERRMSG" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FINALIZE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FONTSRELEASE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPPRIVATEFONTSLOAD" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GDIPPRIVATEFONTSRELEASE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GETFONT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GETFONTSUBSET" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GETRENDERER" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="PRINTENVDEFAULT_ACCESS" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="PRINTENVDEFAULT_ASSIGN" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="PRINTENV_ACCESS" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="PRINTENV_ASSIGN" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="PROCESS_FRXDYNAMICS" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="PROCESS_FRXHEADER" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="PROCESS_FRXPICTURE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="RUNRENDERER" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="SAVEAS_PDFMETA_ACCESS" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="SAVEAS_PDFMETA_ASSIGN" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="SETRENDERER" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <counter type="METHOD" missed="9" covered="13"/>
                 </class>
                              
             <class name="pdfiumviewer">                     
@@ -1301,74 +1325,50 @@
                 <counter type="METHOD" missed="15" covered="23"/>
                 </class>
                              
-            <class name="pdfiumreport">                     
-                <method name="BATCHBEGIN" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="BATCHEND" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="ERRLOGSHOW" desc="">
+            <class name="pdfium_env">                     
+                <method name="ERRFMT" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
                 <method name="ERRMSG" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
-                <method name="FINALIZE" desc="">
+                <method name="FOXENV_RESTORE" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="FONTSRELEASE" desc="">
+                <method name="FOXENV_SET" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="GDIPPRIVATEFONTSLOAD" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GDIPPRIVATEFONTSRELEASE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GETFONT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GETFONTSUBSET" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GETRENDERER" desc="">
+                <method name="GETAPPNAME" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
-                <method name="PRINTENVDEFAULT_ACCESS" desc="">
+                <method name="GETPDFDPI" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="PRINTENVDEFAULT_ASSIGN" desc="">
+                <method name="GETSAVEFILENAME" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
-                <method name="PRINTENV_ACCESS" desc="">
+                <method name="GETSCREENDPIX" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="PRINTENV_ASSIGN" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="PROCESS_FRXDYNAMICS" desc="">
+                <method name="GETSCREENDPIY" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="PROCESS_FRXHEADER" desc="">
+                <method name="GETUNIQUETEMPCURSORNAME" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="PROCESS_FRXPICTURE" desc="">
+                <method name="GETUNIQUETEMPFILENAME" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="RUNRENDERER" desc="">
+                <method name="OK" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="SAVEAS_PDFMETA_ACCESS" desc="">
+                <method name="SETUP" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="SAVEAS_PDFMETA_ASSIGN" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
+                <method name="SETUPRELEASE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="SETRENDERER" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <counter type="METHOD" missed="9" covered="13"/>
+                <counter type="METHOD" missed="4" covered="10"/>
                 </class>
                              
             <class name="pdfium_i18n">                     
