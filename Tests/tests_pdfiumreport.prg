@@ -102,10 +102,9 @@ DEFINE CLASS tests_pdfiumreport as tests_pdfium_base OF tests_pdfium_base.prg
 
             LOCAL lSave_REPORTOUTPUT
             lSave_REPORTOUTPUT = _REPORTOUTPUT
-            
+            _REPORTOUTPUT = This.pdfium_release+"\pdfiumreport.app"
+            SYS(2335, 0) && Regression test for issue #18 Problem running with sys(2335) enabled 
             TRY
-                _REPORTOUTPUT = This.pdfium_release+"\pdfiumreport.app"
-
                 DO (_REPORTOUTPUT) WITH This.pdfium_env && Execute on initialization step of your application
                 
                 **********************************************************************************************
@@ -135,9 +134,9 @@ DEFINE CLASS tests_pdfiumreport as tests_pdfium_base OF tests_pdfium_base.prg
                 REPORT FORM .\Assets\Report1.frx NOPAGEEJECT
                 REPORT FORM .\Assets\Report2.frx TO FILE (This.pdfium_reporttofile)
                 
+            FINALLY
+                SYS(2335, 1)
                 DO (_REPORTOUTPUT) WITH .F. && Execute on release step of your application
-                
-            FINALLY    
                 _REPORTOUTPUT = lSave_REPORTOUTPUT
             ENDTRY
 

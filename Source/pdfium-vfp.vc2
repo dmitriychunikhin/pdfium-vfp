@@ -4924,7 +4924,11 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		    RETURN
 		ENDIF
 		
-		MESSAGEBOX(This.Class + " ("+This.ClassLibrary+"): " + m.lcMsg, 0+48, This.Class + " ("+This.ClassLibrary+")")
+		IF SYS(2335) != '0'
+		    MESSAGEBOX(This.Class + " ("+This.ClassLibrary+"): " + m.lcMsg, 0+48, This.Class + " ("+This.ClassLibrary+")")
+		ELSE
+		    THROW m.lcMsg
+		ENDIF
 		
 	ENDPROC
 
@@ -8365,6 +8369,28 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		This.PreviewContainer = NULL
 		This.Renderer = .F.
+		
+	ENDPROC
+
+	PROCEDURE DoMessage
+		LPARAMETERS cMessage, nParams, cTitle
+		
+		IF SYS(2335) != '0'
+		    DODEFAULT(m.cMessage, m.nParams, m.cTitle)
+		ELSE
+		    NODEFAULT    
+		ENDIF
+		
+	ENDPROC
+
+	PROCEDURE DoStatus
+		LPARAMETERS cMessage
+		
+		IF SYS(2335) != '0'
+		    DODEFAULT(m.cMessage)
+		ELSE
+		    NODEFAULT    
+		ENDIF
 		
 	ENDPROC
 
@@ -13830,7 +13856,9 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		    ENDIF
 		    
 		CATCH TO m.loErr
-		    MESSAGEBOX(This.env.ErrFmt(m.loErr), 0+48, This.Class + " ("+This.ClassLibrary+")")
+		    IF SYS(2335) != '0'
+		        MESSAGEBOX(This.env.ErrFmt(m.loErr), 0+48, This.Class + " ("+This.ClassLibrary+")")
+		    ENDIF
 		    
 		FINALLY
 		    TRY
@@ -14612,7 +14640,11 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN
 		ENDIF
 		
-		MESSAGEBOX(m.lcMsg, 0+48, This.Class + " ("+This.ClassLibrary+")")
+		IF SYS(2335) != '0'
+		    MESSAGEBOX(m.lcMsg, 0+48, This.Class + " ("+This.ClassLibrary+")")
+		ELSE
+		    THROW m.lcMsg
+		ENDIF
 		
 	ENDPROC
 
