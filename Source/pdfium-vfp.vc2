@@ -8031,7 +8031,7 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		        This.IsPageFrame = .T.
 		
 		        IF BETWEEN(m.loControl.Parent.ActivePage, 1, m.loControl.Parent.PageCount)
-		            IF m.loControl.Parent.Pages(m.loControl.Parent.ActivePage) != m.loControl
+		            IF m.loControl.Parent.ActivePage != EVL(m.loControl.PageOrder, 1)
 		                This.UIEnabled = .F.
 		            ENDIF
 		        ENDIF
