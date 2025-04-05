@@ -1,3 +1,7 @@
+1.23
+  - Fixed issue #20 Unable to display PDF on page with changed PageOrder
+  - Fixed PdfiumViewer positioning inside containers (sample project was updated with viewer in container)
+
 1.22
   - Fixed issue #18 Problem running with sys(2335) enabled
 
