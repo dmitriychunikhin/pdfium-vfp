@@ -1,3 +1,12 @@
+1.24
+  - Fixed issue with PdfiumViewer visibility on PageFrame when use calls Page.SetFocus method
+    explanation: it is likely to be a VFP bug when Page.SetFocus doesn't raise UIEnable events and doesn't change PageFrame.ActivePage value
+
+    `for info:` __PageFrame.RemoveObject may lead to the similar bug.__ 
+    It makes a page on the left side from removed visible without changing PageFrame.ActivePage value and raising UIEnable events.
+    Alas, this can't be fixed without intervention in original behaviour of VFP PageFrame which may be unexpected for you as an app developer.
+    As workaround you should explicitly set PageFrame.ActivePage property or call Page.ZOrder method after calling PageFrame.RemoveObject
+
 1.23
   - Fixed issue #20 Unable to display PDF on page with changed PageOrder
   - Fixed PdfiumViewer positioning inside containers (sample project was updated with viewer in container)

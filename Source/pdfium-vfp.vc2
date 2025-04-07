@@ -7920,16 +7920,20 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		*m: onvisible
 		*m: setstate
 		*m: _onenabled
+		*m: _onpagecountchange
+		*m: _onpagegotfocus
+		*m: _onpagelostfocus
 		*m: _onuienable
 		*m: _onvisible
 		*p: effectivelyenabled
 		*p: effectivelyvisible
 		*p: ispageframe
 		*p: uienabled		&& State received from UIEnable event of the parent control
+		*p: uienabledforce		&& Page.SetFocus doesn't raise UIEnable, thus this property is for mocking UIEnable behavior. Accepts: .T. | .F. | NULL. See This._OnPageGotFocus, _OnPageLostFocus
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
-	HIDDEN AddObject,AddProperty,BaseClass,CloneObject,Comment,ControlCount,Controls,effectivelyenabled,effectivelyvisible,Error,Height,HelpContextID,ispageframe,NewObject,Objects,ParentClass,Parent,Picture,ReadExpression,ReadMethod,RemoveObject,ResetToDefault,SaveAsClass,ShowWhatsThis,Tag,uienabled,WhatsThisHelpID,Width,WriteExpression,WriteMethod
+	HIDDEN AddObject,AddProperty,BaseClass,CloneObject,Comment,ControlCount,Controls,effectivelyenabled,effectivelyvisible,Error,Height,HelpContextID,ispageframe,NewObject,Objects,ParentClass,Parent,Picture,ReadExpression,ReadMethod,RemoveObject,ResetToDefault,SaveAsClass,ShowWhatsThis,Tag,uienabledforce,uienabled,WhatsThisHelpID,Width,WriteExpression,WriteMethod
 	*<PropValue>
 		effectivelyenabled = .F.
 		effectivelyvisible = .F.
@@ -7938,6 +7942,7 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		Name = "pdfium_uistate"
 		Tag = ""
 		uienabled = .F.
+		uienabledforce = (.NULL.)
 		Width = 37
 		_memberdata = <VFPData>
 			<memberdata name="objtoclient" display="ObjToClient"/>
@@ -7977,6 +7982,10 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 			<memberdata name="_onvisible" type="method" display="_OnVisible"/>
 			<memberdata name="onmoved" type="method" display="OnMoved"/>
 			<memberdata name="onresize" type="method" display="OnResize"/>
+			<memberdata name="_onpagecountchange" type="method" display="_OnPageCountChange"/>
+			<memberdata name="_onpagegotfocus" type="method" display="_OnPageGotFocus"/>
+			<memberdata name="_onpagelostfocus" type="method" display="_OnPageLostFocus"/>
+			<memberdata name="uienabledforce" type="property" display="UIEnabledForce"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -8030,11 +8039,19 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		    IF UPPER(m.loControl.BASECLASS) == [PAGE] 
 		        This.IsPageFrame = .T.
 		
-		        IF BETWEEN(m.loControl.Parent.ActivePage, 1, m.loControl.Parent.PageCount)
-		            IF m.loControl.Parent.ActivePage != EVL(m.loControl.PageOrder, 1)
-		                This.UIEnabled = .F.
-		            ENDIF
+		        IF m.loControl.Parent.ActivePage != EVL(m.loControl.PageOrder, 1)
+		            This.UIEnabled = .F.
 		        ENDIF
+		        
+		        BINDEVENT(m.loControl.Parent, "AddObject", This, "_OnPageCountChange", 1)
+		        BINDEVENT(m.loControl.Parent, "PageCount", This, "_OnPageCountChange", 1)
+		        BINDEVENT(m.loControl, "SetFocus", This, "_OnPageGotFocus", 1)
+		        LOCAL liPage
+		        FOR m.liPage = 1 TO m.loControl.Parent.PageCount
+		            IF m.loControl.Parent.Pages[m.liPage] != m.loControl
+		                BINDEVENT(m.loControl.Parent.Pages[m.liPage], "SetFocus", This, "_OnPageLostFocus", 1)
+		            ENDIF
+		        ENDFOR
 		    ENDIF
 		
 		    IF INLIST(UPPER(m.loControl.BASECLASS), [PAGEFRAME], [CONTAINER], [CONTROL])
@@ -8142,12 +8159,14 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		LOCAL loControl
 		m.loControl = This.Parent
 		
-		
 		LOCAL llPrevVisible, llPrevEnabled
 		m.llPrevVisible = This.EffectivelyVisible
 		m.llPrevEnabled = This.EffectivelyEnabled
 		
-		This.EffectivelyVisible = m.loControl.Visible AND This.UIEnabled
+		This.EffectivelyVisible = m.loControl.Visible AND (This.UIEnabled OR NVL(This.UIEnabledForce,.F.))
+		IF NVL(This.UIEnabledForce, .T.) = .F.
+		    This.EffectivelyVisible = .F.
+		ENDIF
 		This.EffectivelyEnabled = m.loControl.Enabled
 		
 		DO WHILE NOT UPPER(m.loControl.BASECLASS) == [FORM]
@@ -8159,6 +8178,12 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		
 		    IF PEMSTATUS(m.loControl, "Visible", 5) AND NOT PEMSTATUS(m.loControl, "Visible", 2)
 		        IF m.loControl.Visible = .F.
+		            This.EffectivelyVisible = .F.
+		        ENDIF
+		    ENDIF
+		
+		    IF UPPER(m.loControl.BASECLASS) == [PAGE]
+		        IF m.loControl.Parent.ActivePage != EVL(m.loControl.PageOrder, 1) AND NVL(This.UIEnabledForce,.F.) = .F.
 		            This.EffectivelyVisible = .F.
 		        ENDIF
 		    ENDIF
@@ -8178,6 +8203,53 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 	PROCEDURE _onenabled
 		LPARAMETERS tlEnabled
 		This.SetState()
+		
+	ENDPROC
+
+	PROCEDURE _onpagecountchange
+		LPARAMETERS p1,p2,p3,p4,p5,p6,p7,p8,p9,p10
+		
+		LOCAL loControl
+		m.loControl = This.Parent
+		
+		DO WHILE NOT UPPER(m.loControl.BASECLASS) == [FORM]
+		    IF UPPER(m.loControl.BASECLASS) == [PAGE] 
+		        LOCAL liPage
+		        FOR m.liPage = 1 TO m.loControl.Parent.PageCount
+		            IF m.loControl = m.loControl.Parent.Pages[m.liPage]
+		                UNBINDEVENTS(m.loControl, "SetFocus", This, "_OnPageGotFocus")
+		                BINDEVENT(m.loControl, "SetFocus", This, "_OnPageGotFocus", 1)
+		            ELSE
+		                UNBINDEVENTS(m.loControl.Parent.Pages[m.liPage], "SetFocus", This, "_OnPageLostFocus")
+		                BINDEVENT(m.loControl.Parent.Pages[m.liPage], "SetFocus", This, "_OnPageLostFocus", 1)
+		            ENDIF
+		        ENDFOR
+		    ENDIF
+		
+		    m.loControl = m.loControl.PARENT
+		ENDDO
+		
+	ENDPROC
+
+	PROCEDURE _onpagegotfocus
+		LPARAMETERS p1,p2,p3,p4,p5,p6,p7,p8,p9,p10
+		
+		* PageFrame.ActivePage stays unchaned after a call of Page.SetFocus()
+		* that's why UIEnabledForce is used
+		This.UIEnabledForce = .T.
+		This.SetState()
+		This.UIEnabledForce = .NULL.
+		
+	ENDPROC
+
+	PROCEDURE _onpagelostfocus
+		LPARAMETERS p1,p2,p3,p4,p5,p6,p7,p8,p9,p10
+		
+		* PageFrame.ActivePage stays unchaned after a call of Page.SetFocus()
+		* that's why UIEnabledForce is used
+		This.UIEnabledForce = .F.
+		This.SetState()
+		This.UIEnabledForce = .NULL.
 		
 	ENDPROC
 
@@ -14311,7 +14383,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
 			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
 			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu"/>
+			<memberdata name="contextmenu" type="method" display="ContextMenu" favorites="True"/>
 			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
 			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
 			<memberdata name="drawbufdib" type="property" display="DrawBufDIB"/>
@@ -14328,25 +14400,25 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 			<memberdata name="fpdf_page_first_visible" type="property" display="fpdf_page_first_visible"/>
 			<memberdata name="fpdf_page_last_visible" type="property" display="fpdf_page_last_visible"/>
 			<memberdata name="fpdf_text_pages" type="property" display="fpdf_text_pages"/>
-			<memberdata name="getcurrentpage" type="method" display="GetCurrentPage"/>
-			<memberdata name="getpagecount" type="method" display="GetPageCount"/>
-			<memberdata name="getpagesize" type="method" display="GetPageSize"/>
+			<memberdata name="getcurrentpage" type="method" display="GetCurrentPage" favorites="True"/>
+			<memberdata name="getpagecount" type="method" display="GetPageCount" favorites="True"/>
+			<memberdata name="getpagesize" type="method" display="GetPageSize" favorites="True"/>
 			<memberdata name="keypress" type="method" display="KeyPress"/>
 			<memberdata name="openpdf" type="method" display="OpenPDF" favorites="True"/>
 			<memberdata name="pagepick" type="method" display="PagePick"/>
 			<memberdata name="redraw" type="method" display="Redraw"/>
 			<memberdata name="renderpages" type="method" display="RenderPages"/>
 			<memberdata name="renderselection" type="method" display="RenderSelection"/>
-			<memberdata name="scale" type="property" display="Scale"/>
+			<memberdata name="scale" type="property" display="Scale" favorites="True"/>
 			<memberdata name="scale_assign" type="method" display="Scale_Assign"/>
-			<memberdata name="scrollbars" type="property" display="ScrollBars"/>
+			<memberdata name="scrollbars" type="property" display="ScrollBars" favorites="True"/>
 			<memberdata name="scrollbars_assign" type="method" display="ScrollBars_Assign"/>
 			<memberdata name="scrollhorz" type="method" display="ScrollHorz"/>
 			<memberdata name="scrollvert" type="method" display="ScrollVert"/>
 			<memberdata name="selectionbrush" type="property" display="SelectionBrush"/>
 			<memberdata name="selectioncharindexprev" type="property" display="SelectionCharIndexPrev"/>
 			<memberdata name="selectioncharindexstart" type="property" display="SelectionCharIndexStart"/>
-			<memberdata name="selectioncopy" type="method" display="SelectionCopy"/>
+			<memberdata name="selectioncopy" type="method" display="SelectionCopy" favorites="True"/>
 			<memberdata name="selecttext" type="method" display="SelectText"/>
 			<memberdata name="viewportmaxx" type="property" display="ViewPortMaxX"/>
 			<memberdata name="viewportmaxy" type="property" display="ViewPortMaxY"/>
@@ -14364,26 +14436,26 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 			<memberdata name="wndrelease" type="method" display="WndRelease"/>
 			<memberdata name="wndresize" type="method" display="WndResize"/>
 			<memberdata name="wndshow" type="method" display="WndShow"/>
-			<memberdata name="selecttextall" type="method" display="SelectTextAll"/>
+			<memberdata name="selecttextall" type="method" display="SelectTextAll" favorites="True"/>
 			<memberdata name="dblclickbegin" type="property" display="DblClickBegin"/>
 			<memberdata name="tplclickbegin" type="property" display="TplClickBegin"/>
 			<memberdata name="rendersearch" type="method" display="RenderSearch"/>
 			<memberdata name="searchbrush" type="property" display="SearchBrush"/>
-			<memberdata name="searchclose" type="method" display="SearchClose"/>
+			<memberdata name="searchclose" type="method" display="SearchClose" favorites="True"/>
 			<memberdata name="searchstate_findwhat" type="property" display="SearchState_FindWhat"/>
 			<memberdata name="searchstate_rescount" type="property" display="SearchState_ResCount"/>
 			<memberdata name="searchstate_resindex" type="property" display="SearchState_ResIndex"/>
 			<memberdata name="searchstate_respage" type="property" display="SearchState_ResPage"/>
 			<memberdata name="searchstate_resrect" type="property" display="SearchState_ResRect"/>
-			<memberdata name="searchtext" type="method" display="SearchText"/>
+			<memberdata name="searchtext" type="method" display="SearchText" favorites="True"/>
 			<memberdata name="searchstate_dir" type="property" display="SearchState_Dir"/>
-			<memberdata name="savedocument" type="method" display="SaveDocument"/>
-			<memberdata name="fitwidth" type="property" display="FitWidth"/>
+			<memberdata name="savedocument" type="method" display="SaveDocument" favorites="True"/>
+			<memberdata name="fitwidth" type="property" display="FitWidth" favorites="True"/>
 			<memberdata name="fitwidth_assign" type="method" display="FitWidth_Assign"/>
 			<memberdata name="isfocused" type="property" display="IsFocused"/>
 			<memberdata name="printdocument" type="method" display="PrintDocument"/>
 			<memberdata name="afterviewportupdate" type="method" display="AfterViewportUpdate"/>
-			<memberdata name="printenv" type="property" display="PrintEnv"/>
+			<memberdata name="printenv" type="property" display="PrintEnv" favorites="True"/>
 			<memberdata name="printenv_assign" type="method" display="PrintEnv_Assign"/>
 			<memberdata name="printenv_access" type="method" display="PrintEnv_Access"/>
 			<memberdata name="_printenv" type="property" display="_PrintEnv"/>
