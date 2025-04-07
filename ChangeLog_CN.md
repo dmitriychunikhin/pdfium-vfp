@@ -1,3 +1,10 @@
+1.23
+  - 修正了问题 #20：在更改 PageOrder 的页面上无法显示 PDF
+  - 修正了 PdfiumViewer 在容器内的定位问题（示例项目已更新，包含容器内的查看器）
+
+1.22
+  - 修正了问题 #18：启用 sys(2335) 时运行出错
+
 1.21
   - 修正了 pdfiumreport.app 中的 DPI 感知错误：当系统 DPI 非 96（DPI 缩放 > 100%）且应用程序 DPI 为 96（应用程序具有 DPI 感知）时，使用 GdipMeasureString 测量的文本范围不正确。
 
