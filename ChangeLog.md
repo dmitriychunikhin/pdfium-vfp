@@ -1,5 +1,5 @@
 1.24
-  - Fixed issue with PdfiumViewer visibility on PageFrame when use calls Page.SetFocus method
+  - Fixed issue with PdfiumViewer visibility on PageFrame when user calls Page.SetFocus method
     explanation: it is likely to be a VFP bug when Page.SetFocus doesn't raise UIEnable events and doesn't change PageFrame.ActivePage value
 
     `for info:` __PageFrame.RemoveObject may lead to the similar bug.__ 
