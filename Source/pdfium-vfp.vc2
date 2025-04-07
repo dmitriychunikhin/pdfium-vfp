@@ -7915,20 +7915,21 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		*m: getispageframe
 		*m: objtoclient
 		*m: onenabled
+		*m: onmoved
+		*m: onresize
 		*m: onvisible
 		*m: setstate
-		*m: _onactivate
-		*m: _ondeactivate
 		*m: _onenabled
+		*m: _onuienable
 		*m: _onvisible
 		*p: effectivelyenabled
 		*p: effectivelyvisible
 		*p: ispageframe
-		*p: _ispagedeactivated
+		*p: uienabled		&& State received from UIEnable event of the parent control
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
-	HIDDEN AddObject,AddProperty,BaseClass,CloneObject,Comment,ControlCount,Controls,effectivelyenabled,effectivelyvisible,Error,Height,HelpContextID,ispageframe,NewObject,Objects,ParentClass,Parent,Picture,ReadExpression,ReadMethod,RemoveObject,ResetToDefault,SaveAsClass,ShowWhatsThis,Tag,WhatsThisHelpID,Width,WriteExpression,WriteMethod,_ispagedeactivated
+	HIDDEN AddObject,AddProperty,BaseClass,CloneObject,Comment,ControlCount,Controls,effectivelyenabled,effectivelyvisible,Error,Height,HelpContextID,ispageframe,NewObject,Objects,ParentClass,Parent,Picture,ReadExpression,ReadMethod,RemoveObject,ResetToDefault,SaveAsClass,ShowWhatsThis,Tag,uienabled,WhatsThisHelpID,Width,WriteExpression,WriteMethod
 	*<PropValue>
 		effectivelyenabled = .F.
 		effectivelyvisible = .F.
@@ -7936,8 +7937,8 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		ispageframe = .F.
 		Name = "pdfium_uistate"
 		Tag = ""
+		uienabled = .F.
 		Width = 37
-		_ispagedeactivated = .F.
 		_memberdata = <VFPData>
 			<memberdata name="objtoclient" display="ObjToClient"/>
 			<memberdata name="addobject" display="AddObject"/>
@@ -7970,6 +7971,12 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 			<memberdata name="getispageframe" display="GetIsPageFrame"/>
 			<memberdata name="onenabled" display="OnEnabled"/>
 			<memberdata name="onvisible" display="OnVisible"/>
+			<memberdata name="uienabled" type="property" display="UIEnabled"/>
+			<memberdata name="_onenabled" type="method" display="_OnEnabled"/>
+			<memberdata name="_onuienable" type="method" display="_OnUIEnable"/>
+			<memberdata name="_onvisible" type="method" display="_OnVisible"/>
+			<memberdata name="onmoved" type="method" display="OnMoved"/>
+			<memberdata name="onresize" type="method" display="OnResize"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -7998,20 +8005,43 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		m.loControl = This.Parent
 		
 		This.IsPageFrame = .F.
-		
+		This.UIEnabled = m.loControl.Visible
 		BINDEVENT(m.loControl, "Visible", This, "_OnVisible",1)
 		BINDEVENT(m.loControl, "Enabled", This, "_OnEnabled",1)
+		IF PEMSTATUS(m.loControl, "UIEnable", 5)
+		    BINDEVENT(m.loControl, "UIEnable", This, "_OnUIEnable", 2)
+		ENDIF
+		IF PEMSTATUS(m.loControl, "Moved", 5)
+		    BINDEVENT(m.loControl, "Moved", This, "OnMoved", 1)
+		ENDIF
+		IF PEMSTATUS(m.loControl, "Resize", 5)
+		    BINDEVENT(m.loControl, "Resize", This, "OnResize", 1)
+		ENDIF
 		
 		DO WHILE NOT UPPER(m.loControl.BASECLASS) == [FORM]
-		    IF UPPER(m.loControl.BASECLASS) == [PAGE] THEN
+		    IF PEMSTATUS(m.loControl, "Enabled", 5) AND NOT PEMSTATUS(m.loControl, "Enabled", 2)
+		        BINDEVENT(m.loControl, "Enabled", This, "_OnEnabled", 1)
+		    ENDIF
+		
+		    IF PEMSTATUS(m.loControl, "Visible", 5) AND NOT PEMSTATUS(m.loControl, "Visible", 2)
+		        BINDEVENT(m.loControl, "Visible", This, "_OnVisible", 1)
+		    ENDIF
+		
+		    IF UPPER(m.loControl.BASECLASS) == [PAGE] 
 		        This.IsPageFrame = .T.
 		
-		        BINDEVENT(m.loControl, "Activate", This, "_OnActivate",1)
-		        BINDEVENT(m.loControl, "Deactivate", This, "_OnDeactivate",1)
-		        BINDEVENT(m.loControl, "Enabled", This, "_OnEnabled",1)
-		        BINDEVENT(m.loControl.Parent, "Visible", This, "_OnVisible",1)
-		        BINDEVENT(m.loControl.Parent, "Enabled", This, "_OnEnabled",1)
+		        IF BETWEEN(m.loControl.Parent.ActivePage, 1, m.loControl.Parent.PageCount)
+		            IF m.loControl.Parent.ActivePage != EVL(m.loControl.PageOrder, 1)
+		                This.UIEnabled = .F.
+		            ENDIF
+		        ENDIF
 		    ENDIF
+		
+		    IF INLIST(UPPER(m.loControl.BASECLASS), [PAGEFRAME], [CONTAINER], [CONTROL])
+		        BINDEVENT(m.loControl, "Moved", This, "OnMoved", 1)
+		        BINDEVENT(m.loControl, "Resize", This, "OnResize", 1)
+		    ENDIF
+		    
 		    m.loControl = m.loControl.PARENT
 		ENDDO
 		
@@ -8021,77 +8051,88 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 
 	PROCEDURE objtoclient
 		*********************************************************************
-		** Copied from GDPIPlusX xfcBitmap.ObjToClientEx
+		** Based on GDPIPlusX xfcBitmap.ObjToClientEx
 		**
 		** This replaces OBJTOCLIENT that has bugs with pageframes and SP2
 		*********************************************************************
-		LPARAMETERS tnType 
-		
-		* tnType:  1 = Top  2 = Left
-		
-		
-		IF This.GetIsPageframe() = .F.
-		    RETURN OBJTOCLIENT(This.Parent, m.tnType)
-		ENDIF
+		LPARAMETERS tnLeft, tnTop, tnRight, tnBottom
 		
 		LOCAL loControl
 		m.loControl = This.Parent
 		
-		
 		*!* TabOrientation parameters
-		#DEFINE CON_TABOR_TOP    0
-		#DEFINE CON_TABOR_BOTTOM 1
-		#DEFINE CON_TABOR_LEFT   2
-		#DEFINE CON_TABOR_RIGHT  3
+		#DEFINE TABOR_TOP    0
+		#DEFINE TABOR_BOTTOM 1
+		#DEFINE TABOR_LEFT   2
+		#DEFINE TABOR_RIGHT  3
 		
-		LOCAL lnPosition AS INTEGER
-		m.lnPosition = 0
+		STORE 0 TO m.tnLeft, m.tnTop
+		m.tnRight = Thisform.Width
+		m.tnBottom = Thisform.Height
 		
-		DO CASE
+		LOCAL lnCLeft, lnCTop, lnCWidth, lnCHeight
 		
-		CASE m.tnType = 1 && Top
-		    DO WHILE NOT UPPER(m.loControl.BASECLASS) == [FORM]
-		        IF PEMSTATUS(m.loControl, [Top],5) THEN && Defined Property
-		            m.lnPosition = m.lnPosition + m.loControl.TOP
+		DO WHILE NOT UPPER(m.loControl.BASECLASS) == [FORM]
+		    
+		    STORE 0 TO m.lnCLeft, m.lnCTop, m.lnCWidth, m.lnCHeight
+		    
+		    IF PEMSTATUS(m.loControl, [Left], 5)
+		        m.lnCLeft = m.loControl.Left
+		    ENDIF
+		    IF PEMSTATUS(m.loControl, [Top], 5)
+		        m.lnCTop = m.loControl.Top
+		    ENDIF
+		    IF PEMSTATUS(m.loControl, [Width], 5)
+		        m.lnCWidth = m.loControl.Width
+		    ENDIF
+		    IF PEMSTATUS(m.loControl, [Height], 5)
+		        m.lnCHeight = m.loControl.Height
+		    ENDIF
+		    
+		    DO CASE
+		    CASE UPPER(m.loControl.BASECLASS) == [PAGE]
+		        IF m.loControl.PARENT.TABORIENTATION = TABOR_LEFT
+		            m.lnCLeft = m.lnCLeft + ;
+		                m.loControl.PARENT.WIDTH - ;
+		                m.loControl.PARENT.PAGEWIDTH - ;
+		                m.loControl.PARENT.BORDERWIDTH * 2
+		        ELSE
+		            m.lnCLeft = m.lnCLeft + 1
 		        ENDIF
-		        IF UPPER(m.loControl.BASECLASS) == [PAGE] THEN
-		            IF m.loControl.PARENT.TABORIENTATION = CON_TABOR_TOP THEN    && Top
-		                m.lnPosition = m.lnPosition + ;
-		                    m.loControl.PARENT.HEIGHT - ;
-		                    m.loControl.PARENT.PAGEHEIGHT - ;
-		                    m.loControl.PARENT.BORDERWIDTH * 2
-		            ELSE
-		                m.lnPosition = m.lnPosition + 1
-		            ENDIF
-		        ENDIF
-		        m.loControl = m.loControl.PARENT
-		    ENDDO
 		
-		CASE m.tnType = 2 && Left
-		    DO WHILE NOT UPPER(m.loControl.BASECLASS) == [FORM]
-		        IF PEMSTATUS(m.loControl, [Left], 5) THEN && Defined Property
-		            m.lnPosition = m.lnPosition + m.loControl.LEFT
+		        IF m.loControl.PARENT.TABORIENTATION = TABOR_TOP
+		            m.lnCTop = m.lnCTop + ;
+		                m.loControl.PARENT.HEIGHT - ;
+		                m.loControl.PARENT.PAGEHEIGHT - ;
+		                m.loControl.PARENT.BORDERWIDTH * 2
+		        ELSE
+		            m.lnCTop = m.lnCTop + 1
 		        ENDIF
-		        IF UPPER(m.loControl.BASECLASS) == [PAGE]
-		            IF m.loControl.PARENT.TABORIENTATION = CON_TABOR_LEFT THEN    && Left
-		                m.lnPosition = m.lnPosition + ;
-		                    m.loControl.PARENT.WIDTH - ;
-		                    m.loControl.PARENT.PAGEWIDTH - ;
-		                    m.loControl.PARENT.BORDERWIDTH * 2
-		            ELSE
-		                m.lnPosition = m.lnPosition + 1
-		            ENDIF
-		        ENDIF
-		        m.loControl = m.loControl.PARENT
-		    ENDDO
+		        
+		        m.lnCWidth = m.loControl.PARENT.PAGEWIDTH - m.loControl.PARENT.BORDERWIDTH * 2
+		        m.lnCHeight = m.loControl.PARENT.PAGEHEIGHT - m.loControl.PARENT.BORDERWIDTH * 2
+		    ENDCASE
+		    
+		    m.tnLeft = m.tnLeft + m.lnCLeft
+		    m.tnTop = m.tnTop + m.lnCTop
+		    m.tnRight = m.lnCLeft + MIN(m.tnRight, m.lnCWidth)
+		    m.tnBottom = m.lnCTop + MIN(m.tnBottom, m.lnCHeight)
+		    
+		    m.loControl = m.loControl.PARENT
+		ENDDO
 		
-		ENDCASE
-		
-		RETURN m.lnPosition
+		m.tnRight = MAX(m.tnRight, m.tnLeft)
+		m.tnBottom = MAX(m.tnBottom, m.tnTop)
 		
 	ENDPROC
 
 	PROCEDURE onenabled
+	ENDPROC
+
+	PROCEDURE onmoved
+	ENDPROC
+
+	PROCEDURE onresize
 	ENDPROC
 
 	PROCEDURE onvisible
@@ -8106,33 +8147,22 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		m.llPrevVisible = This.EffectivelyVisible
 		m.llPrevEnabled = This.EffectivelyEnabled
 		
-		This.EffectivelyVisible = m.loControl.Visible
+		This.EffectivelyVisible = m.loControl.Visible AND This.UIEnabled
 		This.EffectivelyEnabled = m.loControl.Enabled
 		
-		
-		IF This._IsPageDeactivated
-		    This.EffectivelyVisible = .F.
-		ENDIF
-		
 		DO WHILE NOT UPPER(m.loControl.BASECLASS) == [FORM]
-		    IF UPPER(m.loControl.BASECLASS) == [PAGE] THEN
+		    IF PEMSTATUS(m.loControl, "Enabled", 5) AND NOT PEMSTATUS(m.loControl, "Enabled", 2)
 		        IF m.loControl.Enabled = .F.
 		            This.EffectivelyEnabled = .F.
 		        ENDIF
-		       IF m.loControl.Parent.Enabled = .F.
-		            This.EffectivelyEnabled = .F.
-		        ENDIF
+		    ENDIF
 		
-		        IF m.loControl.Parent.Visible = .F.
+		    IF PEMSTATUS(m.loControl, "Visible", 5) AND NOT PEMSTATUS(m.loControl, "Visible", 2)
+		        IF m.loControl.Visible = .F.
 		            This.EffectivelyVisible = .F.
 		        ENDIF
-		        
-		        IF BETWEEN(m.loControl.Parent.ActivePage, 1, m.loControl.Parent.PageCount)
-		            IF m.loControl.Parent.Pages(m.loControl.Parent.ActivePage) != m.loControl
-		                This.EffectivelyVisible = .F.
-		            ENDIF
-		        ENDIF
 		    ENDIF
+		
 		    m.loControl = m.loControl.PARENT
 		ENDDO
 		
@@ -8145,21 +8175,15 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		
 	ENDPROC
 
-	PROCEDURE _onactivate
-		This.SetState()
-		
-	ENDPROC
-
-	PROCEDURE _ondeactivate
-		This._IsPageDeactivated = .T.
-		This.SetState()
-		This._IsPageDeactivated = .F.
-		
-		
-	ENDPROC
-
 	PROCEDURE _onenabled
 		LPARAMETERS tlEnabled
+		This.SetState()
+		
+	ENDPROC
+
+	PROCEDURE _onuienable
+		LPARAMETERS lEnable
+		This.UIEnabled = m.lEnable
 		This.SetState()
 		
 	ENDPROC
@@ -14229,6 +14253,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*p: wndclassname
 		*p: wnddc
 		*p: wndhandle		&& Specifies the Window handle of the Window.
+		*p: wndviewport
 		*a: fpdf_pages[1,0]
 		*a: fpdf_pages_pos[1,4]
 		*a: fpdf_pages_selection[1,3]
@@ -14238,7 +14263,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*p: _printenv
 	*</DefinedPropArrayMethod>
 
-	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,DragDrop,DragIcon,DragMode,DragOver,Drag,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,fpdf_doc,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Moved,Objects,OLECompleteDrag,OLEDragDrop,OLEDragMode,OLEDragOver,OLEDragPicture,OLEDrag,OLEDropEffects,OLEDropHasData,OLEDropMode,OLEGiveFeedback,OLESetData,OLEStartDrag,pagefillbrush,ParentClass,Picture,ReadExpression,ReadMethod,Refresh,ResetToDefault,Resize,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,ShowWhatsThis,SpecialEffect,Style,Tag,tplclickbegin,UIEnable,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,WriteExpression,WriteMethod,ZOrder,_printenv
+	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,fpdf_doc,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Objects,pagefillbrush,Picture,ReadExpression,ReadMethod,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,ShowWhatsThis,SpecialEffect,Style,tplclickbegin,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,wndviewport,WriteExpression,WriteMethod,ZOrder,_printenv
 	*<PropValue>
 		backcolorbrush = .F.
 		BackStyle = 1
@@ -14281,6 +14306,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		wndclassname = ("PDFIUM-VFP-VIEWER")
 		wnddc = 0
 		wndhandle = 0
+		wndviewport = 0
 		_memberdata = <VFPData>
 			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
 			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
@@ -14362,6 +14388,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 			<memberdata name="printenv_access" type="method" display="PrintEnv_Access"/>
 			<memberdata name="_printenv" type="property" display="_PrintEnv"/>
 			<memberdata name="pagefillbrush" type="property" display="PageFillBrush"/>
+			<memberdata name="wndviewport" type="property" display="WndViewport"/>
 		</VFPData>
 		_printenv = .F.
 	*</PropValue>
@@ -14482,7 +14509,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 	ENDPROC
 
-	HIDDEN PROCEDURE contextmenu
+	PROCEDURE contextmenu
 		
 		LOCAL lcMenuName
 		m.lcMenuName = "_context_menu"
@@ -15765,11 +15792,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 	ENDPROC
 
-	HIDDEN PROCEDURE Resize
-		This.WndResize()
-		
-	ENDPROC
-
 	PROCEDURE savedocument		&& Save document to file
 		LPARAMETERS tcFileName
 		
@@ -16584,13 +16606,29 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		ENDIF
 		
 		
+		This.WndViewport = This.env.API_WIN.CreateWindowEx( ;
+		    0, ;
+		    This.WndClassName, ;
+		    "", ;
+		    WS_CHILD + WS_CLIPCHILDREN + WS_CLIPSIBLINGS, ;
+		    0,0,1,1, ;
+		    m.lhWndParent, ;
+		    0, ;
+		    m.lhInstance, ;
+		    0)
+		
+		IF EMPTY(This.WndViewport)=.T.
+		    This.errMsg("CreateWindowEx returned 0")
+		    RETURN
+		ENDIF
+		
 		This.WndHandle = This.env.API_WIN.CreateWindowEx( ;
 		    0, ;
 		    This.WndClassName, ;
 		    "", ;
 		    WS_CHILD + WS_CLIPCHILDREN + WS_CLIPSIBLINGS + WS_HSCROLL + WS_VSCROLL, ;
 		    0,0,1,1, ;
-		    m.lhWndParent, ;
+		    This.WndViewport, ;
 		    0, ;
 		    m.lhInstance, ;
 		    0)
@@ -16836,9 +16874,15 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    This.WndHandle = 0
 		ENDIF
 		
+		IF EMPTY(This.WndViewport) = .F.
+		    UNBINDEVENTS(This.WndViewport)
+		    This.env.API_WIN.DestroyWindow(This.WndViewport)
+		    This.WndViewport = 0
+		ENDIF
+		
 	ENDPROC
 
-	HIDDEN PROCEDURE wndresize
+	PROCEDURE wndresize
 		IF EMPTY(This.WndHandle)
 		    RETURN
 		ENDIF
@@ -16846,7 +16890,17 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		This.ViewPortUpdate()
 		This.DrawBufCreate()
 		
-		This.env.API_WIN.MoveWindow(This.WndHandle, This.UIState.ObjToClient(2), This.UIState.ObjToClient(1), This.Width, This.Height, 1)
+		LOCAL lnViewLeft, lnViewTop, lnViewRight, lnViewBottom
+		This.UIState.ObjToClient(@m.lnViewLeft, @m.lnViewTop, @m.lnViewRight, @m.lnViewBottom)
+		
+		This.env.API_WIN.MoveWindow(This.WndViewport, ;
+		    m.lnViewLeft, ;
+		    m.lnViewTop, ;
+		    MAX(m.lnViewRight - m.lnViewLeft, 0), ;
+		    MAX(m.lnViewBottom - m.lnViewTop, 0), ;
+		    1)
+		
+		This.env.API_WIN.MoveWindow(This.WndHandle, 0, 0, This.Width, This.Height, 1)
 		
 		This.WndRedraw()
 		
@@ -16859,6 +16913,20 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		IF EMPTY(This.WndHandle)=.F.
 		    This.env.API_WIN.ShowWindow(This.WndHandle, IIF(This.UIState.GetEffectivelyVisible(), SW_SHOWNA, SW_HIDE))
 		ENDIF
+		
+		IF EMPTY(This.WndViewport)=.F.
+		    This.env.API_WIN.ShowWindow(This.WndViewport, IIF(This.UIState.GetEffectivelyVisible(), SW_SHOWNA, SW_HIDE))
+		ENDIF
+		
+	ENDPROC
+
+	PROCEDURE UIState.onmoved
+		This.Parent.WndResize()
+		
+	ENDPROC
+
+	PROCEDURE UIState.onresize
+		This.Parent.WndResize()
 		
 	ENDPROC
 

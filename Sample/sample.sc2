@@ -40,7 +40,8 @@ DEFINE CLASS sample AS form
 	*< OBJECTDATA: ObjPath="cmdReport" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="Pageframe1" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="Pageframe1.Page1.Pageframe2" UniqueID="" Timestamp="" />
-	*< OBJECTDATA: ObjPath="Pageframe1.Page1.Pageframe2.Page1.Pdfiumviewer" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="Pageframe1.Page1.Pageframe2.Page1.Container1" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="Pageframe1.Page1.Pageframe2.Page1.Container1.Pdfiumviewer" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="Pageframe1.Page1.Pageframe2.Page2.Pdfiumviewer" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="Pageframe1.Page2.Pdfiumviewer" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdFit" UniqueID="" Timestamp="" />
@@ -64,7 +65,7 @@ DEFINE CLASS sample AS form
 		Height = 741
 		Left = 0
 		MinWidth = 1235
-		Name = "sample"
+		Name = "SAMPLE"
 		ScrollBars = 2
 		ShowWindow = 0
 		Top = 0
@@ -304,34 +305,40 @@ DEFINE CLASS sample AS form
 		Page2.Name = "Page2"
 		*< END OBJECT: BaseClass="pageframe" />
 
-	ADD OBJECT 'Pageframe1.Page1.Pageframe2.Page1.Pdfiumviewer' AS pdfiumviewer WITH ;
+	ADD OBJECT 'Pageframe1.Page1.Pageframe2.Page1.Container1' AS container WITH ;
+		Anchor = 0, ;
+		BorderWidth = 1, ;
+		Height = 481, ;
+		Left = 23, ;
+		Name = "Container1", ;
+		Top = 30, ;
+		Width = 469
+		*< END OBJECT: BaseClass="container" />
+
+	ADD OBJECT 'Pageframe1.Page1.Pageframe2.Page1.Container1.Pdfiumviewer' AS pdfiumviewer WITH ;
 		Anchor = 15, ;
 		Enabled = .T., ;
 		fitwidth = .T., ;
-		Height = 516, ;
-		Left = 14, ;
+		Height = 456, ;
+		Left = 12, ;
 		Name = "Pdfiumviewer", ;
 		scrollbars = 3, ;
 		TabIndex = 13, ;
 		TabStop = .T., ;
-		Top = 6, ;
+		Top = 12, ;
 		Visible = .T., ;
-		Width = 480, ;
+		Width = 444, ;
 		cmdFocus.Name = "cmdFocus", ;
 		env.API_FPDF.CONST.Name = "CONST", ;
 		env.API_FPDF.Name = "API_FPDF", ;
-		env.API_FRX.CONST.Name = "CONST", ;
-		env.API_FRX.Name = "API_FRX", ;
 		env.API_GDIP.CONST.Name = "CONST", ;
 		env.API_GDIP.Name = "API_GDIP", ;
-		env.API_HPDF.CONST.Name = "CONST", ;
-		env.API_HPDF.Name = "API_HPDF", ;
 		env.API_WIN.Name = "API_WIN", ;
 		env.Name = "env", ;
 		i18n.API_WIN.Name = "API_WIN", ;
 		i18n.Name = "i18n", ;
 		UIState.Name = "UIState"
-		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
+		*< END OBJECT: ClassLib="..\release\pdfium-vfp.vcx" BaseClass="control" />
 
 	ADD OBJECT 'Pageframe1.Page1.Pageframe2.Page2.Pdfiumviewer' AS pdfiumviewer WITH ;
 		Anchor = 15, ;
@@ -349,64 +356,51 @@ DEFINE CLASS sample AS form
 		cmdFocus.Name = "cmdFocus", ;
 		env.API_FPDF.CONST.Name = "CONST", ;
 		env.API_FPDF.Name = "API_FPDF", ;
-		env.API_FRX.CONST.Name = "CONST", ;
-		env.API_FRX.Name = "API_FRX", ;
 		env.API_GDIP.CONST.Name = "CONST", ;
 		env.API_GDIP.Name = "API_GDIP", ;
-		env.API_HPDF.CONST.Name = "CONST", ;
-		env.API_HPDF.Name = "API_HPDF", ;
 		env.API_WIN.Name = "API_WIN", ;
 		env.Name = "env", ;
 		i18n.API_WIN.Name = "API_WIN", ;
 		i18n.Name = "i18n", ;
 		UIState.Name = "UIState"
-		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
+		*< END OBJECT: ClassLib="..\release\pdfium-vfp.vcx" BaseClass="control" />
 
 	ADD OBJECT 'Pageframe1.Page2.Pdfiumviewer' AS pdfiumviewer WITH ;
 		Anchor = 15, ;
 		Enabled = .T., ;
 		fitwidth = .T., ;
-		Height = 516, ;
-		Left = 40, ;
+		Height = 544, ;
+		Left = 32, ;
 		Name = "Pdfiumviewer", ;
 		scrollbars = 3, ;
 		TabIndex = 13, ;
 		TabStop = .T., ;
-		Top = 43, ;
+		Top = 30, ;
 		Visible = .T., ;
-		Width = 480, ;
+		Width = 492, ;
 		cmdFocus.Name = "cmdFocus", ;
 		env.API_FPDF.CONST.Name = "CONST", ;
 		env.API_FPDF.Name = "API_FPDF", ;
-		env.API_FRX.CONST.Name = "CONST", ;
-		env.API_FRX.Name = "API_FRX", ;
 		env.API_GDIP.CONST.Name = "CONST", ;
 		env.API_GDIP.Name = "API_GDIP", ;
-		env.API_HPDF.CONST.Name = "CONST", ;
-		env.API_HPDF.Name = "API_HPDF", ;
 		env.API_WIN.Name = "API_WIN", ;
 		env.Name = "env", ;
 		i18n.API_WIN.Name = "API_WIN", ;
 		i18n.Name = "i18n", ;
 		UIState.Name = "UIState"
-		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
+		*< END OBJECT: ClassLib="..\release\pdfium-vfp.vcx" BaseClass="control" />
 
 	ADD OBJECT 'Pdfium_env' AS pdfium_env WITH ;
 		Left = 612, ;
-		libhpdf_dll_path = (IIF(ATC("x64", SYS(17))<>0 , "..\Release\libhpdf64.dll", "..\Release\libhpdf.dll")), ;
 		Name = "Pdfium_env", ;
 		pdfium_dll_path = (IIF(ATC("x64", SYS(17))<>0, "..\Release\pdfium64.dll", "..\Release\pdfium.dll")), ;
 		Top = 12, ;
 		API_FPDF.CONST.Name = "CONST", ;
 		API_FPDF.Name = "API_FPDF", ;
-		API_HPDF.CONST.Name = "CONST", ;
-		API_HPDF.Name = "API_HPDF", ;
 		API_WIN.Name = "API_WIN", ;
-		API_FRX.CONST.Name = "CONST", ;
-		API_FRX.Name = "API_FRX", ;
 		API_GDIP.CONST.Name = "CONST", ;
 		API_GDIP.Name = "API_GDIP"
-		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="custom" />
+		*< END OBJECT: ClassLib="..\release\pdfium-vfp.vcx" BaseClass="custom" />
 
 	ADD OBJECT 'PdfiumViewer' AS pdfiumviewer WITH ;
 		Anchor = 195, ;
@@ -424,18 +418,14 @@ DEFINE CLASS sample AS form
 		cmdFocus.Name = "cmdFocus", ;
 		env.API_FPDF.CONST.Name = "CONST", ;
 		env.API_FPDF.Name = "API_FPDF", ;
-		env.API_FRX.CONST.Name = "CONST", ;
-		env.API_FRX.Name = "API_FRX", ;
 		env.API_GDIP.CONST.Name = "CONST", ;
 		env.API_GDIP.Name = "API_GDIP", ;
-		env.API_HPDF.CONST.Name = "CONST", ;
-		env.API_HPDF.Name = "API_HPDF", ;
 		env.API_WIN.Name = "API_WIN", ;
 		env.Name = "env", ;
 		i18n.API_WIN.Name = "API_WIN", ;
 		i18n.Name = "i18n", ;
 		UIState.Name = "UIState"
-		*< END OBJECT: ClassLib="..\source\pdfium-vfp.vcx" BaseClass="control" />
+		*< END OBJECT: ClassLib="..\release\pdfium-vfp.vcx" BaseClass="control" />
 
 	ADD OBJECT 'shpSearch' AS shape WITH ;
 		Anchor = 130, ;
@@ -482,7 +472,7 @@ DEFINE CLASS sample AS form
 		This.cmbPdfiumViewers.Clear()
 		This.cmbPdfiumViewers.AddItem("All PdfiumViewers")
 		This.cmbPdfiumViewers.AddItem("PdfiumViewer")
-		This.cmbPdfiumViewers.AddItem("PageFrame1.Page1.PageFrame2.Page1.PdfiumViewer")
+		This.cmbPdfiumViewers.AddItem("Pageframe1.Page1.Pageframe2.Page1.Container1.Pdfiumviewer")
 		This.cmbPdfiumViewers.AddItem("PageFrame1.Page1.PageFrame2.Page2.PdfiumViewer")
 		This.cmbPdfiumViewers.AddItem("PageFrame1.Page2.PdfiumViewer")
 		This.cmbPdfiumViewers.Value = 1
@@ -494,7 +484,7 @@ DEFINE CLASS sample AS form
 		This.cmbControls.AddItem("PageFrame1.Page1")
 		This.cmbControls.AddItem("PageFrame1.Page1.PageFrame2")
 		This.cmbControls.AddItem("PageFrame1.Page1.PageFrame2.Page1")
-		This.cmbControls.AddItem("PageFrame1.Page1.PageFrame2.Page1.PdfiumViewer")
+		This.cmbControls.AddItem("Pageframe1.Page1.Pageframe2.Page1.Container1.Pdfiumviewer")
 		This.cmbControls.AddItem("PageFrame1.Page1.PageFrame2.Page2")
 		This.cmbControls.AddItem("PageFrame1.Page1.PageFrame2.Page2.PdfiumViewer")
 		This.cmbControls.AddItem("PageFrame1.Page2")
@@ -925,7 +915,7 @@ DEFINE CLASS sample AS form
 		Thisform.RefreshVisible(This)
 	ENDPROC
 
-	PROCEDURE Pageframe1.Page1.Pageframe2.Page1.Pdfiumviewer.Init
+	PROCEDURE Pageframe1.Page1.Pageframe2.Page1.Container1.Pdfiumviewer.Init
 		LPARAMETERS toEnv as pdfium_env of pdfium-vfp
 		
 		RETURN DODEFAULT(Thisform.Pdfium_env)
