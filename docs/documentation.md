@@ -1,15 +1,7 @@
 # pdfium-vfp Documentation
 
-There is no documentation yet, please, stay calm and look at [README.md](../README.md)
+There is no documentation yet, please, stay calm and 
+1. Explore [Discussions](../../../discussions) section
+2. Read readme.md in the repository root
+3. Explore sample project in this repository
 
-
-{Overview of documentation}
-
-[Topic 1](topic1.md)
-
-[Topic 2](topic2.md)
-
-----
-Last changed: 2024-07-12
-
-![powered by VFPX](./images/vfpxpoweredby_alternative.gif "powered by VFPX")
