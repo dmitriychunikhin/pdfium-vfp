@@ -150,4 +150,8 @@
         <text>Отмена</text>
     </i18n>
 
+    <i18n>
+        <id>PRINTENV_TOTAL_SHEETS</id>
+        <text>Всего листов бумаги</text>
+    </i18n>
 </VFPData>

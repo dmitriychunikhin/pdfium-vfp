@@ -27,6 +27,8 @@ loLocales.Add(1033, "text_en")
 loLocales.Add(1034, "text_es")
 loLocales.Add(1036, "text_fr")
 loLocales.Add(1049, "text_ru")
+loLocales.Add(1029, "text_cz")
+
 
 CREATE CURSOR curTempText (id c(250), text m NOCPTRANS)
 

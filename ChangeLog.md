@@ -1,3 +1,8 @@
+1.25
+  - Czech localization of UI. Made by [zdenekkrejci](https://github.com/zdenekkrejci) (issue #24)
+  - Added info about the total number of pages and sheets of paper quantity to the print dialog (issue #24)
+
+
 1.24
   - Fixed issue with PdfiumViewer visibility on PageFrame when user calls Page.SetFocus method
     explanation: it is likely to be a VFP bug when Page.SetFocus doesn't raise UIEnable events and doesn't change PageFrame.ActivePage value

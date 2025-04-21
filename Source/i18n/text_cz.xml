@@ -2,156 +2,157 @@
 <VFPData>
     <i18n>
         <id>MNU_COPY</id>
-        <text>Copy</text>
+        <text>Kopírovat</text>
     </i18n>
 
     <i18n>
         <id>MNU_SLCTA</id>
-        <text>Select all</text>
+        <text>Vybrat vše</text>
     </i18n>
 
     <i18n>
         <id>MNU_CUT</id>
-        <text>Cut</text>
+        <text>Vyjmout</text>
     </i18n>
 
     <i18n>
         <id>MNU_PASTE</id>
-        <text>Paste</text>
+        <text>Vložit</text>
     </i18n>
 
     <i18n>
         <id>MNU_CLEAR</id>
-        <text>Clear</text>
+        <text>Vymazat</text>
     </i18n>
 
     <i18n>
         <id>REPORTVIEWER_TITLE</id>
-        <text>Print preview</text>
+        <text>Náhled tisku</text>
     </i18n>
 
     <i18n>
         <id>SEARCH_NOT_FOUND</id>
-        <text>Not found</text>
+        <text>Nenalezeno</text>
     </i18n>
 
     <i18n>
         <id>SEARCH_ENDED</id>
-        <text>Search ended</text>
+        <text>Hledání ukončeno</text>
     </i18n>
 
     <i18n>
         <id>BTN_PRINT</id>
-        <text>Print</text>
+        <text>Tisk</text>
     </i18n>
 
     <i18n>
         <id>PRINTENV_TITLE</id>
-        <text>Print setting</text>
+        <text>Nastavení tisku</text>
     </i18n>
 
     <i18n>
         <id>PRINTENV_OK</id>
-        <text>Print</text>
+        <text>Tisk</text>
     </i18n>
 
     <i18n>
         <id>PRINTENV_CANCEL</id>
-        <text>Cancel</text>
+        <text>Zrušit</text>
     </i18n>
 
     <i18n>
         <id>PRINTENV_PRINTER</id>
-        <text>Printer</text>
+        <text>Tiskárna</text>
     </i18n>
 
     <i18n>
         <id>PRINTENV_COPIES</id>
-        <text>Copies</text>
+        <text>Počet kopií</text>
     </i18n>
 
     <i18n>
         <id>PRINTENV_PAGEMODE</id>
-        <text>Pages</text>
+        <text>Strany</text>
     </i18n>
 
     <i18n>
         <id>PRINTENV_PAGEMODE_ALL</id>
-        <text>All</text>
+        <text>Vše</text>
     </i18n>
 
     <i18n>
         <id>PRINTENV_PAGEMODE_ODD</id>
-        <text>Odd pages only</text>
+        <text>Pouze liché strany</text>
     </i18n>
 
     <i18n>
         <id>PRINTENV_PAGEMODE_EVEN</id>
-        <text>Even pages only</text>
+        <text>Pouze sudé strany</text>
     </i18n>
 
     <i18n>
         <id>PRINTENV_PAGEMODE_PAGELIST</id>
-        <text>Example: 1-3, 5-8, 9</text>
+        <text>Příklad: 1-3, 5-8, 9</text>
     </i18n>
 
     <i18n>
         <id>PRINTENV_PAGEMODE_DUPLEX</id>
-        <text>Print on both sides</text>
+        <text>Oboustranný tisk</text>
     </i18n>
 
     <i18n>
         <id>PRINTENV_PAPERSIZE</id>
-        <text>Paper size</text>
+        <text>Velikost papíru</text>
     </i18n>
 
     <i18n>
         <id>PRINTENV_PAPERSIZE_AUTO</id>
-        <text>Automatic choice</text>
+        <text>Automatická volba</text>
     </i18n>
 
     <i18n>
         <id>PASSWORDINPUT_TITLE</id>
-        <text>Input password</text>
+        <text>Zadejte heslo</text>
     </i18n>
 
     <i18n>
         <id>PASSWORDINPUT_PROMPT</id>
-        <text>PDF file is password protected. Input a password to open the file.</text>
+        <text>Soubor PDF je chráněn heslem. Zadejte heslo pro otevření souboru.</text>
     </i18n>
 
     <i18n>
         <id>PASSWORDINPUT_INCORRECTPASSWORD</id>
-        <text>Incorrect password</text>
+        <text>Nesprávné heslo</text>
     </i18n>
 
     <i18n>
         <id>PASSWORDINPUT_OK</id>
-        <text>Open document</text>
+        <text>Otevřít dokument</text>
     </i18n>
 
     <i18n>
         <id>PASSWORDINPUT_CANCEL</id>
-        <text>Cancel</text>
+        <text>Zrušit</text>
     </i18n>
 
     <i18n>
         <id>PRINTER_SELECTION_TITLE</id>
-        <text>Printer selection</text>
+        <text>Výběr tiskárny</text>
     </i18n>
 
     <i18n>
         <id>PRINTER_SELECTION_OK</id>
-        <text>Apply</text>
+        <text>Použít</text>
     </i18n>
 
     <i18n>
         <id>PRINTER_SELECTION_CANCEL</id>
-        <text>Cancel</text>
+        <text>Zrušit</text>
     </i18n>
 
     <i18n>
         <id>PRINTENV_TOTAL_SHEETS</id>
-        <text>Total sheets of paper</text>
+        <text>Počet listů papíru</text>
     </i18n>
+
 </VFPData>
