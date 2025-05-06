@@ -1,3 +1,9 @@
+1.26
+  - Fixed bug #26 in pdfium-vfp.vcx in pdfium_print_settings.setup():
+    This.PrintEnv.Copies = MAX(This.PrintEnv.Copies, 0)
+    instead of
+    This.PrintEnv.Copies = MAX(This.PrintEnv, 0)
+
 1.25
   - Czech localization of UI. Made by [zdenekkrejci](https://github.com/zdenekkrejci) (issue #24)
   - Added info about the total number of pages and sheets of paper quantity to the print dialog (issue #24)

@@ -7489,7 +7489,7 @@ DEFINE CLASS pdfium_print_settings AS form 		&& Print settings dialog.
 		    This.PrintEnv.FoxDefaultPrinter_Set()
 		ENDIF
 		
-		This.PrintEnv.Copies = MAX(This.PrintEnv, 0)
+		This.PrintEnv.Copies = MAX(This.PrintEnv.Copies, 0)
 		IF VARTYPE(This.PrintEnvIn) = "O"
 		    This.PrintEnvIn.Setup(This.PrintEnv)
 		ENDIF
