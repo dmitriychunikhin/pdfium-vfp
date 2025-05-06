@@ -1,3 +1,23 @@
+1.26
+  - 修复了 pdfium-vfp.vcx 中 pdfium_print_settings.setup() 的错误 #26：
+    将 
+    `This.PrintEnv.Copies = MAX(This.PrintEnv.Copies, 0)`
+    替换为
+    `This.PrintEnv.Copies = MAX(This.PrintEnv, 0)`
+
+1.25
+  - 添加了 UI 的捷克语本地化。由 [zdenekkrejci](https://github.com/zdenekkrejci) 制作（问题 #24）
+  - 在打印对话框中添加了有关总页数和纸张数量的信息（问题 #24）
+
+1.24
+  - 修复了 PdfiumViewer 在 PageFrame 上的可见性问题，当用户调用 Page.SetFocus 方法时出现。
+    说明：这可能是 VFP 的一个错误，当调用 Page.SetFocus 时不会触发 UIEnable 事件，也不会更改 PageFrame.ActivePage 的值。
+
+    `提示：` __PageFrame.RemoveObject 可能会导致类似的错误。__
+    它会使被移除页面左侧的页面可见，但不会更改 PageFrame.ActivePage 的值，也不会触发 UIEnable 事件。
+    遗憾的是，这个问题无法在不干预 VFP PageFrame 原始行为的情况下修复，而这种干预可能会对作为应用程序开发者的您造成意外影响。
+    作为解决方法，您应该在调用 PageFrame.RemoveObject 后显式设置 PageFrame.ActivePage 属性或调用 Page.ZOrder 方法。
+
 1.23
   - 修正了问题 #20：在更改 PageOrder 的页面上无法显示 PDF
   - 修正了 PdfiumViewer 在容器内的定位问题（示例项目已更新，包含容器内的查看器）
