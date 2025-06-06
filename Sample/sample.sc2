@@ -848,8 +848,9 @@ DEFINE CLASS sample AS form
 		
 		CASE 2 = REPOBJ_VARIANT && local scope batch
 		
-		    LOCAL loPdfiumReport as PdfiumReport OF "..\Release\pdfium-vfp.vcx"
-		    loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "../Release/pdfiumreport.app", Thisform.Pdfium_env)
+		    LOCAL loPdfiumReport
+		    * DON'T USE NewObject("PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app") to create new instance of PdfiumReport
+		    DO "../Release/pdfiumreport.app" WITH Thisform.pdfium_env, m.loPdfiumReport, .T.
 		    loPdfiumReport.SaveAs_Filename = "myreport" && Filename suggestion for save as dialog, not mandatory
 		
 		    loPdfiumReport.BatchBegin()
@@ -863,16 +864,15 @@ DEFINE CLASS sample AS form
 		
 		CASE 3 = REPOBJ_VARIANT && local scope single
 		
-		    LOCAL loPdfiumReport as PdfiumReport OF "..\Release\pdfium-vfp.vcx"
-		    loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "../Release/pdfiumreport.app", Thisform.Pdfium_env)
+		    LOCAL loPdfiumReport
+		    * DON'T USE NewObject("PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app") to create new instance of PdfiumReport
+		    DO "../Release/pdfiumreport.app" WITH Thisform.pdfium_env, m.loPdfiumReport, .T.
 		    loPdfiumReport.SaveAs_Filename = "myreport" && Filename suggestion for save as dialog, not mandatory
 		
 		    REPORT FORM Report1.frx OBJECT loPdfiumReport NOPAGEEJECT
 		    REPORT FORM Report2.frx OBJECT loPdfiumReport PREVIEW
 		
 		    loPdfiumReport = .F. 
-		    
-		    
 		ENDCASE
 		
 		IF USED("curReport1")
