@@ -1,3 +1,19 @@
+1.27
+  - Changed a way of creating local PdfiumReport object
+    This fixes issue #28 "Class definition PDFIUMREPORT is not found"
+    README.md was updated according to the changes
+
+    Before 1.27
+    ```
+    LOCAL loPdfiumReport
+    loPdfiumReport = NewObject("PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app") 
+    ```
+    From 1.27
+    ```
+    LOCAL loPdfiumReport
+    DO pdfiumreport.app WITH .F., loPdfiumReport, .T. && Create new instance of PdfiumReport
+    ```
+
 1.26
   - Fixed bug #26 in pdfium-vfp.vcx in pdfium_print_settings.setup():
     This.PrintEnv.Copies = MAX(This.PrintEnv.Copies, 0)

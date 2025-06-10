@@ -129,7 +129,8 @@ More examples can be found at `pdfium-vfp/Sample/sample.scx`
 
 ```foxpro
 LOCAL loPdfiumReport
-loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app")
+DO pdfiumreport.app WITH .F., loPdfiumReport, .T. && Create new instance of PdfiumReport
+* DON'T USE NewObject("PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app") to create new instance of PdfiumReport
 
 *******************************************
 * Report previewing
@@ -209,14 +210,16 @@ Sample can be found in `pdfium-vfp/Sample/Sample.scx` in `cmdReport.Click`
 * Manually create Pdfium environment and add your private fonts in Pdfium_env.PrivateFonts collection
 
 LOCAL loPdfiumEnv
-loPdfiumEnv = NEWOBJECT("Pdfium_env", "pdfium-vfp.vcx", "pdfiumreport.app")
+loPdfiumEnv = NEWOBJECT("Pdfium_env", "pdfium-vfp.vcx", "pdfiumreport.app") 
+* You can omit "pdfiumreport.app" from NewObject 3rd argument if you have pdfium-vfp.vcx included in your project
 
 * parameters: font file path, font face name
 loPdfiumEnv.PrivateFonts.Add("Fonts\KurintoSansSC-Rg.ttf", "Kurinto Sans SC")
 
-* Pass pdfium_env object as the first parameter of PdfiumReport constructor
+* Pass pdfium_env object as the first parameter of DO PdfiumReport.app command
 LOCAL loPdfiumReport
-loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app", loPdfiumEnv)
+DO pdfiumreport.app WITH loPdfiumEnv, loPdfiumReport, .T. && Create new instance of PdfiumReport
+
 
 * Run report with private fonts
 REPORT FORM Report1.frx OBJECT loPdfiumReport PREVIEW
@@ -228,6 +231,7 @@ REPORT FORM Report1.frx OBJECT loPdfiumReport PREVIEW
 
 LOCAL loPdfiumEnv
 loPdfiumEnv = NEWOBJECT("Pdfium_env", "pdfium-vfp.vcx", "pdfiumreport.app")
+* You can omit "pdfiumreport.app" from NewObject 3rd argument if you have pdfium-vfp.vcx included in your project
 
 * parameters: font file path, font face name
 loPdfiumEnv.PrivateFonts.Add("Fonts\KurintoSansSC-Rg.ttf", "Kurinto Sans SC")
@@ -248,7 +252,8 @@ LOCAL loPdfiumReport
 
 loPdfiumReport = Application.PdfiumReport
 * or *
-loPdfiumReport = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app")
+DO pdfiumreport.app WITH .F., loPdfiumReport, .T. && Create new instance of PdfiumReport
+
 
 ********************************************************************************************** 
 * Application.PdfiumReport is global variable created by pdfiumreport.app on initialization

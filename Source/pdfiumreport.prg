@@ -1,4 +1,9 @@
-LPARAMETERS tvType, tvReference
+LPARAMETERS tvType, tvReference, tlCreateInstance
+* tvType: if tlCreateInstance = .T. then tvType accepts instance of Pdfium_Env object or [.F.| NULL|Empty string]
+*         if tlCreateInstance = .F. then tvType accepts:
+*           .T. for initialization of PdfiumReport global instance 
+*           .F. for release of PdfiumReport global instance
+* tlCreateInstance: if .T. then tvReference will be assinged to new PdfiumReport instance, which must be released by caller
 
 
 DO CASE
@@ -16,7 +21,13 @@ CASE PCOUNT() = 1 AND m.tvType = .F. && Release
 
 CASE PCOUNT() = 0
     RETURN
-    
+
+CASE PCOUNT() = 3 AND m.tlCreateInstance
+    LOCAL lcAppPath
+    m.lcAppPath = STREXTRACT(SYS(16)," ","",2,1+2)
+    m.tvReference = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", m.lcAppPath, m.tvType)
+    RETURN
+
 ENDCASE
 
 
