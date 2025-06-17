@@ -1,3 +1,6 @@
+1.28
+  - PdfiumViewer: added interactive form filling
+
 1.27
   - Changed a way of creating local PdfiumReport object
     This fixes issue #28 "Class definition PDFIUMREPORT is not found"

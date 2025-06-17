@@ -48,6 +48,7 @@ DEFINE CLASS sample AS form
 	*< OBJECTDATA: ObjPath="cmdPrint" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdSaveAs" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdOpenPdf" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdOpenPdfSample_forms" UniqueID="" Timestamp="" />
 
 	*<DefinedPropArrayMethod>
 		*m: closepdf
@@ -81,7 +82,7 @@ DEFINE CLASS sample AS form
 		Height = 17, ;
 		Left = 199, ;
 		Name = "chkSearchBackward", ;
-		TabIndex = 8, ;
+		TabIndex = 9, ;
 		Top = 82, ;
 		Width = 75
 		*< END OBJECT: BaseClass="checkbox" />
@@ -93,7 +94,7 @@ DEFINE CLASS sample AS form
 		Height = 17, ;
 		Left = 380, ;
 		Name = "chkSearchMatchCase", ;
-		TabIndex = 10, ;
+		TabIndex = 11, ;
 		Top = 82, ;
 		Width = 82
 		*< END OBJECT: BaseClass="checkbox" />
@@ -105,7 +106,7 @@ DEFINE CLASS sample AS form
 		Height = 17, ;
 		Left = 286, ;
 		Name = "chkSearchWholeWord", ;
-		TabIndex = 9, ;
+		TabIndex = 10, ;
 		Top = 82, ;
 		Width = 84
 		*< END OBJECT: BaseClass="checkbox" />
@@ -120,7 +121,7 @@ DEFINE CLASS sample AS form
 		RowSource = "", ;
 		RowSourceType = 0, ;
 		Style = 2, ;
-		TabIndex = 14, ;
+		TabIndex = 15, ;
 		Top = 12, ;
 		Value = , ;
 		Width = 420
@@ -147,7 +148,7 @@ DEFINE CLASS sample AS form
 		Height = 27, ;
 		Left = 575, ;
 		Name = "cmdClosePdf", ;
-		TabIndex = 5, ;
+		TabIndex = 6, ;
 		Top = 40, ;
 		Width = 132, ;
 		WordWrap = .F.
@@ -159,7 +160,7 @@ DEFINE CLASS sample AS form
 		Height = 29, ;
 		Left = 726, ;
 		Name = "cmdEnable", ;
-		TabIndex = 16, ;
+		TabIndex = 17, ;
 		Top = 65, ;
 		Width = 420, ;
 		WordWrap = .F.
@@ -171,7 +172,7 @@ DEFINE CLASS sample AS form
 		Height = 27, ;
 		Left = 592, ;
 		Name = "cmdFit", ;
-		TabIndex = 13, ;
+		TabIndex = 14, ;
 		Top = 76, ;
 		Width = 115, ;
 		WordWrap = .F.
@@ -181,9 +182,9 @@ DEFINE CLASS sample AS form
 		Anchor = 0, ;
 		Caption = "Open any pdf...", ;
 		Height = 27, ;
-		Left = 372, ;
+		Left = 432, ;
 		Name = "cmdOpenPdf", ;
-		TabIndex = 4, ;
+		TabIndex = 5, ;
 		Top = 40, ;
 		Width = 132, ;
 		WordWrap = .F.
@@ -205,9 +206,21 @@ DEFINE CLASS sample AS form
 		Anchor = 0, ;
 		Caption = "Open Sample2.pdf", ;
 		Height = 27, ;
-		Left = 191, ;
+		Left = 146, ;
 		Name = "cmdOpenPdfSample2", ;
 		TabIndex = 3, ;
+		Top = 40, ;
+		Width = 132, ;
+		WordWrap = .F.
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'cmdOpenPdfSample_forms' AS commandbutton WITH ;
+		Anchor = 0, ;
+		Caption = "Open Sample Forms", ;
+		Height = 27, ;
+		Left = 282, ;
+		Name = "cmdOpenPdfSample_forms", ;
+		TabIndex = 4, ;
 		Top = 40, ;
 		Width = 132, ;
 		WordWrap = .F.
@@ -219,7 +232,7 @@ DEFINE CLASS sample AS form
 		Height = 27, ;
 		Left = 467, ;
 		Name = "cmdPrint", ;
-		TabIndex = 11, ;
+		TabIndex = 12, ;
 		Top = 76, ;
 		Width = 53, ;
 		WordWrap = .F.
@@ -232,7 +245,7 @@ DEFINE CLASS sample AS form
 		Left = 1200, ;
 		Name = "cmdReport", ;
 		Picture = images\wwrite.ico, ;
-		TabIndex = 18, ;
+		TabIndex = 19, ;
 		Top = 12, ;
 		Width = 73, ;
 		WordWrap = .T.
@@ -244,7 +257,7 @@ DEFINE CLASS sample AS form
 		Height = 27, ;
 		Left = 525, ;
 		Name = "cmdSaveAs", ;
-		TabIndex = 12, ;
+		TabIndex = 13, ;
 		Top = 76, ;
 		Width = 60, ;
 		WordWrap = .F.
@@ -257,7 +270,7 @@ DEFINE CLASS sample AS form
 		Name = "cmdSearch", ;
 		Picture = images\search16.bmp, ;
 		PicturePosition = 14, ;
-		TabIndex = 7, ;
+		TabIndex = 8, ;
 		Top = 75, ;
 		Width = 37
 		*< END OBJECT: BaseClass="commandbutton" />
@@ -268,7 +281,7 @@ DEFINE CLASS sample AS form
 		Height = 27, ;
 		Left = 726, ;
 		Name = "cmdShow", ;
-		TabIndex = 15, ;
+		TabIndex = 16, ;
 		Top = 38, ;
 		Width = 420, ;
 		WordWrap = .F.
@@ -281,7 +294,7 @@ DEFINE CLASS sample AS form
 		Left = 723, ;
 		Name = "Pageframe1", ;
 		PageCount = 2, ;
-		TabIndex = 19, ;
+		TabIndex = 20, ;
 		Top = 108, ;
 		Width = 550, ;
 		Page1.Caption = "Page1", ;
@@ -331,6 +344,8 @@ DEFINE CLASS sample AS form
 		cmdFocus.Name = "cmdFocus", ;
 		env.API_FPDF.CONST.Name = "CONST", ;
 		env.API_FPDF.Name = "API_FPDF", ;
+		env.API_FPDF_FORMS.CONST.Name = "CONST", ;
+		env.API_FPDF_FORMS.Name = "API_FPDF_FORMS", ;
 		env.API_GDIP.CONST.Name = "CONST", ;
 		env.API_GDIP.Name = "API_GDIP", ;
 		env.API_WIN.Name = "API_WIN", ;
@@ -356,6 +371,8 @@ DEFINE CLASS sample AS form
 		cmdFocus.Name = "cmdFocus", ;
 		env.API_FPDF.CONST.Name = "CONST", ;
 		env.API_FPDF.Name = "API_FPDF", ;
+		env.API_FPDF_FORMS.CONST.Name = "CONST", ;
+		env.API_FPDF_FORMS.Name = "API_FPDF_FORMS", ;
 		env.API_GDIP.CONST.Name = "CONST", ;
 		env.API_GDIP.Name = "API_GDIP", ;
 		env.API_WIN.Name = "API_WIN", ;
@@ -381,6 +398,8 @@ DEFINE CLASS sample AS form
 		cmdFocus.Name = "cmdFocus", ;
 		env.API_FPDF.CONST.Name = "CONST", ;
 		env.API_FPDF.Name = "API_FPDF", ;
+		env.API_FPDF_FORMS.CONST.Name = "CONST", ;
+		env.API_FPDF_FORMS.Name = "API_FPDF_FORMS", ;
 		env.API_GDIP.CONST.Name = "CONST", ;
 		env.API_GDIP.Name = "API_GDIP", ;
 		env.API_WIN.Name = "API_WIN", ;
@@ -399,7 +418,9 @@ DEFINE CLASS sample AS form
 		API_FPDF.Name = "API_FPDF", ;
 		API_WIN.Name = "API_WIN", ;
 		API_GDIP.CONST.Name = "CONST", ;
-		API_GDIP.Name = "API_GDIP"
+		API_GDIP.Name = "API_GDIP", ;
+		API_FPDF_FORMS.CONST.Name = "CONST", ;
+		API_FPDF_FORMS.Name = "API_FPDF_FORMS"
 		*< END OBJECT: ClassLib="..\release\pdfium-vfp.vcx" BaseClass="custom" />
 
 	ADD OBJECT 'PdfiumViewer' AS pdfiumviewer WITH ;
@@ -410,7 +431,7 @@ DEFINE CLASS sample AS form
 		Left = 12, ;
 		Name = "PdfiumViewer", ;
 		scrollbars = 3, ;
-		TabIndex = 17, ;
+		TabIndex = 18, ;
 		TabStop = .T., ;
 		Top = 108, ;
 		Visible = .T., ;
@@ -418,6 +439,8 @@ DEFINE CLASS sample AS form
 		cmdFocus.Name = "cmdFocus", ;
 		env.API_FPDF.CONST.Name = "CONST", ;
 		env.API_FPDF.Name = "API_FPDF", ;
+		env.API_FPDF_FORMS.CONST.Name = "CONST", ;
+		env.API_FPDF_FORMS.Name = "API_FPDF_FORMS", ;
 		env.API_GDIP.CONST.Name = "CONST", ;
 		env.API_GDIP.Name = "API_GDIP", ;
 		env.API_WIN.Name = "API_WIN", ;
@@ -441,7 +464,7 @@ DEFINE CLASS sample AS form
 		Height = 23, ;
 		Left = 12, ;
 		Name = "txtSearch", ;
-		TabIndex = 6, ;
+		TabIndex = 7, ;
 		Top = 78, ;
 		Width = 132
 		*< END OBJECT: BaseClass="textbox" />
@@ -761,6 +784,11 @@ DEFINE CLASS sample AS form
 
 	PROCEDURE cmdOpenPdfSample2.Click
 		Thisform.OpenPdf(".\sample2.pdf")
+		
+	ENDPROC
+
+	PROCEDURE cmdOpenPdfSample_forms.Click
+		Thisform.OpenPdf(".\sample_forms.pdf")
 		
 	ENDPROC
 

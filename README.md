@@ -19,6 +19,7 @@ pdfium-vfp is a open source PDF viewer control and ReportOutput + ReportPreview 
 
 ### Features:
 * Viewing PDF files
+* Interactive form filling
 * Text selection and copying
 * Text searching
 * Printing PDF

@@ -4,11 +4,8 @@
 *< FOXBIN2PRG: Version="1.21" SourceFile="pdfium-vfp.vcx" CPID="1251" /> (Solo para binarios VFP 9 / Only for VFP 9 binaries)
 *
 *
-DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
+DEFINE CLASS pdfium_api_fpdf AS pdfium_api_fpdf_base OF "pdfium-vfp.vcx" 		&& Pdfium API wrapper
  	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
-
-	*-- OBJECTDATA items order determines ZOrder / El orden de los items OBJECTDATA determina el ZOrder 
-	*< OBJECTDATA: ObjPath="CONST" UniqueID="" Timestamp="" />
 
 	*<DefinedPropArrayMethod>
 		*m: fpdfbitmap_create
@@ -82,7 +79,7 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 		*m: fpdf_loadpage
 		*m: fpdf_pagetodevice
 		*m: fpdf_renderpage
-		*m: pdfium_vfp_dll_path_access
+		*m: fpdf_renderpagebitmap
 		*m: vfpdf_addfiletozipinput
 		*m: vfpdf_createfontsubset
 		*m: vfpdf_createzip
@@ -92,21 +89,16 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 		*m: vfpdf_destroyzipinput
 		*m: vfpdf_getfontfilename		&& pdfium-vfp.dll function; Gets font face name and returns font filename and simulations
 		*m: vfpdf_savedocument		&& pdfium-vfp.dll function; Save pdf to the file
-		*p: pdfium_dll_path		&& Path to file pdfium.dll
-		*p: pdfium_vfp_dll_path
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
-	HIDDEN AddObject,AddProperty,CloneObject,Comment,ControlCount,Controls,Error,HelpContextID,NewObject,Objects,pdfium_vfp_dll_path,Picture,ReadExpression,ReadMethod,RemoveObject,SaveAsClass,ShowWhatsThis,Tag,WhatsThisHelpID,WriteExpression,WriteMethod
+	HIDDEN AddObject,AddProperty,CloneObject,Comment,ControlCount,Controls,Error,HelpContextID,NewObject,Objects,Picture,ReadExpression,ReadMethod,RemoveObject,SaveAsClass,ShowWhatsThis,Tag,WhatsThisHelpID,WriteExpression,WriteMethod
 	*<PropValue>
 		Height = 27
 		Name = "pdfium_api_fpdf"
-		pdfium_dll_path = ("")
-		pdfium_vfp_dll_path = ("")
 		Width = 27
 		_memberdata = <VFPData>
 			<memberdata name="fpdf_initlibrarywithconfig" type="method" display="FPDF_InitLibraryWithConfig"/>
-			<memberdata name="pdfium_dll_path" type="property" display="pdfium_dll_path"/>
 			<memberdata name="fpdf_destroylibrary" type="method" display="FPDF_DestroyLibrary"/>
 			<memberdata name="fpdf_loaddocument" type="method" display="FPDF_LoadDocument"/>
 			<memberdata name="fpdf_loadmemdocument" type="method" display="FPDF_LoadMemDocument"/>
@@ -186,18 +178,9 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 			<memberdata name="vfpdf_createzipinput" type="method" display="VFPDF_CreateZipInput"/>
 			<memberdata name="vfpdf_destroyzip" type="method" display="VFPDF_DestroyZip"/>
 			<memberdata name="vfpdf_destroyzipinput" type="method" display="VFPDF_DestroyZipInput"/>
-			<memberdata name="pdfium_vfp_dll_path" type="property" display="pdfium_vfp_dll_path"/>
-			<memberdata name="pdfium_vfp_dll_path_access" type="method" display="pdfium_vfp_dll_path_access"/>
+			<memberdata name="fpdf_renderpagebitmap" type="method" display="FPDF_RenderPageBitmap"/>
 		</VFPData>
 	*</PropValue>
-
-	ADD OBJECT 'CONST' AS pdfium_api_fpdf_const WITH ;
-		Height = 0, ;
-		Left = 0, ;
-		Name = "CONST", ;
-		Top = 0, ;
-		Width = 0
-		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="custom" />
 	
 	PROCEDURE fpdfbitmap_create
 		LPARAMETERS width as Long, height as Long, alpha as Long
@@ -1352,8 +1335,19 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 		
 	ENDPROC
 
-	HIDDEN PROCEDURE pdfium_vfp_dll_path_access
-		RETURN ADDBS(JUSTPATH(This.pdfium_dll_path)) + IIF(ATC("x64", SYS(17))<>0, "pdfium-vfp64.dll", "pdfium-vfp.dll")
+	PROCEDURE fpdf_renderpagebitmap
+		LPARAMETERS bitmap as Long, page as Long, start_x as Integer, start_y as Integer, size_x as Integer, size_y as Integer, rotate as Integer, flags as Integer
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_RenderPageBitmap(m.bitmap, m.page, m.start_x, m.start_y, m.size_x, m.size_y, m.rotate, m.flags)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE FPDF_RenderPageBitmap IN (This.pdfium_dll_path) AS FPDF_RenderPageBitmap LONG bitmap, LONG page, integer start_x, integer start_y, integer size_x, integer size_y, integer rotate, integer flags
+		    m.lvRes = FPDF_RenderPageBitmap(m.bitmap, m.page, m.start_x, m.start_y, m.size_x, m.size_y, m.rotate, m.flags)
+		ENDTRY
+		
+		RETURN m.lvRes
 		
 	ENDPROC
 
@@ -1532,6 +1526,48 @@ DEFINE CLASS pdfium_api_fpdf AS custom 		&& Pdfium API wrapper
 
 ENDDEFINE
 
+DEFINE CLASS pdfium_api_fpdf_base AS custom 		&& Pdfium API wrapper
+ 	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
+
+	*-- OBJECTDATA items order determines ZOrder / El orden de los items OBJECTDATA determina el ZOrder 
+	*< OBJECTDATA: ObjPath="CONST" UniqueID="" Timestamp="" />
+
+	*<DefinedPropArrayMethod>
+		*m: pdfium_vfp_dll_path_access
+		*p: pdfium_dll_path		&& Path to file pdfium.dll
+		*p: pdfium_vfp_dll_path
+		*p: _memberdata		&& XML Metadata for customizable properties
+	*</DefinedPropArrayMethod>
+
+	HIDDEN AddObject,AddProperty,CloneObject,Comment,ControlCount,Controls,Error,HelpContextID,NewObject,Objects,pdfium_vfp_dll_path,Picture,ReadExpression,ReadMethod,RemoveObject,SaveAsClass,ShowWhatsThis,Tag,WhatsThisHelpID,WriteExpression,WriteMethod
+	*<PropValue>
+		Height = 27
+		Name = "pdfium_api_fpdf_base"
+		pdfium_dll_path = ("")
+		pdfium_vfp_dll_path = ("")
+		Width = 27
+		_memberdata = <VFPData>
+			<memberdata name="pdfium_dll_path" type="property" display="pdfium_dll_path"/>
+			<memberdata name="pdfium_vfp_dll_path" type="property" display="pdfium_vfp_dll_path"/>
+			<memberdata name="pdfium_vfp_dll_path_access" type="method" display="pdfium_vfp_dll_path_access"/>
+		</VFPData>
+	*</PropValue>
+
+	ADD OBJECT 'CONST' AS pdfium_api_fpdf_const WITH ;
+		Height = 0, ;
+		Left = 0, ;
+		Name = "CONST", ;
+		Top = 0, ;
+		Width = 0
+		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="custom" />
+	
+	HIDDEN PROCEDURE pdfium_vfp_dll_path_access
+		RETURN ADDBS(JUSTPATH(This.pdfium_dll_path)) + IIF(ATC("x64", SYS(17))<>0, "pdfium-vfp64.dll", "pdfium-vfp.dll")
+		
+	ENDPROC
+
+ENDDEFINE
+
 DEFINE CLASS pdfium_api_fpdf_const AS custom 		&& Pdfium API constants
  	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
 
@@ -1547,6 +1583,14 @@ DEFINE CLASS pdfium_api_fpdf_const AS custom 		&& Pdfium API constants
 		*m: fpdf_fillmode_winding
 		*m: fpdf_font_truetype
 		*m: fpdf_font_type1
+		*m: fpdf_formfield_checkbox
+		*m: fpdf_formfield_combobox
+		*m: fpdf_formfield_listbox
+		*m: fpdf_formfield_pushbutton
+		*m: fpdf_formfield_radiobutton
+		*m: fpdf_formfield_signature
+		*m: fpdf_formfield_textfield
+		*m: fpdf_formfield_unknown
 		*m: fpdf_pageobj_form
 		*m: fpdf_pageobj_image
 		*m: fpdf_pageobj_path
@@ -1589,6 +1633,14 @@ DEFINE CLASS pdfium_api_fpdf_const AS custom 		&& Pdfium API constants
 			<memberdata name="fpdfbitmap_bgrx" type="method" display="FPDFBitmap_BGRx"/>
 			<memberdata name="fpdfbitmap_gray" type="method" display="FPDFBitmap_Gray"/>
 			<memberdata name="fpdfbitmap_unknown" type="method" display="FPDFBitmap_Unknown"/>
+			<memberdata name="fpdf_formfield_checkbox" type="method" display="FPDF_FORMFIELD_CHECKBOX"/>
+			<memberdata name="fpdf_formfield_combobox" type="method" display="FPDF_FORMFIELD_COMBOBOX"/>
+			<memberdata name="fpdf_formfield_listbox" type="method" display="FPDF_FORMFIELD_LISTBOX"/>
+			<memberdata name="fpdf_formfield_pushbutton" type="method" display="FPDF_FORMFIELD_PUSHBUTTON"/>
+			<memberdata name="fpdf_formfield_radiobutton" type="method" display="FPDF_FORMFIELD_RADIOBUTTON"/>
+			<memberdata name="fpdf_formfield_signature" type="method" display="FPDF_FORMFIELD_SIGNATURE"/>
+			<memberdata name="fpdf_formfield_textfield" type="method" display="FPDF_FORMFIELD_TEXTFIELD"/>
+			<memberdata name="fpdf_formfield_unknown" type="method" display="FPDF_FORMFIELD_UNKNOWN"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -1647,6 +1699,38 @@ DEFINE CLASS pdfium_api_fpdf_const AS custom 		&& Pdfium API constants
 		
 	ENDPROC
 
+	PROCEDURE fpdf_formfield_checkbox
+		RETURN 2
+	ENDPROC
+
+	PROCEDURE fpdf_formfield_combobox
+		RETURN 4
+	ENDPROC
+
+	PROCEDURE fpdf_formfield_listbox
+		RETURN 5
+	ENDPROC
+
+	PROCEDURE fpdf_formfield_pushbutton
+		RETURN 1
+	ENDPROC
+
+	PROCEDURE fpdf_formfield_radiobutton
+		RETURN 3
+	ENDPROC
+
+	PROCEDURE fpdf_formfield_signature
+		RETURN 7
+	ENDPROC
+
+	PROCEDURE fpdf_formfield_textfield
+		RETURN 6
+	ENDPROC
+
+	PROCEDURE fpdf_formfield_unknown
+		RETURN 0
+	ENDPROC
+
 	PROCEDURE fpdf_pageobj_form
 		RETURN 5
 		
@@ -1699,6 +1783,381 @@ DEFINE CLASS pdfium_api_fpdf_const AS custom 		&& Pdfium API constants
 
 	PROCEDURE fpdf_textrendermode_unknown
 		RETURN -1
+		
+	ENDPROC
+
+ENDDEFINE
+
+DEFINE CLASS pdfium_api_fpdf_forms AS pdfium_api_fpdf_base OF "pdfium-vfp.vcx" 		&& Pdfium API wrapper
+ 	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
+
+	*<DefinedPropArrayMethod>
+		*m: form_forcetokillfocus
+		*m: form_getfocusedannot
+		*m: form_getselectedtext
+		*m: form_onafterloadpage
+		*m: form_onbeforeclosepage
+		*m: form_onchar
+		*m: form_onfocus
+		*m: form_onkeydown
+		*m: form_onlbuttondoubleclick
+		*m: form_onlbuttondown
+		*m: form_onlbuttonup
+		*m: form_onmousemove
+		*m: form_replaceselection
+		*m: form_selectalltext
+		*m: fpdfpage_hasformfieldatpoint
+		*m: fpdf_ffldraw
+		*m: fpdf_setformfieldhighlightalpha
+		*m: fpdf_setformfieldhighlightcolor
+		*m: vfpdfdoc_exitformfillenvironment
+		*m: vfpdfdoc_initformfillenvironment
+	*</DefinedPropArrayMethod>
+
+	HIDDEN AddObject,AddProperty,CloneObject,Comment,ControlCount,Controls,Error,HelpContextID,NewObject,Objects,Picture,ReadExpression,ReadMethod,RemoveObject,SaveAsClass,ShowWhatsThis,Tag,WhatsThisHelpID,WriteExpression,WriteMethod
+	*<PropValue>
+		Height = 27
+		Name = "pdfium_api_fpdf_forms"
+		Width = 27
+		_memberdata = <VFPData>
+			<memberdata name="vfpdfdoc_initformfillenvironment" type="method" display="VFPDFDOC_InitFormFillEnvironment"/>
+			<memberdata name="fpdf_ffldraw" type="method" display="FPDF_FFLDraw"/>
+			<memberdata name="fpdf_setformfieldhighlightcolor" type="method" display="FPDF_SetFormFieldHighlightColor"/>
+			<memberdata name="fpdf_setformfieldhighlightalpha" type="method" display="FPDF_SetFormFieldHighlightAlpha"/>
+			<memberdata name="form_onafterloadpage" type="method" display="Form_OnAfterLoadPage"/>
+			<memberdata name="form_onbeforeclosepage" type="method" display="Form_OnBeforeClosePage"/>
+			<memberdata name="form_onchar" type="method" display="Form_OnChar"/>
+			<memberdata name="form_onfocus" type="method" display="Form_OnFocus"/>
+			<memberdata name="form_onkeydown" type="method" display="Form_OnKeyDown"/>
+			<memberdata name="form_onlbuttondown" type="method" display="Form_OnLButtonDown"/>
+			<memberdata name="form_onlbuttonup" type="method" display="Form_OnLButtonUp"/>
+			<memberdata name="form_onmousemove" type="method" display="Form_OnMouseMove"/>
+			<memberdata name="fpdfpage_hasformfieldatpoint" type="method" display="FPDFPage_HasFormFieldAtPoint"/>
+			<memberdata name="vfpdfdoc_exitformfillenvironment" type="method" display="VFPDFDOC_ExitFormFillEnvironment"/>
+			<memberdata name="form_getfocusedannot" type="method" display="FORM_GetFocusedAnnot"/>
+			<memberdata name="form_forcetokillfocus" type="method" display="FORM_ForceToKillFocus"/>
+			<memberdata name="form_onlbuttondoubleclick" type="method" display="FORM_OnLButtonDoubleClick"/>
+			<memberdata name="form_getselectedtext" type="method" display="FORM_GetSelectedText"/>
+			<memberdata name="form_selectalltext" type="method" display="FORM_SelectAllText"/>
+			<memberdata name="form_replaceselection" type="method" display="FORM_ReplaceSelection"/>
+		</VFPData>
+		CONST.Name = "CONST"
+	*</PropValue>
+	
+	PROCEDURE form_forcetokillfocus
+		LPARAMETERS hHandle as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_FORM_ForceToKillFocus(m.hHandle)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE INTEGER FORM_ForceToKillFocus IN (This.pdfium_dll_path) AS FPDF_FORM_ForceToKillFocus LONG hHandle
+		    m.lvRes = FPDF_FORM_ForceToKillFocus(m.hHandle)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE form_getfocusedannot
+		LPARAMETERS handle as Long, page_index as Long, annot as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_FORM_GetFocusedAnnot(m.handle, @m.page_index, @m.annot)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE INTEGER FORM_GetFocusedAnnot IN (This.pdfium_dll_path) AS FPDF_FORM_GetFocusedAnnot LONG handle, LONG @page_index, LONG @annot
+		    m.lvRes = FPDF_FORM_GetFocusedAnnot(m.handle, @m.page_index, @m.annot)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE form_getselectedtext
+		LPARAMETERS hHandle as Long, page as Long, buffer as String, buflen as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_FORM_GetSelectedText(m.hHandle, m.page, @m.buffer, m.buflen)
+		CATCH
+		    SET CONSOLE OFF
+		    DECLARE LONG FORM_GetSelectedText IN (This.pdfium_dll_path) AS FPDF_FORM_GetSelectedText LONG hHandle, LONG page, STRING @modifier, long buflen
+		    m.lvRes = FPDF_FORM_GetSelectedText(m.hHandle, m.page, @m.buffer, m.buflen)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE form_onafterloadpage
+		LPARAMETERS page as Long, hHandle as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_FORM_OnAfterLoadPage(m.page, m.hHandle)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE FORM_OnAfterLoadPage IN (This.pdfium_dll_path) AS FPDF_FORM_OnAfterLoadPage LONG page, LONG hHandle
+		    m.lvRes = FPDF_FORM_OnAfterLoadPage(m.page, m.hHandle)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE form_onbeforeclosepage
+		LPARAMETERS page as Long, hHandle as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_FORM_OnBeforeClosePage(m.page, m.hHandle)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE FORM_OnBeforeClosePage IN (This.pdfium_dll_path) AS FPDF_FORM_OnBeforeClosePage LONG page, LONG hHandle
+		    m.lvRes = FPDF_FORM_OnBeforeClosePage(m.page, m.hHandle)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE form_onchar
+		LPARAMETERS hHandle as Long, page as Long, nChar as Integer, modifier as Integer
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_FORM_OnChar(m.hHandle, m.page, m.nChar, m.modifier)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE INTEGER FORM_OnChar IN (This.pdfium_dll_path) AS FPDF_FORM_OnChar LONG hHandle, LONG page, INTEGER nChar, INTEGER modifier
+		    m.lvRes = FPDF_FORM_OnChar(m.hHandle, m.page, m.nChar, m.modifier)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE form_onfocus
+		LPARAMETERS hHandle as Long, page as Long, modifier as Integer, page_x as Double, page_y as Double
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_FORM_OnFocus(m.hHandle, m.page, m.modifier, m.page_x, m.page_y)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE INTEGER FORM_OnFocus IN (This.pdfium_dll_path) AS FPDF_FORM_OnFocus LONG hHandle, LONG page, INTEGER modifier, double page_x, double page_y
+		    m.lvRes = FPDF_FORM_OnFocus(m.hHandle, m.page, m.modifier, m.page_x, m.page_y)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE form_onkeydown
+		LPARAMETERS hHandle as Long, page as Long, nKeyCode as Integer, modifier as Integer
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_FORM_OnKeyDown(m.hHandle, m.page, m.nKeyCode, m.modifier)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE INTEGER FORM_OnKeyDown IN (This.pdfium_dll_path) AS FPDF_FORM_OnKeyDown LONG hHandle, LONG page, INTEGER nKeyCode, INTEGER modifier
+		    m.lvRes = FPDF_FORM_OnKeyDown(m.hHandle, m.page, m.nKeyCode, m.modifier)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE form_onlbuttondoubleclick
+		LPARAMETERS hHandle as Long, page as Long, modifier as Integer, page_x as Double, page_y as Double
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_FORM_OnLButtonDoubleClick(m.hHandle, m.page, m.modifier, m.page_x, m.page_y)
+		CATCH
+		    SET CONSOLE OFF
+		    DECLARE INTEGER FORM_OnLButtonDoubleClick IN (This.pdfium_dll_path) AS FPDF_FORM_OnLButtonDoubleClick LONG hHandle, LONG page, INTEGER modifier, double page_x, double page_y
+		    m.lvRes = FPDF_FORM_OnLButtonDoubleClick(m.hHandle, m.page, m.modifier, m.page_x, m.page_y)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE form_onlbuttondown
+		LPARAMETERS hHandle as Long, page as Long, modifier as Integer, page_x as Double, page_y as Double
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_FORM_OnLButtonDown(m.hHandle, m.page, m.modifier, m.page_x, m.page_y)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE INTEGER FORM_OnLButtonDown IN (This.pdfium_dll_path) AS FPDF_FORM_OnLButtonDown LONG hHandle, LONG page, INTEGER modifier, double page_x, double page_y
+		    m.lvRes = FPDF_FORM_OnLButtonDown(m.hHandle, m.page, m.modifier, m.page_x, m.page_y)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE form_onlbuttonup
+		LPARAMETERS hHandle as Long, page as Long, modifier as Integer, page_x as Double, page_y as Double
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_FORM_OnLButtonUp(m.hHandle, m.page, m.modifier, m.page_x, m.page_y)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE INTEGER FORM_OnLButtonUp IN (This.pdfium_dll_path) AS FPDF_FORM_OnLButtonUp LONG hHandle, LONG page, INTEGER modifier, double page_x, double page_y
+		    m.lvRes = FPDF_FORM_OnLButtonUp(m.hHandle, m.page, m.modifier, m.page_x, m.page_y)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE form_onmousemove
+		LPARAMETERS hHandle as Long, page as Long, modifier as Integer, page_x as Double, page_y as Double
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_FORM_OnMouseMove(m.hHandle, m.page, m.modifier, m.page_x, m.page_y)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE INTEGER FORM_OnMouseMove IN (This.pdfium_dll_path) AS FPDF_FORM_OnMouseMove LONG hHandle, LONG page, INTEGER modifier, double page_x, double page_y
+		    m.lvRes = FPDF_FORM_OnMouseMove(m.hHandle, m.page, m.modifier, m.page_x, m.page_y)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE form_replaceselection
+		LPARAMETERS hHandle as Long, page as Long, wsText as String
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_FORM_ReplaceSelection(m.hHandle, m.page, m.wsText)
+		CATCH
+		    SET CONSOLE OFF
+		    DECLARE FORM_ReplaceSelection IN (This.pdfium_dll_path) AS FPDF_FORM_ReplaceSelection LONG hHandle, LONG page, STRING wsText
+		    m.lvRes = FPDF_FORM_ReplaceSelection(m.hHandle, m.page, m.wsText)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE form_selectalltext
+		LPARAMETERS hHandle as Long, page as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_FORM_SelectAllText(m.hHandle, m.page)
+		CATCH
+		    SET CONSOLE OFF
+		    DECLARE INTEGER FORM_SelectAllText IN (This.pdfium_dll_path) AS FPDF_FORM_SelectAllText LONG hHandle, LONG page
+		    m.lvRes = FPDF_FORM_SelectAllText(m.hHandle, m.page)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfpage_hasformfieldatpoint
+		LPARAMETERS hHandle as Long, page as Long, page_x as Double, page_y as Double
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFPage_HasFormFieldAtPoint(m.hHandle, m.page, m.page_x, m.page_y)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE INTEGER FPDFPage_HasFormFieldAtPoint IN (This.pdfium_dll_path) AS FPDFPage_HasFormFieldAtPoint LONG hHandle, LONG page, double page_x, double page_y
+		    m.lvRes = FPDFPage_HasFormFieldAtPoint(m.hHandle, m.page, m.page_x, m.page_y)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdf_ffldraw
+		LPARAMETERS hHandle as Long, bitmap as Long, page as Long, start_x as Integer, start_y as Integer, size_x as Integer, size_y as Integer, rotate as Integer, flags as Integer
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_FFLDraw(m.hHandle, m.bitmap, m.page, m.start_x, m.start_y, m.size_x, m.size_y, m.rotate, m.flags)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE FPDF_FFLDraw IN (This.pdfium_dll_path) AS FPDF_FFLDraw LONG hHandle, LONG bitmap, LONG page, integer start_x, integer start_y, integer size_x, integer size_y, integer rotate, integer flags
+		    m.lvRes = FPDF_FFLDraw(m.hHandle, m.bitmap, m.page, m.start_x, m.start_y, m.size_x, m.size_y, m.rotate, m.flags)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdf_setformfieldhighlightalpha
+		LPARAMETERS hHandle as Long, alpha as Integer
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_SetFormFieldHighlightAlpha(m.hHandle, m.alpha)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE FPDF_SetFormFieldHighlightAlpha IN (This.pdfium_dll_path) AS FPDF_SetFormFieldHighlightAlpha LONG hHandle, INTEGER alpha
+		    m.lvRes = FPDF_SetFormFieldHighlightAlpha(m.hHandle, m.alpha)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdf_setformfieldhighlightcolor
+		LPARAMETERS hHandle as Long, fieldType as Integer, color as Integer
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_SetFormFieldHighlightColor(m.hHandle, m.fieldType, m.color)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE FPDF_SetFormFieldHighlightColor IN (This.pdfium_dll_path) AS FPDF_SetFormFieldHighlightColor LONG hHandle, INTEGER fieldType, INTEGER color
+		    m.lvRes = FPDF_SetFormFieldHighlightColor(m.hHandle, m.fieldType, m.color)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE vfpdfdoc_exitformfillenvironment
+		LPARAMETERS hHandle as Long
+		
+		TRY
+		    VFPDFDOC_ExitFormFillEnvironment(m.hHandle)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE VFPDFDOC_ExitFormFillEnvironment IN (This.pdfium_vfp_dll_path) AS VFPDFDOC_ExitFormFillEnvironment LONG hHandle
+		    VFPDFDOC_ExitFormFillEnvironment(m.hHandle)
+		ENDTRY
+		
+	ENDPROC
+
+	PROCEDURE vfpdfdoc_initformfillenvironment
+		LPARAMETERS document as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = VFPDFDOC_InitFormFillEnvironment(m.document)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG VFPDFDOC_InitFormFillEnvironment IN (This.pdfium_vfp_dll_path) AS VFPDFDOC_InitFormFillEnvironment LONG document
+		    m.lvRes = VFPDFDOC_InitFormFillEnvironment(m.document)
+		ENDTRY
+		
+		RETURN m.lvRes
 		
 	ENDPROC
 
@@ -3510,6 +3969,7 @@ DEFINE CLASS pdfium_api_win AS custom
 		*m: getdefaultprinter
 		*m: getdevicecaps
 		*m: getkeystate
+		*m: getkeyunicode		&& Convert keyboard key code (e.g. from KeyPress event) to utf-16 codepoint
 		*m: getmodulehandle
 		*m: getopenclipboardwindow
 		*m: getsavefilenamea
@@ -3521,6 +3981,7 @@ DEFINE CLASS pdfium_api_win AS custom
 		*m: globalalloc
 		*m: globalfree
 		*m: globallock
+		*m: globalsize
 		*m: globalunlock
 		*m: heapalloc
 		*m: heapcreate
@@ -3534,13 +3995,16 @@ DEFINE CLASS pdfium_api_win AS custom
 		*m: registerclassex
 		*m: releasedc
 		*m: selectobject
+		*m: sendmessage
 		*m: setclipboarddata
 		*m: setdefaultprinter
+		*m: setfocus		&& Sets the focus to a control.
 		*m: setscrollinfo
 		*m: shellexecute
 		*m: showwindow		&& Specifies the Form window to show the Form or Toolbar in at creation time.
 		*m: startdoc
 		*m: startpage
+		*m: stretchdibits
 		*m: uuidcreate
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
@@ -3619,6 +4083,11 @@ DEFINE CLASS pdfium_api_win AS custom
 			<memberdata name="bcryptgetproperty" type="method" display="BCryptGetProperty"/>
 			<memberdata name="getsavefilenamea" type="method" display="GetSaveFileNameA"/>
 			<memberdata name="shellexecute" type="method" display="ShellExecute"/>
+			<memberdata name="stretchdibits" type="method" display="StretchDIBits"/>
+			<memberdata name="getkeyunicode" type="method" display="GetKeyUnicode"/>
+			<memberdata name="setfocus" type="method" display="SetFocus"/>
+			<memberdata name="sendmessage" type="method" display="SendMessage"/>
+			<memberdata name="globalsize" type="method" display="GlobalSize"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -4262,6 +4731,48 @@ DEFINE CLASS pdfium_api_win AS custom
 		
 	ENDPROC
 
+	PROCEDURE getkeyunicode		&& Convert keyboard key code (e.g. from KeyPress event) to utf-16 codepoint
+		LPARAMETERS tnChar
+		
+		#define MAPVK_VK_TO_CHAR 2
+		#define MAPVK_VK_TO_VSC_EX 4
+		
+		DECLARE INTEGER GetKeyboardState IN user32 AS WinApi_GetKeyboardState STRING @pbKeyState
+		DECLARE INTEGER GetKeyboardLayout IN user32 AS WinApi_GetKeyboardLayout INTEGER idThread
+		DECLARE INTEGER MapVirtualKey IN user32 AS WinApi_MapVirtualKey INTEGER uCode, INTEGER uMapType
+		DECLARE INTEGER VkKeyScanExA IN user32 AS WinApi_VkKeyScanExA INTEGER ch, INTEGER dwhkl
+		
+		DECLARE INTEGER ToUnicodeEx IN user32 AS WinApi_ToUnicodeEx ;
+		    INTEGER wVirtKey, INTEGER wScanCode, STRING @lpKeyState,;
+		    STRING @pwszBuff, INTEGER cchBuff, INTEGER wFlags,;
+		    INTEGER dwhkl
+		
+		LOCAL lnKL, lnVKCode, lnScanCode, lcKeyState
+		
+		m.lnKL = WinApi_GetKeyboardLayout(0)
+		m.lnVKCode = BITAND(WinApi_VkKeyScanExA(m.tnChar, m.lnKL), 0xFF)
+		IF EMPTY(m.lnVKCode)
+		    RETURN 0
+		ENDIF
+		IF EMPTY(WinApi_MapVirtualKey(m.lnVKCode, MAPVK_VK_TO_CHAR))
+		    RETURN 0
+		ENDIF
+		m.lnScanCode = WinApi_MapVirtualKey(m.lnVKCode, MAPVK_VK_TO_VSC_EX)
+		
+		m.lcKeyState = REPLICATE(CHR(0), 256)
+		WinApi_GetKeyboardState(@m.lcKeyState)
+		
+		LOCAL lcCharUTF
+		m.lcCharUTF = 0h00000000
+		
+		IF WinApi_ToUnicodeEx(m.lnVKCode, m.lnScanCode, m.lcKeyState, @m.lcCharUTF, 2, 0, m.lnKL) > 0
+		    RETURN BITLSHIFT(ASC(SUBSTR(m.lcCharUTF, 2, 1)), 8) + ASC(SUBSTR(m.lcCharUTF, 1, 1))
+		ELSE
+		    RETURN 0
+		ENDIF
+		
+	ENDPROC
+
 	PROCEDURE getmodulehandle
 		LPARAMETERS lpModuleName as String
 		
@@ -4429,6 +4940,22 @@ DEFINE CLASS pdfium_api_win AS custom
 		    SET CONSOLE OFF    
 		    DECLARE LONG GlobalLock IN Kernel32 AS WinApi_GlobalLock LONG hMem
 		    m.lvRes = WinApi_GlobalLock(m.hMem)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE globalsize
+		LPARAMETERS hMem as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_GlobalSize(m.hMem)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG GlobalSize IN Kernel32 AS WinApi_GlobalSize LONG hMem
+		    m.lvRes = WinApi_GlobalSize(m.hMem)
 		ENDTRY
 		
 		RETURN m.lvRes
@@ -4643,6 +5170,22 @@ DEFINE CLASS pdfium_api_win AS custom
 		
 	ENDPROC
 
+	PROCEDURE sendmessage
+		LPARAMETERS hWnd as Integer, Msg as Integer, wParam as Integer, lParam as Integer
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_SendMessage(m.hWnd, m.Msg, m.wParam, m.lParam)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG SendMessage IN user32 AS WinApi_SendMessage LONG hWnd, LONG Msg, LONG wParam, LONG lParam
+		    m.lvRes = WinApi_SendMessage(m.hWnd, m.Msg, m.wParam, m.lParam)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
 	PROCEDURE setclipboarddata
 		LPARAMETERS uFormat as Integer, hMem as Integer
 		
@@ -4669,6 +5212,22 @@ DEFINE CLASS pdfium_api_win AS custom
 		    SET CONSOLE OFF    
 		    DECLARE INTEGER SetDefaultPrinter IN WINSPOOL.DRV  AS WinApi_SetDefaultPrinter STRING pszPrinter
 		    m.lvRes = WinApi_SetDefaultPrinter(m.pszPrinter)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE setfocus		&& Sets the focus to a control.
+		LPARAMETERS hWnd as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_SetFocus(m.hWnd)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE LONG SetFocus IN user32 AS WinApi_SetFocus LONG hWnd
+		    m.lvRes = WinApi_SetFocus(m.hWnd)
 		ENDTRY
 		
 		RETURN m.lvRes
@@ -4755,6 +5314,22 @@ DEFINE CLASS pdfium_api_win AS custom
 		
 	ENDPROC
 
+	PROCEDURE stretchdibits
+		LPARAMETERS hdc as Long, nXDest as Integer, nYDest as Integer, nWidth as Integer, nHeight as Integer, nXSrc as Integer, nYSrc as Integer, nSrcWidth as Integer, nSrcHeight as Integer, lpBits as Long, lpBMI as String, iUsage as Integer, nRop as Integer
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_StretchDIBits(m.hdc, m.nXDest, m.nYDest, m.nWidth, m.nHeight, m.nXSrc, m.nYSrc, m.nSrcWidth, m.nSrcHeight, m.lpBits, @m.lpBMI, m.iUsage, m.nRop)
+		CATCH
+		    SET CONSOLE OFF    
+		    DECLARE INTEGER StretchDIBits IN Gdi32 AS WinApi_StretchDIBits LONG hdc, INTEGER nXDest, INTEGER nYDest, INTEGER nWidth, INTEGER nHeight, INTEGER nXSrc, INTEGER nYSrc, INTEGER nSrcWidth, INTEGER nSrcHeight, LONG lpBits, STRING@ lpBMI, INTEGER iUsage, INTEGER nRop
+		    m.lvRes = WinApi_StretchDIBits(m.hdc, m.nXDest, m.nYDest, m.nWidth, m.nHeight, m.nXSrc, m.nYSrc, m.nSrcWidth, m.nSrcHeight, m.lpBits, @m.lpBMI, m.iUsage, m.nRop)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
 	PROCEDURE uuidcreate
 		LPARAMETERS Uuid
 		
@@ -4783,6 +5358,7 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 	*< OBJECTDATA: ObjPath="API_WIN" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="API_FRX" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="API_GDIP" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="API_FPDF_FORMS" UniqueID="" Timestamp="" />
 
 	*<DefinedPropArrayMethod>
 		*m: errfmt
@@ -4841,6 +5417,15 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		Height = 0, ;
 		Left = 0, ;
 		Name = "API_FPDF", ;
+		Top = 0, ;
+		Width = 0, ;
+		CONST.Name = "CONST"
+		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="custom" />
+
+	ADD OBJECT 'API_FPDF_FORMS' AS pdfium_api_fpdf_forms WITH ;
+		Height = 0, ;
+		Left = 0, ;
+		Name = "API_FPDF_FORMS", ;
 		Top = 0, ;
 		Width = 0, ;
 		CONST.Name = "CONST"
@@ -5228,6 +5813,7 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		ENDIF
 		
 		This.API_FPDF.pdfium_dll_path = This.pdfium_dll_path
+		This.API_FPDF_FORMS.pdfium_dll_path = This.pdfium_dll_path
 		
 		
 		
@@ -14510,6 +15096,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*m: keypress		&& Occurs when the user presses and releases a key.
 		*m: openpdf		&& Open pdf file. Returns: .T. on success, .F. if file was not loaded
 		*m: pagepick
+		*m: paste		&& Paste text from clipboard to form field
 		*m: printdocument		&& Send document to printer with preceding setup dialog
 		*m: printenv_access
 		*m: printenv_assign
@@ -14534,13 +15121,17 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*m: wndrelease
 		*m: wndresize
 		*m: wndshow		&& Show child window (for internal use, public for bindevent)
+		*p: allowformedit		&& Allows interactive input in PDF forms.
 		*p: backcolorbrush
 		*p: dblclickbegin
+		*p: drawbufbitmap		&& FPDF_Bitmap buffer for document rendering
+		*p: drawbufbitmapbmi
 		*p: drawbufdc
 		*p: drawbufdib
 		*p: drawbufgfx
 		*p: fitwidth
 		*p: fpdf_doc
+		*p: fpdf_form
 		*p: fpdf_opened
 		*p: fpdf_pagecount
 		*p: fpdf_page_first_visible		&& Index of the page that appears first after rendering
@@ -14580,16 +15171,20 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*p: _printenv
 	*</DefinedPropArrayMethod>
 
-	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,fpdf_doc,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Objects,pagefillbrush,Picture,ReadExpression,ReadMethod,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,ShowWhatsThis,SpecialEffect,Style,tplclickbegin,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,wndviewport,WriteExpression,WriteMethod,ZOrder,_printenv
+	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,drawbufbitmapbmi,drawbufbitmap,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,fpdf_doc,fpdf_form,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Objects,pagefillbrush,Picture,ReadExpression,ReadMethod,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,ShowWhatsThis,SpecialEffect,Style,tplclickbegin,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,wndviewport,WriteExpression,WriteMethod,ZOrder,_printenv
 	*<PropValue>
+		allowformedit = .T.
 		backcolorbrush = .F.
 		BackStyle = 1
 		dblclickbegin = 0
+		drawbufbitmap = 0
+		drawbufbitmapbmi = ("")
 		drawbufdc = 0
 		drawbufdib = 0
 		drawbufgfx = 0
 		fitwidth = .F.
 		fpdf_doc = 0
+		fpdf_form = 0
 		fpdf_opened = .F.
 		fpdf_pagecount = 0
 		fpdf_page_first_visible = 0
@@ -14628,74 +15223,89 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
 			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
 			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu" favorites="True"/>
+			<memberdata name="contextmenu" type="method" display="ContextMenu"/>
 			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
 			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBu<VFPData><memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
-			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu" favorites="True"/>
-			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
-			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBu<VFPData><memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
-			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu" favorites="True"/>
-			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
-			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBu<VFPData><memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
-			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu" favorites="True"/>
-			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
-			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBu<VFPData><memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
-			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu" favorites="True"/>
-			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
-			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBu<VFPData><memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
-			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu" favorites="True"/>
-			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
-			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBu<VFPData><memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
-			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu" favorites="True"/>
-			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
-			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBu<VFPData><memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
-			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu" favorites="True"/>
-			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
-			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBu<VFPData><memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
-			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu" favorites="True"/>
-			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
-			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBu<VFPData><memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="backcolorbrush" type="property" display="BackColorBrush"/>
-			<memberdata name="backcolor_assign" type="method" display="BackColor_Assign"/>
-			<memberdata name="contextmenu" type="method" display="ContextMenu" favorites="True"/>
-			<memberdata name="drawbufcreate" type="method" display="DrawBufCreate"/>
-			<memberdata name="drawbufdc" type="property" display="DrawBufDC"/>
-			<memberdata name="drawbufdib" type="property" display="DrawBu<VFPData><memberdata name="closepdf" display="ClosePDF" favorites="True"/>
-			<memberdata name="closepdf" display="ClosePDF" favorites="True"/>
+			<memberdata name="drawbufdib" type="property" display="DrawBufDIB"/>
+			<memberdata name="drawbufgfx" type="property" display="DrawBufGFX"/>
+			<memberdata name="drawbufrelease" type="method" display="DrawBufRelease"/>
+			<memberdata name="errmsg" type="method" display="ErrMsg"/>
+			<memberdata name="fpdf_doc" type="property" display="fpdf_doc"/>
+			<memberdata name="fpdf_opened" type="property" display="fpdf_opened"/>
+			<memberdata name="fpdf_pagecount" type="property" display="fpdf_pagecount"/>
+			<memberdata name="fpdf_pages" type="property" display="fpdf_pages"/>
+			<memberdata name="fpdf_pages_pos" type="property" display="fpdf_pages_pos"/>
+			<memberdata name="fpdf_pages_selection" type="property" display="fpdf_pages_selection"/>
+			<memberdata name="fpdf_pages_size" type="property" display="fpdf_pages_size"/>
+			<memberdata name="fpdf_page_first_visible" type="property" display="fpdf_page_first_visible"/>
+			<memberdata name="fpdf_page_last_visible" type="property" display="fpdf_page_last_visible"/>
+			<memberdata name="fpdf_text_pages" type="property" display="fpdf_text_pages"/>
+			<memberdata name="getcurrentpage" type="method" display="GetCurrentPage"/>
+			<memberdata name="getpagecount" type="method" display="GetPageCount"/>
+			<memberdata name="getpagesize" type="method" display="GetPageSize"/>
+			<memberdata name="keypress" type="method" display="KeyPress"/>
+			<memberdata name="openpdf" type="method" display="OpenPDF" favorites="True"/>
+			<memberdata name="pagepick" type="method" display="PagePick"/>
+			<memberdata name="redraw" type="method" display="Redraw"/>
+			<memberdata name="renderpages" type="method" display="RenderPages"/>
+			<memberdata name="renderselection" type="method" display="RenderSelection"/>
+			<memberdata name="scale" type="property" display="Scale"/>
+			<memberdata name="scale_assign" type="method" display="Scale_Assign"/>
+			<memberdata name="scrollbars" type="property" display="ScrollBars"/>
+			<memberdata name="scrollbars_assign" type="method" display="ScrollBars_Assign"/>
+			<memberdata name="scrollhorz" type="method" display="ScrollHorz"/>
+			<memberdata name="scrollvert" type="method" display="ScrollVert"/>
+			<memberdata name="selectionbrush" type="property" display="SelectionBrush"/>
+			<memberdata name="selectioncharindexprev" type="property" display="SelectionCharIndexPrev"/>
+			<memberdata name="selectioncharindexstart" type="property" display="SelectionCharIndexStart"/>
+			<memberdata name="selectioncopy" type="method" display="SelectionCopy"/>
+			<memberdata name="selecttext" type="method" display="SelectText"/>
+			<memberdata name="viewportmaxx" type="property" display="ViewPortMaxX"/>
+			<memberdata name="viewportmaxy" type="property" display="ViewPortMaxY"/>
+			<memberdata name="viewportsizex" type="property" display="ViewPortSizeX"/>
+			<memberdata name="viewportsizey" type="property" display="ViewPortSizeY"/>
+			<memberdata name="viewportupdate" type="method" display="ViewPortUpdate"/>
+			<memberdata name="viewportx" type="property" display="ViewPortX"/>
+			<memberdata name="viewporty" type="property" display="ViewPortY"/>
+			<memberdata name="wndclassname" type="property" display="WndClassName"/>
+			<memberdata name="wndcreate" type="method" display="WndCreate"/>
+			<memberdata name="wnddc" type="property" display="WndDC"/>
+			<memberdata name="wndhandle" type="property" display="WndHandle"/>
+			<memberdata name="wndproc" type="method" display="WndProc"/>
+			<memberdata name="wndredraw" type="method" display="WndRedraw"/>
+			<memberdata name="wndrelease" type="method" display="WndRelease"/>
+			<memberdata name="wndresize" type="method" display="WndResize"/>
+			<memberdata name="wndshow" type="method" display="WndShow"/>
+			<memberdata name="selecttextall" type="method" display="SelectTextAll"/>
+			<memberdata name="dblclickbegin" type="property" display="DblClickBegin"/>
+			<memberdata name="tplclickbegin" type="property" display="TplClickBegin"/>
+			<memberdata name="rendersearch" type="method" display="RenderSearch"/>
+			<memberdata name="searchbrush" type="property" display="SearchBrush"/>
+			<memberdata name="searchclose" type="method" display="SearchClose"/>
+			<memberdata name="searchstate_findwhat" type="property" display="SearchState_FindWhat"/>
+			<memberdata name="searchstate_rescount" type="property" display="SearchState_ResCount"/>
+			<memberdata name="searchstate_resindex" type="property" display="SearchState_ResIndex"/>
+			<memberdata name="searchstate_respage" type="property" display="SearchState_ResPage"/>
+			<memberdata name="searchstate_resrect" type="property" display="SearchState_ResRect"/>
+			<memberdata name="searchtext" type="method" display="SearchText"/>
+			<memberdata name="searchstate_dir" type="property" display="SearchState_Dir"/>
+			<memberdata name="savedocument" type="method" display="SaveDocument"/>
+			<memberdata name="fitwidth" type="property" display="FitWidth"/>
+			<memberdata name="fitwidth_assign" type="method" display="FitWidth_Assign"/>
+			<memberdata name="isfocused" type="property" display="IsFocused"/>
+			<memberdata name="printdocument" type="method" display="PrintDocument"/>
+			<memberdata name="afterviewportupdate" type="method" display="AfterViewportUpdate"/>
+			<memberdata name="printenv" type="property" display="PrintEnv"/>
+			<memberdata name="printenv_assign" type="method" display="PrintEnv_Assign"/>
+			<memberdata name="printenv_access" type="method" display="PrintEnv_Access"/>
+			<memberdata name="_printenv" type="property" display="_PrintEnv"/>
+			<memberdata name="pagefillbrush" type="property" display="PageFillBrush"/>
+			<memberdata name="wndviewport" type="property" display="WndViewport"/>
+			<memberdata name="drawbufbitmap" type="property" display="DrawBufBitmap"/>
+			<memberdata name="drawbufbitmapbmi" type="property" display="DrawBufBitmapBMI"/>
+			<memberdata name="fpdf_form" type="property" display="fpdf_form"/>
+			<memberdata name="allowformedit" type="property" display="AllowFormEdit"/>
+			<memberdata name="paste" type="method" display="Paste"/>
 		</VFPData>
 		_printenv = .F.
 	*</PropValue>
@@ -14716,7 +15326,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		API_FRX.CONST.Name = "CONST", ;
 		API_FRX.Name = "API_FRX", ;
 		API_GDIP.CONST.Name = "CONST", ;
-		API_GDIP.Name = "API_GDIP"
+		API_GDIP.Name = "API_GDIP", ;
+		API_FPDF_FORMS.CONST.Name = "CONST", ;
+		API_FPDF_FORMS.Name = "API_FPDF_FORMS"
 		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="custom" />
 
 	ADD OBJECT 'i18n' AS pdfium_i18n WITH ;
@@ -14757,9 +15369,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN
 		ENDIF
 		
-		LOCAL loFPDF
+		LOCAL loFPDF, loFPDF_FORMS
 		m.loFPDF = This.env.API_FPDF
-		
+		m.loFPDF_FORMS = This.env.API_FPDF_FORMS
 		
 		IF This.fpdf_opened
 		    This._PrintEnv = .F.
@@ -14788,6 +15400,10 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		LOCAL lnPage
 		FOR m.lnPage = 1 TO m.lnPageCount
+		    IF EMPTY(This.fpdf_form) = .F.
+		        m.loFPDF_FORMS.FORM_OnBeforeClosePage(This.fpdf_pages[m.lnPage], This.fpdf_form)
+		    ENDIF
+		
 		    m.loFPDF.FPDFText_ClosePage(This.fpdf_text_pages[m.lnPage])
 		    m.loFPDF.FPDF_ClosePage(This.fpdf_pages[m.lnPage])
 		    
@@ -14806,6 +15422,11 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		STORE 0 TO This.fpdf_pages_pos, This.fpdf_pages_size
 		
+		IF EMPTY(This.fpdf_form) = .F.
+		    m.loFPDF_FORMS.VFPDFDOC_ExitFormFillEnvironment(This.fpdf_form)
+		    This.fpdf_form = 0
+		ENDIF
+		
 		IF EMPTY(This.fpdf_doc)=.F.
 		    m.loFPDF.FPDF_CloseDocument(This.fpdf_doc)
 		    This.fpdf_doc = 0
@@ -14823,9 +15444,10 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		DEFINE POPUP (m.lcMenuName) FROM MROW(), MCOL() MARGIN RELATIVE SHORTCUT FONT 'Segoe UI', 10
 		
-		LOCAL lcSelectCopy, lcSelectAll
+		LOCAL lcSelectCopy, lcSelectAll, lcPaste
 		m.lcSelectCopy = "SKIP FOR .T."
 		m.lcSelectAll = ""
+		m.lcPaste = IIF(EMPTY(_CLIPTEXT), "SKIP FOR .T.", "")
 		
 		IF This.fpdf_opened = .T.
 		    LOCAL lnPage
@@ -14839,6 +15461,23 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    m.lcSelectAll = "SKIP FOR .T."
 		ENDIF
 		
+		LOCAL llIsFormField
+		m.llIsFormField = .F.
+		IF EMPTY(This.fpdf_form) = .F.
+		    LOCAL lnAnnotPage, lnAnnot
+		    STORE 0 TO m.lnAnnotPage, m.lnAnnot
+		    IF This.env.API_FPDF_FORMS.FORM_GetFocusedAnnot(This.fpdf_form, @m.lnAnnotPage, @m.lnAnnot) = 1
+		        IF BETWEEN(m.lnAnnotPage + 1, This.fpdf_page_first_visible, This.fpdf_page_last_visible)
+		            LOCAL lnFPDF_Page
+		            m.lnFPDF_Page = This.fpdf_pages[m.lnAnnotPage + 1]
+		            IF This.env.API_FPDF_FORMS.FORM_GetSelectedText(This.fpdf_form, m.lnFPDF_Page, "", 0) > 2
+		                m.lcSelectCopy = ""
+		            ENDIF
+		            m.llIsFormField = .T.
+		        ENDIF
+		    ENDIF
+		ENDIF
+		
 		
 		LOCAL i
 		m.i=0
@@ -14846,6 +15485,12 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		m.i=m.i+1
 		DEFINE BAR (m.i) OF (m.lcMenuName) PROMPT (This.i18n.text("MNU_COPY")) PICTRES _MED_COPY &lcSelectCopy
 		ON SELECTION BAR (m.i) OF (m.lcMenuName) m.poThis.SelectionCopy()
+		
+		IF m.llIsFormField
+		    m.i=m.i+1
+		    DEFINE BAR (m.i) OF (m.lcMenuName) PROMPT (This.i18n.text("MNU_PASTE")) PICTRES _MED_PASTE &lcPaste
+		    ON SELECTION BAR (m.i) OF (m.lcMenuName) m.poThis.Paste()
+		ENDIF
 		
 		m.i=m.i+1
 		DEFINE BAR (m.i) OF (m.lcMenuName) PROMPT (This.i18n.text("MNU_SLCTA")) &lcSelectAll
@@ -14944,6 +15589,13 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		This.env.API_GDIP.CheckError(This.env.API_GDIP.GdipCreateFromHDC(This.DrawBufDC, @m.lhDrawBufGfx))
 		This.DrawBufGfx = m.lhDrawBufGfx
 		
+		This.DrawBufBitmap = This.env.API_FPDF.FPDFBitmap_Create(m.lnWidth, m.lnHeight, 0)
+		
+		m.lnBitsPerPixel = 32
+		This.DrawBufBitmapBMI = BINTOC(FF_BHDR_SIZE ,"4RS") + BINTOC(m.lnWidth,"4RS") + BINTOC(-m.lnHeight, "4RS") + ;
+		        (CHR(MOD(1,256)) + CHR(INT(1/256))) + (CHR(MOD(m.lnBitsPerPixel,256))+ CHR(INT(m.lnBitsPerPixel/256))) +;
+		        BINTOC(FF_BI_RGB, "4RS") + REPLICATE(0h00, 20)
+		
 	ENDPROC
 
 	HIDDEN PROCEDURE drawbufrelease
@@ -14960,6 +15612,11 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		IF EMPTY(This.DrawBufDIB) = .F.
 		    This.env.API_WIN.DeleteObject(This.DrawBufDIB)
 		    This.DrawBufDIB = 0
+		ENDIF
+		
+		IF EMPTY(This.DrawBufBitmap) = .F.
+		    This.env.API_FPDF.FPDFBitmap_Destroy(This.DrawBufBitmap)
+		    This.DrawBufBitmap = 0
 		ENDIF
 		
 	ENDPROC
@@ -15051,7 +15708,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 	HIDDEN PROCEDURE GotFocus
 		This.IsFocused = .T.
 		
-		
 	ENDPROC
 
 	PROCEDURE Init
@@ -15103,6 +15759,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 	PROCEDURE keypress		&& Occurs when the user presses and releases a key.
 		LPARAMETERS nKeyCode, nShiftAltCtrl
 		
+		#define KEY_BACK 127
+		#define KEY_TAB 0x09
 		#define KEY_LEFT_ARROW 19
 		#define KEY_RIGHT_ARROW 4
 		#define KEY_UP_ARROW 5
@@ -15111,9 +15769,160 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		#define KEY_PAGE_DOWN 3
 		#define KEY_HOME 1
 		#define KEY_END 6
+		#define KEY_CTRL_C 3
+		#define KEY_CTRL_V 22
+		
+		IF This.AllowFormEdit ;
+		    AND EMPTY(This.fpdf_form) = .F. ;
+		    AND BITAND(m.nShiftAltCtrl, 4) = 0 ;
+		    AND NOT (INLIST(m.nKeyCode, KEY_CTRL_C, KEY_CTRL_V) AND m.nShiftAltCtrl = 2)
+		    
+		    #define VK_INSERT 0x2D
+		    #define VK_HOME 0x24
+		    #define VK_DELETE 0x2E
+		    #define VK_END 0x23
+		    #define VK_PRIOR 0x21
+		    #define VK_NEXT 0x22
+		    #define VK_UP 0x26
+		    #define VK_DOWN 0x28
+		    #define VK_RIGHT 0x27
+		    #define VK_LEFT 0x25
+		    #define VK_ESCAPE 0x1B
+		    #define VK_BACK 0x08
+		    #define VK_TAB 0x09
+		    #define VK_RETURN 0x09
+		        
+		
+		    LOCAL lnVKey
+		    m.lnVKey = 0
+		    DO CASE
+		    CASE m.nKeyCode = 22 AND m.nShiftAltCtrl = 0
+		        m.lnVKey = VK_INSERT
+		    CASE m.nKeyCode = 22 AND m.nShiftAltCtrl = 1
+		        m.lnVKey = VK_INSERT
+		    CASE m.nKeyCode = 146 AND m.nShiftAltCtrl = 2
+		        m.lnVKey = VK_INSERT
+		
+		    CASE m.nKeyCode = 1 AND m.nShiftAltCtrl = 0
+		        m.lnVKey = VK_HOME
+		    CASE m.nKeyCode = 55 AND m.nShiftAltCtrl = 1
+		        m.lnVKey = VK_HOME
+		    CASE m.nKeyCode = 29 AND m.nShiftAltCtrl = 2
+		        m.lnVKey = VK_HOME
+		
+		    CASE m.nKeyCode = 7 AND m.nShiftAltCtrl = 0
+		        m.lnVKey = VK_DELETE
+		    CASE m.nKeyCode = 7 AND m.nShiftAltCtrl = 1
+		        m.lnVKey = VK_DELETE
+		    CASE m.nKeyCode = 147 AND m.nShiftAltCtrl = 2
+		        m.lnVKey = VK_DELETE
+		
+		    CASE m.nKeyCode = 6 AND m.nShiftAltCtrl = 0
+		        m.lnVKey = VK_END
+		    CASE m.nKeyCode = 49 AND m.nShiftAltCtrl = 1
+		        m.lnVKey = VK_END
+		    CASE m.nKeyCode = 23 AND m.nShiftAltCtrl = 2
+		        m.lnVKey = VK_END
+		
+		    CASE m.nKeyCode = 18 AND m.nShiftAltCtrl = 0
+		        m.lnVKey = VK_PRIOR
+		    CASE m.nKeyCode = 57 AND m.nShiftAltCtrl = 1
+		        m.lnVKey = VK_PRIOR
+		    CASE m.nKeyCode = 31 AND m.nShiftAltCtrl = 2
+		        m.lnVKey = VK_PRIOR
+		
+		    CASE m.nKeyCode = 3 AND m.nShiftAltCtrl = 0
+		        m.lnVKey = VK_NEXT
+		    CASE m.nKeyCode = 51 AND m.nShiftAltCtrl = 1
+		        m.lnVKey = VK_NEXT
+		    CASE m.nKeyCode = 30 AND m.nShiftAltCtrl = 2
+		        m.lnVKey = VK_NEXT
+		
+		    CASE m.nKeyCode = 5 AND m.nShiftAltCtrl = 0
+		        m.lnVKey = VK_UP
+		    CASE m.nKeyCode = 56 AND m.nShiftAltCtrl = 1
+		        m.lnVKey = VK_UP
+		    CASE m.nKeyCode = 141 AND m.nShiftAltCtrl = 2
+		        m.lnVKey = VK_UP
+		
+		    CASE m.nKeyCode = 24 AND m.nShiftAltCtrl = 0
+		        m.lnVKey = VK_DOWN
+		    CASE m.nKeyCode = 50 AND m.nShiftAltCtrl = 1
+		        m.lnVKey = VK_DOWN
+		    CASE m.nKeyCode = 145 AND m.nShiftAltCtrl = 2
+		        m.lnVKey = VK_DOWN
+		
+		    CASE m.nKeyCode = 4 AND m.nShiftAltCtrl = 0
+		        m.lnVKey = VK_RIGHT
+		    CASE m.nKeyCode = 54 AND m.nShiftAltCtrl = 1
+		        m.lnVKey = VK_RIGHT
+		    CASE m.nKeyCode = 2 AND m.nShiftAltCtrl = 2
+		        m.lnVKey = VK_RIGHT
+		
+		    CASE m.nKeyCode = 19 AND m.nShiftAltCtrl = 0
+		        m.lnVKey = VK_LEFT
+		    CASE m.nKeyCode = 52 AND m.nShiftAltCtrl = 1
+		        m.lnVKey = VK_LEFT
+		    CASE m.nKeyCode = 26 AND m.nShiftAltCtrl = 2
+		        m.lnVKey = VK_LEFT
+		
+		    CASE m.nKeyCode = 27 AND m.nShiftAltCtrl = 0
+		        m.lnVKey = VK_ESCAPE
+		    CASE m.nKeyCode = 27 AND m.nShiftAltCtrl = 1
+		        m.lnVKey = VK_ESCAPE
+		    CASE m.nKeyCode = 27 AND m.nShiftAltCtrl = 2
+		        m.lnVKey = VK_ESCAPE
+		
+		    CASE m.nKeyCode = 13 AND m.nShiftAltCtrl = 0
+		        m.lnVKey = VK_RETURN
+		    CASE m.nKeyCode = 13 AND m.nShiftAltCtrl = 1
+		        m.lnVKey = VK_RETURN
+		    CASE m.nKeyCode = 10 AND m.nShiftAltCtrl = 2
+		        m.lnVKey = VK_RETURN
+		
+		    CASE m.nKeyCode = 127 AND m.nShiftAltCtrl = 0
+		        m.lnVKey = VK_BACK
+		    CASE m.nKeyCode = 127 AND m.nShiftAltCtrl = 1
+		        m.lnVKey = VK_BACK
+		    CASE m.nKeyCode = 127 AND m.nShiftAltCtrl = 2
+		        m.lnVKey = VK_BACK
+		
+		    CASE m.nKeyCode = 9 AND m.nShiftAltCtrl = 0
+		        m.lnVKey = VK_TAB
+		    CASE m.nKeyCode = 15 AND m.nShiftAltCtrl = 1
+		        m.lnVKey = VK_TAB
+		    CASE m.nKeyCode = 148 AND m.nShiftAltCtrl = 2
+		        m.lnVKey = VK_TAB
+		    ENDCASE
+		    
+		    LOCAL lnAnnotPage, lnAnnot
+		    STORE 0 TO m.lnAnnotPage, m.lnAnnot
+		    IF This.env.API_FPDF_FORMS.FORM_GetFocusedAnnot(This.fpdf_form, @m.lnAnnotPage, @m.lnAnnot) = 1
+		        IF BETWEEN(m.lnAnnotPage + 1, This.fpdf_page_first_visible, This.fpdf_page_last_visible)
+		            LOCAL lnFPDF_Page
+		            m.lnFPDF_Page = This.fpdf_pages[m.lnAnnotPage + 1]
+		        
+		            LOCAL lnKeyCodeUTF
+		            m.lnKeyCodeUTF = 0
+		            IF INLIST(m.lnVKey, 0, VK_BACK) AND INLIST(m.nShiftAltCtrl,0,1)
+		                m.lnKeyCodeUTF = This.env.API_WIN.GetKeyUnicode(m.nKeyCode)
+		            ENDIF
+		            DO CASE
+		            CASE m.lnKeyCodeUTF > 0 AND NOT INLIST(m.lnKeyCodeUTF, KEY_TAB)
+		                This.env.API_FPDF_FORMS.FORM_OnChar(This.fpdf_form, m.lnFPDF_Page, m.lnKeyCodeUTF, 0)
+		            CASE m.lnVKey > 0
+		                This.env.API_FPDF_FORMS.FORM_OnKeyDown(This.fpdf_form, m.lnFPDF_Page, m.lnVKey, m.nShiftAltCtrl)
+		            ENDCASE
+		            
+		            This.Redraw()
+		            NODEFAULT
+		            RETURN
+		        ENDIF
+		    ENDIF
+		ENDIF
+		
 		
 		DO CASE
-		
 		CASE This.fpdf_opened = .F.
 		 
 		CASE This.UIState.GetEffectivelyVisible() = .F.
@@ -15152,14 +15961,14 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    NODEFAULT
 		    This.ScrollVert(This.ViewPortMaxY, .T., .F.)
 		
-		CASE m.nKeyCode = 3 AND m.nShiftAltCtrl = 2
+		CASE m.nKeyCode = KEY_CTRL_C AND m.nShiftAltCtrl = 2
 		    NODEFAULT
 		    This.SelectionCopy()
 		
-		CASE m.nKeyCode = 1 AND m.nShiftAltCtrl = 2
+		CASE m.nKeyCode = KEY_CTRL_V AND m.nShiftAltCtrl = 2
 		    NODEFAULT
 		    This.SelectTextAll()
-		    
+		
 		ENDCASE
 		
 		
@@ -15167,16 +15976,19 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 
 	HIDDEN PROCEDURE LostFocus
 		This.IsFocused = .F.
-		
-		
+		IF EMPTY(This.fpdf_form) = .F.
+		    This.env.API_FPDF_FORMS.FORM_ForceToKillFocus(This.fpdf_form)
+		    This.Redraw()
+		ENDIF
 		
 	ENDPROC
 
 	HIDDEN PROCEDURE MouseDown
 		LPARAMETERS nButton, nShift, nXCoord, nYCoord
 		
-		LOCAL loFPDF
+		LOCAL loFPDF, loFPDF_FORMS
 		m.loFPDF = This.env.API_FPDF
+		m.loFPDF_FORMS = This.env.API_FPDF_FORMS
 		
 		IF This.fpdf_opened = .F.
 		    RETURN
@@ -15188,7 +16000,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		IF m.nButton <> 1
 		    RETURN 
 		ENDIF
-		
 		
 		LOCAL lnMouseX, lnMouseY
 		m.lnMouseX = m.nXCoord
@@ -15250,6 +16061,24 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		IF m.loFPDF.FPDF_DeviceToPage(m.lnFPDF_Page, This.fpdf_pages_pos[m.lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[m.lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[m.lnPage,3], This.fpdf_pages_pos[m.lnPage,4], 0, m.lnMouseX, m.lnMouseY, @m.lnPageX, @m.lnPageY) <> 1
 		    RETURN
+		ENDIF
+		
+		IF m.nButton = 1 AND This.AllowFormEdit AND EMPTY(This.fpdf_form) = .F.
+		    DO CASE
+		    CASE m.llDblClick = .T.
+		        IF m.loFPDF_FORMS.FORM_OnLButtonDoubleClick(This.fpdf_form, m.lnFPDF_Page, m.nShift, m.lnPageX, m.lnPageY) > 0
+		            m.loFPDF_FORMS.Form_OnFocus(This.fpdf_form, m.lnFPDF_Page, m.nShift, m.lnPageX, m.lnPageY)
+		            This.Redraw()
+		            RETURN
+		        ENDIF
+		    OTHERWISE
+		        IF m.loFPDF_FORMS.FORM_OnLButtonDown(This.fpdf_form, m.lnFPDF_Page, m.nShift, m.lnPageX, m.lnPageY) > 0
+		            m.loFPDF_FORMS.Form_OnFocus(This.fpdf_form, m.lnFPDF_Page, m.nShift, m.lnPageX, m.lnPageY)
+		            This.Redraw()
+		            RETURN
+		        ENDIF
+		    ENDCASE
+		    m.loFPDF_FORMS.FORM_ForceToKillFocus(This.fpdf_form)
 		ENDIF
 		
 		
@@ -15336,8 +16165,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN
 		ENDIF
 		
-		LOCAL loFPDF
+		LOCAL loFPDF, loFPDF_FORMS
 		m.loFPDF = This.env.API_FPDF
+		m.loFPDF_FORMS = This.env.API_FPDF_FORMS
 		
 		LOCAL lnMouseX, lnMouseY
 		m.lnMouseX = m.nXCoord
@@ -15359,6 +16189,13 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN
 		ENDIF
 		
+		IF m.nButton = 1 AND This.AllowFormEdit AND EMPTY(This.fpdf_form) = .F.
+		    IF m.loFPDF_FORMS.FORM_OnMouseMove(This.fpdf_form, m.lnFPDF_Page, m.nShift + IIF(m.nButton=1, 64,0), m.lnPageX, m.lnPageY) > 0
+		        This.Redraw()
+		        RETURN
+		    ENDIF
+		ENDIF
+		
 		LOCAL lnCharIndex
 		m.lnCharIndex = m.loFPDF.FPDFText_GetCharIndexAtPos(m.lnFPDF_Text_Page, m.lnPageX, m.lnPageY, 10, 0)
 		
@@ -15367,7 +16204,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    This.MousePointer = 3
 		    
 		    IF m.nButton = 1 AND m.lnCharIndex <> This.SelectionCharindexPrev
-		        This.selecttext(m.lnPage, MIN(This.SelectionCharIndexStart,m.lnCharIndex), ABS(m.lnCharIndex-This.SelectionCharIndexStart)+1)
+		        This.SelectText(m.lnPage, MIN(This.SelectionCharIndexStart,m.lnCharIndex), ABS(m.lnCharIndex-This.SelectionCharIndexStart)+1)
 		    ENDIF
 		    
 		OTHERWISE
@@ -15381,10 +16218,41 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 	HIDDEN PROCEDURE MouseUp
 		LPARAMETERS nButton, nShift, nXCoord, nYCoord
 		
+		LOCAL loFPDF, loFPDF_FORMS
+		m.loFPDF = This.env.API_FPDF
+		m.loFPDF_FORMS = This.env.API_FPDF_FORMS
+		
 		IF This.fpdf_opened = .F.
 		    RETURN
 		ENDIF
 		
+		LOCAL lnMouseX, lnMouseY
+		m.lnMouseX = m.nXCoord
+		m.lnMouseY = m.nYCoord
+		
+		LOCAL lnPage, lnFPDF_Page, lnFPDF_Text_Page
+		m.lnPage = This.PagePick(m.lnMouseX, m.lnMouseY)
+		
+		IF EMPTY(m.lnPage) = .T.
+		    RETURN
+		ENDIF
+		
+		m.lnFPDF_Page = This.fpdf_pages[m.lnPage]
+		m.lnFPDF_Text_Page = This.fpdf_text_pages[m.lnPage]
+		
+		LOCAL lnPageX as Double, lnPageY as Double
+		STORE 0 TO m.lnPageX, m.lnPageY
+		
+		IF m.loFPDF.FPDF_DeviceToPage(m.lnFPDF_Page, This.fpdf_pages_pos[m.lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[m.lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[m.lnPage,3], This.fpdf_pages_pos[m.lnPage,4], 0, m.lnMouseX, m.lnMouseY, @m.lnPageX, @m.lnPageY) <> 1
+		    RETURN
+		ENDIF
+		
+		IF m.nButton = 1 AND This.AllowFormEdit AND EMPTY(This.fpdf_form) = .F.
+		    IF m.loFPDF_FORMS.FORM_OnLButtonUp(This.fpdf_form, m.lnFPDF_Page, m.nShift + 64, m.lnPageX, m.lnPageY) > 0
+		        This.Redraw()
+		        RETURN
+		    ENDIF
+		ENDIF
 		
 		IF m.nButton = 2
 		    This.contextmenu()
@@ -15420,8 +16288,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		This.ClosePDF()
 		
-		LOCAL loFPDF
+		LOCAL loFPDF, loFPDF_FORMS
 		m.loFPDF = This.env.API_FPDF
+		m.loFPDF_FORMS = This.env.API_FPDF_FORMS
 		
 		
 		LOCAL lcFilename
@@ -15468,6 +16337,11 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN .F.
 		ENDDO
 		
+		This.fpdf_form = m.loFPDF_FORMS.VFPDFDOC_InitFormFillEnvironment(This.fpdf_doc)
+		IF EMPTY(This.fpdf_form) = .F.
+		    m.loFPDF_FORMS.FPDF_SetFormFieldHighlightColor(This.fpdf_form, m.loFPDF.CONST.FPDF_FORMFIELD_UNKNOWN() , 0xFFE4DD)
+		    m.loFPDF_FORMS.FPDF_SetFormFieldHighlightAlpha(This.fpdf_form, 100)
+		ENDIF
 		
 		This.fpdf_pagecount = m.loFPDF.FPDF_GetPageCount(This.fpdf_doc)
 		
@@ -15485,6 +16359,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    This.fpdf_pages[m.lnPage] = m.loFPDF.FPDF_LoadPage(This.FPDF_Doc, m.lnPage-1)
 		    
 		    This.fpdf_text_pages[m.lnPage] = m.loFPDF.FPDFText_LoadPage(This.fpdf_pages[m.lnPage])
+		    IF EMPTY(This.fpdf_form) = .F.
+		        m.loFPDF_FORMS.FORM_OnAfterLoadPage(This.fpdf_pages[m.lnPage], This.fpdf_form)
+		    ENDIF
 		    
 		    This.fpdf_pages_selection[m.lnPage,1] = ""
 		    This.fpdf_pages_selection[m.lnPage,2] = 0
@@ -15531,6 +16408,74 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		ENDFOR
 		
 		RETURN m.lnPageFound
+		
+	ENDPROC
+
+	PROCEDURE paste		&& Paste text from clipboard to form field
+		
+		#define CF_UNICODETEXT 13
+		
+		IF This.fpdf_opened = .F.
+		    RETURN
+		ENDIF
+		
+		LOCAL lcPasteTextUTF
+		m.lcPasteTextUTF = ""
+		
+		IF This.env.API_WIN.OpenClipboard(0) = 0
+		    EXIT
+		ENDIF
+		
+		LOCAL loErr
+		m.loErr = .F.
+		TRY
+		    LOCAL lnMemHandle
+		    m.lnMemHandle = This.env.API_WIN.GetClipboardData(CF_UNICODETEXT)
+		    IF m.lnMemHandle <> 0
+		        LOCAL lnBufLen, lnMemPtr
+		        m.lnBufLen = This.env.API_WIN.GlobalSize(m.lnMemHandle)
+		        m.lnMemPtr = This.env.API_WIN.GlobalLock(m.lnMemHandle)
+		
+		        IF m.lnBufLen <> 0 AND m.lnMemPtr <> 0
+		            m.lcPasteTextUTF = SYS(2600, m.lnMemPtr, m.lnBufLen)
+		        ENDIF
+		        This.env.API_WIN.GlobalUnlock(m.lnMemHandle)
+		    ENDIF
+		    
+		    IF EMPTY(m.lcPasteTextUTF)
+		        m.lcPasteTextUTF = STRCONV(_CLIPTEXT, 5)
+		    ENDIF
+		    
+		CATCH TO m.loErr
+		    This.ErrMsg(m.loErr)
+		FINALLY
+		    This.env.API_WIN.CloseClipboard()
+		ENDTRY
+		
+		IF EMPTY(m.lcPasteTextUTF)
+		    RETURN
+		ENDIF
+		
+		LOCAL loErr
+		m.loErr = .F.
+		TRY
+		    IF EMPTY(This.fpdf_form) = .F.
+		        LOCAL lnAnnotPage, lnAnnot
+		        STORE 0 TO m.lnAnnotPage, m.lnAnnot
+		        IF This.env.API_FPDF_FORMS.FORM_GetFocusedAnnot(This.fpdf_form, @m.lnAnnotPage, @m.lnAnnot) = 1
+		            IF BETWEEN(m.lnAnnotPage + 1, This.fpdf_page_first_visible, This.fpdf_page_last_visible)
+		                LOCAL lnFPDF_Page
+		                m.lnFPDF_Page = This.fpdf_pages[m.lnAnnotPage + 1]
+		
+		                This.env.API_FPDF_FORMS.FORM_ReplaceSelection(This.fpdf_form, m.lnFPDF_Page, m.lcPasteTextUTF + CHR(0))
+		                This.Redraw()
+		                EXIT
+		            ENDIF
+		        ENDIF
+		    ENDIF
+		CATCH TO m.loErr
+		    This.ErrMsg(m.loErr)
+		ENDTRY
 		
 	ENDPROC
 
@@ -15963,8 +16908,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN
 		ENDIF
 		
-		
-		
 		LOCAL lnWidth, lnHeight
 		m.lnWidth = This.Width
 		m.lnHeight = This.Height
@@ -15996,9 +16939,21 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN
 		ENDIF
 		
-		LOCAL loFPDF
+		LOCAL loFPDF, loFPDF_FORMS
 		m.loFPDF = This.env.API_FPDF
+		m.loFPDF_FORMS = This.env.API_FPDF_FORMS
 		
+		#define FF_DIB_RGB_COLORS   0
+		#define FF_SRCCOPY 0x00CC0020
+		
+		IF EMPTY(This.fpdf_form) = .F.
+		    IF EMPTY(This.DrawBufBitmap)
+		        RETURN
+		    ENDIF
+		    m.loFPDF.FPDFBitmap_FillRect(This.DrawBufBitmap, 0, 0, This.Width, This.Height, 0xFFFFFFFF)
+		    LOCAL lnDibDataPtr
+		    m.lnDibDataPtr = This.env.API_FPDF.FPDFBitmap_GetBuffer(This.DrawBufBitmap)
+		ENDIF
 		
 		LOCAL lnFPDF_Page, lnPageX, lnPageY, lnPageWidth, lnPageHeight
 		
@@ -16013,11 +16968,16 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		    This.env.API_GDIP.GdipFillRectangleI(This.DrawBufGfx, This.PageFillBrush, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight)
 		    
-		    m.loFPDF.FPDF_RenderPage(This.DrawBufDC, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, 0, 0)
-		
+		    IF EMPTY(This.fpdf_form) = .T.
+		        m.loFPDF.FPDF_RenderPage(This.DrawBufDC, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, 0, 0)
+		    ELSE
+		        m.loFPDF.FPDF_RenderPageBitmap(This.DrawBufBitmap, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, 0, 0)
+		        m.loFPDF_FORMS.FPDF_FFLDraw(This.fpdf_form, This.DrawBufBitmap, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, 0, 0)
+		        This.env.API_WIN.StretchDIBits(This.DrawBufDC, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageX, This.Height - m.lnPageY - m.lnPageHeight, m.lnPageWidth, m.lnPageHeight, m.lnDibDataPtr, This.DrawBufBitmapBMI, FF_DIB_RGB_COLORS, FF_SRCCOPY)
+		    ENDIF
+		    
 		    This.RenderSearch(m.lnPage)
 		    This.RenderSelection(m.lnPage)
-		    
 		ENDFOR
 		
 	ENDPROC
@@ -16097,7 +17057,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    IF m.loFPDF.FPDF_PageToDevice(This.FPDF_PAGES[m.lnPage], This.fpdf_pages_pos[m.lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[m.lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[m.lnPage,3], This.fpdf_pages_pos[m.lnPage,4], 0, m.lnPageRight, m.lnPageBottom, @m.lnRight, @m.lnBottom) = 0
 		        LOOP
 		    ENDIF
-		        
+		
 		    This.env.API_GDIP.GdipFillRectangleI(This.DrawBufGfx, This.SelectionBrush, m.lnLeft, m.lnTop, m.lnRight - m.lnLeft, m.lnBottom - m.lnTop)
 		ENDFOR
 		
@@ -16482,26 +17442,55 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		LOCAL lcCopyText
 		m.lcCopyText = ""
 		
-		LOCAL lnPage, lnFPDF_TEXT_PAGE, lnSelStart, lnSelCount
-		FOR m.lnPage = 1 TO This.fpdf_pagecount
+		LOCAL loErr
+		m.loErr = .F.
+		TRY
+		    IF EMPTY(This.fpdf_form) = .F.
+		        LOCAL lnAnnotPage, lnAnnot
+		        STORE 0 TO m.lnAnnotPage, m.lnAnnot
+		        IF This.env.API_FPDF_FORMS.FORM_GetFocusedAnnot(This.fpdf_form, @m.lnAnnotPage, @m.lnAnnot) = 1
+		            IF BETWEEN(m.lnAnnotPage + 1, This.fpdf_page_first_visible, This.fpdf_page_last_visible)
+		                LOCAL lnFPDF_Page
+		                m.lnFPDF_Page = This.fpdf_pages[m.lnAnnotPage + 1]
 		
-		    m.lnFPDF_TEXT_PAGE = This.FPDF_TEXT_PAGES[m.lnPage]
-		    m.lnSelStart = EVL(This.fpdf_pages_selection[m.lnPage,2],0)
-		    m.lnSelCount = EVL(This.fpdf_pages_selection[m.lnPage,3],0)
-		    
-		    IF m.lnSelCount = 0
-		        LOOP
-		    ENDIF
-		    
-		    LOCAL lcBuffer, lnBufLen
-		    m.lcBuffer = REPLICATE(CHR(0), m.lnSelCount * 2)
-		    m.lnBufLen = m.loFPDF.FPDFText_GetText(m.lnFPDF_TEXT_PAGE, m.lnSelStart, m.lnSelCount, @m.lcBuffer)
-		    
-		    IF m.lnBufLen > 0
-		        m.lcCopyText = m.lcCopyText + m.lcBuffer
+		                LOCAL lcBuffer, lnBufLen
+		                m.lnBufLen = This.env.API_FPDF_FORMS.FORM_GetSelectedText(This.fpdf_form, m.lnFPDF_Page, "", 0)
+		                IF m.lnBufLen > 0
+		                    m.lcBuffer = REPLICATE(CHR(0), m.lnBufLen)
+		                    
+		                    IF This.env.API_FPDF_FORMS.FORM_GetSelectedText(This.fpdf_form, m.lnFPDF_Page, @m.lcBuffer, m.lnBufLen) > 0
+		                        m.lcCopyText = m.lcBuffer
+		                    ENDIF
+		                ENDIF
+		                EXIT
+		            ENDIF
+		        ENDIF
 		    ENDIF
 		
-		ENDFOR
+		    LOCAL lnPage, lnFPDF_TEXT_PAGE, lnSelStart, lnSelCount
+		    FOR m.lnPage = 1 TO This.fpdf_pagecount
+		
+		        m.lnFPDF_TEXT_PAGE = This.FPDF_TEXT_PAGES[m.lnPage]
+		        m.lnSelStart = EVL(This.fpdf_pages_selection[m.lnPage,2],0)
+		        m.lnSelCount = EVL(This.fpdf_pages_selection[m.lnPage,3],0)
+		        
+		        IF m.lnSelCount = 0
+		            LOOP
+		        ENDIF
+		        
+		        LOCAL lcBuffer, lnBufLen
+		        m.lcBuffer = REPLICATE(CHR(0), m.lnSelCount * 2)
+		        m.lnBufLen = m.loFPDF.FPDFText_GetText(m.lnFPDF_TEXT_PAGE, m.lnSelStart, m.lnSelCount, @m.lcBuffer)
+		        
+		        IF m.lnBufLen > 0
+		            m.lcCopyText = m.lcCopyText + m.lcBuffer
+		        ENDIF
+		
+		    ENDFOR
+		
+		CATCH TO loErr
+		    This.ErrMsg(m.loErr)
+		ENDTRY
 		
 		IF EMPTY(m.lcCopyText)=.F.
 		    
@@ -16641,7 +17630,29 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 	ENDPROC
 
 	PROCEDURE selecttextall		&& Select all text in the document
-		This.SelectText(0,0,-1)
+		LOCAL loErr
+		m.loErr = .F.
+		TRY
+		    IF EMPTY(This.fpdf_form) = .F.
+		        LOCAL lnAnnotPage, lnAnnot
+		        STORE 0 TO m.lnAnnotPage, m.lnAnnot
+		        IF This.env.API_FPDF_FORMS.FORM_GetFocusedAnnot(This.fpdf_form, @m.lnAnnotPage, @m.lnAnnot) = 1
+		            IF BETWEEN(m.lnAnnotPage + 1, This.fpdf_page_first_visible, This.fpdf_page_last_visible)
+		                LOCAL lnFPDF_Page
+		                m.lnFPDF_Page = This.fpdf_pages[m.lnAnnotPage + 1]
+		
+		                This.env.API_FPDF_FORMS.FORM_SelectAllText(This.fpdf_form, m.lnFPDF_Page)
+		                This.Redraw()
+		                EXIT
+		            ENDIF
+		        ENDIF
+		    ENDIF
+		
+		    This.SelectText(0,0,-1)
+		    
+		CATCH TO loErr
+		    This.ErrMsg(m.loErr)
+		ENDTRY
 		
 	ENDPROC
 
@@ -16963,10 +17974,14 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		#define WM_MOUSEMOVE 0x0200
 		#define WM_LBUTTONDOWN 0x0201
+		#define WM_LBUTTONUP 0x0202
+		#define WM_RBUTTONDOWN 0x0204
 		#define WM_RBUTTONUP 0x0205
 		#define WM_MOUSEWHEEL 0x020A
 		BINDEVENT(This.WndHandle, WM_MOUSEMOVE, This, "WndProc")
 		BINDEVENT(This.WndHandle, WM_LBUTTONDOWN, This, "WndProc")
+		BINDEVENT(This.WndHandle, WM_LBUTTONUP, This, "WndProc")
+		BINDEVENT(This.WndHandle, WM_RBUTTONDOWN, This, "WndProc")
 		BINDEVENT(This.WndHandle, WM_RBUTTONUP, This, "WndProc")
 		BINDEVENT(This.WndHandle, WM_MOUSEWHEEL, This, "WndProc")
 		
@@ -16975,8 +17990,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		#define WM_HSCROLL 0x0114
 		BINDEVENT(This.WndHandle, WM_HSCROLL, This, "WndProc")
-		
-		
 		
 	ENDPROC
 
@@ -16990,13 +18003,14 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		#define WM_HSCROLL 0x0114
 		#define WM_MOUSEMOVE 0x0200
 		#define WM_LBUTTONDOWN 0x0201
+		#define WM_LBUTTONUP 0x0202
+		#define WM_RBUTTONDOWN 0x0204
 		#define WM_RBUTTONUP 0x0205
 		#define WM_MOUSEWHEEL 0x020A
 		#define MK_LBUTTON 0x0001
 		#define MK_RBUTTON 0x0002
 		#define MK_SHIFT 0x0004
 		#define MK_CONTROL 0x0008
-		
 		
 		#define SB_LINEUP           0
 		#define SB_LINELEFT         0
@@ -17052,7 +18066,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		        This.MousePointer = m.lSaveMousePointer
 		    ENDIF
 		    
-		CASE INLIST(m.tnMsg, WM_MOUSEMOVE, WM_MOUSEWHEEL, WM_LBUTTONDOWN, WM_RBUTTONUP) 
+		CASE INLIST(m.tnMsg, WM_MOUSEMOVE, WM_MOUSEWHEEL, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_RBUTTONDOWN, WM_RBUTTONUP) 
 		    LOCAL lnMBtn, lnMShift, lnMouseX, lnMouseY
 		    m.lnMBtn = BITAND(m.tnWParam, MK_LBUTTON + MK_RBUTTON)
 		    m.lnMShift = BITRSHIFT(BITAND(m.tnWParam, MK_SHIFT + MK_CONTROL),2)
@@ -17061,20 +18075,26 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    
 		    DO CASE
 		    
-		    CASE INLIST(m.tnMsg, WM_MOUSEMOVE) AND This.IsFocused
+		    CASE m.tnMsg = WM_MOUSEMOVE AND This.IsFocused
 		        This.MouseMove(m.lnMBtn, m.lnMShift, m.lnMouseX, m.lnMouseY)
 		 
-		    CASE INLIST(m.tnMsg, WM_MOUSEWHEEL)
+		    CASE m.tnMsg = WM_MOUSEWHEEL
 		        LOCAL lnMWDir 
 		        m.lnMWDir = BITAND(BITRSHIFT(m.tnWParam,16), 0xffff)
 		        m.lnMWDir = IIF(BITTEST(m.lnMWDir,15), m.lnMWDir - 0xffff, m.lnMWDir)
 		        
 		        This.MouseWheel(m.lnMWDir, m.lnMShift, m.lnMouseX, m.lnMouseY)
 		
-		    CASE INLIST(m.tnMsg, WM_LBUTTONDOWN) AND This.IsFocused
+		    CASE m.tnMsg =  WM_LBUTTONDOWN AND This.IsFocused
 		        This.MouseDown(1, m.lnMShift, m.lnMouseX, m.lnMouseY)
+		
+		    CASE m.tnMsg = WM_LBUTTONUP AND This.IsFocused
+		        This.MouseUp(1, m.lnMShift, m.lnMouseX, m.lnMouseY)
+		
+		    CASE m.tnMsg =  WM_RBUTTONDOWN AND This.IsFocused
+		        This.MouseDown(2, m.lnMShift, m.lnMouseX, m.lnMouseY)
 		        
-		    CASE INLIST(m.tnMsg, WM_RBUTTONUP) AND This.IsFocused
+		    CASE m.tnMsg = WM_RBUTTONUP AND This.IsFocused
 		        This.MouseUp(2, m.lnMShift, m.lnMouseX, m.lnMouseY)
 		
 		    ENDCASE
@@ -17151,14 +18171,12 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		       ENDIF
 		    ENDCASE
 		
-		
 		OTHERWISE
 		    LOCAL lnWndProcDefault
 		    m.lnWndProcDefault = This.env.API_WIN.GetWindowLong(m.thWnd, GWL_WNDPROC)
 		    m.lnRetVal = This.env.API_WIN.CallWindowProc(m.lnWndProcDefault, m.thWnd, m.tnMsg, m.tnWParam, m.tnLParam)
 		
 		ENDCASE
-		
 		
 		RETURN m.lnRetVal
 		

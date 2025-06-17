@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.0//EN" "report.dtd">
     <report name="report">
-        <sessioninfo id="_77C0NAC8G" start="1749552688531" dump="1749552705000"/>         
+        <sessioninfo id="_77J16CBLZ" start="1750189494238" dump="1750189510000"/>         
         <package name="PDFIUM-VFP/SOURCE/PDFIUM-VFP.VCX">             
             <class name="pdfiumviewer_cmdfocus">                     
                 <method name="THIS_ACCESS" desc="">
@@ -30,76 +30,6 @@
                              
             <class name="pdfium_api_frx">                     
                 <counter type="METHOD" missed="0" covered="0"/>
-                </class>
-                             
-            <class name="pdfium_api_fpdf_const">                     
-                <method name="FPDFBITMAP_BGR" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFBITMAP_BGRA" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFBITMAP_BGRX" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFBITMAP_GRAY" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFBITMAP_UNKNOWN" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDF_ERR_PASSWORD" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDF_FILLMODE_ALTERNATE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDF_FILLMODE_NONE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDF_FILLMODE_WINDING" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDF_FONT_TRUETYPE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDF_FONT_TYPE1" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDF_PAGEOBJ_FORM" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDF_PAGEOBJ_IMAGE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDF_PAGEOBJ_PATH" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDF_PAGEOBJ_SHADING" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDF_PAGEOBJ_TEXT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDF_PAGEOBJ_UNKNOWN" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDF_PRINTING" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDF_TEXTRENDERMODE_FILL" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDF_TEXTRENDERMODE_FILL_STROKE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDF_TEXTRENDERMODE_STROKE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDF_TEXTRENDERMODE_UNKNOWN" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <counter type="METHOD" missed="16" covered="6"/>
                 </class>
                              
             <class name="pdfium_api_gdip_const">                     
@@ -210,253 +140,6 @@
                 <counter type="METHOD" missed="2" covered="10"/>
                 </class>
                              
-            <class name="pdfium_api_fpdf">                     
-                <method name="FPDFBITMAP_CREATE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFBITMAP_CREATEEX" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFBITMAP_DESTROY" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFBITMAP_FILLRECT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFBITMAP_GETBUFFER" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFBITMAP_GETFORMAT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFBITMAP_GETHEIGHT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFBITMAP_GETSTRIDE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFBITMAP_GETWIDTH" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFFONT_CLOSE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFFONT_GETFAMILYNAME" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFFONT_GETFLAGS" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFFONT_GETWEIGHT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFIMAGEOBJ_SETBITMAP" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFPAGEOBJ_CREATENEWPATH" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFPAGEOBJ_CREATENEWRECT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFPAGEOBJ_CREATETEXTOBJ" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFPAGEOBJ_DESTROY" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFPAGEOBJ_GETBOUNDS" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFPAGEOBJ_GETMATRIX" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFPAGEOBJ_GETTYPE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFPAGEOBJ_NEWIMAGEOBJ" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFPAGEOBJ_SETDASHARRAY" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFPAGEOBJ_SETFILLCOLOR" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFPAGEOBJ_SETSTROKECOLOR" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFPAGEOBJ_SETSTROKEWIDTH" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFPAGEOBJ_TRANSFORM" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFPAGEOBJ_TRANSFORMF" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFPAGE_COUNTOBJECTS" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFPAGE_DELETE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFPAGE_GENERATECONTENT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFPAGE_GETOBJECT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFPAGE_INSERTOBJECT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFPAGE_NEW" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFPAGE_REMOVEOBJECT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFPATH_BEZIERTO" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFPATH_LINETO" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFPATH_MOVETO" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFPATH_SETDRAWMODE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFTEXTOBJ_GETFONT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFTEXTOBJ_GETFONTSIZE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFTEXTOBJ_GETTEXT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFTEXTOBJ_SETTEXTRENDERMODE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFTEXT_CLOSEPAGE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFTEXT_COUNTCHARS" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFTEXT_COUNTRECTS" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFTEXT_GETCHARINDEXATPOS" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFTEXT_GETRECT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFTEXT_GETTEXT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFTEXT_GETUNICODE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFTEXT_LOADFONT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFTEXT_LOADPAGE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDFTEXT_LOADSTANDARDFONT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDFTEXT_SETTEXT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDF_CLOSEDOCUMENT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDF_CLOSEPAGE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDF_CREATENEWDOCUMENT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDF_DESTROYLIBRARY" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDF_DEVICETOPAGE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDF_GETLASTERROR" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDF_GETPAGECOUNT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDF_GETPAGEHEIGHT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDF_GETPAGESIZEBYINDEX" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDF_GETPAGEWIDTH" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDF_IMPORTPAGES" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FPDF_INITLIBRARYWITHCONFIG" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDF_LOADDOCUMENT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDF_LOADMEMDOCUMENT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDF_LOADPAGE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDF_PAGETODEVICE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FPDF_RENDERPAGE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="PDFIUM_VFP_DLL_PATH_ACCESS" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="VFPDF_ADDFILETOZIPINPUT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="VFPDF_CREATEFONTSUBSET" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="VFPDF_CREATEZIP" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="VFPDF_CREATEZIPINPUT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="VFPDF_DESTROYFONTSUBSET" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="VFPDF_DESTROYZIP" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="VFPDF_DESTROYZIPINPUT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="VFPDF_GETFONTFILENAME" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="VFPDF_SAVEDOCUMENT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <counter type="METHOD" missed="31" covered="50"/>
-                </class>
-                             
             <class name="pdfiumreport_renderer_base">                     
                 <method name="BEGIN" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
@@ -471,214 +154,6 @@
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
                 <counter type="METHOD" missed="4" covered="0"/>
-                </class>
-                             
-            <class name="pdfium_api_win">                     
-                <method name="BCRYPTCLOSEALGORITHMPROVIDER" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="BCRYPTCREATEHASH" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="BCRYPTDESTROYHASH" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="BCRYPTDESTROYKEY" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="BCRYPTENCRYPT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="BCRYPTFINISHHASH" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="BCRYPTGENERATESYMMETRICKEY" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="BCRYPTGETPROPERTY" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="BCRYPTHASHDATA" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="BCRYPTOPENALGORITHMPROVIDER" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="BEGINPAINT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="BITBLT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="CALLWINDOWPROC" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="CLOSECLIPBOARD" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="CLOSEPRINTER" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="CREATECOMPATIBLEDC" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="CREATEDC" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="CREATEDIBSECTION" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="CREATEWINDOWEX" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="DELETEDC" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="DELETEOBJECT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="DESTROYWINDOW" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="DEVICECAPABILITIES" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="DOCUMENTPROPERTIES" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="EMPTYCLIPBOARD" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="ENDDOC" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="ENDPAGE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="ENDPAINT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="ENUMFORMS" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FINDNLSSTRING" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GETCLASSINFOEX" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GETCLIPBOARDDATA" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GETDC" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GETDEFAULTPRINTER" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GETDEVICECAPS" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GETKEYSTATE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GETMODULEHANDLE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GETOPENCLIPBOARDWINDOW" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GETSAVEFILENAMEA" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GETSCROLLINFO" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GETSYSTEMDEFAULTLCID" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GETTICKCOUNT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GETWINDOW" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GETWINDOWLONG" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GLOBALALLOC" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GLOBALFREE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GLOBALLOCK" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="GLOBALUNLOCK" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="HEAPALLOC" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="HEAPCREATE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="HEAPDESTROY" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="HEAPFREE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="INVALIDATERECT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="ISCLIPBOARDFORMATAVAILABLE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="MOVEWINDOW" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="OPENCLIPBOARD" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="OPENPRINTER" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="REGISTERCLASSEX" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="RELEASEDC" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="SELECTOBJECT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="SETCLIPBOARDDATA" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="SETDEFAULTPRINTER" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="SETSCROLLINFO" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="SHELLEXECUTE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="SHOWWINDOW" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="STARTDOC" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="STARTPAGE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="UUIDCREATE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <counter type="METHOD" missed="26" covered="42"/>
                 </class>
                              
             <class name="pdfiumreport_renderer_docx">                     
@@ -1095,6 +570,227 @@
                 <counter type="METHOD" missed="9" covered="13"/>
                 </class>
                              
+            <class name="pdfium_uistate">                     
+                <method name="GETEFFECTIVELYENABLED" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GETEFFECTIVELYVISIBLE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GETISPAGEFRAME" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="OBJTOCLIENT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="ONENABLED" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="ONMOVED" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="ONRESIZE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="ONVISIBLE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="SETSTATE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="_ONENABLED" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="_ONPAGECOUNTCHANGE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="_ONPAGEGOTFOCUS" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="_ONPAGELOSTFOCUS" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="_ONUIENABLE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="_ONVISIBLE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <counter type="METHOD" missed="12" covered="3"/>
+                </class>
+                             
+            <class name="pdfium_textbox">                     
+                <method name="CONTEXTMENU" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="SELECTALL" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <counter type="METHOD" missed="2" covered="0"/>
+                </class>
+                             
+            <class name="pdfium_print_env">                     
+                <method name="FOXDEFAULTPRINTER_GET" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FOXDEFAULTPRINTER_RESTORE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FOXDEFAULTPRINTER_SET" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GETPRINTERDEVMODE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GETPRINTERDUPLEX" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GETPRINTERFORMS" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GETPRINTERTITLE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="PAGELIST_PARSE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="SETUP" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="SETUPDEFAULT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="STATELEN" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="STATEPOP" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="STATEPUSH" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="SYSDEFAULTPRINTER_GET" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="SYSDEFAULTPRINTER_RESTORE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="SYSDEFAULTPRINTER_SET" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <counter type="METHOD" missed="13" covered="3"/>
+                </class>
+                             
+            <class name="pdfium_api_fpdf_const">                     
+                <method name="FPDFBITMAP_BGR" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFBITMAP_BGRA" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFBITMAP_BGRX" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDFBITMAP_GRAY" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDFBITMAP_UNKNOWN" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_ERR_PASSWORD" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_FILLMODE_ALTERNATE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_FILLMODE_NONE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_FILLMODE_WINDING" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_FONT_TRUETYPE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_FONT_TYPE1" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_FORMFIELD_CHECKBOX" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_FORMFIELD_COMBOBOX" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_FORMFIELD_LISTBOX" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_FORMFIELD_PUSHBUTTON" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_FORMFIELD_RADIOBUTTON" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_FORMFIELD_SIGNATURE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_FORMFIELD_TEXTFIELD" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_FORMFIELD_UNKNOWN" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_PAGEOBJ_FORM" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_PAGEOBJ_IMAGE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_PAGEOBJ_PATH" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_PAGEOBJ_SHADING" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_PAGEOBJ_TEXT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_PAGEOBJ_UNKNOWN" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_PRINTING" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_TEXTRENDERMODE_FILL" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_TEXTRENDERMODE_FILL_STROKE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_TEXTRENDERMODE_STROKE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_TEXTRENDERMODE_UNKNOWN" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <counter type="METHOD" missed="23" covered="7"/>
+                </class>
+                             
+            <class name="pdfium_print_settings">                     
+                <method name="CANCEL" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="PAPERSIZEREQUERY" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="REFRESHSTATE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="SETUP" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <counter type="METHOD" missed="4" covered="0"/>
+                </class>
+                             
             <class name="pdfium_env">                     
                 <method name="ERRFMT" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
@@ -1141,53 +837,551 @@
                 <counter type="METHOD" missed="4" covered="10"/>
                 </class>
                              
-            <class name="pdfium_uistate">                     
-                <method name="GETEFFECTIVELYENABLED" desc="">
+            <class name="pdfium_api_fpdf">                     
+                <method name="FPDFBITMAP_CREATE" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="GETEFFECTIVELYVISIBLE" desc="">
+                <method name="FPDFBITMAP_CREATEEX" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="GETISPAGEFRAME" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="OBJTOCLIENT" desc="">
+                <method name="FPDFBITMAP_DESTROY" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="ONENABLED" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="ONMOVED" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="ONRESIZE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="ONVISIBLE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="SETSTATE" desc="">
+                <method name="FPDFBITMAP_FILLRECT" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <method name="_ONENABLED" desc="">
+                <method name="FPDFBITMAP_GETBUFFER" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFBITMAP_GETFORMAT" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
-                <method name="_ONPAGECOUNTCHANGE" desc="">
+                <method name="FPDFBITMAP_GETHEIGHT" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
-                <method name="_ONPAGEGOTFOCUS" desc="">
+                <method name="FPDFBITMAP_GETSTRIDE" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
-                <method name="_ONPAGELOSTFOCUS" desc="">
+                <method name="FPDFBITMAP_GETWIDTH" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
-                <method name="_ONUIENABLE" desc="">
+                <method name="FPDFFONT_CLOSE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFFONT_GETFAMILYNAME" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
-                <method name="_ONVISIBLE" desc="">
+                <method name="FPDFFONT_GETFLAGS" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
-                <counter type="METHOD" missed="11" covered="4"/>
+                <method name="FPDFFONT_GETWEIGHT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDFIMAGEOBJ_SETBITMAP" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFPAGEOBJ_CREATENEWPATH" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFPAGEOBJ_CREATENEWRECT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFPAGEOBJ_CREATETEXTOBJ" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFPAGEOBJ_DESTROY" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDFPAGEOBJ_GETBOUNDS" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDFPAGEOBJ_GETMATRIX" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDFPAGEOBJ_GETTYPE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDFPAGEOBJ_NEWIMAGEOBJ" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFPAGEOBJ_SETDASHARRAY" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFPAGEOBJ_SETFILLCOLOR" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFPAGEOBJ_SETSTROKECOLOR" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFPAGEOBJ_SETSTROKEWIDTH" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFPAGEOBJ_TRANSFORM" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFPAGEOBJ_TRANSFORMF" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFPAGE_COUNTOBJECTS" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDFPAGE_DELETE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFPAGE_GENERATECONTENT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFPAGE_GETOBJECT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDFPAGE_INSERTOBJECT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFPAGE_NEW" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFPAGE_REMOVEOBJECT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDFPATH_BEZIERTO" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFPATH_LINETO" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFPATH_MOVETO" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFPATH_SETDRAWMODE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFTEXTOBJ_GETFONT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDFTEXTOBJ_GETFONTSIZE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDFTEXTOBJ_GETTEXT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDFTEXTOBJ_SETTEXTRENDERMODE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFTEXT_CLOSEPAGE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFTEXT_COUNTCHARS" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFTEXT_COUNTRECTS" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFTEXT_GETCHARINDEXATPOS" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDFTEXT_GETRECT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFTEXT_GETTEXT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFTEXT_GETUNICODE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDFTEXT_LOADFONT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFTEXT_LOADPAGE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDFTEXT_LOADSTANDARDFONT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDFTEXT_SETTEXT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_CLOSEDOCUMENT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_CLOSEPAGE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_CREATENEWDOCUMENT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_DESTROYLIBRARY" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_DEVICETOPAGE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_GETLASTERROR" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_GETPAGECOUNT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_GETPAGEHEIGHT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_GETPAGESIZEBYINDEX" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_GETPAGEWIDTH" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_IMPORTPAGES" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_INITLIBRARYWITHCONFIG" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_LOADDOCUMENT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_LOADMEMDOCUMENT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_LOADPAGE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_PAGETODEVICE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_RENDERPAGE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_RENDERPAGEBITMAP" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="PDFIUM_VFP_DLL_PATH_ACCESS" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="VFPDF_ADDFILETOZIPINPUT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="VFPDF_CREATEFONTSUBSET" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="VFPDF_CREATEZIP" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="VFPDF_CREATEZIPINPUT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="VFPDF_DESTROYFONTSUBSET" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="VFPDF_DESTROYZIP" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="VFPDF_DESTROYZIPINPUT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="VFPDF_GETFONTFILENAME" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="VFPDF_SAVEDOCUMENT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <counter type="METHOD" missed="30" covered="52"/>
+                </class>
+                             
+            <class name="pdfium_api_fpdf_base">                     
+                <method name="PDFIUM_VFP_DLL_PATH_ACCESS" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <counter type="METHOD" missed="0" covered="1"/>
+                </class>
+                             
+            <class name="pdfium_api_fpdf_forms">                     
+                <method name="FORM_FORCETOKILLFOCUS" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FORM_GETFOCUSEDANNOT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FORM_GETSELECTEDTEXT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FORM_ONAFTERLOADPAGE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FORM_ONBEFORECLOSEPAGE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FORM_ONCHAR" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FORM_ONFOCUS" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FORM_ONKEYDOWN" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FORM_ONLBUTTONDOUBLECLICK" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FORM_ONLBUTTONDOWN" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FORM_ONLBUTTONUP" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FORM_ONMOUSEMOVE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FORM_REPLACESELECTION" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FORM_SELECTALLTEXT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDFPAGE_HASFORMFIELDATPOINT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FPDF_FFLDRAW" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_SETFORMFIELDHIGHLIGHTALPHA" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="FPDF_SETFORMFIELDHIGHLIGHTCOLOR" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="PDFIUM_VFP_DLL_PATH_ACCESS" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="VFPDFDOC_EXITFORMFILLENVIRONMENT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="VFPDFDOC_INITFORMFILLENVIRONMENT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <counter type="METHOD" missed="13" covered="8"/>
+                </class>
+                             
+            <class name="pdfium_api_win">                     
+                <method name="BCRYPTCLOSEALGORITHMPROVIDER" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="BCRYPTCREATEHASH" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="BCRYPTDESTROYHASH" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="BCRYPTDESTROYKEY" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="BCRYPTENCRYPT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="BCRYPTFINISHHASH" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="BCRYPTGENERATESYMMETRICKEY" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="BCRYPTGETPROPERTY" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="BCRYPTHASHDATA" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="BCRYPTOPENALGORITHMPROVIDER" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="BEGINPAINT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="BITBLT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="CALLWINDOWPROC" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="CLOSECLIPBOARD" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="CLOSEPRINTER" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="CREATECOMPATIBLEDC" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="CREATEDC" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="CREATEDIBSECTION" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="CREATEWINDOWEX" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="DELETEDC" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="DELETEOBJECT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="DESTROYWINDOW" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="DEVICECAPABILITIES" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="DOCUMENTPROPERTIES" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="EMPTYCLIPBOARD" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="ENDDOC" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="ENDPAGE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="ENDPAINT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="ENUMFORMS" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="FINDNLSSTRING" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GETCLASSINFOEX" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GETCLIPBOARDDATA" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GETDC" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GETDEFAULTPRINTER" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GETDEVICECAPS" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GETKEYSTATE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GETKEYUNICODE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GETMODULEHANDLE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GETOPENCLIPBOARDWINDOW" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GETSAVEFILENAMEA" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GETSCROLLINFO" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GETSYSTEMDEFAULTLCID" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GETTICKCOUNT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GETWINDOW" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GETWINDOWLONG" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GLOBALALLOC" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GLOBALFREE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GLOBALLOCK" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="GLOBALSIZE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GLOBALUNLOCK" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="HEAPALLOC" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="HEAPCREATE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="HEAPDESTROY" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="HEAPFREE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="INVALIDATERECT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="ISCLIPBOARDFORMATAVAILABLE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="MOVEWINDOW" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="OPENCLIPBOARD" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="OPENPRINTER" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="REGISTERCLASSEX" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="RELEASEDC" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="SELECTOBJECT" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="SENDMESSAGE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="SETCLIPBOARDDATA" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="SETDEFAULTPRINTER" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="SETFOCUS" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="SETSCROLLINFO" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="SHELLEXECUTE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="SHOWWINDOW" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="STARTDOC" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="STARTPAGE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="STRETCHDIBITS" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <method name="UUIDCREATE" desc="">
+                    <counter type="METHOD" missed="0" covered="1"/>
+                </method>                 
+                <counter type="METHOD" missed="28" covered="45"/>
                 </class>
                              
             <class name="pdfiumviewer">                     
@@ -1231,6 +1425,9 @@
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
                 <method name="PAGEPICK" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="PASTE" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
                 <method name="PRINTDOCUMENT" desc="">
@@ -1305,85 +1502,7 @@
                 <method name="WNDSHOW" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <counter type="METHOD" missed="15" covered="23"/>
-                </class>
-                             
-            <class name="pdfium_textbox">                     
-                <method name="CONTEXTMENU" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="SELECTALL" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <counter type="METHOD" missed="2" covered="0"/>
-                </class>
-                             
-            <class name="pdfium_print_env">                     
-                <method name="FOXDEFAULTPRINTER_GET" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="FOXDEFAULTPRINTER_RESTORE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="FOXDEFAULTPRINTER_SET" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GETPRINTERDEVMODE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GETPRINTERDUPLEX" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GETPRINTERFORMS" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="GETPRINTERTITLE" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="PAGELIST_PARSE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="SETUP" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
-                </method>                 
-                <method name="SETUPDEFAULT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="STATELEN" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="STATEPOP" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="STATEPUSH" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="SYSDEFAULTPRINTER_GET" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="SYSDEFAULTPRINTER_RESTORE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="SYSDEFAULTPRINTER_SET" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <counter type="METHOD" missed="13" covered="3"/>
-                </class>
-                             
-            <class name="pdfium_print_settings">                     
-                <method name="CANCEL" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="PAPERSIZEREQUERY" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="REFRESHSTATE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="SETUP" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <counter type="METHOD" missed="4" covered="0"/>
+                <counter type="METHOD" missed="16" covered="23"/>
                 </class>
                              
             <class name="pdfium_i18n">                     
@@ -1417,7 +1536,7 @@
                 <counter type="METHOD" missed="9" covered="0"/>
                 </class>
                              
-            <counter type="METHOD" missed="203" covered="235"/>
+            <counter type="METHOD" missed="226" covered="249"/>
         </package>         
-        <counter type="METHOD" missed="203" covered="235"/>
+        <counter type="METHOD" missed="226" covered="249"/>
     </report>

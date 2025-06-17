@@ -551,17 +551,17 @@ BOOL PDFIUM_VFP_CALL VFPDF_CreateZip(VFPDF_ZIP_INPUT* zip_input, unsigned char**
 		zip.push_back(0x14); zip.push_back(0x00);
 		zip.push_back(0x00); zip.push_back(0x00);
 		zip.push_back(0x08); zip.push_back(0x00);  // compression method = deflate
-        
+
         zip.push_back(modified_zip & 0xFF);
         zip.push_back((modified_zip >> 8) & 0xFF);
         zip.push_back((modified_zip >> 16) & 0xFF);
         zip.push_back((modified_zip >> 24) & 0xFF);
-        
+
         zip.push_back(file_it->crc32_val & 0xFF);
         zip.push_back((file_it->crc32_val >> 8) & 0xFF);
         zip.push_back((file_it->crc32_val >> 16) & 0xFF);
         zip.push_back((file_it->crc32_val >> 24) & 0xFF);
-        
+
         zip.push_back(file_it->compressed_filedata_size & 0xFF);
         zip.push_back((file_it->compressed_filedata_size >> 8) & 0xFF);
         zip.push_back((file_it->compressed_filedata_size >> 16) & 0xFF);
@@ -586,7 +586,6 @@ BOOL PDFIUM_VFP_CALL VFPDF_CreateZip(VFPDF_ZIP_INPUT* zip_input, unsigned char**
         {
             zip.push_back(file_it->compressed_filedata[i]);
         }
-		
 
         ZipCentralDirItem zcdi;
         zcdi.filename = file_it->filename;
@@ -624,7 +623,7 @@ BOOL PDFIUM_VFP_CALL VFPDF_CreateZip(VFPDF_ZIP_INPUT* zip_input, unsigned char**
         zip.push_back((zcd_it->crc32_val >> 8) & 0xFF);
         zip.push_back((zcd_it->crc32_val >> 16) & 0xFF);
         zip.push_back((zcd_it->crc32_val >> 24) & 0xFF);
-        
+
         zip.push_back(zcd_it->compressedsize & 0xFF);
         zip.push_back((zcd_it->compressedsize >> 8) & 0xFF);
         zip.push_back((zcd_it->compressedsize >> 16) & 0xFF);
@@ -696,4 +695,93 @@ BOOL PDFIUM_VFP_CALL VFPDF_CreateZip(VFPDF_ZIP_INPUT* zip_input, unsigned char**
 
 void PDFIUM_VFP_CALL VFPDF_DestroyZip(unsigned char* zipfile_data) {
     if (zipfile_data) free(zipfile_data);
+}
+
+
+class VFPDF_FORMFILLINFO : public FPDF_FORMFILLINFO {
+public:
+    VFPDF_FORMFILLINFO() {
+        this->version = 1;
+        this->FFI_Invalidate = FFI_InvalidateImpl;
+        this->FFI_SetCursor = FFI_SetCursorImpl;
+        this->FFI_SetTimer = FFI_SetTimerImpl;
+        this->FFI_KillTimer = FFI_KillTimerImpl;
+        this->FFI_GetLocalTime = FFI_GetLocalTimeImpl;
+        this->FFI_GetPage = FFI_GetPageImpl;
+        this->FFI_GetRotation = FFI_GetRotationImpl;
+        this->FFI_ExecuteNamedAction = FFI_ExecuteNamedActionImpl;
+    }
+
+    static void FFI_InvalidateImpl (struct _FPDF_FORMFILLINFO* pThis,
+                         FPDF_PAGE page,
+                         double left,
+                         double top,
+                         double right,
+                         double bottom) 
+    {
+    };
+
+    static void FFI_SetCursorImpl (struct _FPDF_FORMFILLINFO* pThis, int nCursorType) 
+    {
+
+    };
+
+    static int FFI_SetTimerImpl (struct _FPDF_FORMFILLINFO* pThis,
+                      int uElapse,
+                      TimerCallback lpTimerFunc) 
+    {
+        return 0;
+    };
+
+    static void FFI_KillTimerImpl (struct _FPDF_FORMFILLINFO* pThis, int nTimerID) 
+    {
+
+    };
+
+    static FPDF_SYSTEMTIME FFI_GetLocalTimeImpl (struct _FPDF_FORMFILLINFO* pThis) 
+    {
+        std::time_t now_t = std::time(nullptr);
+        std::tm* now = std::localtime(&now_t);
+        FPDF_SYSTEMTIME res;
+        res.wYear = now->tm_year;
+        res.wMonth = now->tm_mon;
+        res.wDay = now->tm_mday;
+        res.wDayOfWeek = now->tm_wday;
+        res.wHour = now->tm_hour;
+        res.wMinute = now->tm_min;
+        res.wSecond = now->tm_sec == 60 ? 59 : now->tm_sec;
+        res.wMilliseconds = 0;
+
+        return res;
+    }
+
+    static FPDF_PAGE FFI_GetPageImpl (struct _FPDF_FORMFILLINFO* pThis,
+                           FPDF_DOCUMENT document,
+                           int nPageIndex) 
+    {
+        return NULL;
+    };
+
+    static int FFI_GetRotationImpl (struct _FPDF_FORMFILLINFO* pThis, FPDF_PAGE page)
+    {
+        return 0;
+    };
+
+    static void FFI_ExecuteNamedActionImpl (struct _FPDF_FORMFILLINFO* pThis,
+                                 FPDF_BYTESTRING namedAction) 
+    {
+
+    };
+
+};
+
+VFPDF_FORMFILLINFO formInfo;
+FPDF_FORMHANDLE VFPDFDOC_InitFormFillEnvironment(FPDF_DOCUMENT document) {
+    FPDF_FORMHANDLE formHandle = FPDFDOC_InitFormFillEnvironment(document, &formInfo);
+    return formHandle;
+};
+
+void VFPDFDOC_ExitFormFillEnvironment (FPDF_FORMHANDLE hHandle) {
+    if (! hHandle) return;
+    FPDFDOC_ExitFormFillEnvironment(hHandle);
 }

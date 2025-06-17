@@ -2,6 +2,7 @@
 #include <dwrite.h>
 #include <stdint.h>
 #include "thirdparty/pdfium/include/fpdf_save.h"
+#include "thirdparty/pdfium/include/fpdf_formfill.h"
 
 #define PDFIUM_VFP_EXPORT __declspec(dllexport)
 #define PDFIUM_VFP_CALL __stdcall
@@ -60,6 +61,11 @@ PDFIUM_VFP_EXPORT BOOL PDFIUM_VFP_CALL VFPDF_CreateZip(VFPDF_ZIP_INPUT* zip_inpu
 /// @brief VFPDF_DestroyZip
 PDFIUM_VFP_EXPORT void PDFIUM_VFP_CALL VFPDF_DestroyZip(unsigned char* zipfile_data);
 
+/// @brief VFPDFDOC_InitFormFillEnvironment
+PDFIUM_VFP_EXPORT FPDF_FORMHANDLE PDFIUM_VFP_CALL VFPDFDOC_InitFormFillEnvironment(FPDF_DOCUMENT document);
+
+/// @brief VFPDFDOC_ExitFormFillEnvironment
+PDFIUM_VFP_EXPORT void PDFIUM_VFP_CALL VFPDFDOC_ExitFormFillEnvironment (FPDF_FORMHANDLE hHandle);
 
 #ifdef __cplusplus
 } // __cplusplus defined.
