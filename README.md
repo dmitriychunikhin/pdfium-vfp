@@ -298,7 +298,7 @@ loPdfiumReport.SaveAs_PDFMeta.Permit_Edit = .T. && Allow to make annotations and
 ```
 
 ## Filling PDF forms programmatically
-    PdfiumViewer gives a read-write access to form fields values, and read-only access to other field's properties like name, options and etc, adding new fields is now allowed.
+PdfiumViewer gives a read-write access to form fields values, and read-only access to other field's properties like name, options and etc, adding new fields is now allowed.
 
 ### PdfiumViewer::GetFormFieldsCount()
 
@@ -334,7 +334,7 @@ __Return object fields:__
 * ___AnnotIndex___: 1-based index of a field's widget annotation
 
 ### PdfiumViewer::SetFormFieldValue(tcFieldNameOrIndex as String, tvFormFieldValue)
-Set value of a field. Accepts two parameters:
+Sets value of a field. Accepts two parameters:
 
 * field name in UTF-16LE or 1-based form field index
 * field value of type String (UTF-16LE) for textbox, combobox, Logical for checkbox, Numeric 1-based index of selected RadioButton for OptionGroup; Returns .T. if a value was set successfully otherwise returns .F.
