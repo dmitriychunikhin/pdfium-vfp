@@ -29,41 +29,6 @@ CLEAR CLASSLIB m.lcPath+"/../Source/pdfium-vfp.vcx"
 ******************************************
 COPY FILE m.lcPath+"/../Source/pdfium-vfp.vcx" TO  m.lcPath+"/../Release/pdfium-vfp.vcx"
 COPY FILE m.lcPath+"/../Source/pdfium-vfp.vct" TO  m.lcPath+"/../Release/pdfium-vfp.vct"
-
-LOCAL laSelObj(1)
-MODIFY CLASS pdfium_env OF m.lcPath+"/../Release/pdfium-vfp.vcx" NOWAIT METHOD Init
-IF ASELOBJ(laSelObj,1) = 1
-    LOCAL loObj
-    m.loObj = m.laSelObj[1]
-    m.loObj.RemoveObject("API_FRX")
-    m.loObj = .F.
-ENDIF
-RELEASE WINDOWS (WONTOP())
-ACTIVATE WINDOW (WONTOP())
-SYS(1500, "_MFI_SAVE", "_MFILE")
-RELEASE WINDOWS (WONTOP())
-RELEASE laSelObj
-
-MODIFY CLASS pdfiumviewer OF m.lcPath+"/../Release/pdfium-vfp.vcx" NOWAIT METHOD Init
-RELEASE WINDOWS (WONTOP())
-ACTIVATE WINDOW (WONTOP())
-SYS(1500, "_MFI_SAVE", "_MFILE")
-RELEASE WINDOWS (WONTOP())
-
-CLEAR CLASSLIB m.lcPath+"/../Release/pdfium-vfp.vcx"
-
-
-REMOVE CLASS pdfium_api_frx OF m.lcPath+"/../Release/pdfium-vfp.vcx"
-REMOVE CLASS pdfium_api_frx_const OF m.lcPath+"/../Release/pdfium-vfp.vcx"
-REMOVE CLASS pdfiumreport OF m.lcPath+"/../Release/pdfium-vfp.vcx" 
-REMOVE CLASS pdfiumreport_renderer_docx OF m.lcPath+"/../Release/pdfium-vfp.vcx" 
-REMOVE CLASS pdfiumreport_renderer_pdf OF m.lcPath+"/../Release/pdfium-vfp.vcx" 
-REMOVE CLASS pdfiumreport_renderer_base OF m.lcPath+"/../Release/pdfium-vfp.vcx" 
-REMOVE CLASS pdfiumreport_repfont OF m.lcPath+"/../Release/pdfium-vfp.vcx"
-REMOVE CLASS pdfiumreport_repobj OF m.lcPath+"/../Release/pdfium-vfp.vcx"
-REMOVE CLASS pdfiumreportviewer OF m.lcPath+"/../Release/pdfium-vfp.vcx"
-
-PACK m.lcPath+"/../Release/pdfium-vfp.vcx"
 ******************************************
 
 

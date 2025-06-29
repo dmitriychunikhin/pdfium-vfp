@@ -25,7 +25,7 @@ CASE PCOUNT() = 0
 CASE PCOUNT() = 3 AND m.tlCreateInstance
     LOCAL lcAppPath
     m.lcAppPath = STREXTRACT(SYS(16)," ","",2,1+2)
-    m.tvReference = NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", m.lcAppPath, m.tvType)
+    m.tvReference = NEWOBJECT("PdfiumReport", "PdfiumReport.vcx", m.lcAppPath, m.tvType)
     RETURN
 
 ENDCASE
@@ -55,7 +55,7 @@ PROCEDURE PdfiumReportAppInit
     ADDPROPERTY(Application, "PdfiumReportEnv", NEWOBJECT("Pdfium_env", "pdfium-vfp.vcx", m.lcAppPath))
     Application.PdfiumReportEnv.setup(m.toEnv)
 
-    ADDPROPERTY(Application, "PdfiumReport", NEWOBJECT("PdfiumReport", "pdfium-vfp.vcx", m.lcAppPath, Application.PdfiumReportEnv))
+    ADDPROPERTY(Application, "PdfiumReport", NEWOBJECT("PdfiumReport", "PdfiumReport.vcx", m.lcAppPath, Application.PdfiumReportEnv))
     
 ENDPROC
 

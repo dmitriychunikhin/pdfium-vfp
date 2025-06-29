@@ -1,3 +1,8 @@
+1.29
+  - PdfiumViewer: added methods for filling PDF forms programmatically
+  - PdfiumViewer: fixed missed KeyPress handling of Enter and Space keys in PDF form controls
+  - PdfiumViewer: fixed SaveDocument method to allow to save PDF in the file that is opened in PdfiumViewer
+
 1.28
   - PdfiumViewer: added interactive form filling
 

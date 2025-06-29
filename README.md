@@ -17,7 +17,22 @@ pdfium-vfp is a open source PDF viewer control and ReportOutput + ReportPreview 
 * [DirectWrite](https://learn.microsoft.com/ru-ru/windows/win32/directwrite/direct-write-portal)
 * [zlib](https://www.zlib.net/)
 
-### Features:
+## Table of contents
+* [Features](#features)
+* [Minumum system requirements](#minumum-system-requirements)
+* [Known issues](#known-issues)
+* [Getting started](#getting-started)
+* [Sample VFP project](#sample-vfp-project)
+* [Known issues](#known-issues)
+* [Basic usage of PdfiumViewer](#basic-usage-of-pdfiumviewer)
+* [Basic usage of PdfiumReport](#basic-usage-of-pdfiumreport)
+* [PdfiumReport.app and private fonts](#pdfiumreportapp-and-private-fonts)
+* [PdfiumReport PDF metadata and password protection](#pdfiumreport-pdf-metadata-and-password-protection)
+* [Filling PDF forms programmatically](#filling-pdf-forms-programmatically)
+* [Binaries](#binaries)
+* [VFP environment effects](#vfp-environment-effects)
+
+## Features:
 * Viewing PDF files
 * Interactive form filling
 * Text selection and copying
@@ -30,31 +45,31 @@ pdfium-vfp is a open source PDF viewer control and ReportOutput + ReportPreview 
 * Frx report rendering supports dynamics and rotation properties
 * Supports VFP Advanced x86 and x64
 
-### Minumum system requirements
-#### Windows
+## Minumum system requirements
+### Windows
 * Windows Vista SP 2
 * 1 core CPU
 * 1024 MB of RAM
 
-#### Linux
+### Linux
 * Tested on Debian (12 bookworm) and Alt (kworkstation 10) distros
 * Wine 9.0
 
 
-### Getting started 
+## Getting started
 
-#### Thor 
+### Thor 
 * Install Thor https://github.com/VFPX/Thor
 * Run VFP and open Thor / Check for updates in VFP system menu 
 * Download pdfium-vfp component
 * Open Thor / Folders / Components in VFP system menu and then open pdfium-vfp folder in Explorer
 * Read Basic Usage section on this page
 
-#### Windows (full sources with samples)
+### Windows (full sources with samples)
 * git clone https://github.com/dmitriychunikhin/pdfium-vfp
 * open and explore Sample/sample.pjx
 
-#### Linux  (full sources with samples)
+### Linux  (full sources with samples)
 * Check wine version
 ```bash
 > wine --version
@@ -73,7 +88,7 @@ WINEDLLOVERRIDES="gdiplus=n" wine sample.exe
 ```
 
 
-### Sample VFP project
+## Sample VFP project
 Open sample.pjx project from `pdfium-vfp/Sample` folder or just run Sample/sample.exe
 
 <img alt="Sample screen shot" src="Sample/screenshots/pdfium-vfp-screen01.png" />
@@ -81,14 +96,14 @@ Open sample.pjx project from `pdfium-vfp/Sample` folder or just run Sample/sampl
 <img alt="Sample screen shot" src="Sample/screenshots/pdfium-vfp-screen02.png" />
 
 
-### Known issues
+## Known issues
 * PdfiumViewer doesn't support page rotation, bookmarks, annotations and active hyperlinks
 * Fallback font in report previewer is Helvetica with no chance to change it
 * Report previewer can deal with ttf/ttc fonts only, non ttf font (bitmap fonts) and symbol fonts are rendered as images
 * Interface language always is your system language 
 
 
-### Basic usage of PdfiumViewer
+## Basic usage of PdfiumViewer
 1) Copy pdfium-vfp.vcx, pdfium-vfp.vct from Release folder to your project folder
 2) <br/>
     <b>VFP:</b> Copy dependency binaries <i>pdfium.dll, pdfium-vfp.dll</i> from <i>Release</i> folder to your project's folder
@@ -117,7 +132,7 @@ Thisform.PdfiumViewer.SaveDocument("c:\myfolder\mydoc.pdf")
 Thisform.PdfiumViewer.ClosePdf()
 ```
 
-### Basic usage of PdfiumReport 
+## Basic usage of PdfiumReport
 1) Copy PdfiumReport.app from Release folder to your project folder
 2) <br/>
     <b>VFP:</b> Copy dependency binaries <i>pdfium.dll, pdfium-vfp.dll</i> from <i>Release</i> folder to your project's folder
@@ -126,7 +141,7 @@ Thisform.PdfiumViewer.ClosePdf()
 
 More examples can be found at `pdfium-vfp/Sample/sample.scx`
 
-#### Standalone 
+### Standalone
 
 ```foxpro
 LOCAL loPdfiumReport
@@ -169,7 +184,7 @@ REPORT FORM Report2.frx OBJECT loPdfiumReport TO FILE "some.pdf"
 
 ```
 
-#### as _REPORTOUTPUT 
+### as _REPORTOUTPUT
 
 ```foxpro
 SET REPORTBEHAVIOR 90
@@ -201,12 +216,12 @@ FINALLY
 ENDTRY
 ```
 
-### PdfiumReport.app and private fonts
+## PdfiumReport.app and private fonts
 Private font is a font that is not installed in system in your development, testing or production environment
 
 Sample can be found in `pdfium-vfp/Sample/Sample.scx` in `cmdReport.Click`
 
-#### Standalone
+### Standalone
 ```foxpro
 * Manually create Pdfium environment and add your private fonts in Pdfium_env.PrivateFonts collection
 
@@ -226,7 +241,7 @@ DO pdfiumreport.app WITH loPdfiumEnv, loPdfiumReport, .T. && Create new instance
 REPORT FORM Report1.frx OBJECT loPdfiumReport PREVIEW
 ```
 
-#### as _REPORTOUTPUT
+### as _REPORTOUTPUT
 ```foxpro
 * Manually create Pdfium environment and add your private fonts in Pdfium_env.PrivateFonts collection
 
@@ -245,7 +260,7 @@ REPORT FORM Report1.frx PREVIEW
 ```
 
 
-### <a name="PDFMeta">PdfiumReport PDF metadata and password protection</a>
+## PdfiumReport PDF metadata and password protection
 
 ```foxpro
 
@@ -282,20 +297,104 @@ loPdfiumReport.SaveAs_PDFMeta.Permit_Edit = .T. && Allow to make annotations and
 
 ```
 
+## Filling PDF forms programmatically
+    PdfiumViewer gives a read-write access to form fields values, and read-only access to other field's properties like name, options and etc, adding new fields is now allowed.
 
-### Binaries
+### PdfiumViewer::GetFormFieldsCount()
+
+Returns number of fields in PDF form
+
+### PdfiumViewer::GetFormField(tcFieldNameOrIndex as String)
+
+Accepts PDF form field name in UTF-16LE or 1-based field index, returns object if field exists otherwise returns .F..
+
+Return object is a clone of current internal state of a field in document, thus setting values of object properties doesn't change anything inside document.
+
+__Return object fields:__
+* ___Name___: field name in UTF-16LE encoding
+* ___Type___: field type, string (ANSI encoding)
+
+    values: CheckBox, ComboBox, ListBox, Button, TextBox, OptionGroup, Signature, Unknown
+
+* ___Value___: value of a field, the property contains 
+    * String value (UTF-16LE) for TextBox, ComboBox
+    * Logical value for CheckBox
+    * Numeric value for OptionGroup that is 1-based index of selected RadioButton in the group
+    * NULL for Button
+* ___ValueRaw___: unformatted field value in PDF (String, UTF-16LE encoding)
+* ___GroupItems___: Collection of items for OptionGroup fields. Contains objects with props:
+    * "Value" String (UTF-16LE): RadioButton internal value in PDF
+    * "PageIndex": 1-based index of a page where RadioButton widget is located
+    * "AnnotIndex": 1-based index of a RadioButton widget annotation
+* ___Options___: Collection of options for ComboBox and ListBox fields
+
+    Contains objects with props "Label" String (UTF-16LE), "IsSelected" Logical
+
+* ___PageIndex___: 1-based index of a page where field's widget is located
+* ___AnnotIndex___: 1-based index of a field's widget annotation
+
+### PdfiumViewer::SetFormFieldValue(tcFieldNameOrIndex as String, tvFormFieldValue)
+Set value of a field. Accepts two parameters:
+
+* field name in UTF-16LE or 1-based form field index
+* field value of type String (UTF-16LE) for textbox, combobox, Logical for checkbox, Numeric 1-based index of selected RadioButton for OptionGroup; Returns .T. if a value was set successfully otherwise returns .F.
+
+### Code samples
+```
+Thisform.NewObject("oPdfiumViewer", "PdfiumViewer", "pdfium-vfp.vcx")
+LOCAL loFormField
+WITH Thisform.oPdfiumViewer
+    * TextBox
+    m.loFormField = .GetFormField(STRCONV('teacher_name', 5))
+    IF VARTYPE(m.loFormField) = "O"
+        ? STRCONV(m.loFormField.Value, 6) && TextBox value is a string in UTF-16LE
+        IF NOT .SetFormFieldValue(STRCONV('teacher_name', 5), STRCONV('John Doe', 5))
+            ? teacher_name value wasn't set
+        ENDIF
+    ENDIF
+
+    * ComboBox
+    m.loFormField = .GetFormField(STRCONV('Combo1', 5))
+    IF VARTYPE(m.loFormField) = "O"
+        ? STRCONV(m.loFormField.Value, 6) && ComboBox value is a string in UTF-16LE
+        IF NOT .SetFormFieldValue(STRCONV('Combo1', 5), 10) && This selects 10th item in combobox
+            ? Combo1 value wasn't set
+        ENDIF
+    ENDIF
+
+    * CheckBox
+    m.loFormField = .GetFormField(STRCONV('checkbox', 5))
+    IF VARTYPE(m.loFormField) = "O"
+        ? m.loFormField.Value && CheckBox value is of Logical type
+        IF NOT .SetFormFieldValue(STRCONV('checkbox', 5), .T.)
+            ? checkbox value wasn't set
+        ENDIF
+    ENDIF
+
+    * OptionGroup
+    m.loFormField = .GetFormField(STRCONV('radiobutton', 5))
+    IF VARTYPE(m.loFormField) = "O"
+        ? m.loFormField.Value && OptionGroup value is of Numeric type
+        IF NOT .SetFormFieldValue(STRCONV('radiobutton', 5), 2) && This selects 2nd RadioButton in OptionGroup
+            ? OptionGroup value wasn't set
+        ENDIF
+    ENDIF
+ENDWITH
+```
+
+## Binaries
 What binaries exactly do you need to run all the stuff (or your own latest version of it)
-#### VFP
+### VFP
 * [pdfium-vfp/Release/pdfium.dll](Release/pdfium.dll)
 * [pdfium-vfp/Release/pdfium-vfp.dll](Release/pdfium-vfp.dll)
 
-#### VFPA x64
+### VFPA x64
 * [pdfium-vfp/Release/pdfium64.dll](Release/pdfium64.dll)
 * [pdfium-vfp/Release/pdfium-vfp64.dll](Release/pdfium-vfp64.dll)
 
 
 
-### VFP environment effects
+## VFP environment effects
 * Adds Application.Pdfium_instance_count property
 * Adds Application.PdfiumReportEnv property as pdfium_env of pdfium-vfp
 * Adds Application.PdfiumReport property as pdfiumreport of pdfium-vfp

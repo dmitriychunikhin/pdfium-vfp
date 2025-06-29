@@ -59,6 +59,7 @@ WITH loProject.FILES
 	.ADD('images\wwrite.ico')		&& *< FileMetadata: Type="x" Cpid="0" Timestamp="0" ID="0" ObjRev="0" User="" />
 	.ADD('pdfium-vfp.vcx')		&& *< FileMetadata: Type="V" Cpid="1251" Timestamp="0" ID="0" ObjRev="544" User="" />
 	.ADD('pdfiumreport.prg')		&& *< FileMetadata: Type="P" Cpid="1251" Timestamp="0" ID="0" ObjRev="544" User="" />
+	.ADD('pdfiumreport.vcx')		&& *< FileMetadata: Type="V" Cpid="1251" Timestamp="0" ID="0" ObjRev="544" User="" />
 	*</BuildProj>
 
 	.ITEM('__newproject.f2b').Remove()

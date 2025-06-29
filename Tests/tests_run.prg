@@ -26,6 +26,7 @@ LOCAL lcTests
 TEXT TO m.lcTests NOSHOW FLAGS 1 PRETEXT 7
 tests_pdfium_api_fpdf;TestAll
 tests_pdfiumviewer;TestAll
+tests_pdfiumviewer_forms.prg;TestAll
 tests_pdfiumreport;TestAll
 ENDTEXT
 
