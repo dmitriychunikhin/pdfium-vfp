@@ -1,3 +1,27 @@
+1.29
+  - PdfiumViewer：新增以编程方式填写 PDF 表单的方法
+  - PdfiumViewer：修复了在 PDF 表单控件中未能处理回车键和空格键的 KeyPress 事件
+  - PdfiumViewer：修复了 SaveDocument 方法，现在允许将 PDF 保存到当前在 PdfiumViewer 中打开的文件
+
+1.28
+  - PdfiumViewer：新增交互式表单填写功能
+
+1.27
+  - 更改了创建本地 PdfiumReport 对象的方式
+    该更改修复了 issue #28 “未找到类定义 PDFIUMREPORT”
+    README.md 已根据更改进行了更新
+
+    1.27 之前
+    ```
+    LOCAL loPdfiumReport
+    loPdfiumReport = NewObject("PdfiumReport", "pdfium-vfp.vcx", "pdfiumreport.app") 
+    ```
+    1.27 起
+    ```
+    LOCAL loPdfiumReport
+    DO pdfiumreport.app WITH .F., loPdfiumReport, .T. && 创建 PdfiumReport 的新实例
+    ```
+
 1.26
   - 修复了 pdfium-vfp.vcx 中 pdfium_print_settings.setup() 的错误 #26：
     将 
