@@ -9037,6 +9037,7 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		*m: geteffectivelyenabled
 		*m: geteffectivelyvisible
 		*m: getispageframe
+		*m: getunattendedmode
 		*m: objtoclient
 		*m: onenabled
 		*m: onmoved
@@ -9110,6 +9111,7 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 			<memberdata name="_onpagegotfocus" type="method" display="_OnPageGotFocus"/>
 			<memberdata name="_onpagelostfocus" type="method" display="_OnPageLostFocus"/>
 			<memberdata name="uienabledforce" type="property" display="UIEnabledForce"/>
+			<memberdata name="getunattendedmode" type="method" display="GetUnattendedMode"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -9130,6 +9132,11 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 
 	PROCEDURE getispageframe
 		RETURN This.IsPageFrame
+		
+	ENDPROC
+
+	PROCEDURE getunattendedmode
+		RETURN SYS(2335) == '0'
 		
 	ENDPROC
 
@@ -9183,6 +9190,9 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		        BINDEVENT(m.loControl, "Resize", This, "OnResize", 1)
 		    ENDIF
 		    
+		    IF TYPE("m.loControl.PARENT") != "O"
+		        EXIT
+		    ENDIF
 		    m.loControl = m.loControl.PARENT
 		ENDDO
 		
@@ -9259,6 +9269,9 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		    m.tnRight = m.lnCLeft + MIN(m.tnRight, m.lnCWidth)
 		    m.tnBottom = m.lnCTop + MIN(m.tnBottom, m.lnCHeight)
 		    
+		    IF TYPE("m.loControl.PARENT") != "O"
+		        EXIT
+		    ENDIF
 		    m.loControl = m.loControl.PARENT
 		ENDDO
 		
@@ -9312,6 +9325,9 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		        ENDIF
 		    ENDIF
 		
+		    IF TYPE("m.loControl.PARENT") != "O"
+		        EXIT
+		    ENDIF
 		    m.loControl = m.loControl.PARENT
 		ENDDO
 		
@@ -9350,6 +9366,9 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		        ENDFOR
 		    ENDIF
 		
+		    IF TYPE("m.loControl.PARENT") != "O"
+		        EXIT
+		    ENDIF
 		    m.loControl = m.loControl.PARENT
 		ENDDO
 		
@@ -9416,6 +9435,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*m: getformfieldscount		&& Returns number of fields in PDF form
 		*m: getpagecount		&& Returns page count
 		*m: getpagesize		&& Returns page dimensions (see comment in source code)
+		*m: getpagetext		&& Accepts page 1-based index. Returns text data of the page in UTF-16LE encoding
 		*m: keypress		&& Occurs when the user presses and releases a key.
 		*m: openpdf		&& Open pdf file. Returns: .T. on success, .F. if file was not loaded
 		*m: pagepick
@@ -9636,6 +9656,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 			<memberdata name="getformfield" type="method" display="GetFormField"/>
 			<memberdata name="getformfieldscount" type="method" display="GetFormFieldsCount"/>
 			<memberdata name="setformfieldvalue" type="method" display="SetFormFieldValue"/>
+			<memberdata name="getpagetext" type="method" display="GetPageText"/>
 		</VFPData>
 		_printenv = .F.
 	*</PropValue>
@@ -9964,10 +9985,10 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN
 		ENDIF
 		
-		IF SYS(2335) != '0'
-		    MESSAGEBOX(m.lcMsg, 0+48, This.Class + " ("+This.ClassLibrary+")")
-		ELSE
+		IF This.UIState.GetUnattendedMode()
 		    THROW m.lcMsg
+		ELSE
+		    MESSAGEBOX(m.lcMsg, 0+48, This.Class + " ("+This.ClassLibrary+")")
 		ENDIF
 		
 	ENDPROC
@@ -10203,6 +10224,33 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		ENDCASE
 		
 		RETURN 0
+		
+	ENDPROC
+
+	PROCEDURE getpagetext		&& Accepts page 1-based index. Returns text data of the page in UTF-16LE encoding
+		LPARAMETERS tnPageIndex
+		
+		IF VARTYPE(m.tnPageIndex) != "N"
+		    RETURN ""
+		ENDIF
+		IF NOT BETWEEN(m.tnPageIndex, 1, This.fpdf_pagecount)
+		    RETURN ""
+		ENDIF
+		
+		LOCAL lnPage, lnFPDF_TEXT_PAGE, lnCharCount
+		m.lnPage = m.tnPageIndex
+		m.lnFPDF_TEXT_PAGE = This.FPDF_TEXT_PAGES[m.lnPage]
+		m.lnCharCount = This.env.API_FPDF.FPDFText_CountChars(m.lnFPDF_TEXT_PAGE)
+		
+		IF m.lnCharCount = 0
+		    RETURN ""
+		ENDIF
+		
+		LOCAL lcBuffer, lnBufLen
+		m.lcBuffer = REPLICATE(CHR(0), m.lnCharCount * 2)
+		m.lnBufLen = This.env.API_FPDF.FPDFText_GetText(m.lnFPDF_TEXT_PAGE, 0, m.lnCharCount, @m.lcBuffer)
+		
+		RETURN m.lcBuffer
 		
 	ENDPROC
 
@@ -10839,7 +10887,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		IF FILE(m.lcFilename,1)=.F.
 		    This.errMsg(TEXTMERGE("File <<FULLPATH(lcFilename)>> not found"))
 		    RETURN .F.
-		ENDIF    
+		ENDIF
 		
 		LOCAL lcPassword
 		m.lcPassword = IIF(VARTYPE(m.tcPassword)<>"C", "", m.tcPassword)
@@ -10855,7 +10903,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    LOCAL lnLoadError
 		    m.lnLoadError = m.loFPDF.FPDF_GetLastError()
 		    
-		    IF m.lnLoadError = m.loFPDF.CONST.FPDF_ERR_PASSWORD()
+		    IF m.lnLoadError = m.loFPDF.CONST.FPDF_ERR_PASSWORD() AND This.UIState.GetUnattendedMode() = .F.
 		        LOCAL loPasswordInput
 		        m.loPasswordInput = NEWOBJECT("pdfium_password_input", This.ClassLibrary)
 		        m.loPasswordInput.out_password = m.lcPassword
@@ -11101,7 +11149,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		m.loFPDF = This.env.API_FPDF
 		
 		*********************************************************************
-		IF This.PrintEnv.AllowPrintSetupUI = .T.
+		IF This.PrintEnv.AllowPrintSetupUI = .T. AND This.UIState.GetUnattendedMode() = .F.
 		
 		    LOCAL loDocProps
 		    m.loDocProps = NEWOBJECT("Empty")
@@ -12630,6 +12678,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		#define GMEM_FIXED 0x0
 		#define GMEM_ZEROINIT 0x0040
 		
+		IF TYPE("Thisform") != "O"
+		    RETURN
+		ENDIF
 		
 		LOCAL lhWndParent
 		m.lhWndParent = This.env.API_WIN.GetWindow(Thisform.HWnd, GW_CHILD) && VFP window with ScrollBars != 0 or with ShowWindow = 2 - As Top-Level Form creates his own child window

@@ -1,3 +1,7 @@
+1.30
+  - added PdfiumViewer::GetPageText(page_index) method returning page text in UTF-16LE
+  - PdfiumViewer can be created without being placed in a form, simply by calling CreateObject or NewObject
+
 1.29
   - PdfiumViewer: added methods for filling PDF forms programmatically
   - PdfiumViewer: fixed missed KeyPress handling of Enter and Space keys in PDF form controls
