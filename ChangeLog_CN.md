@@ -1,3 +1,7 @@
+1.30
+  - 新增 PdfiumViewer::GetPageText(page_index) 方法，返回 UTF-16LE 编码的页面文本
+  - 现在可以通过调用 CreateObject 或 NewObject 创建 PdfiumViewer，而无需将其放置在表单中
+
 1.29
   - PdfiumViewer：新增以编程方式填写 PDF 表单的方法
   - PdfiumViewer：修复了在 PDF 表单控件中未能处理回车键和空格键的 KeyPress 事件
