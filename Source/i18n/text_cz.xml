@@ -155,4 +155,9 @@
         <text>Počet listů papíru</text>
     </i18n>
 
+    <i18n>
+        <id>PDFIUMREPORT_CANCEL</id>
+        <text>Zrušit</text>
+    </i18n>
+
 </VFPData>

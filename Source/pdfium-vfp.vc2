@@ -4261,6 +4261,7 @@ DEFINE CLASS pdfium_api_win AS custom
 		*m: getdc
 		*m: getdefaultprinter
 		*m: getdevicecaps
+		*m: getfileattributesa
 		*m: getkeystate
 		*m: getkeyunicode		&& Convert keyboard key code (e.g. from KeyPress event) to utf-16 codepoint
 		*m: getmodulehandle
@@ -4381,6 +4382,7 @@ DEFINE CLASS pdfium_api_win AS custom
 			<memberdata name="setfocus" type="method" display="SetFocus"/>
 			<memberdata name="sendmessage" type="method" display="SendMessage"/>
 			<memberdata name="globalsize" type="method" display="GlobalSize"/>
+			<memberdata name="getfileattributesa" type="method" display="GetFileAttributesA"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -5002,6 +5004,22 @@ DEFINE CLASS pdfium_api_win AS custom
 		    SET CONSOLE OFF
 		    DECLARE LONG GetDeviceCaps IN Gdi32 AS WinApi_GetDeviceCaps LONG hdc, LONG nIndex 
 		    m.lvRes = WinApi_GetDeviceCaps(m.hdc, m.nIndex)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE getfileattributesa
+		LPARAMETERS lpFileName as String
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_GetFileAttributesA(m.lpFileName)
+		CATCH
+		    SET CONSOLE OFF
+		    DECLARE LONG GetFileAttributesA IN kernel32 AS WinApi_GetFileAttributesA STRING lpFileName
+		    m.lvRes = WinApi_GetFileAttributesA(m.lpFileName)
 		ENDTRY
 		
 		RETURN m.lvRes
@@ -6061,7 +6079,7 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		    
 		    m.lcFilename = m.lcPath + "pdfium_vfp_" + m.lcUuid + IIF(EMPTY(m.lcFileExt), "", "." + m.lcFileExt)
 		    
-		    IF FILE(m.lcFilename,1) OR DIRECTORY(m.lcFilename,1)
+		    IF This.API_WIN.GetFileAttributesA(m.lcFilename) != -1
 		        m.lcFilename = ""
 		        LOOP
 		    ENDIF
@@ -6070,7 +6088,6 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		ENDFOR
 		
 		RETURN m.lcFilename
-		
 		
 	ENDPROC
 
@@ -6366,6 +6383,10 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		CASE m.tcTxtID == "PRINTER_SELECTION_CANCEL"
 		RETURN CHR(200) + CHR(161) + CHR(207) + CHR(251)
 		
+		
+		CASE m.tcTxtID == "PDFIUMREPORT_CANCEL"
+		RETURN CHR(200) + CHR(161) + CHR(207) + CHR(251)
+		
 		OTHERWISE
 		RETURN This.text_en(m.tcTxtID)
 		
@@ -6504,6 +6525,10 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		
 		CASE m.tcTxtID == "PRINTENV_TOTAL_SHEETS"
 		RETURN CHR(80) + CHR(111) + CHR(232) + CHR(101) + CHR(116) + CHR(32) + CHR(108) + CHR(105) + CHR(115) + CHR(116) + CHR(249) + CHR(32) + CHR(112) + CHR(97) + CHR(112) + CHR(237) + CHR(114) + CHR(117)
+		
+		
+		CASE m.tcTxtID == "PDFIUMREPORT_CANCEL"
+		RETURN CHR(90) + CHR(114) + CHR(117) + CHR(154) + CHR(105) + CHR(116)
 		
 		OTHERWISE
 		RETURN This.text_en(m.tcTxtID)
@@ -6666,6 +6691,10 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		
 		CASE m.tcTxtID == "PRINTENV_TOTAL_SHEETS"
 		RETURN CHR(84) + CHR(111) + CHR(116) + CHR(97) + CHR(108) + CHR(32) + CHR(115) + CHR(104) + CHR(101) + CHR(101) + CHR(116) + CHR(115) + CHR(32) + CHR(111) + CHR(102) + CHR(32) + CHR(112) + CHR(97) + CHR(112) + CHR(101) + CHR(114)
+		
+		
+		CASE m.tcTxtID == "PDFIUMREPORT_CANCEL"
+		RETURN CHR(67) + CHR(97) + CHR(110) + CHR(99) + CHR(101) + CHR(108)
 		
 		OTHERWISE
 		RETURN m.tcTxtID
@@ -6851,6 +6880,10 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		
 		CASE m.tcTxtID == "PRINTENV_TOTAL_SHEETS"
 		RETURN CHR(194) + CHR(241) + CHR(229) + CHR(227) + CHR(238) + CHR(32) + CHR(235) + CHR(232) + CHR(241) + CHR(242) + CHR(238) + CHR(226) + CHR(32) + CHR(225) + CHR(243) + CHR(236) + CHR(224) + CHR(227) + CHR(232)
+		
+		
+		CASE m.tcTxtID == "PDFIUMREPORT_CANCEL"
+		RETURN CHR(206) + CHR(242) + CHR(236) + CHR(229) + CHR(237) + CHR(224)
 		
 		OTHERWISE
 		RETURN This.text_en(m.tcTxtID)
@@ -9340,13 +9373,13 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		
 	ENDPROC
 
-	PROCEDURE _onenabled
+	PROTECTED PROCEDURE _onenabled
 		LPARAMETERS tlEnabled
 		This.SetState()
 		
 	ENDPROC
 
-	PROCEDURE _onpagecountchange
+	PROTECTED PROCEDURE _onpagecountchange
 		LPARAMETERS p1,p2,p3,p4,p5,p6,p7,p8,p9,p10
 		
 		LOCAL loControl
@@ -9374,7 +9407,7 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		
 	ENDPROC
 
-	PROCEDURE _onpagegotfocus
+	PROTECTED PROCEDURE _onpagegotfocus
 		LPARAMETERS p1,p2,p3,p4,p5,p6,p7,p8,p9,p10
 		
 		* PageFrame.ActivePage stays unchaned after a call of Page.SetFocus()
@@ -9385,7 +9418,7 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		
 	ENDPROC
 
-	PROCEDURE _onpagelostfocus
+	PROTECTED PROCEDURE _onpagelostfocus
 		LPARAMETERS p1,p2,p3,p4,p5,p6,p7,p8,p9,p10
 		
 		* PageFrame.ActivePage stays unchaned after a call of Page.SetFocus()
@@ -9396,14 +9429,14 @@ DEFINE CLASS pdfium_uistate AS custom 		&& UI states handling (visible, enable) 
 		
 	ENDPROC
 
-	PROCEDURE _onuienable
+	PROTECTED PROCEDURE _onuienable
 		LPARAMETERS lEnable
 		This.UIEnabled = m.lEnable
 		This.SetState()
 		
 	ENDPROC
 
-	PROCEDURE _onvisible
+	PROTECTED PROCEDURE _onvisible
 		LPARAMETERS tlVisible
 		This.SetState()
 		
@@ -9460,11 +9493,11 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*m: setformfieldvalue		&& Accepts PDF form field name in UTF-16LE or 1-based form field index and a value of type String (UTF-16LE) for textbox, combobox, Logical for checkbox, Numeric as a number of selected RadioButton in OptionGroup; Returs True if the value was set
 		*m: viewportupdate
 		*m: wndcreate
-		*m: wndproc		&& Events handler of PdfiumViewer internal window. Developer must not use or redefine this method
+		*m: wndproc		&& Events handler of PdfiumViewer internal window.
 		*m: wndredraw
 		*m: wndrelease
-		*m: wndresize
-		*m: wndshow		&& Show child window (for internal use, public for bindevent)
+		*m: wndresize		&& Resize child window
+		*m: wndshow		&& Show child window
 		*p: allowformedit		&& Allows interactive input in PDF forms.
 		*p: backcolorbrush
 		*p: dblclickbegin
@@ -10885,7 +10918,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		ENDIF
 		
 		IF FILE(m.lcFilename,1)=.F.
-		    This.errMsg(TEXTMERGE("File <<FULLPATH(lcFilename)>> not found"))
+		    This.errMsg(TEXTMERGE("File <<FULLPATH(lcFilename)>> is not found"))
 		    RETURN .F.
 		ENDIF
 		
@@ -12791,7 +12824,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 	ENDPROC
 
-	PROCEDURE wndproc		&& Events handler of PdfiumViewer internal window. Developer must not use or redefine this method
+	PROTECTED PROCEDURE wndproc		&& Events handler of PdfiumViewer internal window.
 		LPARAMETERS thWnd, tnMsg, tnWParam, tnLParam
 		
 		#define GWL_WNDPROC -4
@@ -13009,7 +13042,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 	ENDPROC
 
-	PROCEDURE wndresize
+	PROCEDURE wndresize		&& Resize child window
 		IF EMPTY(This.WndHandle)
 		    RETURN
 		ENDIF
@@ -13033,7 +13066,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 	ENDPROC
 
-	PROCEDURE wndshow		&& Show child window (for internal use, public for bindevent)
+	PROCEDURE wndshow		&& Show child window
 		
 		#define SW_HIDE 0
 		#define SW_SHOWNA 8
@@ -13049,17 +13082,14 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 
 	PROCEDURE UIState.onmoved
 		This.Parent.WndResize()
-		
 	ENDPROC
 
 	PROCEDURE UIState.onresize
 		This.Parent.WndResize()
-		
 	ENDPROC
 
 	PROCEDURE UIState.onvisible
 		This.Parent.WndShow()
-		
 	ENDPROC
 
 ENDDEFINE

@@ -1,3 +1,7 @@
+1.31
+  - PdfiumReport rendering performance increased by up to 30%.
+  - A progress indicator with cancellation support was implemented in PdfiumReport
+
 1.30
   - added PdfiumViewer::GetPageText(page_index) method returning page text in UTF-16LE
   - PdfiumViewer can be created without being placed in a form, simply by calling CreateObject or NewObject

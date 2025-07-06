@@ -344,6 +344,8 @@ DEFINE CLASS sample AS form
 		cmdFocus.Name = "cmdFocus", ;
 		env.API_FPDF.CONST.Name = "CONST", ;
 		env.API_FPDF.Name = "API_FPDF", ;
+		env.API_FPDF_ANNOT.CONST.Name = "CONST", ;
+		env.API_FPDF_ANNOT.Name = "API_FPDF_ANNOT", ;
 		env.API_FPDF_FORMS.CONST.Name = "CONST", ;
 		env.API_FPDF_FORMS.Name = "API_FPDF_FORMS", ;
 		env.API_GDIP.CONST.Name = "CONST", ;
@@ -371,6 +373,8 @@ DEFINE CLASS sample AS form
 		cmdFocus.Name = "cmdFocus", ;
 		env.API_FPDF.CONST.Name = "CONST", ;
 		env.API_FPDF.Name = "API_FPDF", ;
+		env.API_FPDF_ANNOT.CONST.Name = "CONST", ;
+		env.API_FPDF_ANNOT.Name = "API_FPDF_ANNOT", ;
 		env.API_FPDF_FORMS.CONST.Name = "CONST", ;
 		env.API_FPDF_FORMS.Name = "API_FPDF_FORMS", ;
 		env.API_GDIP.CONST.Name = "CONST", ;
@@ -398,6 +402,8 @@ DEFINE CLASS sample AS form
 		cmdFocus.Name = "cmdFocus", ;
 		env.API_FPDF.CONST.Name = "CONST", ;
 		env.API_FPDF.Name = "API_FPDF", ;
+		env.API_FPDF_ANNOT.CONST.Name = "CONST", ;
+		env.API_FPDF_ANNOT.Name = "API_FPDF_ANNOT", ;
 		env.API_FPDF_FORMS.CONST.Name = "CONST", ;
 		env.API_FPDF_FORMS.Name = "API_FPDF_FORMS", ;
 		env.API_GDIP.CONST.Name = "CONST", ;
@@ -420,7 +426,9 @@ DEFINE CLASS sample AS form
 		API_GDIP.CONST.Name = "CONST", ;
 		API_GDIP.Name = "API_GDIP", ;
 		API_FPDF_FORMS.CONST.Name = "CONST", ;
-		API_FPDF_FORMS.Name = "API_FPDF_FORMS"
+		API_FPDF_FORMS.Name = "API_FPDF_FORMS", ;
+		API_FPDF_ANNOT.CONST.Name = "CONST", ;
+		API_FPDF_ANNOT.Name = "API_FPDF_ANNOT"
 		*< END OBJECT: ClassLib="..\release\pdfium-vfp.vcx" BaseClass="custom" />
 
 	ADD OBJECT 'PdfiumViewer' AS pdfiumviewer WITH ;
@@ -439,6 +447,8 @@ DEFINE CLASS sample AS form
 		cmdFocus.Name = "cmdFocus", ;
 		env.API_FPDF.CONST.Name = "CONST", ;
 		env.API_FPDF.Name = "API_FPDF", ;
+		env.API_FPDF_ANNOT.CONST.Name = "CONST", ;
+		env.API_FPDF_ANNOT.Name = "API_FPDF_ANNOT", ;
 		env.API_FPDF_FORMS.CONST.Name = "CONST", ;
 		env.API_FPDF_FORMS.Name = "API_FPDF_FORMS", ;
 		env.API_GDIP.CONST.Name = "CONST", ;

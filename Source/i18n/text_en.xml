@@ -154,4 +154,9 @@
         <id>PRINTENV_TOTAL_SHEETS</id>
         <text>Total sheets of paper</text>
     </i18n>
+
+    <i18n>
+        <id>PDFIUMREPORT_CANCEL</id>
+        <text>Cancel</text>
+    </i18n>
 </VFPData>
