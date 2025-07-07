@@ -1,3 +1,7 @@
+1.31
+  - PdfiumReport 渲染性能提升高达 30%。
+  - 在 PdfiumReport 中实现了带取消支持的进度指示器。
+
 1.30
   - 新增 PdfiumViewer::GetPageText(page_index) 方法，返回 UTF-16LE 编码的页面文本
   - 现在可以通过调用 CreateObject 或 NewObject 创建 PdfiumViewer，而无需将其放置在表单中
