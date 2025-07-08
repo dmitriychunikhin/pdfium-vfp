@@ -1,3 +1,6 @@
+1.32
+  - Memory consumption optimization: release PDF pages from memory when they are no longer needed.
+
 1.31
   - PdfiumReport rendering performance increased by up to 30%.
   - A progress indicator with cancellation support was implemented in PdfiumReport

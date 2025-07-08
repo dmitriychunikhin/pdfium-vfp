@@ -121,8 +121,8 @@ DEFINE CLASS tests_pdfiumreport as tests_pdfium_base OF tests_pdfium_base.prg
                 Application.PdfiumReport.SaveAs_PDFMeta.Title = "Sample report"
 
                 * PDF password protection, input any owner password and user password for testing
-                Application.PdfiumReport.SaveAs_PDFMeta.OwnerPassword = "" && Owner Password protects permissions of the doc. Mandatory if User Password was set. Owner password mustn't be equal to user password
-                Application.PdfiumReport.SaveAs_PDFMeta.UserPassword = "" && This password user inputs when open pdf file
+                Application.PdfiumReport.SaveAs_PDFMeta.OwnerPassword = "testpassword1" && Owner Password protects permissions of the doc. Mandatory if User Password was set. Owner password mustn't be equal to user password
+                Application.PdfiumReport.SaveAs_PDFMeta.UserPassword = "testpassword2" && This password user inputs when open pdf file
                 
                 * PDF reader permissions (matter only if Owner passwords is set)
                 Application.PdfiumReport.SaveAs_PDFMeta.Permit_Print = .T. && Allow to print document

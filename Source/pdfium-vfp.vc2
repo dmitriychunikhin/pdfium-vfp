@@ -9457,6 +9457,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 	*<DefinedPropArrayMethod>
 		*m: afterviewportupdate		&& Event. Triggered after ViewPortUpdate call
 		*m: backcolor_assign
+		*m: closepage
 		*m: closepdf		&& Close pdf file, previously opened by PdfiumViewer.openpdf
 		*m: contextmenu
 		*m: drawbufcreate
@@ -9470,6 +9471,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*m: getpagesize		&& Returns page dimensions (see comment in source code)
 		*m: getpagetext		&& Accepts page 1-based index. Returns text data of the page in UTF-16LE encoding
 		*m: keypress		&& Occurs when the user presses and releases a key.
+		*m: loadpage
 		*m: openpdf		&& Open pdf file. Returns: .T. on success, .F. if file was not loaded
 		*m: pagepick
 		*m: paste		&& Paste text from clipboard to form field
@@ -9542,6 +9544,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*p: wndviewport
 		*a: fpdf_pages[1,0]
 		*a: fpdf_pages_pos[1,4]
+		*a: fpdf_pages_ref[1,2]
 		*a: fpdf_pages_selection[1,3]
 		*a: fpdf_pages_size[1,4]
 		*a: fpdf_text_pages[1,0]
@@ -9549,7 +9552,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*p: _printenv
 	*</DefinedPropArrayMethod>
 
-	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,drawbufbitmapbmi,drawbufbitmap,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,formfields,fpdf_doc,fpdf_form,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Objects,pagefillbrush,Picture,ReadExpression,ReadMethod,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,ShowWhatsThis,SpecialEffect,Style,tplclickbegin,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,wndviewport,WriteExpression,WriteMethod,ZOrder,_printenv
+	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,drawbufbitmapbmi,drawbufbitmap,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,formfields,fpdf_doc,fpdf_form,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_ref,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Objects,pagefillbrush,Picture,ReadExpression,ReadMethod,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,ShowWhatsThis,SpecialEffect,Style,tplclickbegin,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,wndviewport,WriteExpression,WriteMethod,ZOrder,_printenv
 	*<PropValue>
 		allowformedit = .T.
 		backcolorbrush = .F.
@@ -9690,6 +9693,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 			<memberdata name="getformfieldscount" type="method" display="GetFormFieldsCount"/>
 			<memberdata name="setformfieldvalue" type="method" display="SetFormFieldValue"/>
 			<memberdata name="getpagetext" type="method" display="GetPageText"/>
+			<memberdata name="closepage" type="method" display="ClosePage"/>
+			<memberdata name="loadpage" type="method" display="LoadPage"/>
 		</VFPData>
 		_printenv = .F.
 	*</PropValue>
@@ -9745,6 +9750,29 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		ENDIF
 		
 		This.WndRedraw()
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE closepage
+		LPARAMETERS lnPage
+		
+		IF This.fpdf_pages_ref[m.lnPage,1] > 0
+		    This.fpdf_pages_ref[m.lnPage,1] = This.fpdf_pages_ref[m.lnPage,1] - 1
+		    IF This.fpdf_pages_ref[m.lnPage,1] > 0
+		        RETURN
+		    ENDIF
+		ENDIF
+		IF This.fpdf_pages_ref[m.lnPage,2] = 1 && Release Lock
+		    RETURN
+		ENDIF
+		IF BETWEEN(m.lnPage, This.fpdf_page_first_visible, This.fpdf_page_last_visible)
+		    RETURN
+		ENDIF
+		
+		This.env.API_FPDF.FPDFText_ClosePage(This.fpdf_text_pages[m.lnPage])
+		This.fpdf_text_pages[m.lnPage] = 0
+		This.env.API_FPDF.FPDF_ClosePage(This.fpdf_pages[m.lnPage])
+		This.fpdf_pages[m.lnPage] = 0
 		
 	ENDPROC
 
@@ -9805,8 +9833,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		DIMENSION This.fpdf_pages_selection(1,3)
 		DIMENSION This.fpdf_pages_pos(1,4)
 		DIMENSION This.fpdf_pages_size(1,2)
+		DIMENSION This.fpdf_pages_ref(1,2)
 		
-		STORE 0 TO This.fpdf_pages_pos, This.fpdf_pages_size
+		STORE 0 TO This.fpdf_pages_pos, This.fpdf_pages_size, This.fpdf_pages_ref
 		
 		IF EMPTY(This.fpdf_form) = .F.
 		    m.loFPDF_FORMS.VFPDFDOC_ExitFormFillEnvironment(This.fpdf_form)
@@ -9861,6 +9890,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		            ENDIF
 		            m.llIsFormField = .T.
 		        ENDIF
+		    ENDIF
+		    IF EMPTY(m.lnAnnot) = .F.
+		        This.env.API_FPDF_ANNOT.FPDFPage_CloseAnnot(m.lnAnnot)
 		    ENDIF
 		ENDIF
 		
@@ -10272,16 +10304,20 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		LOCAL lnPage, lnFPDF_TEXT_PAGE, lnCharCount
 		m.lnPage = m.tnPageIndex
+		This.LoadPage(m.lnPage)
 		m.lnFPDF_TEXT_PAGE = This.FPDF_TEXT_PAGES[m.lnPage]
 		m.lnCharCount = This.env.API_FPDF.FPDFText_CountChars(m.lnFPDF_TEXT_PAGE)
 		
 		IF m.lnCharCount = 0
+		    This.ClosePage(m.lnPage)
 		    RETURN ""
 		ENDIF
 		
 		LOCAL lcBuffer, lnBufLen
 		m.lcBuffer = REPLICATE(CHR(0), m.lnCharCount * 2)
 		m.lnBufLen = This.env.API_FPDF.FPDFText_GetText(m.lnFPDF_TEXT_PAGE, 0, m.lnCharCount, @m.lcBuffer)
+		
+		This.ClosePage(m.lnPage)
 		
 		RETURN m.lcBuffer
 		
@@ -10591,6 +10627,18 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 	ENDPROC
 
+	HIDDEN PROCEDURE loadpage
+		LPARAMETERS lnPage
+		
+		IF EMPTY(This.fpdf_pages[m.lnPage])
+		    This.fpdf_pages[m.lnPage] = This.env.API_FPDF.FPDF_LoadPage(This.fpdf_doc, m.lnPage - 1)
+		    This.fpdf_text_pages[m.lnPage] = This.env.API_FPDF.FPDFText_LoadPage(This.fpdf_pages[m.lnPage])
+		ENDIF
+		
+		This.fpdf_pages_ref[m.lnPage,1] = This.fpdf_pages_ref[m.lnPage,1] + 1
+		
+	ENDPROC
+
 	HIDDEN PROCEDURE LostFocus
 		This.IsFocused = .F.
 		IF EMPTY(This.fpdf_form) = .F.
@@ -10670,108 +10718,113 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN
 		ENDIF
 		
-		m.lnFPDF_Page = This.fpdf_pages[m.lnPage]
-		m.lnFPDF_Text_Page = This.fpdf_text_pages[m.lnPage]
+		TRY
+		    This.LoadPage(m.lnPage)
+		    
+		    m.lnFPDF_Page = This.fpdf_pages[m.lnPage]
+		    m.lnFPDF_Text_Page = This.fpdf_text_pages[m.lnPage]
 		
-		LOCAL lnPageX as Double, lnPageY as Double
-		STORE 0 TO m.lnPageX, m.lnPageY
+		    LOCAL lnPageX as Double, lnPageY as Double
+		    STORE 0 TO m.lnPageX, m.lnPageY
 		
-		IF m.loFPDF.FPDF_DeviceToPage(m.lnFPDF_Page, This.fpdf_pages_pos[m.lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[m.lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[m.lnPage,3], This.fpdf_pages_pos[m.lnPage,4], 0, m.lnMouseX, m.lnMouseY, @m.lnPageX, @m.lnPageY) <> 1
-		    RETURN
-		ENDIF
+		    IF m.loFPDF.FPDF_DeviceToPage(m.lnFPDF_Page, This.fpdf_pages_pos[m.lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[m.lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[m.lnPage,3], This.fpdf_pages_pos[m.lnPage,4], 0, m.lnMouseX, m.lnMouseY, @m.lnPageX, @m.lnPageY) <> 1
+		        EXIT
+		    ENDIF
 		
-		IF m.nButton = 1 AND This.AllowFormEdit AND EMPTY(This.fpdf_form) = .F.
-		    DO CASE
-		    CASE m.llDblClick = .T. AND m.llTplClick = .F.
-		        IF m.loFPDF_FORMS.FORM_OnLButtonDoubleClick(This.fpdf_form, m.lnFPDF_Page, m.nShift, m.lnPageX, m.lnPageY) > 0
-		            m.loFPDF_FORMS.Form_OnFocus(This.fpdf_form, m.lnFPDF_Page, m.nShift, m.lnPageX, m.lnPageY)
-		            This.Redraw()
-		            RETURN
+		    IF m.nButton = 1 AND This.AllowFormEdit AND EMPTY(This.fpdf_form) = .F.
+		        DO CASE
+		        CASE m.llDblClick = .T. AND m.llTplClick = .F.
+		            IF m.loFPDF_FORMS.FORM_OnLButtonDoubleClick(This.fpdf_form, m.lnFPDF_Page, m.nShift, m.lnPageX, m.lnPageY) > 0
+		                m.loFPDF_FORMS.Form_OnFocus(This.fpdf_form, m.lnFPDF_Page, m.nShift, m.lnPageX, m.lnPageY)
+		                This.Redraw()
+		                EXIT
+		            ENDIF
+		        OTHERWISE
+		            IF m.loFPDF_FORMS.FORM_OnLButtonDown(This.fpdf_form, m.lnFPDF_Page, m.nShift, m.lnPageX, m.lnPageY) > 0
+		                m.loFPDF_FORMS.Form_OnFocus(This.fpdf_form, m.lnFPDF_Page, m.nShift, m.lnPageX, m.lnPageY)
+		                This.Redraw()
+		                EXIT
+		            ENDIF
+		        ENDCASE
+		        m.loFPDF_FORMS.FORM_ForceToKillFocus(This.fpdf_form)
+		    ENDIF
+		
+		
+		    ********************************************************************
+		    LOCAL lnCharIndexStart
+		    m.lnCharIndexStart = m.loFPDF.FPDFText_GetCharIndexAtPos(m.lnFPDF_Text_Page, m.lnPageX, m.lnPageY, 10, 0)
+		
+		    IF m.lnCharIndexStart > 0
+		        This.SelectionCharIndexStart = m.lnCharIndexStart
+		    ENDIF
+		
+		    IF m.lnCharIndexStart < 0
+		        * TEXT MISCLICK
+		        This.SelectText()
+		        EXIT
+		    ENDIF
+		
+		
+		    IF m.llDblClick = .F. AND m.llTplClick = .F.
+		        * TEXT SINGLE CLICK
+		        This.SelectText()
+		        EXIT
+		    ENDIF
+		
+		
+		    ********************************************************************
+		    * TEXT DOUBLE CLICK, TRIPLE CLICK
+		    ********************************************************************
+		
+		    LOCAL lnCharCountMax
+		    m.lnCharCountMax = m.loFPDF.FPDFText_CountChars(m.lnFPDF_Text_Page)
+		    IF m.lnCharCountMax < 0
+		        EXIT
+		    ENDIF
+		
+		    LOCAL lnCharCount
+		    m.lnCharCount = 1
+		
+		    LOCAL lnCharIndexLeft
+		    m.lnCharIndexLeft = m.lnCharIndexStart
+		
+		    DO WHILE m.lnCharIndexLeft > 0
+		        LOCAL lcChar
+		        m.lcChar = LEFT(STRCONV(STRCONV(BINTOC(m.loFPDF.FPDFText_GetUnicode(m.lnFPDF_Text_Page, m.lnCharIndexLeft-1), "4RS"),6),2),1)
+		        
+		        IF INLIST(m.lcChar, CHR(10),CHR(13))
+		            EXIT
 		        ENDIF
-		    OTHERWISE
-		        IF m.loFPDF_FORMS.FORM_OnLButtonDown(This.fpdf_form, m.lnFPDF_Page, m.nShift, m.lnPageX, m.lnPageY) > 0
-		            m.loFPDF_FORMS.Form_OnFocus(This.fpdf_form, m.lnFPDF_Page, m.nShift, m.lnPageX, m.lnPageY)
-		            This.Redraw()
-		            RETURN
+		        
+		        IF EMPTY(m.lcChar) AND m.llTplClick = .F.
+		            EXIT
 		        ENDIF
-		    ENDCASE
-		    m.loFPDF_FORMS.FORM_ForceToKillFocus(This.fpdf_form)
-		ENDIF
+		        
+		        m.lnCharIndexLeft = m.lnCharIndexLeft - 1
+		        m.lnCharCount = m.lnCharCount + 1
+		    ENDDO
 		
 		
-		********************************************************************
-		LOCAL lnCharIndexStart
-		m.lnCharIndexStart = m.loFPDF.FPDFText_GetCharIndexAtPos(m.lnFPDF_Text_Page, m.lnPageX, m.lnPageY, 10, 0)
+		    DO WHILE m.lnCharIndexLeft + m.lnCharCount < m.lnCharCountMax
+		        LOCAL lcChar
+		        m.lcChar = LEFT(STRCONV(STRCONV(BINTOC(m.loFPDF.FPDFText_GetUnicode(m.lnFPDF_Text_Page, m.lnCharIndexLeft + m.lnCharCount), "4RS"),6),2),1)
 		
-		IF m.lnCharIndexStart > 0
-		    This.SelectionCharIndexStart = m.lnCharIndexStart
-		ENDIF
+		        IF INLIST(m.lcChar, CHR(10),CHR(13))
+		            EXIT
+		        ENDIF
 		
-		IF m.lnCharIndexStart < 0
-		    * TEXT MISCLICK
-		    This.SelectText()
-		    RETURN
-		ENDIF
+		        IF EMPTY(m.lcChar) AND m.llTplClick = .F.
+		            EXIT
+		        ENDIF
 		
+		        m.lnCharCount = m.lnCharCount + 1
+		    ENDDO
 		
-		IF m.llDblClick = .F. AND m.llTplClick = .F.
-		    * TEXT SINGLE CLICK
-		    This.SelectText()
-		    RETURN
-		ENDIF
+		    This.SelectText(m.lnPage, m.lnCharIndexLeft, m.lnCharCount)
 		
-		
-		********************************************************************
-		* TEXT DOUBLE CLICK, TRIPLE CLICK
-		********************************************************************
-		
-		LOCAL lnCharCountMax
-		m.lnCharCountMax = m.loFPDF.FPDFText_CountChars(m.lnFPDF_Text_Page)
-		IF m.lnCharCountMax < 0
-		    RETURN
-		ENDIF
-		
-		LOCAL lnCharCount
-		m.lnCharCount = 1
-		
-		LOCAL lnCharIndexLeft
-		m.lnCharIndexLeft = m.lnCharIndexStart
-		
-		DO WHILE m.lnCharIndexLeft > 0
-		    LOCAL lcChar
-		    m.lcChar = LEFT(STRCONV(STRCONV(BINTOC(m.loFPDF.FPDFText_GetUnicode(m.lnFPDF_Text_Page, m.lnCharIndexLeft-1), "4RS"),6),2),1)
-		    
-		    IF INLIST(m.lcChar, CHR(10),CHR(13))
-		        EXIT
-		    ENDIF
-		    
-		    IF EMPTY(m.lcChar) AND m.llTplClick = .F.
-		        EXIT
-		    ENDIF
-		    
-		    m.lnCharIndexLeft = m.lnCharIndexLeft - 1
-		    m.lnCharCount = m.lnCharCount + 1
-		ENDDO
-		
-		
-		DO WHILE m.lnCharIndexLeft + m.lnCharCount < m.lnCharCountMax
-		    LOCAL lcChar
-		    m.lcChar = LEFT(STRCONV(STRCONV(BINTOC(m.loFPDF.FPDFText_GetUnicode(m.lnFPDF_Text_Page, m.lnCharIndexLeft + m.lnCharCount), "4RS"),6),2),1)
-		
-		    IF INLIST(m.lcChar, CHR(10),CHR(13))
-		        EXIT
-		    ENDIF
-		
-		    IF EMPTY(m.lcChar) AND m.llTplClick = .F.
-		        EXIT
-		    ENDIF
-		
-		    m.lnCharCount = m.lnCharCount + 1
-		ENDDO
-		
-		
-		This.SelectText(m.lnPage, m.lnCharIndexLeft, m.lnCharCount)
-		
+		FINALLY
+		    This.ClosePage(m.lnPage)
+		ENDTRY
 		
 	ENDPROC
 
@@ -10796,39 +10849,46 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN
 		ENDIF
 		
-		m.lnFPDF_Page = This.fpdf_pages[m.lnPage]
-		m.lnFPDF_Text_Page = This.fpdf_text_pages[m.lnPage]
-		
-		LOCAL lnPageX as Double, lnPageY as Double
-		STORE 0 TO m.lnPageX, m.lnPageY
-		
-		IF m.loFPDF.FPDF_DeviceToPage(m.lnFPDF_Page, This.fpdf_pages_pos[m.lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[m.lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[m.lnPage,3], This.fpdf_pages_pos[m.lnPage,4], 0, m.lnMouseX, m.lnMouseY, @m.lnPageX, @m.lnPageY) <> 1
-		    RETURN
-		ENDIF
-		
-		IF m.nButton = 1 AND This.AllowFormEdit AND EMPTY(This.fpdf_form) = .F.
-		    IF m.loFPDF_FORMS.FORM_OnMouseMove(This.fpdf_form, m.lnFPDF_Page, m.nShift + IIF(m.nButton=1, 64,0), m.lnPageX, m.lnPageY) > 0
-		        This.Redraw()
-		        RETURN
-		    ENDIF
-		ENDIF
-		
-		LOCAL lnCharIndex
-		m.lnCharIndex = m.loFPDF.FPDFText_GetCharIndexAtPos(m.lnFPDF_Text_Page, m.lnPageX, m.lnPageY, 10, 0)
-		
-		DO CASE
-		CASE m.lnCharIndex >= 0
-		    This.MousePointer = 3
+		TRY
+		    This.LoadPage(m.lnPage)
 		    
-		    IF m.nButton = 1 AND m.lnCharIndex <> This.SelectionCharindexPrev
-		        This.SelectText(m.lnPage, MIN(This.SelectionCharIndexStart,m.lnCharIndex), ABS(m.lnCharIndex-This.SelectionCharIndexStart)+1)
-		    ENDIF
-		    
-		OTHERWISE
-		    This.MousePointer = 0
-		ENDCASE
+		    m.lnFPDF_Page = This.fpdf_pages[m.lnPage]
+		    m.lnFPDF_Text_Page = This.fpdf_text_pages[m.lnPage]
 		
-		This.SelectionCharindexPrev = m.lnCharIndex
+		    LOCAL lnPageX as Double, lnPageY as Double
+		    STORE 0 TO m.lnPageX, m.lnPageY
+		
+		    IF m.loFPDF.FPDF_DeviceToPage(m.lnFPDF_Page, This.fpdf_pages_pos[m.lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[m.lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[m.lnPage,3], This.fpdf_pages_pos[m.lnPage,4], 0, m.lnMouseX, m.lnMouseY, @m.lnPageX, @m.lnPageY) <> 1
+		        EXIT
+		    ENDIF
+		
+		    IF m.nButton = 1 AND This.AllowFormEdit AND EMPTY(This.fpdf_form) = .F.
+		        IF m.loFPDF_FORMS.FORM_OnMouseMove(This.fpdf_form, m.lnFPDF_Page, m.nShift + IIF(m.nButton=1, 64,0), m.lnPageX, m.lnPageY) > 0
+		            This.Redraw()
+		            EXIT
+		        ENDIF
+		    ENDIF
+		
+		    LOCAL lnCharIndex
+		    m.lnCharIndex = m.loFPDF.FPDFText_GetCharIndexAtPos(m.lnFPDF_Text_Page, m.lnPageX, m.lnPageY, 10, 0)
+		
+		    DO CASE
+		    CASE m.lnCharIndex >= 0
+		        This.MousePointer = 3
+		        
+		        IF m.nButton = 1 AND m.lnCharIndex <> This.SelectionCharindexPrev
+		            This.SelectText(m.lnPage, MIN(This.SelectionCharIndexStart,m.lnCharIndex), ABS(m.lnCharIndex-This.SelectionCharIndexStart)+1)
+		        ENDIF
+		        
+		    OTHERWISE
+		        This.MousePointer = 0
+		    ENDCASE
+		
+		    This.SelectionCharindexPrev = m.lnCharIndex
+		    
+		FINALLY
+		    This.ClosePage(m.lnPage)
+		ENDTRY
 		
 	ENDPROC
 
@@ -10847,34 +10907,37 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		m.lnMouseX = m.nXCoord
 		m.lnMouseY = m.nYCoord
 		
-		LOCAL lnPage, lnFPDF_Page, lnFPDF_Text_Page
+		LOCAL lnPage, lnFPDF_Page
 		m.lnPage = This.PagePick(m.lnMouseX, m.lnMouseY)
 		
 		IF EMPTY(m.lnPage) = .T.
 		    RETURN
 		ENDIF
 		
-		m.lnFPDF_Page = This.fpdf_pages[m.lnPage]
-		m.lnFPDF_Text_Page = This.fpdf_text_pages[m.lnPage]
+		TRY
+		    This.LoadPage(m.lnPage)
+		    m.lnFPDF_Page = This.fpdf_pages[m.lnPage]
 		
-		LOCAL lnPageX as Double, lnPageY as Double
-		STORE 0 TO m.lnPageX, m.lnPageY
+		    LOCAL lnPageX as Double, lnPageY as Double
+		    STORE 0 TO m.lnPageX, m.lnPageY
 		
-		IF m.loFPDF.FPDF_DeviceToPage(m.lnFPDF_Page, This.fpdf_pages_pos[m.lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[m.lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[m.lnPage,3], This.fpdf_pages_pos[m.lnPage,4], 0, m.lnMouseX, m.lnMouseY, @m.lnPageX, @m.lnPageY) <> 1
-		    RETURN
-		ENDIF
-		
-		IF m.nButton = 1 AND This.AllowFormEdit AND EMPTY(This.fpdf_form) = .F.
-		    IF m.loFPDF_FORMS.FORM_OnLButtonUp(This.fpdf_form, m.lnFPDF_Page, m.nShift + 64, m.lnPageX, m.lnPageY) > 0
-		        This.Redraw()
-		        RETURN
+		    IF m.loFPDF.FPDF_DeviceToPage(m.lnFPDF_Page, This.fpdf_pages_pos[m.lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[m.lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[m.lnPage,3], This.fpdf_pages_pos[m.lnPage,4], 0, m.lnMouseX, m.lnMouseY, @m.lnPageX, @m.lnPageY) <> 1
+		        EXIT
 		    ENDIF
-		ENDIF
 		
-		IF m.nButton = 2
-		    This.contextmenu()
-		ENDIF
+		    IF m.nButton = 1 AND This.AllowFormEdit AND EMPTY(This.fpdf_form) = .F.
+		        IF m.loFPDF_FORMS.FORM_OnLButtonUp(This.fpdf_form, m.lnFPDF_Page, m.nShift + 64, m.lnPageX, m.lnPageY) > 0
+		            This.Redraw()
+		            EXIT
+		        ENDIF
+		    ENDIF
 		
+		    IF m.nButton = 2
+		        This.contextmenu()
+		    ENDIF
+		FINALLY
+		    This.ClosePage(m.lnPage)
+		ENDTRY
 	ENDPROC
 
 	HIDDEN PROCEDURE MouseWheel
@@ -10968,14 +11031,14 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    DIMENSION This.fpdf_pages_selection(This.fpdf_pagecount,3)
 		    DIMENSION This.fpdf_pages_pos(This.fpdf_pagecount,4)
 		    DIMENSION This.fpdf_pages_size(This.fpdf_pagecount,2)
-		    STORE 0 TO This.fpdf_pages, This.fpdf_text_pages, This.fpdf_pages_pos, This.fpdf_pages_size
+		    DIMENSION This.fpdf_pages_ref(This.fpdf_pagecount,2)
+		    STORE 0 TO This.fpdf_pages, This.fpdf_text_pages, This.fpdf_pages_pos, This.fpdf_pages_size, This.fpdf_pages_ref
 		ENDIF
 		
 		LOCAL lnPage
 		FOR m.lnPage = 1 TO This.FPDF_PageCount
-		    This.fpdf_pages[m.lnPage] = m.loFPDF.FPDF_LoadPage(This.FPDF_Doc, m.lnPage-1)
-		    
-		    This.fpdf_text_pages[m.lnPage] = m.loFPDF.FPDFText_LoadPage(This.fpdf_pages[m.lnPage])
+		    This.LoadPage(m.lnPage)
+		
 		    IF EMPTY(This.fpdf_form) = .F.
 		        m.loFPDF_FORMS.FORM_OnAfterLoadPage(This.fpdf_pages[m.lnPage], This.fpdf_form)
 		    ENDIF
@@ -10987,6 +11050,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    This.fpdf_pages_size[m.lnPage,1] = m.loFPDF.FPDF_GetPageWidth(This.fpdf_pages[m.lnPage])
 		    This.fpdf_pages_size[m.lnPage,2] = m.loFPDF.FPDF_GetPageHeight(This.fpdf_pages[m.lnPage])
 		    
+		    LOCAL llHasFormFields
+		    m.llHasFormFields = .F.
 		    IF EMPTY(This.fpdf_form) = .F.
 		        LOCAL lnAnnotCnt, lnAnnot, lnAnnotHandle
 		        m.lnAnnotCnt = This.env.API_FPDF_ANNOT.FPDFPage_GetAnnotCount(This.fpdf_pages[m.lnPage])
@@ -11006,6 +11071,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		                    IF EMPTY(m.lcBuffer) = .F.
 		                        LOCAL lcFormFieldName
 		                        m.lcFormFieldName = m.lcBuffer
+		                        
+		                        m.llHasFormFields = .T.
 		                        
 		                        LOCAL loFormField, lnFormFieldIndex
 		                        m.lnFormFieldIndex = This.FormFields.GetKey(m.lcFormFieldName)
@@ -11057,6 +11124,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		            ENDTRY
 		        ENDFOR
 		    ENDIF
+		
+		    This.fpdf_pages_ref[m.lnPage,2] = IIF(m.llHasFormFields, 1, 0) && Release Lock
+		    This.ClosePage(m.lnPage)
 		ENDFOR
 		
 		This.ViewPortUpdate()
@@ -11144,12 +11214,13 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN
 		ENDIF
 		
+		LOCAL lnAnnotPage, lnAnnot
+		STORE 0 TO m.lnAnnotPage, m.lnAnnot
+		
 		LOCAL loErr
 		m.loErr = .F.
 		TRY
 		    IF EMPTY(This.fpdf_form) = .F.
-		        LOCAL lnAnnotPage, lnAnnot
-		        STORE 0 TO m.lnAnnotPage, m.lnAnnot
 		        IF This.env.API_FPDF_FORMS.FORM_GetFocusedAnnot(This.fpdf_form, @m.lnAnnotPage, @m.lnAnnot) = 1
 		            IF BETWEEN(m.lnAnnotPage + 1, This.fpdf_page_first_visible, This.fpdf_page_last_visible)
 		                LOCAL lnFPDF_Page
@@ -11163,6 +11234,10 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    ENDIF
 		CATCH TO m.loErr
 		    This.ErrMsg(m.loErr)
+		FINALLY
+		    IF EMPTY(m.lnAnnot) = .F.
+		        This.env.API_FPDF_ANNOT.FPDFPage_CloseAnnot(m.lnAnnot)
+		    ENDIF
 		ENDTRY
 		
 	ENDPROC
@@ -11505,6 +11580,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		                m.lnPrintRotate = IIF(m.lnOrientation = DMORIENT_LANDSCAPE, IIF(m.lnPageWidth > m.lnPageHeight, 2, 1), IIF(m.lnPageWidth > m.lnPageHeight, 3, 0)) 
 		            ENDIF
 		            
+		            This.LoadPage(m.lnPageIndex)
+		            
 		            LOCAL lnFPDF_Page 
 		            m.lnFPDF_Page = This.fpdf_pages[m.lnPageIndex]
 		            
@@ -11520,6 +11597,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		                    m.loFPDF.CONST.FPDF_PRINTING())
 		
 		            ENDIF
+		            
+		            This.ClosePage(m.lnPageIndex)
 		            
 		            This.env.API_WIN.EndPage(m.lhPrinterDC)
 		            ***********************************
@@ -11648,6 +11727,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		LOCAL lnPage
 		FOR m.lnPage = This.fpdf_page_first_visible TO This.fpdf_page_last_visible
 		    
+		    This.LoadPage(m.lnPage)
+		    
 		    m.lnFPDF_Page = This.fpdf_pages[m.lnPage]
 		    m.lnPageX = This.fpdf_pages_pos[m.lnPage,1] - This.ViewPortX
 		    m.lnPageY = This.fpdf_pages_pos[m.lnPage,2] - This.ViewPortY
@@ -11666,6 +11747,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    
 		    This.RenderSearch(m.lnPage)
 		    This.RenderSelection(m.lnPage)
+		    
+		    This.ClosePage(m.lnPage)
 		ENDFOR
 		
 	ENDPROC
@@ -11906,7 +11989,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		#define SCH_BCK 2
 		
 		#define SCH_WHITESPACE CHR(0x00)+CHR(0x09) + CHR(0x00)+CHR(0x0A) + CHR(0x00)+CHR(0x0B) + CHR(0x00)+CHR(0x0C) + CHR(0x00)+CHR(0x0D) + CHR(0x00)+CHR(0x20) + CHR(0x00)+CHR(0x85) + CHR(0x00)+CHR(0xA0) + CHR(0x16)+CHR(0x80) + CHR(0x20)+CHR(0x00) + CHR(0x20)+CHR(0x01) + CHR(0x20)+CHR(0x02) + CHR(0x20)+CHR(0x03) + CHR(0x20)+CHR(0x04) + CHR(0x20)+CHR(0x05) + CHR(0x20)+CHR(0x06) + CHR(0x20)+CHR(0x07) + CHR(0x20)+CHR(0x08) + CHR(0x20)+CHR(0x09) + CHR(0x20)+CHR(0x0A) + CHR(0x20)+CHR(0x28) + CHR(0x20)+CHR(0x29) + CHR(0x20)+CHR(0x2F) + CHR(0x20)+CHR(0x5F) + CHR(0x30)+CHR(0x00)
-		#define SCH_PUNCTIATION CHR(0x00)+CHR(0x21) + CHR(0x00)+CHR(0x22) + CHR(0x00)+CHR(0x23) + CHR(0x00)+CHR(0x25) + CHR(0x00)+CHR(0x26) + CHR(0x00)+CHR(0x27) + CHR(0x00)+CHR(0x2A) + CHR(0x00)+CHR(0x2C) + CHR(0x00)+CHR(0x2D) + CHR(0x00)+CHR(0x2E) + CHR(0x00)+CHR(0x2F) + CHR(0x00)+CHR(0x3A) + CHR(0x00)+CHR(0x3B) + CHR(0x00)+CHR(0x3D) + CHR(0x00)+CHR(0x3F) + CHR(0x20)+CHR(0x10) + CHR(0x20)+CHR(0x11) + CHR(0x20)+CHR(0x12) + CHR(0x20)+CHR(0x13) + CHR(0x20)+CHR(0x14) + CHR(0x20)+CHR(0x15) + CHR(0x00)+CHR(0xAB) + CHR(0x00)+CHR(0xBB) + CHR(0x20)+CHR(0x18) + CHR(0x20)+CHR(0x19) + CHR(0x20)+CHR(0x1B) + CHR(0x20)+CHR(0x1C) + CHR(0x20)+CHR(0x1D) + CHR(0x00)+CHR(0x28) + CHR(0x00)+CHR(0x29) + CHR(0x00)+CHR(0x5B) + CHR(0x00)+CHR(0x5C) + CHR(0x00)+CHR(0x5D) + CHR(0x00)+CHR(0x7B) + CHR(0x00)+CHR(0x7D) + CHR(0x20)+CHR(0x1A) + CHR(0x20)+CHR(0x1E)
+		#define SCH_PUNCTUATION CHR(0x00)+CHR(0x21) + CHR(0x00)+CHR(0x22) + CHR(0x00)+CHR(0x23) + CHR(0x00)+CHR(0x25) + CHR(0x00)+CHR(0x26) + CHR(0x00)+CHR(0x27) + CHR(0x00)+CHR(0x2A) + CHR(0x00)+CHR(0x2C) + CHR(0x00)+CHR(0x2D) + CHR(0x00)+CHR(0x2E) + CHR(0x00)+CHR(0x2F) + CHR(0x00)+CHR(0x3A) + CHR(0x00)+CHR(0x3B) + CHR(0x00)+CHR(0x3D) + CHR(0x00)+CHR(0x3F) + CHR(0x20)+CHR(0x10) + CHR(0x20)+CHR(0x11) + CHR(0x20)+CHR(0x12) + CHR(0x20)+CHR(0x13) + CHR(0x20)+CHR(0x14) + CHR(0x20)+CHR(0x15) + CHR(0x00)+CHR(0xAB) + CHR(0x00)+CHR(0xBB) + CHR(0x20)+CHR(0x18) + CHR(0x20)+CHR(0x19) + CHR(0x20)+CHR(0x1B) + CHR(0x20)+CHR(0x1C) + CHR(0x20)+CHR(0x1D) + CHR(0x00)+CHR(0x28) + CHR(0x00)+CHR(0x29) + CHR(0x00)+CHR(0x5B) + CHR(0x00)+CHR(0x5C) + CHR(0x00)+CHR(0x5D) + CHR(0x00)+CHR(0x7B) + CHR(0x00)+CHR(0x7D) + CHR(0x20)+CHR(0x1A) + CHR(0x20)+CHR(0x1E)
 		
 		IF This.fpdf_opened = .F.
 		    RETURN SCH_ERROR
@@ -11995,6 +12078,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		DO WHILE m.lnPageIndex > 0 AND m.lnPageIndex <= This.fpdf_pagecount
 		
+		    This.LoadPage(m.lnPageIndex)
+		    
 		    LOCAL lnFPDF_Text_Page
 		    m.lnFPDF_Text_Page = This.fpdf_text_pages[m.lnPageIndex]
 		
@@ -12040,9 +12125,10 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		        DO CASE
 		        CASE m.lcNextChar == CHR(0)+CHR(0)
 		        CASE AT(m.lcNextChar, SCH_WHITESPACE) <> 0 
-		        CASE AT(m.lcNextChar, SCH_PUNCTIATION) <> 0
+		        CASE AT(m.lcNextChar, SCH_PUNCTUATION) <> 0
 		        OTHERWISE
 		            m.lnSearchStartIndex = IIF(m.lnDirection = SCH_BCK, m.lnFindResIndex, m.lnFindResIndex + m.lnFindResCount)
+		            This.ClosePage(m.lnPageIndex)
 		            LOOP
 		        ENDCASE
 		    ENDIF
@@ -12086,10 +12172,12 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		        ENDFOR
 		
 		        This.WndRedraw()
-		        
+		
+		        This.ClosePage(m.lnPageIndex)        
 		        RETURN SCH_FOUND
 		    ENDIF
 		
+		    This.ClosePage(m.lnPageIndex)
 		
 		    IF m.lnDirection = SCH_BCK
 		        m.lnPageIndex = m.lnPageIndex - 1
@@ -12097,10 +12185,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    ELSE
 		        m.lnPageIndex = m.lnPageIndex + 1
 		        m.lnSearchStartIndex = 0
-		    ENDIF
-		    
-		    
-		    
+		    ENDIF    
 		ENDDO
 		
 		IF EMPTY(This.SearchState_ResCount)=.F.
@@ -12130,12 +12215,13 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		LOCAL lcCopyText
 		m.lcCopyText = ""
 		
+		LOCAL lnAnnotPage, lnAnnot
+		STORE 0 TO m.lnAnnotPage, m.lnAnnot
+		
 		LOCAL loErr
 		m.loErr = .F.
 		TRY
 		    IF EMPTY(This.fpdf_form) = .F.
-		        LOCAL lnAnnotPage, lnAnnot
-		        STORE 0 TO m.lnAnnotPage, m.lnAnnot
 		        IF This.env.API_FPDF_FORMS.FORM_GetFocusedAnnot(This.fpdf_form, @m.lnAnnotPage, @m.lnAnnot) = 1
 		            IF BETWEEN(m.lnAnnotPage + 1, This.fpdf_page_first_visible, This.fpdf_page_last_visible)
 		                LOCAL lnFPDF_Page
@@ -12158,13 +12244,15 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    LOCAL lnPage, lnFPDF_TEXT_PAGE, lnSelStart, lnSelCount
 		    FOR m.lnPage = 1 TO This.fpdf_pagecount
 		
-		        m.lnFPDF_TEXT_PAGE = This.FPDF_TEXT_PAGES[m.lnPage]
 		        m.lnSelStart = EVL(This.fpdf_pages_selection[m.lnPage,2],0)
 		        m.lnSelCount = EVL(This.fpdf_pages_selection[m.lnPage,3],0)
 		        
 		        IF m.lnSelCount = 0
 		            LOOP
 		        ENDIF
+		
+		        This.LoadPage(m.lnPage)
+		        m.lnFPDF_TEXT_PAGE = This.FPDF_TEXT_PAGES[m.lnPage]
 		        
 		        LOCAL lcBuffer, lnBufLen
 		        m.lcBuffer = REPLICATE(CHR(0), m.lnSelCount * 2)
@@ -12173,11 +12261,16 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		        IF m.lnBufLen > 0
 		            m.lcCopyText = m.lcCopyText + m.lcBuffer
 		        ENDIF
-		
+		        
+		        This.ClosePage(m.lnPage)
 		    ENDFOR
 		
 		CATCH TO loErr
 		    This.ErrMsg(m.loErr)
+		FINALLY
+		    IF EMPTY(m.lnAnnot) = .F.
+		        This.env.API_FPDF_ANNOT.FPDFPage_CloseAnnot(m.lnAnnot)
+		    ENDIF
 		ENDTRY
 		
 		IF EMPTY(m.lcCopyText)=.F.
@@ -12265,6 +12358,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		m.lnPageEnd = EVL(m.lnPage,This.fpdf_pagecount)
 		
 		FOR m.lnPage = m.lnPageStart TO m.lnPageEnd
+		    This.LoadPage(m.lnPage)
+		    
 		    LOCAL lnFPDF_Text_Page
 		    m.lnFPDF_Text_Page = This.fpdf_text_pages[m.lnPage]
 		
@@ -12310,7 +12405,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		        This.fpdf_pages_selection[m.lnPage,2] = 0
 		        This.fpdf_pages_selection[m.lnPage,3] = 0
 		    ENDIF
-		    
+		
+		    This.ClosePage(m.lnPage)    
 		ENDFOR
 		
 		This.Redraw()
@@ -12318,12 +12414,13 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 	ENDPROC
 
 	PROCEDURE selecttextall		&& Select all text in the document
+		LOCAL lnAnnotPage, lnAnnot
+		STORE 0 TO m.lnAnnotPage, m.lnAnnot
+		
 		LOCAL loErr
 		m.loErr = .F.
 		TRY
 		    IF EMPTY(This.fpdf_form) = .F.
-		        LOCAL lnAnnotPage, lnAnnot
-		        STORE 0 TO m.lnAnnotPage, m.lnAnnot
 		        IF This.env.API_FPDF_FORMS.FORM_GetFocusedAnnot(This.fpdf_form, @m.lnAnnotPage, @m.lnAnnot) = 1
 		            IF BETWEEN(m.lnAnnotPage + 1, This.fpdf_page_first_visible, This.fpdf_page_last_visible)
 		                LOCAL lnFPDF_Page
@@ -12337,9 +12434,13 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    ENDIF
 		
 		    This.SelectText(0,0,-1)
-		    
+		
 		CATCH TO loErr
 		    This.ErrMsg(m.loErr)
+		FINALLY
+		    IF EMPTY(m.lnAnnot) = .F.
+		        This.env.API_FPDF_ANNOT.FPDFPage_CloseAnnot(m.lnAnnot)
+		    ENDIF
 		ENDTRY
 		
 	ENDPROC
@@ -12360,7 +12461,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		LOCAL lnFPDF_Page
 		m.lnFPDF_Page = This.fpdf_pages[m.loFormField.PageIndex]
 		
-		LOCAL lnPrevAnntoPage, lnPrevAnnot
+		LOCAL lnPrevAnnotPage, lnPrevAnnot
 		STORE 0 TO m.lnPrevAnnotPage, m.lnPrevAnnot
 		IF This.env.API_FPDF_FORMS.FORM_GetFocusedAnnot(This.fpdf_form, @m.lnPrevAnnotPage, @m.lnPrevAnnot) = 0
 		    STORE 0 TO m.lnPrevAnnotPage, m.lnPrevAnnot
@@ -12368,13 +12469,14 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		LOCAL lnAnnotHandle
 		m.lnAnnotHandle = This.env.API_FPDF_ANNOT.FPDFPage_GetAnnot(m.lnFPDF_Page, m.loFormField.AnnotIndex - 1)
-		IF EMPTY(m.lnAnnotHandle)
-		    RETURN .F.
-		ENDIF
 		
 		LOCAL llRes
 		m.llRes = .F.
 		TRY
+		    IF EMPTY(m.lnAnnotHandle)
+		        EXIT
+		    ENDIF
+		
 		    LOCAL lnFormFieldType, lnFormFieldFlags
 		    m.lnFormFieldType = This.env.API_FPDF_ANNOT.FPDFAnnot_GetFormFieldType(This.fpdf_form, m.lnAnnotHandle)
 		    m.lnFormFieldFlags = This.env.API_FPDF_ANNOT.FPDFAnnot_GetFormFieldFlags(This.fpdf_form, m.lnAnnotHandle)
@@ -12485,6 +12587,10 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 	ENDPROC
 
 	HIDDEN PROCEDURE viewportupdate
+		LOCAL lnPageFirstPrev, lnPageLastPrev
+		m.lnPageFirstPrev = MAX(This.fpdf_page_first_visible, 1)
+		m.lnPageLastPrev = MIN(This.fpdf_page_last_visible, This.fpdf_pagecount)
+		
 		LOCAL lnVewPortUpdateStep
 		m.lnVewPortUpdateStep = 1
 		
@@ -12610,6 +12716,11 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    
 		    EXIT 
 		
+		ENDFOR
+		
+		LOCAL lnPage
+		FOR m.lnPage = m.lnPageFirstPrev TO m.lnPageLastPrev
+		    This.ClosePage(m.lnPage)
 		ENDFOR
 		
 		

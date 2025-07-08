@@ -420,7 +420,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		m.loErr = .F.
 		TRY
 		    IF This.IsReportCancelled = .T.
-		        This.IsReportCancelled = .F.
 		        EXIT
 		    ENDIF
 		
@@ -507,6 +506,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		FINALLY
 		    This.StatusWindow = .F.
+		    This.IsReportCancelled = .F.
 		    
 		    SET SAFETY &lSaveSafety
 		    
@@ -1704,6 +1704,8 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		        EXIT
 		    ENDIF
 		    
+		    This.StatusWindow = .F.
+		
 		    m.lcTempFileName = m.loRenderer.Finalize(This.SaveAs_PDFMeta)
 		
 		    IF VARTYPE(m.lcTempFileName) != "C" 
@@ -1909,6 +1911,7 @@ DEFINE CLASS pdfiumreport_renderer_docx AS pdfiumreport_renderer_base OF "pdfium
 	PROCEDURE begin
 		LPARAMETERS loPDFMeta as pdfium_pdfmeta of pdfium-vfp.vcx
 		
+		
 		This.vfpdf_zip_input = This.env.API_FPDF.VFPDF_CreateZipInput()
 		
 		This.Fonts = NEWOBJECT("Collection")
@@ -1977,7 +1980,7 @@ DEFINE CLASS pdfiumreport_renderer_docx AS pdfiumreport_renderer_base OF "pdfium
 		        STRTOFILE(SYS(2600, m.lnZipFileData, m.lnZipFileDataSize), m.lcTempFileName)
 		    ENDIF
 		
-		FINALLY
+		FINALLY    
 		    IF EMPTY(m.lnZipFileData) = .F.
 		        This.env.API_FPDF.VFPDF_DestroyZip(m.lnZipFileData)
 		        STORE 0 TO m.lnZipFileData, m.lnZipFileDataSize
@@ -3553,7 +3556,6 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfiumr
 		    LOCAL llEncrypt
 		    m.llEncrypt = (LEN(m.lcOwnerPassword) = 0 AND LEN(m.lcUserPassword) = 0) = .F.
 		
-		
 		    IF m.llEncrypt
 		        LOCAL lnPermit as Integer
 		        m.lnPermit = BITCLEAR(BITCLEAR(0xFFFFFFFF,0),1)
@@ -3703,6 +3705,7 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfiumr
 		
 		    IF m.llEncrypt        
 		        LOCAL lcPDFEncrypt
+		        m.lcPDFEncrypt = ""
 		        TEXT TO m.lcPDFEncrypt ADDITIVE NOSHOW FLAGS 1 PRETEXT 3
 		        5 0 obj
 		        <<
@@ -3891,17 +3894,17 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfiumr
 		LOCAL loErr
 		m.loErr = .F.
 		TRY
-		
 		    LOCAL liPage, lnPage
 		    m.liPage = 1 
 		    FOR m.liPage = 1 TO This.fpdf_pagecount
 		        m.lnPage = This.fpdf_pages[m.liPage]
 		        IF EMPTY(m.lnPage) = .F.
 		            m.loFPDF.FPDFPage_GenerateContent(m.lnPage)
-		        ENDIF
+		            m.loFPDF.FPDF_ClosePage(m.lnPage)
+		            This.fpdf_pages[m.liPage] = 0
+		        ENDIF        
 		    ENDFOR
 		    *******************************************************
-		
 		    m.lcTempFileName = This.env.GetUniqueTempFileName("pdf")
 		
 		    LOCAL lcSaveErrMsg
@@ -4158,13 +4161,17 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfiumr
 		    m.lnFPDF_Page = m.loFPDF.FPDFPage_New(This.fpdf_doc, This.fpdf_pagecount - 1, m.loRepObj.Rep_PageWidth * m.lnDpiCoef, m.loRepObj.Rep_PageHeight * m.lnDpiCoef)
 		
 		    This.fpdf_pages[This.fpdf_pagecount] = m.lnFPDF_Page
-		    
+		
+		    IF This.fpdf_pagecount > 1
+		        m.loFPDF.FPDFPage_GenerateContent(This.fpdf_pages[This.fpdf_pagecount - 1])
+		        m.loFPDF.FPDF_ClosePage(This.fpdf_pages[This.fpdf_pagecount - 1])
+		        This.fpdf_pages[This.fpdf_pagecount - 1] = 0 
+		    ENDIF
 		ENDIF
 		
 		IF EMPTY(This.fpdf_pages[This.fpdf_pagecount])
 		    RETURN
 		ENDIF
-		
 		
 		*************************************************
 		
@@ -5734,7 +5741,7 @@ DEFINE CLASS pdfiumreport_status_window AS form
 		    ENDIF
 		ENDIF
 		
-		IF This.Visible = .F. AND (DATETIME() - This.StartTime) > 1
+		IF This.Visible = .F. AND (DATETIME() - This.StartTime) > 3
 		    This.Show()
 		ENDIF
 		
