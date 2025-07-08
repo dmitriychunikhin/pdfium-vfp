@@ -1,5 +1,5 @@
 1.32
-  - Memory consumption optimization: release PDF pages from memory when they are no longer needed.
+  - Memory consumption optimization: release PDF pages from memory when they are no longer needed for rendering in viewport, searching, selecting text, etc.
 
 1.31
   - PdfiumReport rendering performance increased by up to 30%.
