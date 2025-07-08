@@ -298,7 +298,7 @@ loPdfiumReport.SaveAs_PDFMeta.Permit_Edit = .T. && Allow to make annotations and
 ```
 
 ## Filling PDF forms programmatically
-PdfiumViewer gives a read-write access to form fields values, and read-only access to other field's properties like name, options and etc, adding new fields is now allowed.
+PdfiumViewer gives a read-write access to form fields values, and read-only access to other field's properties like name, options and etc, adding new fields is not allowed.
 
 ### PdfiumViewer::GetFormFieldsCount()
 
