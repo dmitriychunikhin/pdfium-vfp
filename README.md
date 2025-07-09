@@ -20,7 +20,6 @@ pdfium-vfp is a open source PDF viewer control and ReportOutput + ReportPreview 
 ## Table of contents
 * [Features](#features)
 * [Minumum system requirements](#minumum-system-requirements)
-* [Known issues](#known-issues)
 * [Getting started](#getting-started)
 * [Sample VFP project](#sample-vfp-project)
 * [Known issues](#known-issues)
