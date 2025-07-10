@@ -1,3 +1,6 @@
+1.33
+  - A progress indicator with cancellation support was impelented in PdfiumViewer in methods OpenPDF, PrintDocument, SearchText
+
 1.32
   - Memory consumption optimization: release PDF pages from memory when they are no longer needed for rendering in viewport, searching, selecting text, etc.
 

@@ -6384,7 +6384,7 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		RETURN CHR(200) + CHR(161) + CHR(207) + CHR(251)
 		
 		
-		CASE m.tcTxtID == "PDFIUMREPORT_CANCEL"
+		CASE m.tcTxtID == "PROGRESS_WINDOW_CANCEL"
 		RETURN CHR(200) + CHR(161) + CHR(207) + CHR(251)
 		
 		OTHERWISE
@@ -6527,7 +6527,7 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		RETURN CHR(80) + CHR(111) + CHR(232) + CHR(101) + CHR(116) + CHR(32) + CHR(108) + CHR(105) + CHR(115) + CHR(116) + CHR(249) + CHR(32) + CHR(112) + CHR(97) + CHR(112) + CHR(237) + CHR(114) + CHR(117)
 		
 		
-		CASE m.tcTxtID == "PDFIUMREPORT_CANCEL"
+		CASE m.tcTxtID == "PROGRESS_WINDOW_CANCEL"
 		RETURN CHR(90) + CHR(114) + CHR(117) + CHR(154) + CHR(105) + CHR(116)
 		
 		OTHERWISE
@@ -6693,7 +6693,7 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		RETURN CHR(84) + CHR(111) + CHR(116) + CHR(97) + CHR(108) + CHR(32) + CHR(115) + CHR(104) + CHR(101) + CHR(101) + CHR(116) + CHR(115) + CHR(32) + CHR(111) + CHR(102) + CHR(32) + CHR(112) + CHR(97) + CHR(112) + CHR(101) + CHR(114)
 		
 		
-		CASE m.tcTxtID == "PDFIUMREPORT_CANCEL"
+		CASE m.tcTxtID == "PROGRESS_WINDOW_CANCEL"
 		RETURN CHR(67) + CHR(97) + CHR(110) + CHR(99) + CHR(101) + CHR(108)
 		
 		OTHERWISE
@@ -6882,7 +6882,7 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		RETURN CHR(194) + CHR(241) + CHR(229) + CHR(227) + CHR(238) + CHR(32) + CHR(235) + CHR(232) + CHR(241) + CHR(242) + CHR(238) + CHR(226) + CHR(32) + CHR(225) + CHR(243) + CHR(236) + CHR(224) + CHR(227) + CHR(232)
 		
 		
-		CASE m.tcTxtID == "PDFIUMREPORT_CANCEL"
+		CASE m.tcTxtID == "PROGRESS_WINDOW_CANCEL"
 		RETURN CHR(206) + CHR(242) + CHR(236) + CHR(229) + CHR(237) + CHR(224)
 		
 		OTHERWISE
@@ -8871,6 +8871,224 @@ DEFINE CLASS pdfium_printer_selection AS form 		&& Printer selection dialog.
 
 ENDDEFINE
 
+DEFINE CLASS pdfium_progress_window AS form 
+ 	*< CLASSDATA: Baseclass="form" Timestamp="" Scale="Pixels" Uniqueid="" />
+
+	*-- OBJECTDATA items order determines ZOrder / El orden de los items OBJECTDATA determina el ZOrder 
+	*< OBJECTDATA: ObjPath="shpProgress" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="i18n" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdCancel" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="lblProgress" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="lblStatus" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="API_WIN" UniqueID="" Timestamp="" />
+
+	*<DefinedPropArrayMethod>
+		*m: oncancel
+		*m: updateprogress		&& Updates progress state
+		*m: wndproc
+		*p: cancelbuttonhandle
+		*p: cancelbuttonid
+		*p: starttime
+		*p: _memberdata		&& XML Metadata for customizable properties
+	*</DefinedPropArrayMethod>
+
+	HIDDEN cancelbuttonhandle,cancelbuttonid,starttime
+	PROTECTED ActiveControl
+	*<PropValue>
+		AllowOutput = .F.
+		AlwaysOnTop = .T.
+		AutoCenter = .T.
+		BorderStyle = 3
+		cancelbuttonhandle = 0
+		cancelbuttonid = 0
+		Caption = "Form"
+		Closable = .F.
+		DoCreate = .T.
+		Height = 74
+		MaxButton = .F.
+		MinButton = .F.
+		Name = "pdfium_progress_window"
+		ScrollBars = 0
+		ShowWindow = 1
+		starttime = ({. :})
+		Themes = .T.
+		TitleBar = 0
+		Visible = .T.
+		Width = 400
+		WindowState = 0
+		_memberdata = <VFPData>
+			<memberdata name="env" type="property" display="env"/>
+			<memberdata name="wndproc" type="method" display="WndProc"/>
+			<memberdata name="cancelbuttonhandle" type="property" display="CancelButtonHandle"/>
+			<memberdata name="cancelbuttonid" type="property" display="CancelButtonId"/>
+			<memberdata name="oncancel" type="method" display="OnCancel"/>
+			<memberdata name="starttime" type="property" display="StartTime"/>
+			<memberdata name="updateprogress" type="method" display="UpdateProgress"/>
+		</VFPData>
+	*</PropValue>
+
+	ADD OBJECT 'API_WIN' AS pdfium_api_win WITH ;
+		Left = 348, ;
+		Name = "API_WIN", ;
+		Top = 36
+		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="custom" />
+
+	ADD OBJECT 'cmdCancel' AS commandbutton WITH ;
+		Caption = "Cancel", ;
+		Height = 27, ;
+		Left = 146, ;
+		Name = "cmdCancel", ;
+		Top = 36, ;
+		Width = 108
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'i18n' AS pdfium_i18n WITH ;
+		Left = 288, ;
+		Name = "i18n", ;
+		Top = 36, ;
+		API_WIN.Name = "API_WIN"
+		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="custom" />
+
+	ADD OBJECT 'lblProgress' AS label WITH ;
+		Alignment = 2, ;
+		BackStyle = 0, ;
+		Caption = "Progress", ;
+		FontBold = .F., ;
+		ForeColor = 255,255,255, ;
+		Height = 17, ;
+		Left = 13, ;
+		Name = "lblProgress", ;
+		Top = 12, ;
+		Visible = .F., ;
+		Width = 372
+		*< END OBJECT: BaseClass="label" />
+
+	ADD OBJECT 'lblStatus' AS label WITH ;
+		Alignment = 0, ;
+		BackStyle = 0, ;
+		Caption = "Status", ;
+		Height = 17, ;
+		Left = 12, ;
+		Name = "lblStatus", ;
+		Top = 12, ;
+		Visible = .F., ;
+		Width = 372
+		*< END OBJECT: BaseClass="label" />
+
+	ADD OBJECT 'shpProgress' AS shape WITH ;
+		BackColor = 0,128,128, ;
+		Height = 17, ;
+		Left = 12, ;
+		Name = "shpProgress", ;
+		Top = 12, ;
+		Visible = .F., ;
+		Width = 375
+		*< END OBJECT: BaseClass="shape" />
+	
+	PROCEDURE Destroy
+		DODEFAULT()
+		
+		IF EMPTY(This.CancelButtonHandle) = .F.
+		    This.API_WIN.DestroyWindow(This.CancelButtonHandle)
+		ENDIF
+		
+	ENDPROC
+
+	PROCEDURE Init
+		This.BorderStyle = 1
+		This.Visible = .F.
+		This.StartTime = SECONDS()
+		
+		#DEFINE GWL_HINSTANCE -6
+		#define WS_CHILD            0x40000000
+		#define WS_VISIBLE          0x10000000
+		#define WM_COMMAND 0x0111
+		
+		LOCAL lhInstance
+		m.lhInstance = This.API_WIN.GetWindowLong(This.HWnd, GWL_HINSTANCE)
+		
+		This.CancelButtonId = 10
+		
+		This.CancelButtonHandle = This.API_WIN.CreateWindowEx( ;
+		    0, ;
+		    "BUTTON", ;
+		    This.cmdCancel.Caption, ;
+		    WS_CHILD + WS_VISIBLE, ;
+		    This.cmdCancel.Left, ;
+		    This.cmdCancel.Top, ;
+		    This.cmdCancel.Width, ;
+		    This.cmdCancel.Height, ;
+		    This.HWnd, ;
+		    This.CancelButtonId, ;
+		    m.lhInstance, ;
+		    0)
+		
+		This.RemoveObject(This.cmdCancel.Name)
+		
+		BINDEVENT(This.HWnd, WM_COMMAND, This, "WndProc")
+		
+	ENDPROC
+
+	PROCEDURE oncancel
+	ENDPROC
+
+	PROCEDURE updateprogress		&& Updates progress state
+		LPARAMETERS cMessage, tnPercent
+		
+		IF EMPTY(m.tnPercent)
+		    This.lblStatus.Caption = EVL(m.cMessage, "")
+		    IF This.lblStatus.Visible = .F.
+		        This.lblStatus.Visible = .T.
+		        This.lblProgress.Visible = .F.
+		        This.shpProgress.Visible = .F.
+		    ENDIF
+		ELSE
+		    This.lblProgress.Caption = EVL(m.cMessage, "")
+		    This.shpProgress.Width = This.lblStatus.Width * m.tnPercent / 100
+		    This.lblProgress.Width = This.shpProgress.Width
+		    IF This.lblProgress.Visible = .F.
+		        This.lblStatus.Visible = .F.
+		        This.lblProgress.Visible = .T.
+		        This.shpProgress.Visible = .T.
+		    ENDIF
+		ENDIF
+		
+		IF This.Visible = .F. AND MOD(SECONDS() - This.StartTime, 86400) > 3
+		    This.Show()
+		ENDIF
+		
+	ENDPROC
+
+	PROTECTED PROCEDURE wndproc
+		LPARAMETERS thWnd, tnMsg, tnWParam, tnLParam
+		
+		#define GWL_WNDPROC -4
+		#define WM_COMMAND 0x0111
+		
+		LOCAL lnRetVal
+		m.lnRetVal = 0
+		
+		DO CASE
+		CASE m.tnMsg = WM_COMMAND AND m.tnLParam = This.CancelButtonHandle
+		    This.OnCancel()
+		
+		OTHERWISE
+		    LOCAL lnWndProcDefault
+		    m.lnWndProcDefault = This.API_WIN.GetWindowLong(m.thWnd, GWL_WNDPROC)
+		    m.lnRetVal = This.API_WIN.CallWindowProc(m.lnWndProcDefault, m.thWnd, m.tnMsg, m.tnWParam, m.tnLParam)
+		ENDCASE
+		
+		RETURN m.lnRetVal
+		
+	ENDPROC
+
+	PROCEDURE cmdCancel.Init
+		This.Caption = Thisform.i18n.Text("PROGRESS_WINDOW_CANCEL")
+		
+	ENDPROC
+
+ENDDEFINE
+
 DEFINE CLASS pdfium_textbox AS textbox 		&& Pdfium-vfp Textbox. Library consumer shouldn't use this class directly
  	*< CLASSDATA: Baseclass="textbox" Timestamp="" Scale="Pixels" Uniqueid="" />
 
@@ -9478,6 +9696,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*m: printdocument		&& Send document to printer with preceding setup dialog
 		*m: printenv_access
 		*m: printenv_assign
+		*m: progresswindowcreate
+		*m: progresswindowoncancel
 		*m: redraw
 		*m: renderpages
 		*m: rendersearch
@@ -9493,6 +9713,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*m: selecttext
 		*m: selecttextall		&& Select all text in the document
 		*m: setformfieldvalue		&& Accepts PDF form field name in UTF-16LE or 1-based form field index and a value of type String (UTF-16LE) for textbox, combobox, Logical for checkbox, Numeric as a number of selected RadioButton in OptionGroup; Returs True if the value was set
+		*m: updateprogress
 		*m: viewportupdate
 		*m: wndcreate
 		*m: wndproc		&& Events handler of PdfiumViewer internal window.
@@ -9519,6 +9740,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*p: isfocused		&& .T. if control has input focus
 		*p: pagefillbrush
 		*p: printenv		&& Print configuration state (pdfium_print_env object); Read-Only
+		*p: progresscancelled
+		*p: progresswindow
 		*p: scale
 		*p: scrollbars		&& Specifies the type of scroll bars that an EditBox control, Form object, or Grid control has. 0 - None (Default); 1 - Horizontal; 2 - Vertical; 3 - Both vertical and horizontal
 		*p: searchbrush
@@ -9552,7 +9775,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*p: _printenv
 	*</DefinedPropArrayMethod>
 
-	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,drawbufbitmapbmi,drawbufbitmap,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,formfields,fpdf_doc,fpdf_form,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_ref,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Objects,pagefillbrush,Picture,ReadExpression,ReadMethod,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,ShowWhatsThis,SpecialEffect,Style,tplclickbegin,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,wndviewport,WriteExpression,WriteMethod,ZOrder,_printenv
+	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,drawbufbitmapbmi,drawbufbitmap,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,formfields,fpdf_doc,fpdf_form,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_ref,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Objects,pagefillbrush,Picture,progresscancelled,progresswindow,ReadExpression,ReadMethod,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,ShowWhatsThis,SpecialEffect,Style,tplclickbegin,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,wndviewport,WriteExpression,WriteMethod,ZOrder,_printenv
 	*<PropValue>
 		allowformedit = .T.
 		backcolorbrush = .F.
@@ -9576,6 +9799,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		Name = "pdfiumviewer"
 		pagefillbrush = 0
 		printenv = .F.
+		progresscancelled = .F.
+		progresswindow = .F.
 		scale = 1
 		scrollbars = 0
 		searchbrush = .F.
@@ -9695,6 +9920,12 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 			<memberdata name="getpagetext" type="method" display="GetPageText"/>
 			<memberdata name="closepage" type="method" display="ClosePage"/>
 			<memberdata name="loadpage" type="method" display="LoadPage"/>
+			<memberdata name="progresswindow" type="property" display="ProgressWindow"/>
+			<memberdata name="fpdf_pages_ref" type="property" display="fpdf_pages_ref"/>
+			<memberdata name="progresswindowcreate" type="method" display="ProgressWindowCreate"/>
+			<memberdata name="progresswindowoncancel" type="method" display="ProgressWindowOnCancel"/>
+			<memberdata name="progresscancelled" type="property" display="ProgressCancelled"/>
+			<memberdata name="updateprogress" type="method" display="UpdateProgress"/>
 		</VFPData>
 		_printenv = .F.
 	*</PropValue>
@@ -9958,6 +10189,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		This._PrintEnv = .F.
 		This.FormFields = .F.
+		This.ProgressWindow = .F.
 		
 	ENDPROC
 
@@ -10963,7 +11195,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		LPARAMETERS tcFilename, tcPassword
 		
 		IF This.env.ok() = .F.
-		    RETURN
+		    RETURN .F.
 		ENDIF
 		
 		This.ClosePDF()
@@ -11034,6 +11266,12 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    DIMENSION This.fpdf_pages_ref(This.fpdf_pagecount,2)
 		    STORE 0 TO This.fpdf_pages, This.fpdf_text_pages, This.fpdf_pages_pos, This.fpdf_pages_size, This.fpdf_pages_ref
 		ENDIF
+		
+		This.ProgressWindowCreate()
+		This.ProgressCancelled = .F.
+		LOCAL llProgressWindow
+		m.llProgressWindow = (VARTYPE(This.ProgressWindow) = "O")
+		
 		
 		LOCAL lnPage
 		FOR m.lnPage = 1 TO This.FPDF_PageCount
@@ -11127,7 +11365,24 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		    This.fpdf_pages_ref[m.lnPage,2] = IIF(m.llHasFormFields, 1, 0) && Release Lock
 		    This.ClosePage(m.lnPage)
+		    
+		    IF m.llProgressWindow
+		        This.UpdateProgress(TRANSFORM(m.lnPage) + " / " + TRANSFORM(This.FPDF_PageCount), CEILING(m.lnPage * 100 / This.FPDF_PageCount))
+		    ENDIF
+		    
+		    IF This.ProgressCancelled
+		        EXIT
+		    ENDIF
 		ENDFOR
+		
+		This.ProgressWindow = .F.
+		IF This.ProgressCancelled
+		    This.ProgressCancelled = .F.
+		    This.ClosePDF()
+		    This.WndRedraw()
+		    RETURN .F.
+		ENDIF
+		
 		
 		This.ViewPortUpdate()
 		
@@ -11149,7 +11404,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		IF This.fpdf_page_first_visible = 0
 		    RETURN 0
 		ENDIF
-		
 		
 		LOCAL lnPage, lnPageFound
 		m.lnPageFound = 0
@@ -11368,8 +11622,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    LOCAL lnRange
 		    FOR m.lnRange = 1 TO m.lnPageRangeCnt
 		        DIMENSION m.laPageRanges(m.lnRange,2)
-		        m.laPageRanges[m.lnRange,1] = m.lnRange*2 - 1
-		        m.laPageRanges[m.lnRange,2] = m.lnRange*2 - 1
+		        m.laPageRanges[m.lnRange,1] = m.lnRange * 2 - 1
+		        m.laPageRanges[m.lnRange,2] = m.lnRange * 2 - 1
 		    ENDFOR
 		
 		CASE m.lnPageMode = 3 && Even pages
@@ -11377,8 +11631,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    LOCAL lnRange
 		    FOR m.lnRange = 1 TO m.lnPageRangeCnt
 		        DIMENSION m.laPageRanges(m.lnRange,2)
-		        m.laPageRanges[m.lnRange,1] = m.lnRange*2
-		        m.laPageRanges[m.lnRange,2] = m.lnRange*2
+		        m.laPageRanges[m.lnRange,1] = m.lnRange * 2
+		        m.laPageRanges[m.lnRange,2] = m.lnRange * 2
 		    ENDFOR
 		
 		CASE m.lnPageMode = 4
@@ -11412,10 +11666,12 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		ENDCASE
 		
 		
+		LOCAL llProgressWindow
+		m.llProgressWindow = .F.
+		This.ProgressCancelled = .F.
 		
 		LOCAL loErr
 		m.loErr = .F.
-		
 		TRY
 		
 		    LOCAL lcDocName
@@ -11441,8 +11697,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    LOCAL llStartDoc
 		    m.llStartDoc = .T.
 		    
-		    LOCAL lnDocPageNum
+		    LOCAL lnDocPageNum, lnDocPageCount
 		    m.lnDocPageNum = 0
+		    m.lnDocPageCount = 0
 		    
 		    LOCAL lnOrientation
 		    m.lnOrientation = 0
@@ -11459,10 +11716,10 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		        m.lnPageFrom = MAX(m.laPageRanges[m.lnPageRange,1], 1)
 		        m.lnPageTo = MIN(m.laPageRanges[m.lnPageRange,2], This.fpdf_pagecount)
 		        
+		        m.lnDocPageCount = m.lnDocPageCount + MAX(m.lnPageTo - m.lnPageFrom, 0)
+		        
 		        LOCAL lnPageIndex
 		        m.lnPageIndex = m.lnPageFrom
-		
-		        
 		        FOR m.lnPageIndex = m.lnPageFrom TO m.lnPageTo
 		
 		            LOCAL lnPageWidth, lnPageHeight
@@ -11547,10 +11804,13 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		                This.env.API_WIN.StartDoc(m.lhPrinterDC, m.lcDocInfo)
 		                
 		                m.llStartDoc = .F.
+		
+		                This.ProgressWindowCreate()
+		                m.llProgressWindow = (VARTYPE(This.ProgressWindow) = "O")
 		            ENDIF
 		
 		            m.lnDocPageNum = m.lnDocPageNum + 1
-		
+		            
 		
 		            ***********************************
 		            * Render page 
@@ -11606,15 +11866,28 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		            ***********************************
 		
 		
+		            IF m.llProgressWindow
+		                This.UpdateProgress(TRANSFORM(m.lnDocPageNum) + " / " + TRANSFORM(m.lnDocPageCount), CEILING(m.lnDocPageNum * 100 / m.lnDocPageCount))
+		            ENDIF
+		            
+		            IF This.ProgressCancelled
+		                EXIT
+		            ENDIF
 		        ENDFOR
 		
+		        IF This.ProgressCancelled
+		            EXIT
+		        ENDIF
 		    ENDFOR
-		    
 		
 		CATCH TO m.loErr
 		    This.ErrMsg(m.loErr)
 		
 		FINALLY
+		    This.ProgressWindow = .F.
+		    This.ProgressCancelled = .F.
+		    This.WndRedraw()
+		    
 		    IF EMPTY(m.lhPrinterDC) = .F.
 		        IF m.llStartDoc = .F.
 		            This.env.API_WIN.EndDoc(m.lhPrinterDC)
@@ -11625,10 +11898,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    IF EMPTY(m.lhDocNameHeap) = .F.
 		        This.env.API_WIN.HeapDestroy(m.lhDocNameHeap)
 		    ENDIF
-		    
 		ENDTRY
-		
-		
 		
 	ENDPROC
 
@@ -11646,6 +11916,20 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		LPARAMETERS vNewVal
 		
 		ERROR 1740, TEXTMERGE("<<This.Class>>.PrintEnv")
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE progresswindowcreate
+		IF NOT This.UIState.GetUnattendedMode()
+		    This.ProgressWindow = NEWOBJECT("pdfium_progress_window", This.ClassLibrary)
+		    BINDEVENT(This.ProgressWindow, "OnCancel", This, "ProgressWindowOnCancel", 1)
+		ENDIF
+		
+	ENDPROC
+
+	PROTECTED PROCEDURE progresswindowoncancel
+		This.ProgressCancelled = .T.
+		This.ProgressWindow.Visible = .F.
 		
 	ENDPROC
 
@@ -12073,10 +12357,26 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		ENDIF
 		
 		
+		This.ProgressWindowCreate()
+		This.ProgressCancelled = .F.
+		LOCAL llProgressWindow
+		m.llProgressWindow = (VARTYPE(This.ProgressWindow) = "O")
+		
 		LOCAL lnPageIndex
 		m.lnPageIndex = m.lnSearchStartPage
 		
+		LOCAL lnRes
+		m.lnRes = SCH_NOT_FOUND
+		
 		DO WHILE m.lnPageIndex > 0 AND m.lnPageIndex <= This.fpdf_pagecount
+		
+		    IF m.llProgressWindow
+		        This.UpdateProgress(TRANSFORM(m.lnPageIndex) + " / " + TRANSFORM(This.FPDF_PageCount), CEILING(m.lnPageIndex * 100 / This.FPDF_PageCount))
+		    ENDIF
+		    
+		    IF This.ProgressCancelled
+		        EXIT
+		    ENDIF
 		
 		    This.LoadPage(m.lnPageIndex)
 		    
@@ -12171,10 +12471,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		            ENDIF
 		        ENDFOR
 		
-		        This.WndRedraw()
-		
-		        This.ClosePage(m.lnPageIndex)        
-		        RETURN SCH_FOUND
+		        This.ClosePage(m.lnPageIndex)
+		        m.lnRes = SCH_FOUND
+		        EXIT
 		    ENDIF
 		
 		    This.ClosePage(m.lnPageIndex)
@@ -12188,11 +12487,17 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    ENDIF    
 		ENDDO
 		
+		This.ProgressWindow = .F.
+		This.ProgressCancelled = .F.
+		This.WndRedraw()
+		
 		IF EMPTY(This.SearchState_ResCount)=.F.
-		    RETURN SCH_ENDED
+		    m.lnRes = SCH_ENDED
 		ELSE
-		    RETURN SCH_NOT_FOUND
+		    m.lnRes = SCH_NOT_FOUND
 		ENDIF
+		
+		RETURN m.lnRes
 		
 	ENDPROC
 
@@ -12583,6 +12888,46 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		ENDIF
 		
 		RETURN m.llRes
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE updateprogress
+		LPARAMETERS cMessage, tnPercent
+		
+		This.ProgressWindow.UpdateProgress(m.cMessage, m.tnPercent)
+		
+		LOCAL lnWndDC
+		m.lnWndDC = This.WndDC
+		
+		IF EMPTY(m.lnWndDC)
+		    RETURN
+		ENDIF
+		
+		IF EMPTY(This.DrawBufDC)
+		    RETURN
+		ENDIF
+		
+		IF EMPTY(This.DrawBufDIB)
+		    RETURN
+		ENDIF
+		
+		IF EMPTY(This.DrawBufGfx)
+		    RETURN
+		ENDIF
+		
+		IF This.UIState.GetEffectivelyVisible() = .F.
+		    RETURN
+		ENDIF
+		
+		IF EMPTY(m.tnPercent) = .F.
+		    LOCAL lnHeight
+		    m.lnHeight = 6
+		    This.env.API_GDIP.GdipFillRectangleI(This.DrawBufGfx, This.SelectionBrush, 0, 0, This.Width * m.tnPercent / 100, m.lnHeight)
+		    This.env.API_GDIP.GdipFlush(This.DrawBufGfx)
+		
+		    #define FF_SRCCOPY 0x00CC0020
+		    This.env.API_WIN.BitBlt(m.lnWndDC, 0,0, This.Width, m.lnHeight, This.DrawBufDC, 0, 0, FF_SRCCOPY)
+		ENDIF
 		
 	ENDPROC
 

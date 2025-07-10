@@ -3,8 +3,8 @@ lparameters toUpdateObject
 * Set the properties of the passed updater object.
 
 with toUpdateObject
-	.VersionNumber    = '1.32 - 20250708'
-	.AvailableVersion = 'pdfium_vfp-1.32-update-20250708'
+	.VersionNumber    = '1.33 - 20250710'
+	.AvailableVersion = 'pdfium_vfp-1.33-update-20250710'
 	.Notes            = GetNotes()
 *	.RegisterWithThor = GetRegisterWithThor()
 endwith

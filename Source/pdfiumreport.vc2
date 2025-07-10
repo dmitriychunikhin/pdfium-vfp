@@ -158,12 +158,12 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*m: process_frxdynamics
 		*m: process_frxheader
 		*m: process_frxpicture
+		*m: progresswindowcreate
+		*m: progresswindowoncancel
 		*m: runrenderer		&& Runs report rendering with specified renderer object (subclass of pdfiumreport_renderer_base). Returns path to the temporary file containing rendering output results or empty string if there is nothing to render. Temp file must be deleted by  a caller
 		*m: saveas_pdfmeta_access
 		*m: saveas_pdfmeta_assign
 		*m: setrenderer		&& Sets renderer object (subclass of pdfiumreport_renderer_base). If not an object value is passed then default pdfiumreport_renderer_pdf is used
-		*m: statuswindowcreate
-		*m: statuswindowoncancel
 		*p: api_frx
 		*p: batchmode
 		*p: batchmodeauto		&& .T. if report was created by  _REPORTOUTPUT (= PdfiumReport.app)  and NOPAGEEJECT was set
@@ -177,6 +177,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*p: isreportcancelled
 		*p: printenv		&& Print configuration state (pdfium_print_env object). ; Read-only; Overrides default print settings when report is printed from preview window or by TO PRINTER clause with This.ToPrinterNative=.T.
 		*p: printenvdefault
+		*p: progresswindow
 		*p: renderer		&& User set renderer object  (subclass of pdfiumreport_renderer_base). If not an object then default pdfiumreport_renderer_pdf is used
 		*p: repobj
 		*p: repobjcursor
@@ -188,7 +189,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*p: saveas_filename		&& Filename suggestion for "save as" dialog
 		*p: saveas_pdfmeta		&& Pdfium_pdfmeta object; Output PDF metadata + encryption (password) and reader permissions
 		*p: screengfx
-		*p: statuswindow
 		*p: toprinternative		&& TO PRINTER clause handing mode:: .T. - report is printed by VFP (PdfiumReport does nothing) ; .F. (default) - report is printed by PdfiumReport (renders report to PDF and prints PDF)
 		*p: _memberdata		&& XML Metadata for customizable properties
 		*p: _printenv		&& Print configuration state (pdfium_print_env object)
@@ -196,7 +196,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*p: _saveas_pdfmeta
 	*</DefinedPropArrayMethod>
 
-	HIDDEN api_frx,batchmodeauto,batchmode,batchpagecount,env,errlog,fontsubset,fonts,gdipprivatefontshandle,isreportcancelled,renderer,repobjcursor,repobjdynamicscursor,repobj,rep_offsetx,rep_offsety,rep_pagecount,rep_wholepage,screengfx,statuswindow,_printenvdefault,_printenv,_saveas_pdfmeta
+	HIDDEN api_frx,batchmodeauto,batchmode,batchpagecount,env,errlog,fontsubset,fonts,gdipprivatefontshandle,isreportcancelled,progresswindow,renderer,repobjcursor,repobjdynamicscursor,repobj,rep_offsetx,rep_offsety,rep_pagecount,rep_wholepage,screengfx,_printenvdefault,_printenv,_saveas_pdfmeta
 	*<PropValue>
 		AllowModalMessages = .T.
 		api_frx = .F.
@@ -217,6 +217,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		Name = "pdfiumreport"
 		printenv = .F.
 		printenvdefault = .F.
+		progresswindow = .F.
 		QuietMode = .F.
 		renderer = .F.
 		repobj = .F.
@@ -230,7 +231,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		saveas_pdfmeta = .F.
 		screengfx = .F.
 		SendGDIPlusImage = 1
-		statuswindow = .F.
 		toprinternative = .F.
 		TwoPassProcess = .T.
 		Width = 23
@@ -284,10 +284,10 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 			<memberdata name="repobj" type="property" display="RepObj"/>
 			<memberdata name="getrenderer" type="method" display="GetRenderer"/>
 			<memberdata name="api_frx" type="property" display="API_FRX"/>
-			<memberdata name="statuswindow" type="property" display="StatusWindow"/>
-			<memberdata name="statuswindowoncancel" type="method" display="StatusWindowOnCancel"/>
-			<memberdata name="statuswindowcreate" type="method" display="StatusWindowCreate"/>
 			<memberdata name="isreportcancelled" type="property" display="IsReportCancelled"/>
+			<memberdata name="progresswindow" type="property" display="ProgressWindow"/>
+			<memberdata name="progresswindowcreate" type="method" display="ProgressWindowCreate"/>
+			<memberdata name="progresswindowoncancel" type="method" display="ProgressWindowOnCancel"/>
 		</VFPData>
 		_printenv = .F.
 		_printenvdefault = .F.
@@ -317,7 +317,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 	ENDPROC
 
 	PROCEDURE Destroy
-		This.StatusWindow = .F.
+		This.ProgressWindow = .F.
 		
 		IF VARTYPE(This.env) = "O"
 		    This.FontsRelease()
@@ -370,8 +370,8 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		LPARAMETERS cMessage
 		
 		NODEFAULT
-		IF VARTYPE(This.StatusWindow) = "O"
-		    This.StatusWindow.UpdateStatus(m.cMessage)
+		IF VARTYPE(This.ProgressWindow) = "O"
+		    This.ProgressWindow.UpdateProgress(m.cMessage)
 		ENDIF
 		
 	ENDPROC
@@ -505,7 +505,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    This.errLogShow()
 		
 		FINALLY
-		    This.StatusWindow = .F.
+		    This.ProgressWindow = .F.
 		    This.IsReportCancelled = .F.
 		    
 		    SET SAFETY &lSaveSafety
@@ -952,8 +952,8 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 	PROCEDURE LoadReport
 		This.env.FoxEnv_Set()
 		
-		IF VARTYPE(This.StatusWindow) != "O"
-		    This.StatusWindowCreate()
+		IF VARTYPE(This.ProgressWindow) != "O"
+		    This.ProgressWindowCreate()
 		ENDIF
 		
 		This.Rep_PageCount = 0
@@ -1349,6 +1349,20 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 	ENDPROC
 
+	HIDDEN PROCEDURE progresswindowcreate
+		IF SYS(2335) != '0' AND This.QuietMode = .F.
+		    This.ProgressWindow = NEWOBJECT("pdfium_progress_window", "pdfium-vfp.vcx")
+		    BINDEVENT(This.ProgressWindow, "OnCancel", This, "ProgressWindowOnCancel", 1)
+		ENDIF
+		
+	ENDPROC
+
+	PROTECTED PROCEDURE progresswindowoncancel
+		This.ProgressWindow.Visible = .F.
+		This.CancelReport()
+		
+	ENDPROC
+
 	PROCEDURE Render
 		LPARAMETERS nFRXRecno, nLeft, nTop, nWidth, nHeight, nObjectContinuationType, cContentsToBeRendered, GDIPlusImage
 		
@@ -1665,11 +1679,10 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		        EXIT
 		    ENDIF
 		
-		    This.StatusWindowCreate()
+		    This.ProgressWindowCreate()
 		
-		    LOCAL llStatusWindow
-		    m.llStatusWindow = (VARTYPE(This.StatusWindow) = "O")
-		    
+		    LOCAL llProgressWindow
+		    m.llProgressWindow = (VARTYPE(This.ProgressWindow) = "O")
 		    
 		    m.loRenderer.Begin(This.SaveAs_PDFMeta)
 		
@@ -1694,9 +1707,9 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		        
 		        m.loRenderer.Render(m.loRepObj)
 		        
-		        IF m.llStatusWindow AND m.lnBatch_PageNo < m.loRepObj.Batch_PageNo
+		        IF m.llProgressWindow AND m.lnBatch_PageNo < m.loRepObj.Batch_PageNo
 		            m.lnBatch_PageNo = m.loRepObj.Batch_PageNo
-		            This.StatusWindow.UpdateStatus(TRANSFORM(m.lnBatch_PageNo) + " / " + TRANSFORM(This.BatchPageCount), CEILING(m.lnBatch_PageNo * 100 / This.BatchPageCount))
+		            This.ProgressWindow.UpdateProgress(TRANSFORM(m.lnBatch_PageNo) + " / " + TRANSFORM(This.BatchPageCount), CEILING(m.lnBatch_PageNo * 100 / This.BatchPageCount))
 		        ENDIF
 		    ENDSCAN
 		
@@ -1704,7 +1717,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		        EXIT
 		    ENDIF
 		    
-		    This.StatusWindow = .F.
+		    This.ProgressWindow = .F.
 		
 		    m.lcTempFileName = m.loRenderer.Finalize(This.SaveAs_PDFMeta)
 		
@@ -1719,7 +1732,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		FINALLY
 		    SELECT (m.lSaveArea)
 		    This.IsReportCancelled = .F.
-		    This.StatusWindow = .F.
+		    This.ProgressWindow = .F.
 		ENDTRY
 		
 		RETURN m.lcTempFileName
@@ -1747,20 +1760,6 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		LPARAMETERS toRenderer
 		
 		This.Renderer = IIF(VARTYPE(m.toRenderer)<>"O", .F., m.toRenderer)
-		
-	ENDPROC
-
-	HIDDEN PROCEDURE statuswindowcreate
-		IF SYS(2335) != '0' AND This.QuietMode = .F.
-		    This.StatusWindow = NEWOBJECT("pdfiumreport_status_window", This.ClassLibrary, "", This.env)
-		    BINDEVENT(This.StatusWindow, "OnCancel", This, "StatusWindowOnCancel", 1)
-		ENDIF
-		
-	ENDPROC
-
-	PROTECTED PROCEDURE statuswindowoncancel
-		This.StatusWindow.Visible = .F.
-		This.CancelReport()
 		
 	ENDPROC
 
@@ -5563,215 +5562,6 @@ DEFINE CLASS pdfiumreport_repobj AS custom 		&& Input object for Render  method 
 		    ENDIF
 		ENDTRY
 		
-		
-	ENDPROC
-
-ENDDEFINE
-
-DEFINE CLASS pdfiumreport_status_window AS form 
- 	*< CLASSDATA: Baseclass="form" Timestamp="" Scale="Pixels" Uniqueid="" />
-
-	*-- OBJECTDATA items order determines ZOrder / El orden de los items OBJECTDATA determina el ZOrder 
-	*< OBJECTDATA: ObjPath="shpProgress" UniqueID="" Timestamp="" />
-	*< OBJECTDATA: ObjPath="i18n" UniqueID="" Timestamp="" />
-	*< OBJECTDATA: ObjPath="cmdCancel" UniqueID="" Timestamp="" />
-	*< OBJECTDATA: ObjPath="lblProgress" UniqueID="" Timestamp="" />
-	*< OBJECTDATA: ObjPath="lblStatus" UniqueID="" Timestamp="" />
-
-	*<DefinedPropArrayMethod>
-		*m: oncancel
-		*m: updatestatus		&& Triggers a change of information in the user interface elements provided by DoStatus.
-		*m: wndproc
-		*p: cancelbuttonhandle
-		*p: cancelbuttonid
-		*p: env
-		*p: starttime
-		*p: _memberdata		&& XML Metadata for customizable properties
-	*</DefinedPropArrayMethod>
-
-	HIDDEN cancelbuttonhandle,cancelbuttonid,env,starttime
-	*<PropValue>
-		AllowOutput = .F.
-		AlwaysOnTop = .T.
-		AutoCenter = .T.
-		BorderStyle = 3
-		cancelbuttonhandle = 0
-		cancelbuttonid = 0
-		Caption = "Form"
-		Closable = .F.
-		DoCreate = .T.
-		env = .F.
-		Height = 74
-		MaxButton = .F.
-		MinButton = .F.
-		Name = "pdfiumreport_status_window"
-		ScrollBars = 0
-		ShowWindow = 1
-		starttime = ({. :})
-		Themes = .T.
-		TitleBar = 0
-		Visible = .F.
-		Width = 445
-		WindowState = 0
-		_memberdata = <VFPData>
-			<memberdata name="env" type="property" display="env"/>
-			<memberdata name="wndproc" type="method" display="WndProc"/>
-			<memberdata name="cancelbuttonhandle" type="property" display="CancelButtonHandle"/>
-			<memberdata name="cancelbuttonid" type="property" display="CancelButtonId"/>
-			<memberdata name="oncancel" type="method" display="OnCancel"/>
-			<memberdata name="updatestatus" type="method" display="UpdateStatus"/>
-			<memberdata name="starttime" type="property" display="StartTime"/>
-		</VFPData>
-	*</PropValue>
-
-	ADD OBJECT 'cmdCancel' AS commandbutton WITH ;
-		Caption = "Cancel", ;
-		Height = 27, ;
-		Left = 168, ;
-		Name = "cmdCancel", ;
-		Top = 36, ;
-		Width = 108
-		*< END OBJECT: BaseClass="commandbutton" />
-
-	ADD OBJECT 'i18n' AS pdfium_i18n WITH ;
-		Left = 408, ;
-		Name = "i18n", ;
-		Top = 0, ;
-		API_WIN.Name = "API_WIN"
-		*< END OBJECT: ClassLib="pdfium-vfp.vcx" BaseClass="custom" />
-
-	ADD OBJECT 'lblProgress' AS label WITH ;
-		Alignment = 2, ;
-		BackStyle = 0, ;
-		Caption = "Progress", ;
-		FontBold = .F., ;
-		ForeColor = 255,255,255, ;
-		Height = 17, ;
-		Left = 13, ;
-		Name = "lblProgress", ;
-		Top = 12, ;
-		Visible = .F., ;
-		Width = 420
-		*< END OBJECT: BaseClass="label" />
-
-	ADD OBJECT 'lblStatus' AS label WITH ;
-		Alignment = 0, ;
-		BackStyle = 0, ;
-		Caption = "Status", ;
-		Height = 17, ;
-		Left = 12, ;
-		Name = "lblStatus", ;
-		Top = 12, ;
-		Visible = .F., ;
-		Width = 420
-		*< END OBJECT: BaseClass="label" />
-
-	ADD OBJECT 'shpProgress' AS shape WITH ;
-		BackColor = 0,128,128, ;
-		Height = 17, ;
-		Left = 12, ;
-		Name = "shpProgress", ;
-		Top = 12, ;
-		Visible = .F., ;
-		Width = 423
-		*< END OBJECT: BaseClass="shape" />
-	
-	PROCEDURE Init
-		LPARAMETERS toEnv as pdfium_env of pdfium-vfp
-		
-		This.BorderStyle = 1
-		This.Visible = .F.
-		This.StartTime = DATETIME()
-		
-		This.env = NEWOBJECT("pdfium_env", "pdfium-vfp.vcx")
-		This.env.Setup(m.toEnv)
-		
-		#DEFINE GWL_HINSTANCE -6
-		#define WS_CHILD            0x40000000
-		#define WS_VISIBLE          0x10000000
-		#define WM_COMMAND 0x0111
-		
-		LOCAL lhInstance
-		m.lhInstance = This.env.API_WIN.GetWindowLong(This.HWnd, GWL_HINSTANCE)
-		
-		This.CancelButtonId = 10
-		
-		This.CancelButtonHandle = This.env.API_WIN.CreateWindowEx( ;
-		    0, ;
-		    "BUTTON", ;
-		    This.cmdCancel.Caption, ;
-		    WS_CHILD + WS_VISIBLE, ;
-		    This.cmdCancel.Left, ;
-		    This.cmdCancel.Top, ;
-		    This.cmdCancel.Width, ;
-		    This.cmdCancel.Height, ;
-		    This.HWnd, ;
-		    This.CancelButtonId, ;
-		    m.lhInstance, ;
-		    0)
-		
-		This.RemoveObject(This.cmdCancel.Name)
-		
-		BINDEVENT(This.HWnd, WM_COMMAND, This, "WndProc")
-		
-		
-	ENDPROC
-
-	PROCEDURE oncancel
-	ENDPROC
-
-	PROCEDURE updatestatus		&& Triggers a change of information in the user interface elements provided by DoStatus.
-		LPARAMETERS cMessage, tnPercent
-		
-		IF EMPTY(m.tnPercent)
-		    This.lblStatus.Caption = EVL(m.cMessage, "")
-		    IF This.lblStatus.Visible = .F.
-		        This.lblStatus.Visible = .T.
-		        This.lblProgress.Visible = .F.
-		        This.shpProgress.Visible = .F.
-		    ENDIF
-		ELSE
-		    This.lblProgress.Caption = EVL(m.cMessage, "")
-		    This.shpProgress.Width = This.lblStatus.Width * m.tnPercent / 100
-		    This.lblProgress.Width = This.shpProgress.Width
-		    IF This.lblProgress.Visible = .F.
-		        This.lblStatus.Visible = .F.
-		        This.lblProgress.Visible = .T.
-		        This.shpProgress.Visible = .T.
-		    ENDIF
-		ENDIF
-		
-		IF This.Visible = .F. AND (DATETIME() - This.StartTime) > 3
-		    This.Show()
-		ENDIF
-		
-	ENDPROC
-
-	PROTECTED PROCEDURE wndproc
-		LPARAMETERS thWnd, tnMsg, tnWParam, tnLParam
-		
-		#define GWL_WNDPROC -4
-		#define WM_COMMAND 0x0111
-		
-		LOCAL lnRetVal
-		m.lnRetVal = 0
-		
-		DO CASE
-		CASE m.tnMsg = WM_COMMAND AND m.tnLParam = This.CancelButtonHandle
-		    This.OnCancel()
-		
-		OTHERWISE
-		    LOCAL lnWndProcDefault
-		    m.lnWndProcDefault = This.env.API_WIN.GetWindowLong(m.thWnd, GWL_WNDPROC)
-		    m.lnRetVal = This.env.API_WIN.CallWindowProc(m.lnWndProcDefault, m.thWnd, m.tnMsg, m.tnWParam, m.tnLParam)
-		ENDCASE
-		
-		RETURN m.lnRetVal
-		
-	ENDPROC
-
-	PROCEDURE cmdCancel.Init
-		This.Caption = Thisform.i18n.Text("PDFIUMREPORT_CANCEL")
 		
 	ENDPROC
 
