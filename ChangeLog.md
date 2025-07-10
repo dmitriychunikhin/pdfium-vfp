@@ -1,3 +1,6 @@
+1.34
+  - Fixed bug added in 1.33: PdfiumViewer::SearchText falsely returned end of search state after the first search match
+
 1.33
   - A progress indicator with cancellation support was impelented in PdfiumViewer in methods OpenPDF, PrintDocument, SearchText
 

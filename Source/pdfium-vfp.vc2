@@ -12491,13 +12491,15 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		This.ProgressCancelled = .F.
 		This.WndRedraw()
 		
-		IF EMPTY(This.SearchState_ResCount)=.F.
-		    m.lnRes = SCH_ENDED
-		ELSE
-		    m.lnRes = SCH_NOT_FOUND
+		IF m.lnRes = SCH_FOUND
+		    RETURN m.lnRes
 		ENDIF
-		
-		RETURN m.lnRes
+		    
+		IF EMPTY(This.SearchState_ResCount)=.F.
+		    RETURN SCH_ENDED
+		ELSE
+		    RETURN SCH_NOT_FOUND
+		ENDIF
 		
 	ENDPROC
 
