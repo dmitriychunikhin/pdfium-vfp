@@ -20,7 +20,6 @@ pdfium-vfp is a open source PDF viewer control and ReportOutput + ReportPreview 
 ## Table of contents
 * [Features](#features)
 * [Minumum system requirements](#minumum-system-requirements)
-* [Known issues](#known-issues)
 * [Getting started](#getting-started)
 * [Sample VFP project](#sample-vfp-project)
 * [Known issues](#known-issues)
@@ -298,7 +297,7 @@ loPdfiumReport.SaveAs_PDFMeta.Permit_Edit = .T. && Allow to make annotations and
 ```
 
 ## Filling PDF forms programmatically
-PdfiumViewer gives a read-write access to form fields values, and read-only access to other field's properties like name, options and etc, adding new fields is now allowed.
+PdfiumViewer gives a read-write access to form fields values, and read-only access to other field's properties like name, options and etc, adding new fields is not allowed.
 
 ### PdfiumViewer::GetFormFieldsCount()
 
