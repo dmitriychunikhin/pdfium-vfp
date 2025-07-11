@@ -1892,6 +1892,7 @@ DEFINE CLASS pdfium_api_fpdf_const AS custom 		&& Pdfium API constants
 		*m: fpdfbitmap_bgrx
 		*m: fpdfbitmap_gray
 		*m: fpdfbitmap_unknown
+		*m: fpdf_annot
 		*m: fpdf_err_file
 		*m: fpdf_err_format
 		*m: fpdf_err_page
@@ -1978,6 +1979,7 @@ DEFINE CLASS pdfium_api_fpdf_const AS custom 		&& Pdfium API constants
 			<memberdata name="fpdf_formflag_noexport" type="method" display="FPDF_FORMFLAG_NOEXPORT"/>
 			<memberdata name="fpdf_formflag_readonly" type="method" display="FPDF_FORMFLAG_READONLY"/>
 			<memberdata name="fpdf_formflag_required" type="method" display="FPDF_FORMFLAG_REQUIRED"/>
+			<memberdata name="fpdf_annot" type="method" display="FPDF_ANNOT"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -2003,6 +2005,11 @@ DEFINE CLASS pdfium_api_fpdf_const AS custom 		&& Pdfium API constants
 
 	PROCEDURE fpdfbitmap_unknown
 		RETURN 0
+		
+	ENDPROC
+
+	PROCEDURE fpdf_annot
+		RETURN 0x01
 		
 	ENDPROC
 
@@ -2199,6 +2206,7 @@ DEFINE CLASS pdfium_api_fpdf_forms AS pdfium_api_fpdf_base OF "pdfium-vfp.vcx" 	
 		*m: form_setindexselected
 		*m: fpdfpage_hasformfieldatpoint
 		*m: fpdf_ffldraw
+		*m: fpdf_removeformfieldhighlight
 		*m: fpdf_setformfieldhighlightalpha
 		*m: fpdf_setformfieldhighlightcolor
 		*m: vfpdfdoc_exitformfillenvironment
@@ -2233,6 +2241,7 @@ DEFINE CLASS pdfium_api_fpdf_forms AS pdfium_api_fpdf_base OF "pdfium-vfp.vcx" 	
 			<memberdata name="form_replaceselection" type="method" display="FORM_ReplaceSelection"/>
 			<memberdata name="form_setfocusedannot" type="method" display="FORM_SetFocusedAnnot"/>
 			<memberdata name="form_setindexselected" type="method" display="FORM_SetIndexSelected"/>
+			<memberdata name="fpdf_removeformfieldhighlight" type="method" display="FPDF_RemoveFormFieldHighlight"/>
 		</VFPData>
 		CONST.Name = "CONST"
 	*</PropValue>
@@ -2519,6 +2528,22 @@ DEFINE CLASS pdfium_api_fpdf_forms AS pdfium_api_fpdf_base OF "pdfium-vfp.vcx" 	
 		    SET CONSOLE OFF
 		    DECLARE FPDF_FFLDraw IN (This.pdfium_dll_path) AS FPDF_FFLDraw LONG hHandle, LONG bitmap, LONG page, integer start_x, integer start_y, integer size_x, integer size_y, integer rotate, integer flags
 		    m.lvRes = FPDF_FFLDraw(m.hHandle, m.bitmap, m.page, m.start_x, m.start_y, m.size_x, m.size_y, m.rotate, m.flags)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdf_removeformfieldhighlight
+		LPARAMETERS hHandle as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_RemoveFormFieldHighlight(m.hHandle)
+		CATCH
+		    SET CONSOLE OFF
+		    DECLARE FPDF_RemoveFormFieldHighlight IN (This.pdfium_dll_path) AS FPDF_RemoveFormFieldHighlight LONG hHandle
+		    m.lvRes = FPDF_RemoveFormFieldHighlight(m.hHandle)
 		ENDTRY
 		
 		RETURN m.lvRes
@@ -9699,6 +9724,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*m: progresswindowcreate
 		*m: progresswindowoncancel
 		*m: redraw
+		*m: removeformfieldhighlight
 		*m: renderpages
 		*m: rendersearch
 		*m: renderselection
@@ -9712,6 +9738,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*m: selectioncopy		&& Copy selected text to clipboard
 		*m: selecttext
 		*m: selecttextall		&& Select all text in the document
+		*m: setformfieldhighlight
 		*m: setformfieldvalue		&& Accepts PDF form field name in UTF-16LE or 1-based form field index and a value of type String (UTF-16LE) for textbox, combobox, Logical for checkbox, Numeric as a number of selected RadioButton in OptionGroup; Returs True if the value was set
 		*m: updateprogress
 		*m: viewportupdate
@@ -9926,6 +9953,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 			<memberdata name="progresswindowoncancel" type="method" display="ProgressWindowOnCancel"/>
 			<memberdata name="progresscancelled" type="property" display="ProgressCancelled"/>
 			<memberdata name="updateprogress" type="method" display="UpdateProgress"/>
+			<memberdata name="setformfieldhighlight" type="method" display="SetFormFieldHighlight"/>
+			<memberdata name="removeformfieldhighlight" type="method" display="RemoveFormFieldHighlight"/>
 		</VFPData>
 		_printenv = .F.
 	*</PropValue>
@@ -11250,10 +11279,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		ENDDO
 		
 		This.fpdf_form = m.loFPDF_FORMS.VFPDFDOC_InitFormFillEnvironment(This.fpdf_doc)
-		IF EMPTY(This.fpdf_form) = .F.
-		    m.loFPDF_FORMS.FPDF_SetFormFieldHighlightColor(This.fpdf_form, m.loFPDF.CONST.FPDF_FORMFIELD_UNKNOWN() , 0xFFE4DD)
-		    m.loFPDF_FORMS.FPDF_SetFormFieldHighlightAlpha(This.fpdf_form, 100)
-		ENDIF
+		This.SetFormFieldHighlight()
 		
 		This.fpdf_pagecount = m.loFPDF.FPDF_GetPageCount(This.fpdf_doc)
 		
@@ -11272,6 +11298,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		LOCAL llProgressWindow
 		m.llProgressWindow = (VARTYPE(This.ProgressWindow) = "O")
 		
+		LOCAL llDocFormFields
+		m.llDocFormFields = .F.
 		
 		LOCAL lnPage
 		FOR m.lnPage = 1 TO This.FPDF_PageCount
@@ -11288,8 +11316,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    This.fpdf_pages_size[m.lnPage,1] = m.loFPDF.FPDF_GetPageWidth(This.fpdf_pages[m.lnPage])
 		    This.fpdf_pages_size[m.lnPage,2] = m.loFPDF.FPDF_GetPageHeight(This.fpdf_pages[m.lnPage])
 		    
-		    LOCAL llHasFormFields
-		    m.llHasFormFields = .F.
+		    LOCAL llPageFormFields
+		    m.llPageFormFields = .F.
 		    IF EMPTY(This.fpdf_form) = .F.
 		        LOCAL lnAnnotCnt, lnAnnot, lnAnnotHandle
 		        m.lnAnnotCnt = This.env.API_FPDF_ANNOT.FPDFPage_GetAnnotCount(This.fpdf_pages[m.lnPage])
@@ -11310,7 +11338,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		                        LOCAL lcFormFieldName
 		                        m.lcFormFieldName = m.lcBuffer
 		                        
-		                        m.llHasFormFields = .T.
+		                        m.llPageFormFields = .T.
+		                        m.llDocFormFields = .T.
 		                        
 		                        LOCAL loFormField, lnFormFieldIndex
 		                        m.lnFormFieldIndex = This.FormFields.GetKey(m.lcFormFieldName)
@@ -11363,7 +11392,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		        ENDFOR
 		    ENDIF
 		
-		    This.fpdf_pages_ref[m.lnPage,2] = IIF(m.llHasFormFields, 1, 0) && Release Lock
+		    This.fpdf_pages_ref[m.lnPage,2] = IIF(m.llPageFormFields, 1, 0) && Release Lock
 		    This.ClosePage(m.lnPage)
 		    
 		    IF m.llProgressWindow
@@ -11383,6 +11412,10 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN .F.
 		ENDIF
 		
+		IF m.llDocFormFields = .F. AND EMPTY(This.fpdf_form) = .F.
+		    m.loFPDF_FORMS.VFPDFDOC_ExitFormFillEnvironment(This.fpdf_form)
+		    This.fpdf_form = 0
+		ENDIF
 		
 		This.ViewPortUpdate()
 		
@@ -11572,6 +11605,14 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		#define FORM_BUILTIN 0x00000001
 		#define FORM_PRINTER 0x00000002
+		
+		#DEFINE FF_RGBQUAD_SIZE     4
+		#DEFINE FF_DIB_RGB_COLORS   0
+		#DEFINE FF_BFHDR_SIZE      14
+		#DEFINE FF_BHDR_SIZE       40
+		#DEFINE FF_BI_RGB           0
+		#define FF_DIB_RGB_COLORS   0
+		#define FF_SRCCOPY 0x00CC0020
 		*********************************************************************
 		* Get printer document properties and printer forms
 		*********************************************************************
@@ -11665,6 +11706,10 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    m.lnPrinterDuplex = DMDUP_VERTICAL
 		ENDCASE
 		
+		
+		IF EMPTY(This.fpdf_form) = .F.
+		    This.RemoveFormFieldHighlight()
+		ENDIF 
 		
 		LOCAL llProgressWindow
 		m.llProgressWindow = .F.
@@ -11825,7 +11870,42 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		            m.lnPrintHeight = IIF(m.lnOrientation = DMORIENT_LANDSCAPE, m.laPrnForm[m.lnPaperSize,3], m.laPrnForm[m.lnPaperSize,4])
 		            m.lnPrintWidth = (m.lnPrintWidth / (25.4 * 1000)) * m.lnPrinterDPI
 		            m.lnPrintHeight = (m.lnPrintHeight / (25.4 * 1000)) * m.lnPrinterDPI
+		            
+		            * Adjust printer canvas size to fit PDF page
+		            DO CASE
+		            CASE INLIST(0, m.lnPageWidth, m.lnPageHeight, m.lnPrintWidth, m.lnPrintHeight)
+		                STORE 0 TO m.lnPrintWidth, m.lnPrintHeight
+		            CASE m.lnPrintWidth > m.lnPrintHeight
+		                IF m.lnPageWidth > m.lnPageHeight
+		                    IF (m.lnPageWidth / m.lnPageHeight) > (m.lnPrintWidth / m.lnPrintHeight)
+		                        m.lnPrintHeight = m.lnPrintWidth * (m.lnPageHeight / m.lnPageWidth)
+		                    ELSE
+		                        m.lnPrintWidth = m.lnPrintHeight * (m.lnPageWidth / m.lnPageHeight)
+		                    ENDIF
+		                ELSE
+		                    IF (m.lnPageHeight / m.lnPageWidth) > (m.lnPrintWidth / m.lnPrintHeight)
+		                        m.lnPrintWidth = m.lnPrintHeight * (m.lnPageWidth / m.lnPageHeight)
+		                    ELSE
+		                        m.lnPrintHeight = m.lnPrintWidth * (m.lnPageHeight / m.lnPageWidth)
+		                    ENDIF
+		                ENDIF
+		            OTHERWISE
+		                IF m.lnPageWidth > m.lnPageHeight
+		                    IF (m.lnPageWidth / m.lnPageHeight) > (m.lnPrintHeight / m.lnPrintWidth)
+		                        m.lnPrintHeight = m.lnPrintWidth * (m.lnPageHeight / m.lnPageWidth)
+		                    ELSE
+		                        m.lnPrintWidth = m.lnPrintHeight * (m.lnPageWidth / m.lnPageHeight)
+		                    ENDIF
+		                ELSE
+		                    IF (m.lnPageHeight / m.lnPageWidth) > (m.lnPrintHeight / m.lnPrintWidth)
+		                        m.lnPrintWidth = m.lnPrintHeight * (m.lnPageWidth / m.lnPageHeight)
+		                    ELSE
+		                        m.lnPrintHeight = m.lnPrintWidth * (m.lnPageHeight / m.lnPageWidth)
+		                    ENDIF
+		                ENDIF
+		            ENDCASE
 		
+		            
 		            #if .F. && pdfium style scaling "fill printable area" (not implemented). Only print without scaling is implemented
 		            m.lnPrintWidth = m.lnPrintWidth - m.lnPrintX * 2
 		            m.lnPrintHeight = m.lnPrintHeight - m.lnPrintY * 2
@@ -11846,15 +11926,38 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		            m.lnFPDF_Page = This.fpdf_pages[m.lnPageIndex]
 		            
 		            IF EMPTY(m.lnFPDF_Page) = .F.
-		                
-		                m.loFPDF.FPDF_RenderPage(m.lhPrinterDC, ;
-		                    m.lnFPDF_Page, ;
-		                    m.lnPrintX, ;
-		                    m.lnPrintY, ;
-		                    m.lnPrintWidth, ;
-		                    m.lnPrintHeight, ;
-		                    m.lnPrintRotate, ;
-		                    m.loFPDF.CONST.FPDF_PRINTING())
+		                IF EMPTY(This.fpdf_form) = .T.
+		                    m.loFPDF.FPDF_RenderPage(m.lhPrinterDC, ;
+		                        m.lnFPDF_Page, ;
+		                        m.lnPrintX, ;
+		                        m.lnPrintY, ;
+		                        m.lnPrintWidth, ;
+		                        m.lnPrintHeight, ;
+		                        m.lnPrintRotate, ;
+		                        m.loFPDF.CONST.FPDF_PRINTING())
+		                ELSE
+		                    LOCAL lnPageBitmap
+		                    m.lnPageBitmap = m.loFPDF.FPDFBitmap_CreateEx(m.lnPrintWidth, m.lnPrintHeight, m.loFPDF.CONST.FPDFBitmap_BGR(), 0, 0)
+		                    IF m.lnPageBitmap != 0
+		                        LOCAL lnBitsPerPixel, lcPageBitmapBMI
+		                        m.lnBitsPerPixel = 24
+		                        m.lcPageBitmapBMI = BINTOC(FF_BHDR_SIZE ,"4RS") + BINTOC(m.lnPrintWidth,"4RS") + BINTOC(-m.lnPrintHeight, "4RS") + ;
+		                                (CHR(MOD(1,256)) + CHR(INT(1/256))) + (CHR(MOD(m.lnBitsPerPixel,256))+ CHR(INT(m.lnBitsPerPixel/256))) +;
+		                                BINTOC(FF_BI_RGB, "4RS") + ;
+		                                REPLICATE(0h00, 20)
+		
+		                        m.loFPDF.FPDFBitmap_FillRect(m.lnPageBitmap, 0, 0, m.lnPrintWidth, m.lnPrintHeight, 0xFFFFFFFF)
+		
+		                        LOCAL lnDibDataPtr
+		                        m.lnDibDataPtr = This.env.API_FPDF.FPDFBitmap_GetBuffer(m.lnPageBitmap)
+		
+		                        m.loFPDF.FPDF_RenderPageBitmap(m.lnPageBitmap, m.lnFPDF_Page, m.lnPrintX, m.lnPrintY, m.lnPrintWidth, m.lnPrintHeight, m.lnPrintRotate, m.loFPDF.CONST.FPDF_PRINTING())
+		                        This.env.API_FPDF_FORMS.FPDF_FFLDraw(This.fpdf_form, m.lnPageBitmap, m.lnFPDF_Page, m.lnPrintX, m.lnPrintY, m.lnPrintWidth, m.lnPrintHeight, m.lnPrintRotate, m.loFPDF.CONST.FPDF_PRINTING())
+		                        This.env.API_WIN.StretchDIBits(m.lhPrinterDC, 0, 0, m.lnPrintWidth, m.lnPrintHeight, 0, 0, m.lnPrintWidth, m.lnPrintHeight, m.lnDibDataPtr, m.lcPageBitmapBMI, FF_DIB_RGB_COLORS, FF_SRCCOPY)
+		                        
+		                        m.loFPDF.FPDFBitmap_Destroy(m.lnPageBitmap)
+		                    ENDIF
+		                ENDIF
 		
 		            ENDIF
 		            
@@ -11884,10 +11987,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    This.ErrMsg(m.loErr)
 		
 		FINALLY
-		    This.ProgressWindow = .F.
-		    This.ProgressCancelled = .F.
-		    This.WndRedraw()
-		    
 		    IF EMPTY(m.lhPrinterDC) = .F.
 		        IF m.llStartDoc = .F.
 		            This.env.API_WIN.EndDoc(m.lhPrinterDC)
@@ -11898,6 +11997,14 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    IF EMPTY(m.lhDocNameHeap) = .F.
 		        This.env.API_WIN.HeapDestroy(m.lhDocNameHeap)
 		    ENDIF
+		
+		    IF EMPTY(This.fpdf_form) = .F.
+		        This.SetFormFieldHighlight()
+		    ENDIF
+		
+		    This.ProgressWindow = .F.
+		    This.ProgressCancelled = .F.
+		    This.WndRedraw()    
 		ENDTRY
 		
 	ENDPROC
@@ -11974,6 +12081,13 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		#define FF_SRCCOPY 0x00CC0020
 		
 		This.env.API_WIN.BitBlt(m.lnWndDC, 0,0, m.lnWidth, m.lnHeight, This.DrawBufDC, 0, 0, FF_SRCCOPY)
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE removeformfieldhighlight
+		IF EMPTY(This.fpdf_form) = .F.
+		    This.env.API_FPDF_FORMS.FPDF_RemoveFormFieldHighlight(This.fpdf_form)
+		ENDIF
 		
 	ENDPROC
 
@@ -12749,6 +12863,14 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		        This.env.API_FPDF_ANNOT.FPDFPage_CloseAnnot(m.lnAnnot)
 		    ENDIF
 		ENDTRY
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE setformfieldhighlight
+		IF EMPTY(This.fpdf_form) = .F.
+		    This.env.API_FPDF_FORMS.FPDF_SetFormFieldHighlightColor(This.fpdf_form, This.env.API_FPDF_FORMS.CONST.FPDF_FORMFIELD_UNKNOWN() , 0xFFE4DD)
+		    This.env.API_FPDF_FORMS.FPDF_SetFormFieldHighlightAlpha(This.fpdf_form, 100)
+		ENDIF
 		
 	ENDPROC
 
