@@ -1,3 +1,6 @@
+1.35
+  - Fixed issue #35: PDF form fields were not present when printed
+
 1.34
   - Fixed bug added in 1.33: PdfiumViewer::SearchText falsely returned end of search state after the first search match
 
