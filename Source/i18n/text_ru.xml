@@ -160,4 +160,19 @@
         <text>Отмена</text>
     </i18n>
 
+    <i18n>
+        <id>PRINTENV_PRINTAREA</id>
+        <text>Область печати</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_PRINTAREA_WHOLE_PAGE</id>
+        <text>Страница целиком</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_PRINTAREA_PRINTABLE_AREA</id>
+        <text>Область доступная для печати</text>
+    </i18n>
+
 </VFPData>

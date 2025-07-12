@@ -4251,6 +4251,7 @@ DEFINE CLASS pdfium_api_win AS custom
  	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
 
 	*<DefinedPropArrayMethod>
+		*m: abortdoc
 		*m: bcryptclosealgorithmprovider
 		*m: bcryptcreatehash
 		*m: bcryptdestroyhash
@@ -4324,6 +4325,7 @@ DEFINE CLASS pdfium_api_win AS custom
 		*m: startdoc
 		*m: startpage
 		*m: stretchdibits
+		*m: transparentblt
 		*m: uuidcreate
 		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
@@ -4408,9 +4410,27 @@ DEFINE CLASS pdfium_api_win AS custom
 			<memberdata name="sendmessage" type="method" display="SendMessage"/>
 			<memberdata name="globalsize" type="method" display="GlobalSize"/>
 			<memberdata name="getfileattributesa" type="method" display="GetFileAttributesA"/>
+			<memberdata name="transparentblt" type="method" display="TransparentBlt"/>
+			<memberdata name="abortdoc" type="method" display="AbortDoc"/>
 		</VFPData>
 	*</PropValue>
 	
+	PROCEDURE abortdoc
+		LPARAMETERS hdc as Integer
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_AbortDoc(m.hdc)
+		CATCH
+		    SET CONSOLE OFF
+		    DECLARE INTEGER AbortDoc IN GDI32 AS WinApi_AbortDoc INTEGER hdc
+		    m.lvRes = WinApi_AbortDoc(m.hdc)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
 	PROCEDURE bcryptclosealgorithmprovider
 		LPARAMETERS hAlgorithm as Long, dwFlags as Long
 		
@@ -5666,6 +5686,22 @@ DEFINE CLASS pdfium_api_win AS custom
 		
 	ENDPROC
 
+	PROCEDURE transparentblt
+		LPARAMETERS hdcDest as Long, xoriginDest as Integer, yoriginDest as Integer, wDest as Integer, hDest as Integer, hdcSrc as Long, xoriginSrc as Integer, yoriginSrc as Integer, wSrc as Integer, hSrc as Integer, crTransparent as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_GdiTransparentBlt(m.hdcDest, m.xoriginDest, m.yoriginDest, m.wDest, m.hDest, m.hdcSrc, m.xoriginSrc, m.yoriginSrc, m.wSrc, m.hSrc, m.crTransparent)
+		CATCH
+		    SET CONSOLE OFF
+		    DECLARE INTEGER GdiTransparentBlt IN Gdi32 AS WinApi_GdiTransparentBlt LONG hdcDest, INTEGER xoriginDest, INTEGER yoriginDest, INTEGER wDest, INTEGER hDest, LONG hdcSrc, INTEGER xoriginSrc, INTEGER yoriginSrc, INTEGER wSrc, INTEGER hSrc, LONG crTransparent
+		    m.lvRes = WinApi_GdiTransparentBlt(m.hdcDest, m.xoriginDest, m.yoriginDest, m.wDest, m.hDest, m.hdcSrc, m.xoriginSrc, m.yoriginSrc, m.wSrc, m.hSrc, m.crTransparent)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
 	PROCEDURE uuidcreate
 		LPARAMETERS Uuid
 		
@@ -6412,6 +6448,18 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		CASE m.tcTxtID == "PROGRESS_WINDOW_CANCEL"
 		RETURN CHR(200) + CHR(161) + CHR(207) + CHR(251)
 		
+		
+		CASE m.tcTxtID == "PRINTENV_PRINTAREA"
+		RETURN CHR(180) + CHR(242) + CHR(211) + CHR(161) + CHR(199) + CHR(248) + CHR(211) + CHR(242)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PRINTAREA_WHOLE_PAGE"
+		RETURN CHR(213) + CHR(251) + CHR(210) + CHR(179)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PRINTAREA_PRINTABLE_AREA"
+		RETURN CHR(191) + CHR(201) + CHR(211) + CHR(195) + CHR(211) + CHR(218) + CHR(180) + CHR(242) + CHR(211) + CHR(161) + CHR(181) + CHR(196) + CHR(199) + CHR(248) + CHR(211) + CHR(242)
+		
 		OTHERWISE
 		RETURN This.text_en(m.tcTxtID)
 		
@@ -6554,6 +6602,18 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		
 		CASE m.tcTxtID == "PROGRESS_WINDOW_CANCEL"
 		RETURN CHR(90) + CHR(114) + CHR(117) + CHR(154) + CHR(105) + CHR(116)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PRINTAREA"
+		RETURN CHR(79) + CHR(98) + CHR(108) + CHR(97) + CHR(115) + CHR(116) + CHR(32) + CHR(116) + CHR(105) + CHR(115) + CHR(107) + CHR(117)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PRINTAREA_WHOLE_PAGE"
+		RETURN CHR(67) + CHR(101) + CHR(108) + CHR(225) + CHR(32) + CHR(115) + CHR(116) + CHR(114) + CHR(225) + CHR(110) + CHR(107) + CHR(97)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PRINTAREA_PRINTABLE_AREA"
+		RETURN CHR(84) + CHR(105) + CHR(115) + CHR(107) + CHR(110) + CHR(117) + CHR(116) + CHR(101) + CHR(108) + CHR(110) + CHR(225) + CHR(32) + CHR(111) + CHR(98) + CHR(108) + CHR(97) + CHR(115) + CHR(116)
 		
 		OTHERWISE
 		RETURN This.text_en(m.tcTxtID)
@@ -6720,6 +6780,18 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		
 		CASE m.tcTxtID == "PROGRESS_WINDOW_CANCEL"
 		RETURN CHR(67) + CHR(97) + CHR(110) + CHR(99) + CHR(101) + CHR(108)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PRINTAREA"
+		RETURN CHR(80) + CHR(114) + CHR(105) + CHR(110) + CHR(116) + CHR(32) + CHR(97) + CHR(114) + CHR(101) + CHR(97)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PRINTAREA_WHOLE_PAGE"
+		RETURN CHR(87) + CHR(104) + CHR(111) + CHR(108) + CHR(101) + CHR(32) + CHR(112) + CHR(97) + CHR(103) + CHR(101)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PRINTAREA_PRINTABLE_AREA"
+		RETURN CHR(80) + CHR(114) + CHR(105) + CHR(110) + CHR(116) + CHR(97) + CHR(98) + CHR(108) + CHR(101) + CHR(32) + CHR(97) + CHR(114) + CHR(101) + CHR(97)
 		
 		OTHERWISE
 		RETURN m.tcTxtID
@@ -6909,6 +6981,18 @@ DEFINE CLASS pdfium_i18n AS custom 		&& PdfiumViewer Internationalization Helper
 		
 		CASE m.tcTxtID == "PROGRESS_WINDOW_CANCEL"
 		RETURN CHR(206) + CHR(242) + CHR(236) + CHR(229) + CHR(237) + CHR(224)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PRINTAREA"
+		RETURN CHR(206) + CHR(225) + CHR(235) + CHR(224) + CHR(241) + CHR(242) + CHR(252) + CHR(32) + CHR(239) + CHR(229) + CHR(247) + CHR(224) + CHR(242) + CHR(232)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PRINTAREA_WHOLE_PAGE"
+		RETURN CHR(209) + CHR(242) + CHR(240) + CHR(224) + CHR(237) + CHR(232) + CHR(246) + CHR(224) + CHR(32) + CHR(246) + CHR(229) + CHR(235) + CHR(232) + CHR(234) + CHR(238) + CHR(236)
+		
+		
+		CASE m.tcTxtID == "PRINTENV_PRINTAREA_PRINTABLE_AREA"
+		RETURN CHR(206) + CHR(225) + CHR(235) + CHR(224) + CHR(241) + CHR(242) + CHR(252) + CHR(32) + CHR(228) + CHR(238) + CHR(241) + CHR(242) + CHR(243) + CHR(239) + CHR(237) + CHR(224) + CHR(255) + CHR(32) + CHR(228) + CHR(235) + CHR(255) + CHR(32) + CHR(239) + CHR(229) + CHR(247) + CHR(224) + CHR(242) + CHR(232)
 		
 		OTHERWISE
 		RETURN This.text_en(m.tcTxtID)
@@ -7295,6 +7379,7 @@ DEFINE CLASS pdfium_print_env AS custom 		&& Print configuration state for Pdfiu
 		*p: pagelist		&& List of pages to print (comma separated), supports intervals: 1,2-5,10; Default value = empty string
 		*p: pagemode		&& 1 (default) - all, 2 - only odd, 3 - only even, 4 - PageList
 		*p: papersize		&& Paper size index (like PRTINFO(2) returns); -1 - auto choice the fittest to the document; 0 (default) - unknown paper size
+		*p: printarea		&& Sets page print  area: 1 - whole page, 2 - printable area; Default value is 2
 		*p: printer		&& Printer name; Default value = VFP default printer (sys("printer",3))
 		*p: statestacksize		&& Size of StateStack
 		*p: sysdefaultprinter_prev		&& System default printer before SysDefaultPrinter_Set call
@@ -7314,6 +7399,7 @@ DEFINE CLASS pdfium_print_env AS custom 		&& Print configuration state for Pdfiu
 		pagelist = ("")
 		pagemode = 1
 		papersize = 0
+		printarea = 2
 		printer = ("")
 		statestacksize = 0
 		sysdefaultprinter_prev = ("")
@@ -7347,6 +7433,7 @@ DEFINE CLASS pdfium_print_env AS custom 		&& Print configuration state for Pdfiu
 			<memberdata name="foxdefaultprinter_prev" type="property" display="FoxDefaultPrinter_Prev"/>
 			<memberdata name="foxdefaultprinter_restore" type="method" display="FoxDefaultPrinter_Restore"/>
 			<memberdata name="foxdefaultprinter_set" type="method" display="FoxDefaultPrinter_Set"/>
+			<memberdata name="printarea" type="property" display="PrintArea"/>
 		</VFPData>
 	*</PropValue>
 
@@ -7784,6 +7871,7 @@ DEFINE CLASS pdfium_print_env AS custom 		&& Print configuration state for Pdfiu
 		    This.PaperSize = m.toPrintEnvSrc.PaperSize
 		    This.AllowPrintSetupUI = m.toPrintEnvSrc.AllowPrintSetupUI
 		    This.AllowSetDefaultPrinter = m.toPrintEnvSrc.AllowSetDefaultPrinter
+		    This.PrintArea = m.toPrintEnvSrc.PrintArea
 		
 		CASE VARTYPE(m.toPrintEnvSrc)="O"
 		    IF NOT ALLTRIM(LOWER(EVL(NVL(m.toPrintEnvSrc.Printer,""), This.Printer))) == ALLTRIM(LOWER(This.Printer))
@@ -7798,7 +7886,7 @@ DEFINE CLASS pdfium_print_env AS custom 		&& Print configuration state for Pdfiu
 		    This.PaperSize = EVL(EVL(NVL(m.toPrintEnvSrc.PaperSize, 0), NVL(This.PaperSize,0)), EVL(MAX(PRTINFO(2, NVL(This.Printer,"")),0), -1))
 		    This.AllowPrintSetupUI = NVL(m.toPrintEnvSrc.AllowPrintSetupUI, This.AllowPrintSetupUI)
 		    This.AllowSetDefaultPrinter = NVL(m.toPrintEnvSrc.AllowSetDefaultPrinter, This.AllowSetDefaultPrinter)
-		
+		    This.PrintArea = EVL(NVL(m.toPrintEnvSrc.PrintArea, 0), This.PrintArea)
 		
 		CASE ISNULL(m.toPrintEnvSrc)
 		    This.Printer = ""
@@ -7809,7 +7897,7 @@ DEFINE CLASS pdfium_print_env AS custom 		&& Print configuration state for Pdfiu
 		    This.PaperSize = 0
 		    This.AllowPrintSetupUI = NULL
 		    This.AllowSetDefaultPrinter = NULL
-		
+		    This.PrintArea = 0
 		ENDCASE
 		
 		
@@ -7964,6 +8052,8 @@ DEFINE CLASS pdfium_print_settings AS form 		&& Print settings dialog.
 	*< OBJECTDATA: ObjPath="cmbPaperSize" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="lblPaperSize" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="lblTotalSheets" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="ogrPrintArea" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="lblPrintArea" UniqueID="" Timestamp="" />
 
 	*<DefinedPropArrayMethod>
 		*m: cancel		&& Specifies if a CommandButton is the Cancel button.
@@ -7984,7 +8074,7 @@ DEFINE CLASS pdfium_print_settings AS form 		&& Print settings dialog.
 		BorderStyle = 2
 		Caption = "Print setup"
 		DoCreate = .T.
-		Height = 297
+		Height = 350
 		Icon = (NVL(EVL(JUSTPATH(This.ClassLibrary),NULL)+"\images\wwrite.ico",""))
 		KeyPreview = .T.
 		MaxButton = .F.
@@ -8073,7 +8163,7 @@ DEFINE CLASS pdfium_print_settings AS form 		&& Print settings dialog.
 		Left = 237, ;
 		Name = "cmdCancel", ;
 		TabIndex = 10, ;
-		Top = 252, ;
+		Top = 314, ;
 		Width = 124
 		*< END OBJECT: BaseClass="commandbutton" />
 
@@ -8098,7 +8188,7 @@ DEFINE CLASS pdfium_print_settings AS form 		&& Print settings dialog.
 		Left = 74, ;
 		Name = "cmdOk", ;
 		TabIndex = 9, ;
-		Top = 252, ;
+		Top = 314, ;
 		Width = 124
 		*< END OBJECT: BaseClass="commandbutton" />
 
@@ -8150,7 +8240,7 @@ DEFINE CLASS pdfium_print_settings AS form 		&& Print settings dialog.
 		Height = 19, ;
 		Left = 227, ;
 		Name = "lblPageMode", ;
-		TabIndex = 15, ;
+		TabIndex = 17, ;
 		Top = 69, ;
 		Width = 171
 		*< END OBJECT: BaseClass="label" />
@@ -8165,8 +8255,23 @@ DEFINE CLASS pdfium_print_settings AS form 		&& Print settings dialog.
 		Height = 19, ;
 		Left = 16, ;
 		Name = "lblPaperSize", ;
-		TabIndex = 14, ;
+		TabIndex = 15, ;
 		Top = 158, ;
+		Width = 173
+		*< END OBJECT: BaseClass="label" />
+
+	ADD OBJECT 'lblPrintArea' AS label WITH ;
+		AutoSize = .F., ;
+		BackStyle = 0, ;
+		Caption = "Print area", ;
+		FontBold = .T., ;
+		FontName = "Segoe UI", ;
+		FontSize = 10, ;
+		Height = 19, ;
+		Left = 16, ;
+		Name = "lblPrintArea", ;
+		TabIndex = 14, ;
+		Top = 215, ;
 		Width = 173
 		*< END OBJECT: BaseClass="label" />
 
@@ -8196,8 +8301,8 @@ DEFINE CLASS pdfium_print_settings AS form 		&& Print settings dialog.
 		Height = 19, ;
 		Left = 81, ;
 		Name = "lblTotalSheets", ;
-		TabIndex = 15, ;
-		Top = 216, ;
+		TabIndex = 16, ;
+		Top = 285, ;
 		Width = 273
 		*< END OBJECT: BaseClass="label" />
 
@@ -8214,6 +8319,7 @@ DEFINE CLASS pdfium_print_settings AS form 		&& Print settings dialog.
 		Value = 1, ;
 		Width = 208, ;
 		Option1.AutoSize = .F., ;
+		Option1.BackStyle = 0, ;
 		Option1.Caption = "All", ;
 		Option1.FontName = "Segoe UI", ;
 		Option1.FontSize = 10, ;
@@ -8224,6 +8330,7 @@ DEFINE CLASS pdfium_print_settings AS form 		&& Print settings dialog.
 		Option1.Value = 1, ;
 		Option1.Width = 193, ;
 		Option2.AutoSize = .F., ;
+		Option2.BackStyle = 0, ;
 		Option2.Caption = "Odd pages only", ;
 		Option2.FontName = "Segoe UI", ;
 		Option2.FontSize = 10, ;
@@ -8233,6 +8340,7 @@ DEFINE CLASS pdfium_print_settings AS form 		&& Print settings dialog.
 		Option2.Top = 34, ;
 		Option2.Width = 193, ;
 		Option3.AutoSize = .F., ;
+		Option3.BackStyle = 0, ;
 		Option3.Caption = "Even pages only", ;
 		Option3.FontName = "Segoe UI", ;
 		Option3.FontSize = 10, ;
@@ -8244,6 +8352,7 @@ DEFINE CLASS pdfium_print_settings AS form 		&& Print settings dialog.
 		Option3.Top = 63, ;
 		Option3.Width = 193, ;
 		Option4.AutoSize = .F., ;
+		Option4.BackStyle = 0, ;
 		Option4.Caption = "", ;
 		Option4.FontName = "Segoe UI", ;
 		Option4.FontSize = 10, ;
@@ -8252,6 +8361,41 @@ DEFINE CLASS pdfium_print_settings AS form 		&& Print settings dialog.
 		Option4.Name = "Option4", ;
 		Option4.Top = 94, ;
 		Option4.Width = 19
+		*< END OBJECT: BaseClass="optiongroup" />
+
+	ADD OBJECT 'ogrPrintArea' AS optiongroup WITH ;
+		BackStyle = 0, ;
+		BorderStyle = 0, ;
+		ButtonCount = 2, ;
+		ControlSource = "Thisform.PrintEnv.PrintArea", ;
+		Height = 49, ;
+		Left = 12, ;
+		Name = "ogrPrintArea", ;
+		TabIndex = 6, ;
+		Top = 230, ;
+		Value = 1, ;
+		Width = 220, ;
+		Option1.AutoSize = .F., ;
+		Option1.BackStyle = 1, ;
+		Option1.Caption = "Whole page", ;
+		Option1.FontName = "Segoe UI", ;
+		Option1.FontSize = 10, ;
+		Option1.Height = 19, ;
+		Option1.Left = 5, ;
+		Option1.Name = "Option1", ;
+		Option1.Top = 5, ;
+		Option1.Value = 1, ;
+		Option1.Width = 207, ;
+		Option2.AutoSize = .F., ;
+		Option2.BackStyle = 1, ;
+		Option2.Caption = "Printable area", ;
+		Option2.FontName = "Segoe UI", ;
+		Option2.FontSize = 10, ;
+		Option2.Height = 19, ;
+		Option2.Left = 5, ;
+		Option2.Name = "Option2", ;
+		Option2.Top = 28, ;
+		Option2.Width = 207
 		*< END OBJECT: BaseClass="optiongroup" />
 
 	ADD OBJECT 'PrintEnv' AS pdfium_print_env WITH ;
@@ -8519,6 +8663,11 @@ DEFINE CLASS pdfium_print_settings AS form 		&& Print settings dialog.
 		
 	ENDPROC
 
+	PROCEDURE lblPrintArea.Refresh
+		This.Caption = Thisform.i18n.text("PRINTENV_PRINTAREA")
+		
+	ENDPROC
+
 	PROCEDURE lblPrinters.Refresh
 		This.Caption = Thisform.i18n.text("PRINTENV_PRINTER")
 		
@@ -8584,6 +8733,14 @@ DEFINE CLASS pdfium_print_settings AS form 		&& Print settings dialog.
 	PROCEDURE ogrPageMode.ProgrammaticChange
 		Thisform.txtPageList.TabStop = (This.Value = 4)
 		Thisform.RefreshState()
+	ENDPROC
+
+	PROCEDURE ogrPrintArea.Option1.Refresh
+		This.Caption = Thisform.i18n.text("PRINTENV_PRINTAREA_WHOLE_PAGE")
+	ENDPROC
+
+	PROCEDURE ogrPrintArea.Option2.Refresh
+		This.Caption = Thisform.i18n.text("PRINTENV_PRINTAREA_PRINTABLE_AREA")
 	ENDPROC
 
 	PROCEDURE txtCopies.InteractiveChange
@@ -9751,6 +9908,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*p: allowformedit		&& Allows interactive input in PDF forms.
 		*p: backcolorbrush
 		*p: dblclickbegin
+		*p: documentfilename
 		*p: drawbufbitmap		&& FPDF_Bitmap buffer for document rendering
 		*p: drawbufbitmapbmi
 		*p: drawbufdc
@@ -9802,12 +9960,13 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*p: _printenv
 	*</DefinedPropArrayMethod>
 
-	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,drawbufbitmapbmi,drawbufbitmap,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,formfields,fpdf_doc,fpdf_form,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_ref,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Objects,pagefillbrush,Picture,progresscancelled,progresswindow,ReadExpression,ReadMethod,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,ShowWhatsThis,SpecialEffect,Style,tplclickbegin,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,wndviewport,WriteExpression,WriteMethod,ZOrder,_printenv
+	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,documentfilename,drawbufbitmapbmi,drawbufbitmap,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,formfields,fpdf_doc,fpdf_form,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_ref,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Objects,pagefillbrush,Picture,progresscancelled,progresswindow,ReadExpression,ReadMethod,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,ShowWhatsThis,SpecialEffect,Style,tplclickbegin,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,wndviewport,WriteExpression,WriteMethod,ZOrder,_printenv
 	*<PropValue>
 		allowformedit = .T.
 		backcolorbrush = .F.
 		BackStyle = 1
 		dblclickbegin = 0
+		documentfilename = ("")
 		drawbufbitmap = 0
 		drawbufbitmapbmi = ("")
 		drawbufdc = 0
@@ -9955,6 +10114,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 			<memberdata name="updateprogress" type="method" display="UpdateProgress"/>
 			<memberdata name="setformfieldhighlight" type="method" display="SetFormFieldHighlight"/>
 			<memberdata name="removeformfieldhighlight" type="method" display="RemoveFormFieldHighlight"/>
+			<memberdata name="documentfilename" type="property" display="DocumentFileName"/>
 		</VFPData>
 		_printenv = .F.
 	*</PropValue>
@@ -10040,6 +10200,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		IF This.env.ok() = .F.
 		    RETURN
 		ENDIF
+		
+		This.DocumentFileName = ""
 		
 		LOCAL loFPDF, loFPDF_FORMS
 		m.loFPDF = This.env.API_FPDF
@@ -11278,6 +11440,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN .F.
 		ENDDO
 		
+		This.DocumentFileName = m.lcFilename
+		
 		This.fpdf_form = m.loFPDF_FORMS.VFPDFDOC_InitFormFillEnvironment(This.fpdf_doc)
 		This.SetFormFieldHighlight()
 		
@@ -11575,7 +11739,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		
 		*********************************************************************
-		
+		#define HORZRES       8 
+		#define VERTRES       10
 		#define PHYSICALOFFSETX 112
 		#define PHYSICALOFFSETY 113
 		
@@ -11720,7 +11885,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		TRY
 		
 		    LOCAL lcDocName
-		    m.lcDocName = This.Class
+		    m.lcDocName = EVL(JUSTFNAME(This.DocumentFileName), This.Name)
 		
 		    LOCAL lhDocNameHeap, lhDocNameHeapPtr
 		    m.lhDocNameHeap = This.env.API_WIN.HeapCreate(0, LEN(m.lcDocName)+1, 0)
@@ -11732,12 +11897,12 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		        ENDIF
 		    ENDIF
 		    
-		    LOCAL lhPrinterDC
+		    LOCAL lhPrinterDC, lhPrinterBufDC
 		    m.lhPrinterDC = 0
-		
+		    m.lhPrinterBufDC = 0
+		    
 		    LOCAL lcDocInfo
 		    m.lcDocInfo = BINTOC(20, "4RS") + BINTOC(m.lhDocNameHeapPtr, "4RS") + BINTOC(0, "4RS") + BINTOC(0, "4RS") + BINTOC(0, "4RS")
-		    
 		
 		    LOCAL llStartDoc
 		    m.llStartDoc = .T.
@@ -11815,9 +11980,15 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		            IF m.llStartDoc
 		
+		                IF EMPTY(m.lhPrinterBufDC) = .F.
+		                    This.env.API_WIN.DeleteDC(m.lhPrinterBufDC)
+		                    m.lhPrinterBufDC = 0
+		                ENDIF
+		
 		                IF EMPTY(m.lhPrinterDC) = .F.
 		                    This.env.API_WIN.EndDoc(m.lhPrinterDC)
 		                    This.env.API_WIN.DeleteDC(m.lhPrinterDC)
+		                    m.lhPrinterDC = 0
 		                ENDIF
 		
 		                m.lnDocPageNum = 0
@@ -11841,9 +12012,13 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		                m.lcPrnDevMode = STUFF(m.lcPrnDevMode, DM_OFFSET_COPIES, 2, BINTOC(EVL(This.PrintEnv.copies,1), "2RS"))
 		                
 		                m.lhPrinterDC = This.env.API_WIN.CreateDC(NULL, This.printenv.Printer + CHR(0), NULL, @m.lcPrnDevMode)
-		
 		                IF EMPTY(m.lhPrinterDC)
 		                    ERROR TEXTMERGE("WinApi CreateDC error on page <<lnPageIndex>>, printer <<This.PrintEnv.Printer>>")
+		                ENDIF
+		                
+		                m.lhPrinterBufDC = This.env.API_WIN.CreateCompatibleDC(m.lhPrinterDC)
+		                IF EMPTY(m.lhPrinterBufDC)
+		                    ERROR TEXTMERGE("WinApi CreateCompatibleDC error for the Printer DC on page <<lnPageIndex>>, printer <<This.PrintEnv.Printer>>")
 		                ENDIF
 		            
 		                This.env.API_WIN.StartDoc(m.lhPrinterDC, m.lcDocInfo)
@@ -11861,16 +12036,29 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		            * Render page 
 		            ***********************************
 		            This.env.API_WIN.StartPage(m.lhPrinterDC)
-		            
-		            LOCAL lnPrintX, lnPrintY, lnPrintWidth, lnPrintHeight
+		
+		            LOCAL lnPrintWidth, lnPrintHeight
+		            IF This.PrintEnv.PrintArea = 2 && Printable area
+		                m.lnPrintWidth = IIF(m.lnOrientation = DMORIENT_LANDSCAPE, This.env.API_WIN.GetDeviceCaps(m.lhPrinterDC, VERTRES), This.env.API_WIN.GetDeviceCaps(m.lhPrinterDC, HORZRES))
+		                m.lnPrintHeight = IIF(m.lnOrientation = DMORIENT_LANDSCAPE, This.env.API_WIN.GetDeviceCaps(m.lhPrinterDC, HORZRES), This.env.API_WIN.GetDeviceCaps(m.lhPrinterDC, VERTRES))
+		            ELSE && Whole page
+		                m.lnPrintWidth = IIF(m.lnOrientation = DMORIENT_LANDSCAPE, m.laPrnForm[m.lnPaperSize,4], m.laPrnForm[m.lnPaperSize,3])
+		                m.lnPrintHeight = IIF(m.lnOrientation = DMORIENT_LANDSCAPE, m.laPrnForm[m.lnPaperSize,3], m.laPrnForm[m.lnPaperSize,4])
+		
+		                m.lnPrintWidth = (m.lnPrintWidth / (25.4 * 1000)) * m.lnPrinterDPI
+		                m.lnPrintHeight = (m.lnPrintHeight / (25.4 * 1000)) * m.lnPrinterDPI
+		            ENDIF
+		
+		            LOCAL lnPrintX, lnPrintY
+		            m.lnPrintX = 0
+		            m.lnPrintY = 0
+		            #if .F. && pdfium style scaling "fill printable area" with centering (not implemented).
 		            m.lnPrintX = IIF(m.lnOrientation = DMORIENT_LANDSCAPE, This.env.API_WIN.GetDeviceCaps(m.lhPrinterDC, PHYSICALOFFSETY), This.env.API_WIN.GetDeviceCaps(m.lhPrinterDC, PHYSICALOFFSETX))
 		            m.lnPrintY = IIF(m.lnOrientation = DMORIENT_LANDSCAPE, This.env.API_WIN.GetDeviceCaps(m.lhPrinterDC, PHYSICALOFFSETX), This.env.API_WIN.GetDeviceCaps(m.lhPrinterDC, PHYSICALOFFSETY))
+		            m.lnPrintWidth = MAX(m.lnPrintWidth - m.lnPrintX * 2, 0)
+		            m.lnPrintHeight = MAX(m.lnPrintHeight - m.lnPrintY * 2, 0)
+		            #endif
 		
-		            m.lnPrintWidth = IIF(m.lnOrientation = DMORIENT_LANDSCAPE, m.laPrnForm[m.lnPaperSize,4], m.laPrnForm[m.lnPaperSize,3])
-		            m.lnPrintHeight = IIF(m.lnOrientation = DMORIENT_LANDSCAPE, m.laPrnForm[m.lnPaperSize,3], m.laPrnForm[m.lnPaperSize,4])
-		            m.lnPrintWidth = (m.lnPrintWidth / (25.4 * 1000)) * m.lnPrinterDPI
-		            m.lnPrintHeight = (m.lnPrintHeight / (25.4 * 1000)) * m.lnPrinterDPI
-		            
 		            * Adjust printer canvas size to fit PDF page
 		            DO CASE
 		            CASE INLIST(0, m.lnPageWidth, m.lnPageHeight, m.lnPrintWidth, m.lnPrintHeight)
@@ -11906,14 +12094,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		            ENDCASE
 		
 		            
-		            #if .F. && pdfium style scaling "fill printable area" (not implemented). Only print without scaling is implemented
-		            m.lnPrintWidth = m.lnPrintWidth - m.lnPrintX * 2
-		            m.lnPrintHeight = m.lnPrintHeight - m.lnPrintY * 2
-		            #endif
-		            
-		            m.lnPrintX = 0
-		            m.lnPrintY = 0
-		            
 		            LOCAL lnPrintRotate
 		            m.lnPrintRotate = IIF(m.lnOrientation = DMORIENT_LANDSCAPE, IIF(m.lnPageWidth > m.lnPageHeight, 0, 1), IIF(m.lnPageWidth > m.lnPageHeight, 1, 0))
 		            IF m.lnPrinterDuplex = DMDUP_VERTICAL AND MOD(m.lnDocPageNum,2) = 0
@@ -11924,41 +12104,49 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		            
 		            LOCAL lnFPDF_Page 
 		            m.lnFPDF_Page = This.fpdf_pages[m.lnPageIndex]
-		            
+		
 		            IF EMPTY(m.lnFPDF_Page) = .F.
-		                IF EMPTY(This.fpdf_form) = .T.
-		                    m.loFPDF.FPDF_RenderPage(m.lhPrinterDC, ;
-		                        m.lnFPDF_Page, ;
-		                        m.lnPrintX, ;
-		                        m.lnPrintY, ;
-		                        m.lnPrintWidth, ;
-		                        m.lnPrintHeight, ;
-		                        m.lnPrintRotate, ;
-		                        m.loFPDF.CONST.FPDF_PRINTING())
-		                ELSE
+		                m.loFPDF.FPDF_RenderPage(m.lhPrinterDC, ;
+		                    m.lnFPDF_Page, ;
+		                    m.lnPrintX, ;
+		                    m.lnPrintY, ;
+		                    m.lnPrintWidth, ;
+		                    m.lnPrintHeight, ;
+		                    m.lnPrintRotate, ;
+		                    m.loFPDF.CONST.FPDF_PRINTING())
+		
+		                IF EMPTY(This.fpdf_form) = .F.
 		                    LOCAL lnPageBitmap
-		                    m.lnPageBitmap = m.loFPDF.FPDFBitmap_CreateEx(m.lnPrintWidth, m.lnPrintHeight, m.loFPDF.CONST.FPDFBitmap_BGR(), 0, 0)
+		                    m.lnPageBitmap = m.loFPDF.FPDFBitmap_CreateEx(m.lnPrintWidth, m.lnPrintHeight, m.loFPDF.CONST.FPDFBitmap_BGRA(), 0, 0)
 		                    IF m.lnPageBitmap != 0
 		                        LOCAL lnBitsPerPixel, lcPageBitmapBMI
-		                        m.lnBitsPerPixel = 24
+		                        m.lnBitsPerPixel = 32
 		                        m.lcPageBitmapBMI = BINTOC(FF_BHDR_SIZE ,"4RS") + BINTOC(m.lnPrintWidth,"4RS") + BINTOC(-m.lnPrintHeight, "4RS") + ;
 		                                (CHR(MOD(1,256)) + CHR(INT(1/256))) + (CHR(MOD(m.lnBitsPerPixel,256))+ CHR(INT(m.lnBitsPerPixel/256))) +;
 		                                BINTOC(FF_BI_RGB, "4RS") + ;
 		                                REPLICATE(0h00, 20)
 		
-		                        m.loFPDF.FPDFBitmap_FillRect(m.lnPageBitmap, 0, 0, m.lnPrintWidth, m.lnPrintHeight, 0xFFFFFFFF)
+		                        m.loFPDF.FPDFBitmap_FillRect(m.lnPageBitmap, 0, 0, m.lnPrintWidth, m.lnPrintHeight, 0x00FFFFFF)
 		
 		                        LOCAL lnDibDataPtr
 		                        m.lnDibDataPtr = This.env.API_FPDF.FPDFBitmap_GetBuffer(m.lnPageBitmap)
 		
-		                        m.loFPDF.FPDF_RenderPageBitmap(m.lnPageBitmap, m.lnFPDF_Page, m.lnPrintX, m.lnPrintY, m.lnPrintWidth, m.lnPrintHeight, m.lnPrintRotate, m.loFPDF.CONST.FPDF_PRINTING())
 		                        This.env.API_FPDF_FORMS.FPDF_FFLDraw(This.fpdf_form, m.lnPageBitmap, m.lnFPDF_Page, m.lnPrintX, m.lnPrintY, m.lnPrintWidth, m.lnPrintHeight, m.lnPrintRotate, m.loFPDF.CONST.FPDF_PRINTING())
-		                        This.env.API_WIN.StretchDIBits(m.lhPrinterDC, 0, 0, m.lnPrintWidth, m.lnPrintHeight, 0, 0, m.lnPrintWidth, m.lnPrintHeight, m.lnDibDataPtr, m.lcPageBitmapBMI, FF_DIB_RGB_COLORS, FF_SRCCOPY)
-		                        
+		
+		                        LOCAL lnBufDib
+		                        m.lnBufDib = This.env.API_WIN.CreateDIBSection(m.lhPrinterBufDC, m.lcPageBitmapBMI, FF_DIB_RGB_COLORS, 0, 0, 0)
+		                        IF m.lnBufDib != 0
+		                            This.env.API_WIN.SelectObject(m.lhPrinterBufDC, m.lnBufDib)
+		                            
+		                            This.env.API_WIN.StretchDIBits(m.lhPrinterBufDC, 0, 0, m.lnPrintWidth, m.lnPrintHeight, 0, 0, m.lnPrintWidth, m.lnPrintHeight, m.lnDibDataPtr, m.lcPageBitmapBMI, FF_DIB_RGB_COLORS, FF_SRCCOPY)
+		                            This.env.API_WIN.TransparentBlt(m.lhPrinterDC, 0, 0, m.lnPrintWidth, m.lnPrintHeight, m.lhPrinterBufDC, 0, 0, m.lnPrintWidth, m.lnPrintHeight, 0x00FFFFFF)
+		                            
+		                            This.env.API_WIN.DeleteObject(m.lnBufDib)
+		                        ENDIF
+		
 		                        m.loFPDF.FPDFBitmap_Destroy(m.lnPageBitmap)
 		                    ENDIF
 		                ENDIF
-		
 		            ENDIF
 		            
 		            This.ClosePage(m.lnPageIndex)
@@ -11987,13 +12175,20 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    This.ErrMsg(m.loErr)
 		
 		FINALLY
+		    IF EMPTY(m.lhPrinterBufDC) = .F.
+		        This.env.API_WIN.DeleteDC(m.lhPrinterBufDC)
+		    ENDIF
 		    IF EMPTY(m.lhPrinterDC) = .F.
 		        IF m.llStartDoc = .F.
-		            This.env.API_WIN.EndDoc(m.lhPrinterDC)
+		            IF This.ProgressCancelled
+		                This.env.API_WIN.AbortDoc(m.lhPrinterDC)
+		            ELSE
+		                This.env.API_WIN.EndDoc(m.lhPrinterDC)
+		            ENDIF
 		        ENDIF
 		        This.env.API_WIN.DeleteDC(m.lhPrinterDC)
 		    ENDIF
-		    
+		
 		    IF EMPTY(m.lhDocNameHeap) = .F.
 		        This.env.API_WIN.HeapDestroy(m.lhDocNameHeap)
 		    ENDIF

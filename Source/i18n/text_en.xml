@@ -159,4 +159,20 @@
         <id>PROGRESS_WINDOW_CANCEL</id>
         <text>Cancel</text>
     </i18n>
+
+    <i18n>
+        <id>PRINTENV_PRINTAREA</id>
+        <text>Print area</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_PRINTAREA_WHOLE_PAGE</id>
+        <text>Whole page</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_PRINTAREA_PRINTABLE_AREA</id>
+        <text>Printable area</text>
+    </i18n>
+
 </VFPData>

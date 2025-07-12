@@ -967,7 +967,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		m.loPrintEnv.Setup(This.PrintEnv)
 		This.PrintEnv.Setup(m.loPrintEnv, .T.)
 		m.loPrintEnv = .F.
-		
+		This.PrintEnv.PrintArea = 1 && Whole Page
 		IF This.CommandClauses.OUTPUTTO = This.API_FRX.CONST.OUTPUTTO_PRINTER()
 		    This.PrintEnv.AllowPrintSetupUI = This.CommandClauses.PROMPT
 		ENDIF

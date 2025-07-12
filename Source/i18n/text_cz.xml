@@ -160,4 +160,19 @@
         <text>Zrušit</text>
     </i18n>
 
+    <i18n>
+        <id>PRINTENV_PRINTAREA</id>
+        <text>Oblast tisku</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_PRINTAREA_WHOLE_PAGE</id>
+        <text>Celá stránka</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_PRINTAREA_PRINTABLE_AREA</id>
+        <text>Tisknutelná oblast</text>
+    </i18n>
+
 </VFPData>

@@ -155,4 +155,19 @@
         <text>取消</text>
     </i18n>
 
+    <i18n>
+        <id>PRINTENV_PRINTAREA</id>
+        <text>打印区域</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_PRINTAREA_WHOLE_PAGE</id>
+        <text>整页</text>
+    </i18n>
+
+    <i18n>
+        <id>PRINTENV_PRINTAREA_PRINTABLE_AREA</id>
+        <text>可用于打印的区域</text>
+    </i18n>
+
 </VFPData>

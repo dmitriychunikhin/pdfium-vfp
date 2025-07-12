@@ -1,3 +1,7 @@
+1.36
+  - Reduced size of the print spool file when printing PDFs with form fields
+  - Added Print Area selection to the Print Setup dialog with options: Whole Page and Printable Area
+
 1.35
   - Fixed issue #35: PDF form fields were not present when printed
 
