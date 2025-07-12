@@ -7,6 +7,7 @@ This and a dozen other components and tools are provided to you by <a href="http
 [![ChangleLog](https://img.shields.io/github/last-commit/dmitriychunikhin/pdfium-vfp?path=%2FChangeLog.md&label=ChangeLog)](ChangeLog.md)
 [![ChangleLog CN](https://img.shields.io/github/last-commit/dmitriychunikhin/pdfium-vfp?path=%2FChangeLog_CN.md&label=ChangeLog%20CN)](ChangeLog_CN.md)
 [![Downloads](https://img.shields.io/github/downloads/dmitriychunikhin/pdfium-vfp/total)](https://github.com/dmitriychunikhin/pdfium-vfp/releases/)
+[![Discussions](https://img.shields.io/github/discussions/dmitriychunikhin/pdfium-vfp?color=default)](https://github.com/dmitriychunikhin/pdfium-vfp/discussions/)
 
 # pdfium-vfp 
 [English](README.md) | [简体中文](README_CN.md)
