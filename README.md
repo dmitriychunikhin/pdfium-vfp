@@ -219,8 +219,9 @@ ENDTRY
 
 ## PdfiumReport.app and private fonts
 Private font is a font that is not installed in system in your development, testing or production environment
+Well know examples: barcode fonts, open-source unicode fonts, custom fonts
 
-Sample can be found in `pdfium-vfp/Sample/Sample.scx` in `cmdReport.Click`
+Usage sample can be found in `pdfium-vfp/Sample/Sample.scx` in `cmdReport.Click`
 
 ### Standalone
 ```foxpro
