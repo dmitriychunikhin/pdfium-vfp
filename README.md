@@ -98,7 +98,7 @@ Open sample.pjx project from `pdfium-vfp/Sample` folder or just run Sample/sampl
 
 
 ## Known issues
-* PdfiumViewer doesn't support page rotation, bookmarks, annotations and active hyperlinks
+* PdfiumViewer doesn't support page bookmarks, annotations and active hyperlinks
 * Fallback font in report previewer is Helvetica with no chance to change it
 * Report previewer can deal with ttf/ttc fonts only, non ttf font (bitmap fonts) and symbol fonts are rendered as images
 * Interface language always is your system language 
@@ -117,18 +117,57 @@ Open sample.pjx project from `pdfium-vfp/Sample` folder or just run Sample/sampl
 ```foxpro
 Thisform.PdfiumViewer.OpenPdf("some.pdf")
 ```
+5) Setup PdfiumViewer
+```foxpro
+Thisform.PdfiumViewer.FitWidth = .T. && Scale the document to fit viewport width
+Thisform.PdfiumViewer.FitHeight = .T. && Scale the document to fit viewport height
+* Rotate document in the viewport, possible values: 
+*                             0 (normal)
+*                             1 (rotated 90 degrees clockwise)
+*                             2 (rotated 180 degrees)
+*                             3 (rotated 90 degrees counter-clockwise)
+Thisform.PdfiumViewer.Rotation = 0
+```
 
-5) Print document
+6) Print document
 ```foxpro
 Thisform.PdfiumViewer.PrintDocument()
 ```
 
-6) Save document to the file
+7) Save document to the file
+
+**Saving without changing original document password protection state and meta-data tags values**
 ```foxpro
 Thisform.PdfiumViewer.SaveDocument("c:\myfolder\mydoc.pdf")
 ```
+**Saving and encrypting with custom password, setting custom values for PDF meta-data tags**
+```foxpro
+LOCAL loPDFMeta
+m.loPDFMeta = NEWOBJECT("pdfium_pdfmeta", "pdfium-vfp.vcx")
 
-7) Close PDF file
+* PDF password protection
+* m.loPDFMeta.OwnerPassword = "" && Owner Password protects permissions of the doc.
+m.loPDFMeta.UserPassword = "MyPassword" && This password user inputs when open pdf file
+
+* PDF metadata setup sample, setting up metadata is not mandatory 
+* If loPDFMeta property value is NULL then the meta-data tag of the original document will not be changed
+* m.loPDFMeta.Author = "Me"
+* m.loPDFMeta.Creator = "Pdfium-vfp sample app"
+m.loPDFMeta.Keywords = "My custom keywords for PDF"
+* m.loPDFMeta.Subject = "sample"
+* m.loPDFMeta.Title = "Sample"
+
+* PDF reader permissions 
+* If loPDFMeta property value is NULL then the permission flag of the original document will not be changed
+* m.loPDFMeta.Permit_Print = .T. && Allow to print document
+* m.loPDFMeta.Permit_Edit_All = .T. && Allow to edit contents other than annotations and forms
+* m.loPDFMeta.Permit_Copy = .T. && Allow copy contents of the document
+* m.loPDFMeta.Permit_Edit = .T. && Allow to make annotations and fill forms
+
+Thisform.PdfiumViewer.SaveDocument("c:\myfolder\mydoc.pdf", m.loPDFMeta)
+```
+
+8) Close PDF file
 ```foxpro
 Thisform.PdfiumViewer.ClosePdf()
 ```

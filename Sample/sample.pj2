@@ -54,6 +54,8 @@ WITH loProject.FILES
 	.ADD('foxbarcode.prg')		&& *< FileMetadata: Type="P" Cpid="1251" Timestamp="0" ID="0" ObjRev="544" User="" />
 	.ADD('gpimage2.prg')		&& *< FileMetadata: Type="P" Cpid="1251" Timestamp="0" ID="0" ObjRev="544" User="" />
 	.ADD('images\foxpro-icon.png')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
+	.ADD('images\rotate_left.png')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
+	.ADD('images\rotate_right.png')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
 	.ADD('images\search16.bmp')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
 	.ADD('images\search16.msk')		&& *< FileMetadata: Type="x" Cpid="1251" Timestamp="0" ID="0" ObjRev="0" User="" />
 	.ADD('images\vfpxbanner.png')		&& *< FileMetadata: Type="x" Cpid="0" Timestamp="0" ID="0" ObjRev="0" User="" />
@@ -84,7 +86,7 @@ WITH loProject
 	.SetMain(lcCurdir + 'sample.prg')
 
 	.Debug = .T.
-	.Encrypted = .F.
+	.Encrypted = .T.
 	*<.CmntStyle = 1 />
 	*<.NoLogo = .F. />
 	*<.SaveCode = .T. />

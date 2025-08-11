@@ -64,10 +64,14 @@ DEFINE CLASS pdfium_api_fpdf AS pdfium_api_fpdf_base OF "pdfium-vfp.vcx" 		&& Pd
 		*m: fpdftext_settext
 		*m: fpdf_closedocument
 		*m: fpdf_closepage
+		*m: fpdf_copyviewerpreferences
 		*m: fpdf_createnewdocument
 		*m: fpdf_destroylibrary
 		*m: fpdf_devicetopage
+		*m: fpdf_getdocpermissions
+		*m: fpdf_getdocuserpermissions
 		*m: fpdf_getlasterror
+		*m: fpdf_getmetatext
 		*m: fpdf_getpagecount
 		*m: fpdf_getpageheight
 		*m: fpdf_getpagesizebyindex
@@ -178,6 +182,10 @@ DEFINE CLASS pdfium_api_fpdf AS pdfium_api_fpdf_base OF "pdfium-vfp.vcx" 		&& Pd
 			<memberdata name="vfpdf_destroyzip" type="method" display="VFPDF_DestroyZip"/>
 			<memberdata name="vfpdf_destroyzipinput" type="method" display="VFPDF_DestroyZipInput"/>
 			<memberdata name="fpdf_renderpagebitmap" type="method" display="FPDF_RenderPageBitmap"/>
+			<memberdata name="fpdf_copyviewerpreferences" type="method" display="FPDF_CopyViewerPreferences"/>
+			<memberdata name="fpdf_getmetatext" type="method" display="FPDF_GetMetaText"/>
+			<memberdata name="fpdf_getdocpermissions" type="method" display="FPDF_GetDocPermissions"/>
+			<memberdata name="fpdf_getdocuserpermissions" type="method" display="FPDF_GetDocUserPermissions"/>
 		</VFPData>
 		CONST.Name = "CONST"
 	*</PropValue>
@@ -1080,6 +1088,22 @@ DEFINE CLASS pdfium_api_fpdf AS pdfium_api_fpdf_base OF "pdfium-vfp.vcx" 		&& Pd
 		
 	ENDPROC
 
+	PROCEDURE fpdf_copyviewerpreferences
+		LPARAMETERS dest_doc as Long, src_doc as Long
+		
+		LOCAL m.lvRes
+		TRY
+		   m.lvRes = FPDF_CopyViewerPreferences(m.dest_doc, m.src_doc)
+		CATCH
+		    SET CONSOLE OFF
+		    DECLARE LONG FPDF_CopyViewerPreferences IN (This.pdfium_dll_path) AS FPDF_CopyViewerPreferences LONG dest_doc, LONG src_doc
+		    m.lvRes = FPDF_CopyViewerPreferences(m.dest_doc, m.src_doc)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
 	PROCEDURE fpdf_createnewdocument
 		LOCAL m.lvRes
 		TRY
@@ -1126,6 +1150,38 @@ DEFINE CLASS pdfium_api_fpdf AS pdfium_api_fpdf_base OF "pdfium-vfp.vcx" 		&& Pd
 		
 	ENDPROC
 
+	PROCEDURE fpdf_getdocpermissions
+		LPARAMETERS document as Long
+		
+		LOCAL m.lvRes
+		TRY
+		   m.lvRes = FPDF_GetDocPermissions(m.document)
+		CATCH
+		    SET CONSOLE OFF
+		    DECLARE LONG FPDF_GetDocPermissions IN (This.pdfium_dll_path) AS FPDF_GetDocPermissions LONG document
+		    m.lvRes = FPDF_GetDocPermissions(m.document)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdf_getdocuserpermissions
+		LPARAMETERS document as Long
+		
+		LOCAL m.lvRes
+		TRY
+		   m.lvRes = FPDF_GetDocUserPermissions(m.document)
+		CATCH
+		    SET CONSOLE OFF
+		    DECLARE LONG FPDF_GetDocUserPermissions IN (This.pdfium_dll_path) AS FPDF_GetDocUserPermissions LONG document
+		    m.lvRes = FPDF_GetDocUserPermissions(m.document)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
 	PROCEDURE fpdf_getlasterror
 		
 		LOCAL m.lvRes
@@ -1135,6 +1191,22 @@ DEFINE CLASS pdfium_api_fpdf AS pdfium_api_fpdf_base OF "pdfium-vfp.vcx" 		&& Pd
 		    SET CONSOLE OFF
 		    DECLARE LONG FPDF_GetLastError IN (This.pdfium_dll_path) AS FPDF_GetLastError
 		    m.lvRes = FPDF_GetLastError()
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdf_getmetatext
+		LPARAMETERS document as Long, tag as String, buffer as String, buflen as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDF_GetMetaText(m.document, m.tag, @m.buffer, m.buflen)
+		CATCH
+		    SET CONSOLE OFF
+		    DECLARE LONG FPDF_GetMetaText IN (This.pdfium_dll_path) AS FPDF_GetMetaText LONG document, STRING tag, STRING @buffer, LONG buflen
+		    m.lvRes = FPDF_GetMetaText(m.document, m.tag, @m.buffer, m.buflen)
 		ENDTRY
 		
 		RETURN m.lvRes
@@ -4292,6 +4364,7 @@ DEFINE CLASS pdfium_api_win AS custom
 		*m: getkeyunicode		&& Convert keyboard key code (e.g. from KeyPress event) to utf-16 codepoint
 		*m: getmodulehandle
 		*m: getopenclipboardwindow
+		*m: getprocessheap
 		*m: getsavefilenamea
 		*m: getscrollinfo
 		*m: getsystemdefaultlcid
@@ -4412,18 +4485,19 @@ DEFINE CLASS pdfium_api_win AS custom
 			<memberdata name="getfileattributesa" type="method" display="GetFileAttributesA"/>
 			<memberdata name="transparentblt" type="method" display="TransparentBlt"/>
 			<memberdata name="abortdoc" type="method" display="AbortDoc"/>
+			<memberdata name="getprocessheap" type="method" display="GetProcessHeap"/>
 		</VFPData>
 	*</PropValue>
 	
 	PROCEDURE abortdoc
-		LPARAMETERS hdc as Integer
+		LPARAMETERS hdc as Long
 		
 		LOCAL m.lvRes
 		TRY
 		    m.lvRes = WinApi_AbortDoc(m.hdc)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER AbortDoc IN GDI32 AS WinApi_AbortDoc INTEGER hdc
+		    DECLARE LONG AbortDoc IN GDI32 AS WinApi_AbortDoc LONG hdc
 		    m.lvRes = WinApi_AbortDoc(m.hdc)
 		ENDTRY
 		
@@ -4655,14 +4729,14 @@ DEFINE CLASS pdfium_api_win AS custom
 	ENDPROC
 
 	PROCEDURE closeprinter
-		LPARAMETERS hPrinter as Integer
+		LPARAMETERS hPrinter as Long
 		
 		LOCAL m.lvRes
 		TRY
 		    m.lvRes = WinApi_ClosePrinter(m.hPrinter)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER ClosePrinter IN winspool.drv AS WinApi_ClosePrinter INTEGER hPrinter
+		    DECLARE LONG ClosePrinter IN winspool.drv AS WinApi_ClosePrinter LONG hPrinter
 		    m.lvRes = WinApi_ClosePrinter(m.hPrinter)
 		ENDTRY
 		
@@ -4671,14 +4745,14 @@ DEFINE CLASS pdfium_api_win AS custom
 	ENDPROC
 
 	PROCEDURE createcompatibledc
-		LPARAMETERS hDC as Integer
+		LPARAMETERS hDC as Long
 		
 		LOCAL m.lvRes
 		TRY
 		    m.lvRes = WinApi_CreateCompatibleDC(m.hDC)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER CreateCompatibleDC IN Gdi32 AS WinApi_CreateCompatibleDC INTEGER hDC
+		    DECLARE LONG CreateCompatibleDC IN Gdi32 AS WinApi_CreateCompatibleDC LONG hDC
 		    m.lvRes = WinApi_CreateCompatibleDC(m.hDC)
 		ENDTRY
 		
@@ -4703,14 +4777,14 @@ DEFINE CLASS pdfium_api_win AS custom
 	ENDPROC
 
 	PROCEDURE createdibsection
-		LPARAMETERS hdc as Integer, pbmi as String, iUsage as Long, ppvBits as Integer, hSection as Integer, dwOffset as Long
+		LPARAMETERS hdc as Long, pbmi as String, iUsage as Long, ppvBits as Long, hSection as Long, dwOffset as Long
 		
 		LOCAL m.lvRes
 		TRY
 		    m.lvRes = WinApi_CreateDIBSection(m.hdc, m.pbmi, m.iUsage, @m.ppvBits, m.hSection, m.dwOffset)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER CreateDIBSection IN Gdi32 AS WinApi_CreateDIBSection INTEGER hdc, STRING pbmi, LONG iUsage, INTEGER @ppvBits, INTEGER hSection, LONG dwOffset
+		    DECLARE LONG CreateDIBSection IN Gdi32 AS WinApi_CreateDIBSection LONG hdc, STRING pbmi, LONG iUsage, LONG @ppvBits, LONG hSection, LONG dwOffset
 		    m.lvRes = WinApi_CreateDIBSection(m.hdc, m.pbmi, m.iUsage, @m.ppvBits, m.hSection, m.dwOffset)
 		ENDTRY
 		
@@ -4802,14 +4876,14 @@ DEFINE CLASS pdfium_api_win AS custom
 	ENDPROC
 
 	PROCEDURE deleteobject
-		LPARAMETERS hObject as Integer
+		LPARAMETERS hObject as Long
 		
 		LOCAL m.lvRes
 		TRY
 		    m.lvRes = WinApi_DeleteObject(m.hObject)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER DeleteObject IN Gdi32 AS WinApi_DeleteObject INTEGER hObject
+		    DECLARE LONG DeleteObject IN Gdi32 AS WinApi_DeleteObject LONG hObject
 		    m.lvRes = WinApi_DeleteObject(m.hObject)
 		ENDTRY
 		
@@ -4850,14 +4924,14 @@ DEFINE CLASS pdfium_api_win AS custom
 	ENDPROC
 
 	PROCEDURE documentproperties
-		LPARAMETERS hWnd as Integer, hPrinter as Integer, pDeviceName as String, pDevModeOutput as String, pDevModeInput as String, fMode as Integer
+		LPARAMETERS hWnd as Long, hPrinter as Long, pDeviceName as String, pDevModeOutput as String, pDevModeInput as String, fMode as Integer
 		
 		LOCAL m.lvRes
 		TRY
 		    m.lvRes = WinApi_DocumentProperties(m.hWnd, m.hPrinter, m.pDeviceName, @m.pDevModeOutput, @m.pDevModeInput, m.fMode)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER DocumentProperties IN winspool.drv AS WinApi_DocumentProperties INTEGER hWnd, INTEGER hPrinter, STRING pDeviceName, STRING @pDevModeOutput, STRING @pDevModeInput, INTEGER fMode
+		    DECLARE LONG DocumentProperties IN winspool.drv AS WinApi_DocumentProperties LONG hWnd, LONG hPrinter, STRING pDeviceName, STRING @pDevModeOutput, STRING @pDevModeInput, INTEGER fMode
 		    m.lvRes = WinApi_DocumentProperties(m.hWnd, m.hPrinter, m.pDeviceName, @m.pDevModeOutput, @m.pDevModeInput, m.fMode)
 		ENDTRY
 		
@@ -4881,14 +4955,14 @@ DEFINE CLASS pdfium_api_win AS custom
 	ENDPROC
 
 	PROCEDURE enddoc
-		LPARAMETERS hdc as Integer
+		LPARAMETERS hdc as Long
 		
 		LOCAL m.lvRes
 		TRY
 		    m.lvRes = WinApi_EndDoc(m.hdc)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER EndDoc IN GDI32 AS WinApi_EndDoc INTEGER hdc
+		    DECLARE LONG EndDoc IN GDI32 AS WinApi_EndDoc LONG hdc
 		    m.lvRes = WinApi_EndDoc(m.hdc)
 		ENDTRY
 		
@@ -4897,14 +4971,14 @@ DEFINE CLASS pdfium_api_win AS custom
 	ENDPROC
 
 	PROCEDURE endpage
-		LPARAMETERS hdc as Integer
+		LPARAMETERS hdc as Long
 		
 		LOCAL m.lvRes
 		TRY
 		    m.lvRes = WinApi_EndPage(m.hdc)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER EndPage IN GDI32 AS WinApi_EndPage INTEGER hdc
+		    DECLARE LONG EndPage IN GDI32 AS WinApi_EndPage LONG hdc
 		    m.lvRes = WinApi_EndPage(m.hdc)
 		ENDTRY
 		
@@ -4999,7 +5073,7 @@ DEFINE CLASS pdfium_api_win AS custom
 		    m.lvRes = WinApi_GetClipboardData(m.uFormat)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER GetClipboardData IN user32 AS WinApi_GetClipboardData INTEGER uFormat
+		    DECLARE LONG GetClipboardData IN user32 AS WinApi_GetClipboardData INTEGER uFormat
 		    m.lvRes = WinApi_GetClipboardData(m.uFormat)
 		ENDTRY
 		
@@ -5031,7 +5105,7 @@ DEFINE CLASS pdfium_api_win AS custom
 		    m.lvRes = WinApi_GetDefaultPrinter(@m.pszBuffer, @m.pcchBuffer)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER GetDefaultPrinter IN WINSPOOL.DRV  AS WinApi_GetDefaultPrinter STRING @pszBuffer, LONG @pcchBuffer
+		    DECLARE LONG GetDefaultPrinter IN WINSPOOL.DRV  AS WinApi_GetDefaultPrinter STRING @pszBuffer, LONG @pcchBuffer
 		    m.lvRes = WinApi_GetDefaultPrinter(@m.pszBuffer, @m.pcchBuffer)
 		ENDTRY
 		
@@ -5137,7 +5211,7 @@ DEFINE CLASS pdfium_api_win AS custom
 		    m.lvRes = WinApi_GetModuleHandle(m.lpModuleName)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER GetModuleHandle IN kernel32 AS WinApi_GetModuleHandle STRING lpModuleName
+		    DECLARE LONG GetModuleHandle IN kernel32 AS WinApi_GetModuleHandle STRING lpModuleName
 		    m.lvRes = WinApi_GetModuleHandle(m.lpModuleName)
 		ENDTRY
 		
@@ -5152,8 +5226,22 @@ DEFINE CLASS pdfium_api_win AS custom
 		    m.lvRes = WinApi_GetOpenClipboardWindow()
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER GetOpenClipboardWindow IN user32 AS WinApi_GetOpenClipboardWindow
+		    DECLARE LONG GetOpenClipboardWindow IN user32 AS WinApi_GetOpenClipboardWindow
 		    m.lvRes = WinApi_GetOpenClipboardWindow()
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE getprocessheap
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = WinApi_GetProcessHeap()
+		CATCH
+		    SET CONSOLE OFF
+		    DECLARE LONG GetProcessHeap IN Kernel32 AS WinApi_GetProcessHeap 
+		    m.lvRes = WinApi_GetProcessHeap()
 		ENDTRY
 		
 		RETURN m.lvRes
@@ -5335,14 +5423,14 @@ DEFINE CLASS pdfium_api_win AS custom
 	ENDPROC
 
 	PROCEDURE heapalloc
-		LPARAMETERS hHeap as Integer, dwFlags as Integer, dwBytes as Integer
+		LPARAMETERS hHeap as Long, dwFlags as Integer, dwBytes as Long
 		
 		LOCAL m.lvRes
 		TRY
 		    m.lvRes = WinApi_HeapAlloc(m.hHeap, m.dwFlags, m.dwBytes)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER HeapAlloc IN Kernel32 AS WinApi_HeapAlloc INTEGER hHeap, INTEGER dwFlags, INTEGER dwBytes
+		    DECLARE LONG HeapAlloc IN Kernel32 AS WinApi_HeapAlloc LONG hHeap, INTEGER dwFlags, LONG dwBytes
 		    m.lvRes = WinApi_HeapAlloc(m.hHeap, m.dwFlags, m.dwBytes)
 		ENDTRY
 		
@@ -5351,14 +5439,14 @@ DEFINE CLASS pdfium_api_win AS custom
 	ENDPROC
 
 	PROCEDURE heapcreate
-		LPARAMETERS dwOptions as Integer, dwInitialSize as Integer, dwMaxSize as Integer
+		LPARAMETERS dwOptions as Integer, dwInitialSize as Long, dwMaxSize as Long
 		
 		LOCAL m.lvRes
 		TRY
 		    m.lvRes = WinApi_HeapCreate(m.dwOptions, m.dwInitialSize, m.dwMaxSize)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER HeapCreate IN Kernel32 AS WinApi_HeapCreate INTEGER dwOptions, INTEGER dwInitialSize, INTEGER dwMaxSize
+		    DECLARE LONG HeapCreate IN Kernel32 AS WinApi_HeapCreate INTEGER dwOptions, LONG dwInitialSize, LONG dwMaxSize
 		    m.lvRes = WinApi_HeapCreate(m.dwOptions, m.dwInitialSize, m.dwMaxSize)
 		ENDTRY
 		
@@ -5367,14 +5455,14 @@ DEFINE CLASS pdfium_api_win AS custom
 	ENDPROC
 
 	PROCEDURE heapdestroy
-		LPARAMETERS hHeap as Integer
+		LPARAMETERS hHeap as Long
 		
 		LOCAL m.lvRes
 		TRY
 		    m.lvRes = WinApi_HeapDestroy(m.hHeap)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER HeapDestroy IN Kernel32 AS WinApi_HeapDestroy INTEGER hHeap
+		    DECLARE LONG HeapDestroy IN Kernel32 AS WinApi_HeapDestroy LONG hHeap
 		    m.lvRes = WinApi_HeapDestroy(m.hHeap)
 		ENDTRY
 		
@@ -5383,14 +5471,14 @@ DEFINE CLASS pdfium_api_win AS custom
 	ENDPROC
 
 	PROCEDURE heapfree
-		LPARAMETERS hHeap as Integer, dwFlags as Integer, pMem as Integer
+		LPARAMETERS hHeap as Long, dwFlags as Integer, pMem as Long
 		
 		LOCAL m.lvRes
 		TRY
 		    m.lvRes = WinApi_HeapFree(m.hHeap, m.dwFlags, m.pMem)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER HeapFree IN Kernel32 AS WinApi_HeapFree INTEGER hHeap, INTEGER dwFlags, INTEGER lpMem
+		    DECLARE LONG HeapFree IN Kernel32 AS WinApi_HeapFree LONG hHeap, INTEGER dwFlags, LONG lpMem
 		    m.lvRes = WinApi_HeapFree(m.hHeap, m.dwFlags, m.pMem)
 		ENDTRY
 		
@@ -5447,14 +5535,14 @@ DEFINE CLASS pdfium_api_win AS custom
 	ENDPROC
 
 	PROCEDURE openclipboard
-		LPARAMETERS hWndNewOwner as Integer
+		LPARAMETERS hWndNewOwner as Long
 		
 		LOCAL m.lvRes
 		TRY
 		    m.lvRes = WinApi_OpenClipboard(m.hWndNewOwner)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER OpenClipboard IN user32 AS WinApi_OpenClipboard INTEGER hWndNewOwner
+		    DECLARE LONG OpenClipboard IN user32 AS WinApi_OpenClipboard LONG hWndNewOwner
 		    m.lvRes = WinApi_OpenClipboard(m.hWndNewOwner)
 		ENDTRY
 		
@@ -5463,14 +5551,14 @@ DEFINE CLASS pdfium_api_win AS custom
 	ENDPROC
 
 	PROCEDURE openprinter
-		LPARAMETERS pPrinterName as String, phPrinter as Integer, pDefault as Integer
+		LPARAMETERS pPrinterName as String, phPrinter as LONG, pDefault as LONG
 		
 		LOCAL m.lvRes
 		TRY
 		    m.lvRes = WinApi_OpenPrinter(m.pPrinterName, @m.phPrinter, m.pDefault)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER OpenPrinter IN winspool.drv AS WinApi_OpenPrinter STRING pPrinterName, INTEGER @phPrinter, INTEGER pDefault
+		    DECLARE LONG OpenPrinter IN winspool.drv AS WinApi_OpenPrinter STRING pPrinterName, LONG @phPrinter, LONG pDefault
 		    m.lvRes = WinApi_OpenPrinter(m.pPrinterName, @m.phPrinter, m.pDefault)
 		ENDTRY
 		
@@ -5511,14 +5599,14 @@ DEFINE CLASS pdfium_api_win AS custom
 	ENDPROC
 
 	PROCEDURE selectobject
-		LPARAMETERS hdc as Integer, hgdiobj as Integer
+		LPARAMETERS hdc as Long, hgdiobj as Long
 		
 		LOCAL m.lvRes
 		TRY
 		    m.lvRes = WinApi_SelectObject(m.hdc, m.hgdiobj)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER SelectObject IN Gdi32 AS WinApi_SelectObject INTEGER hdc, INTEGER hgdiobj
+		    DECLARE LONG SelectObject IN Gdi32 AS WinApi_SelectObject LONG hdc, LONG hgdiobj
 		    m.lvRes = WinApi_SelectObject(m.hdc, m.hgdiobj)
 		ENDTRY
 		
@@ -5527,7 +5615,7 @@ DEFINE CLASS pdfium_api_win AS custom
 	ENDPROC
 
 	PROCEDURE sendmessage
-		LPARAMETERS hWnd as Integer, Msg as Integer, wParam as Integer, lParam as Integer
+		LPARAMETERS hWnd as Long, Msg as Integer, wParam as Integer, lParam as Integer
 		
 		LOCAL m.lvRes
 		TRY
@@ -5543,14 +5631,14 @@ DEFINE CLASS pdfium_api_win AS custom
 	ENDPROC
 
 	PROCEDURE setclipboarddata
-		LPARAMETERS uFormat as Integer, hMem as Integer
+		LPARAMETERS uFormat as Integer, hMem as Long
 		
 		LOCAL m.lvRes
 		TRY
 		    m.lvRes = WinApi_SetClipboardData(m.uFormat, m.hMem)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER SetClipboardData IN user32 AS WinApi_SetClipboardData INTEGER uFormat, INTEGER hMem
+		    DECLARE LONG SetClipboardData IN user32 AS WinApi_SetClipboardData INTEGER uFormat, LONG hMem
 		    m.lvRes = WinApi_SetClipboardData(m.uFormat, m.hMem)
 		ENDTRY
 		
@@ -5639,14 +5727,14 @@ DEFINE CLASS pdfium_api_win AS custom
 	ENDPROC
 
 	PROCEDURE startdoc
-		LPARAMETERS hdc as Integer, lpdi as String
+		LPARAMETERS hdc as Long, lpdi as String
 		
 		LOCAL m.lvRes
 		TRY
 		    m.lvRes = WinApi_StartDoc(m.hdc, m.lpdi)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER StartDoc IN GDI32 AS WinApi_StartDoc INTEGER hdc, STRING lpdi
+		    DECLARE LONG StartDoc IN GDI32 AS WinApi_StartDoc LONG hdc, STRING lpdi
 		    m.lvRes = WinApi_StartDoc(m.hdc, m.lpdi)
 		ENDTRY
 		
@@ -5655,14 +5743,14 @@ DEFINE CLASS pdfium_api_win AS custom
 	ENDPROC
 
 	PROCEDURE startpage
-		LPARAMETERS hdc as Integer
+		LPARAMETERS hdc as Long
 		
 		LOCAL m.lvRes
 		TRY
 		    m.lvRes = WinApi_StartPage(m.hdc)
 		CATCH
 		    SET CONSOLE OFF
-		    DECLARE INTEGER StartPage IN GDI32 AS WinApi_StartPage INTEGER hdc
+		    DECLARE LONG StartPage IN GDI32 AS WinApi_StartPage LONG hdc
 		    m.lvRes = WinApi_StartPage(m.hdc)
 		ENDTRY
 		
@@ -5975,7 +6063,7 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		m.lcResFile = ""
 		
 		TRY
-		    m.lhHeap = This.API_WIN.HeapCreate(0, 0, 0)
+		    m.lhHeap = This.API_WIN.GetProcessHeap()
 		    IF EMPTY(m.lhHeap)
 		        EXIT
 		    ENDIF
@@ -6056,18 +6144,12 @@ DEFINE CLASS pdfium_env AS custom 		&& Pdfium Environment Configuration Object. 
 		        This.API_WIN.HeapFree(m.lhHeap, 0, m.lnPtrFilter)
 		        m.lnPtrFilter = 0
 		    ENDIF
-		    
-		    IF EMPTY(m.lhHeap) = .F.
-		        This.API_WIN.HeapDestroy(m.lhHeap)
-		        m.lhHeap = 0
-		    ENDIF
 		ENDTRY
 		
 		CD (m.lcSavePath)
 		
 		
 		RETURN IIF(m.llRes, m.lcResFile, "")
-		
 		
 	ENDPROC
 
@@ -7319,20 +7401,20 @@ DEFINE CLASS pdfium_pdfmeta AS custom 		&& PDF metadata (author,creator etc) + e
 
 	HIDDEN AddObject,AddProperty,BaseClass,CloneObject,Comment,ControlCount,Controls,Error,Height,HelpContextID,NewObject,Objects,ParentClass,Parent,Picture,ReadExpression,ReadMethod,RemoveObject,ResetToDefault,SaveAsClass,ShowWhatsThis,Tag,WhatsThisHelpID,Width,WriteExpression,WriteMethod
 	*<PropValue>
-		author = ("")
-		creator = ("")
+		author = .NULL.
+		creator = .NULL.
 		Height = 27
-		keywords = ("")
+		keywords = .NULL.
 		Name = "pdfium_pdfmeta"
-		ownerpassword = ("")
-		permit_copy = .T.
-		permit_edit = .T.
-		permit_edit_all = .T.
-		permit_print = .T.
+		ownerpassword = .NULL.
+		permit_copy = .NULL.
+		permit_edit = .NULL.
+		permit_edit_all = .NULL.
+		permit_print = .NULL.
 		producer = ("pdfium-vfp")
-		subject = ("")
-		title = ("")
-		userpassword = ("")
+		subject = .NULL.
+		title = .NULL.
+		userpassword = .NULL.
 		Width = 27
 		_memberdata = <VFPData>
 			<memberdata name="author" type="property" display="Author"/>
@@ -7586,7 +7668,7 @@ DEFINE CLASS pdfium_print_env AS custom 		&& Print configuration state for Pdfiu
 		    IF m.lnBufSize = 0
 		        EXIT
 		    ENDIF
-		    m.lnFormHeap = This.API_WIN.HeapCreate(0, m.lnBufSize, 0)
+		    m.lnFormHeap = This.API_WIN.GetProcessHeap()
 		    IF EMPTY(m.lnFormHeap)
 		        EXIT
 		    ENDIF
@@ -7620,8 +7702,8 @@ DEFINE CLASS pdfium_print_env AS custom 		&& Print configuration state for Pdfiu
 		CATCH TO m.loErr
 		    
 		FINALLY
-		    IF EMPTY(m.lnFormHeap) = .F.
-		        This.API_WIN.HeapDestroy(m.lnFormHeap)
+		    IF EMPTY(m.lnFormHeapPtr) = .F.
+		        This.API_WIN.HeapFree(m.lnFormHeap, 0, m.lnFormHeapPtr)
 		    ENDIF
 		
 		    This.API_WIN.ClosePrinter(m.lhPrinter)
@@ -9862,7 +9944,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*m: contextmenu
 		*m: drawbufcreate
 		*m: drawbufrelease
+		*m: encrypt
 		*m: errmsg
+		*m: fitheight_assign
 		*m: fitwidth_assign
 		*m: getcurrentpage		&& Current page number. First page has number = 1
 		*m: getformfield		&& Accepts PDF form field name in UTF-16LE or 1-based field index,  returns object or .F. if field doesn't exist
@@ -9870,6 +9954,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*m: getpagecount		&& Returns page count
 		*m: getpagesize		&& Returns page dimensions (see comment in source code)
 		*m: getpagetext		&& Accepts page 1-based index. Returns text data of the page in UTF-16LE encoding
+		*m: hash_md5
 		*m: keypress		&& Occurs when the user presses and releases a key.
 		*m: loadpage
 		*m: openpdf		&& Open pdf file. Returns: .T. on success, .F. if file was not loaded
@@ -9885,6 +9970,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*m: renderpages
 		*m: rendersearch
 		*m: renderselection
+		*m: rotation_assign
 		*m: savedocument		&& Save document to file
 		*m: scale_assign
 		*m: scrollbars_assign
@@ -9914,6 +10000,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*p: drawbufdc
 		*p: drawbufdib
 		*p: drawbufgfx
+		*p: fitheight
 		*p: fitwidth
 		*p: formfields		&& Form Fields Collection
 		*p: fpdf_doc
@@ -9927,6 +10014,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*p: printenv		&& Print configuration state (pdfium_print_env object); Read-Only
 		*p: progresscancelled
 		*p: progresswindow
+		*p: rotation		&& Page orientation: 0 (normal), 1 (rotated 90 degrees clockwise), 2 (rotated 180 degrees), 3 (rotated 90 degrees counter-clockwise)
 		*p: scale
 		*p: scrollbars		&& Specifies the type of scroll bars that an EditBox control, Form object, or Grid control has. 0 - None (Default); 1 - Horizontal; 2 - Vertical; 3 - Both vertical and horizontal
 		*p: searchbrush
@@ -9951,16 +10039,17 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*p: wndhandle		&& Specifies the Window handle of the Window.
 		*p: wndviewport
 		*a: fpdf_pages[1,0]
+		*a: fpdf_pages_max_size[2,0]		&& Max page width and max page height
 		*a: fpdf_pages_pos[1,4]
 		*a: fpdf_pages_ref[1,2]
 		*a: fpdf_pages_selection[1,3]
-		*a: fpdf_pages_size[1,4]
+		*a: fpdf_pages_size[1,2]
 		*a: fpdf_text_pages[1,0]
 		*p: _memberdata		&& XML Metadata for customizable properties
 		*p: _printenv
 	*</DefinedPropArrayMethod>
 
-	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,documentfilename,drawbufbitmapbmi,drawbufbitmap,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,formfields,fpdf_doc,fpdf_form,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_pos,fpdf_pages_ref,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Objects,pagefillbrush,Picture,progresscancelled,progresswindow,ReadExpression,ReadMethod,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,ShowWhatsThis,SpecialEffect,Style,tplclickbegin,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,wndviewport,WriteExpression,WriteMethod,ZOrder,_printenv
+	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,documentfilename,drawbufbitmapbmi,drawbufbitmap,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,formfields,fpdf_doc,fpdf_form,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_max_size,fpdf_pages_pos,fpdf_pages_ref,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Objects,pagefillbrush,Picture,progresscancelled,progresswindow,ReadExpression,ReadMethod,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,ShowWhatsThis,SpecialEffect,Style,tplclickbegin,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,wndviewport,WriteExpression,WriteMethod,ZOrder,_printenv
 	*<PropValue>
 		allowformedit = .T.
 		backcolorbrush = .F.
@@ -9972,6 +10061,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		drawbufdc = 0
 		drawbufdib = 0
 		drawbufgfx = 0
+		fitheight = .F.
 		fitwidth = .F.
 		formfields = .F.
 		fpdf_doc = 0
@@ -9987,6 +10077,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		printenv = .F.
 		progresscancelled = .F.
 		progresswindow = .F.
+		rotation = 0
 		scale = 1
 		scrollbars = 0
 		searchbrush = .F.
@@ -10115,6 +10206,13 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 			<memberdata name="setformfieldhighlight" type="method" display="SetFormFieldHighlight"/>
 			<memberdata name="removeformfieldhighlight" type="method" display="RemoveFormFieldHighlight"/>
 			<memberdata name="documentfilename" type="property" display="DocumentFileName"/>
+			<memberdata name="rotation" type="property" display="Rotation"/>
+			<memberdata name="rotation_assign" type="method" display="Rotation_Assign"/>
+			<memberdata name="fitheight" type="property" display="FitHeight"/>
+			<memberdata name="fitheight_assign" type="method" display="FitHeight_Assign"/>
+			<memberdata name="fpdf_pages_max_size" type="property" display="fpdf_pages_max_size"/>
+			<memberdata name="encrypt" type="method" display="Encrypt"/>
+			<memberdata name="hash_md5" type="method" display="Hash_MD5"/>
 		</VFPData>
 		_printenv = .F.
 	*</PropValue>
@@ -10257,7 +10355,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		DIMENSION This.fpdf_pages_size(1,2)
 		DIMENSION This.fpdf_pages_ref(1,2)
 		
-		STORE 0 TO This.fpdf_pages_pos, This.fpdf_pages_size, This.fpdf_pages_ref
+		STORE 0 TO This.fpdf_pages_pos, This.fpdf_pages_size, This.fpdf_pages_ref, This.fpdf_pages_max_size
 		
 		IF EMPTY(This.fpdf_form) = .F.
 		    m.loFPDF_FORMS.VFPDFDOC_ExitFormFillEnvironment(This.fpdf_form)
@@ -10463,6 +10561,68 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 	ENDPROC
 
+	HIDDEN PROCEDURE encrypt
+		LPARAMETERS tcAlgorithm, tcData, tcKey, lcDataEncrypted
+		
+		lcDataEncrypted = ""
+		
+		LOCAL loWin
+		m.loWin = This.env.API_WIN
+		
+		
+		#define BCRYPT_BLOCK_PADDING  0x00000001
+		
+		LOCAL lnAlg, lnKey
+		STORE 0 TO m.lnAlg, m.lnKey
+		
+		LOCAL llRes
+		llRes = .F.
+		
+		TRY
+		    IF m.loWin.BCryptOpenAlgorithmProvider(@m.lnAlg, STRCONV(m.tcAlgorithm+CHR(0),5), NULL, 0) != 0
+		        EXIT
+		    ENDIF
+		
+		    IF m.loWin.BCryptGenerateSymmetricKey(m.lnAlg, @m.lnKey, NULL, 0, @m.tcKey, LEN(m.tcKey), 0) != 0
+		        EXIT
+		    ENDIF
+		
+		    LOCAL lnSize
+		    m.lnSize = 0
+		    IF m.loWin.BCryptEncrypt(m.lnKey, m.tcData, LEN(m.tcData), NULL, NULL, 0, NULL, 0, @m.lnSize, BCRYPT_BLOCK_PADDING) != 0
+		        EXIT
+		    ENDIF
+		
+		
+		    m.lcDataEncrypted = REPLICATE(CHR(0), m.lnSize)
+		    
+		    IF m.loWin.BCryptEncrypt(m.lnKey, m.tcData, LEN(m.tcData), NULL, NULL, 0, @m.lcDataEncrypted, LEN(m.lcDataEncrypted), @m.lnSize, BCRYPT_BLOCK_PADDING) != 0
+		       EXIT
+		    ENDIF
+		    
+		    m.llRes = .T.
+		
+		FINALLY
+		    IF EMPTY(m.lnKey) = .F.
+		        m.loWin.BCryptDestroyKey(m.lnKey)
+		        m.lnKey = 0
+		    ENDIF
+		
+		    IF EMPTY(m.lnAlg) = .F.
+		        m.loWin.BCryptCloseAlgorithmProvider(m.lnAlg, 0)
+		        m.lnAlg = 0
+		    ENDIF
+		ENDTRY
+		
+		IF m.llRes = .F.
+		    m.lcDataEncrypted = ""
+		ENDIF
+		
+		RETURN m.llRes
+		
+		
+	ENDPROC
+
 	HIDDEN PROCEDURE errmsg
 		LPARAMETERS tvMsg
 		
@@ -10477,6 +10637,18 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    THROW m.lcMsg
 		ELSE
 		    MESSAGEBOX(m.lcMsg, 0+48, This.Class + " ("+This.ClassLibrary+")")
+		ENDIF
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE fitheight_assign
+		LPARAMETERS vNewVal
+		
+		This.FitHeight = m.vNewVal
+		
+		IF This.fpdf_opened = .T.
+		    This.ViewPortUpdate()
+		    This.WndRedraw()
 		ENDIF
 		
 	ENDPROC
@@ -10748,6 +10920,94 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 
 	HIDDEN PROCEDURE GotFocus
 		This.IsFocused = .T.
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE hash_md5
+		LPARAMETERS tcData, tcDataHash
+		
+		m.tcDataHash = ""
+		
+		LOCAL loWin
+		m.loWin = This.env.API_WIN
+		
+		LOCAL lcAlgorithm
+		m.lcAlgorithm = "MD5"
+		
+		LOCAL lnAlg, lnHash, lhHashHeap, lnHashObjPtr
+		STORE 0 TO m.lnAlg, m.lnHash, m.lhHashHeap, m.lnHashObjPtr
+		
+		LOCAL llRes
+		m.llRes = .F.
+		
+		TRY
+		
+		    IF m.loWin.BCryptOpenAlgorithmProvider(@m.lnAlg, STRCONV(m.lcAlgorithm+CHR(0),5), NULL, 0) != 0
+		        EXIT
+		    ENDIF
+		
+		    LOCAL lnSizeObj, lnData
+		    m.lnSizeObj = 0
+		    m.lnData = 0
+		    IF m.loWin.BCryptGetProperty(m.lnAlg, STRCONV("ObjectLength"+CHR(0),5), @m.lnSizeObj, 4, @m.lnData, 0 ) != 0
+		        EXIT
+		    ENDIF
+		
+		    LOCAL lnSizeHash
+		    m.lnSizeHash = 0
+		    IF m.loWin.BCryptGetProperty( m.lnAlg, STRCONV("HashDigestLength"+CHR(0),5), @m.lnSizeHash, 4, @m.lnData, 0 ) != 0
+		        EXIT
+		    ENDIF
+		
+		
+		    m.lhHashHeap = m.loWin.GetProcessHeap()
+		    IF EMPTY(m.lhHashHeap)
+		        EXIT
+		    ENDIF
+		
+		    m.lnHashObjPtr = m.loWin.HeapAlloc(m.lhHashHeap, 0, m.lnSizeObj)
+		    IF EMPTY(m.lnHashObjPtr)
+		        EXIT
+		    ENDIF
+		
+		    IF m.loWin.BCryptCreateHash(m.lnAlg, @m.lnHash, m.lnHashObjPtr, m.lnSizeObj, NULL, 0, 0 ) != 0
+		        EXIT
+		    ENDIF
+		
+		    IF m.loWin.BCryptHashData(m.lnHash, m.tcData, LEN(m.tcData), 0) != 0
+		        EXIT
+		    ENDIF 
+		
+		    m.tcDataHash = REPLICATE(CHR(0), m.lnSizeHash)
+		    IF m.loWin.BCryptFinishHash(m.lnHash, @m.tcDataHash, m.lnSizeHash, 0) != 0
+		        EXIT
+		    ENDIF
+		    
+		    m.llRes = .T.
+		
+		FINALLY
+		
+		    IF EMPTY(m.lnHash) = .F.
+		        m.loWin.BCryptDestroyHash(m.lnHash)
+		        m.lnHash = 0
+		    ENDIF
+		
+		    IF EMPTY(m.lnAlg) = .F.
+		        m.loWin.BCryptCloseAlgorithmProvider(m.lnAlg, 0)
+		        m.lnAlg = 0
+		    ENDIF
+		
+		    IF EMPTY(m.lnHashObjPtr)=.F.
+		        m.loWin.HeapFree(m.lhHashHeap, 0, m.lnHashObjPtr)
+		        m.lnHashObjPtr = 0 
+		    ENDIF
+		ENDTRY
+		
+		IF m.llRes = .F.
+		    m.tcDataHash = ""
+		ENDIF
+		
+		RETURN m.llRes
 		
 	ENDPROC
 
@@ -11141,6 +11401,16 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN
 		ENDIF
 		
+		LOCAL lnPageRotate
+		m.lnPageRotate = This.Rotation
+		
+		LOCAL lnPagePosX, lnPagePosY, lnPageWidth, lnPageHeight
+		m.lnPagePosX = This.fpdf_pages_pos[m.lnPage,1] - This.ViewPortX
+		m.lnPagePosY = This.fpdf_pages_pos[m.lnPage,2] - This.ViewPortY
+		m.lnPageWidth = This.fpdf_pages_pos[m.lnPage,3]
+		m.lnPageHeight = This.fpdf_pages_pos[m.lnPage,4]
+		
+		
 		TRY
 		    This.LoadPage(m.lnPage)
 		    
@@ -11150,7 +11420,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    LOCAL lnPageX as Double, lnPageY as Double
 		    STORE 0 TO m.lnPageX, m.lnPageY
 		
-		    IF m.loFPDF.FPDF_DeviceToPage(m.lnFPDF_Page, This.fpdf_pages_pos[m.lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[m.lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[m.lnPage,3], This.fpdf_pages_pos[m.lnPage,4], 0, m.lnMouseX, m.lnMouseY, @m.lnPageX, @m.lnPageY) <> 1
+		    IF m.loFPDF.FPDF_DeviceToPage(m.lnFPDF_Page, m.lnPagePosX, m.lnPagePosY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, m.lnMouseX, m.lnMouseY, @m.lnPageX, @m.lnPageY) <> 1
 		        EXIT
 		    ENDIF
 		
@@ -11272,6 +11542,16 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN
 		ENDIF
 		
+		LOCAL lnPageRotate
+		m.lnPageRotate = This.Rotation
+		
+		LOCAL lnPagePosX, lnPagePosY, lnPageWidth, lnPageHeight
+		m.lnPagePosX = This.fpdf_pages_pos[m.lnPage,1] - This.ViewPortX
+		m.lnPagePosY = This.fpdf_pages_pos[m.lnPage,2] - This.ViewPortY
+		m.lnPageWidth = This.fpdf_pages_pos[m.lnPage,3]
+		m.lnPageHeight = This.fpdf_pages_pos[m.lnPage,4]
+		
+		
 		TRY
 		    This.LoadPage(m.lnPage)
 		    
@@ -11281,7 +11561,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    LOCAL lnPageX as Double, lnPageY as Double
 		    STORE 0 TO m.lnPageX, m.lnPageY
 		
-		    IF m.loFPDF.FPDF_DeviceToPage(m.lnFPDF_Page, This.fpdf_pages_pos[m.lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[m.lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[m.lnPage,3], This.fpdf_pages_pos[m.lnPage,4], 0, m.lnMouseX, m.lnMouseY, @m.lnPageX, @m.lnPageY) <> 1
+		    IF m.loFPDF.FPDF_DeviceToPage(m.lnFPDF_Page, m.lnPagePosX, m.lnPagePosY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, m.lnMouseX, m.lnMouseY, @m.lnPageX, @m.lnPageY) <> 1
 		        EXIT
 		    ENDIF
 		
@@ -11337,6 +11617,15 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN
 		ENDIF
 		
+		LOCAL lnPageRotate
+		m.lnPageRotate = This.Rotation
+		
+		LOCAL lnPagePosX, lnPagePosY, lnPageWidth, lnPageHeight
+		m.lnPagePosX = This.fpdf_pages_pos[m.lnPage,1] - This.ViewPortX
+		m.lnPagePosY = This.fpdf_pages_pos[m.lnPage,2] - This.ViewPortY
+		m.lnPageWidth = This.fpdf_pages_pos[m.lnPage,3]
+		m.lnPageHeight = This.fpdf_pages_pos[m.lnPage,4]
+		
 		TRY
 		    This.LoadPage(m.lnPage)
 		    m.lnFPDF_Page = This.fpdf_pages[m.lnPage]
@@ -11344,7 +11633,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    LOCAL lnPageX as Double, lnPageY as Double
 		    STORE 0 TO m.lnPageX, m.lnPageY
 		
-		    IF m.loFPDF.FPDF_DeviceToPage(m.lnFPDF_Page, This.fpdf_pages_pos[m.lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[m.lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[m.lnPage,3], This.fpdf_pages_pos[m.lnPage,4], 0, m.lnMouseX, m.lnMouseY, @m.lnPageX, @m.lnPageY) <> 1
+		    IF m.loFPDF.FPDF_DeviceToPage(m.lnFPDF_Page, m.lnPagePosX, m.lnPagePosY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, m.lnMouseX, m.lnMouseY, @m.lnPageX, @m.lnPageY) <> 1
 		        EXIT
 		    ENDIF
 		
@@ -11454,7 +11743,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    DIMENSION This.fpdf_pages_pos(This.fpdf_pagecount,4)
 		    DIMENSION This.fpdf_pages_size(This.fpdf_pagecount,2)
 		    DIMENSION This.fpdf_pages_ref(This.fpdf_pagecount,2)
-		    STORE 0 TO This.fpdf_pages, This.fpdf_text_pages, This.fpdf_pages_pos, This.fpdf_pages_size, This.fpdf_pages_ref
+		    STORE 0 TO This.fpdf_pages, This.fpdf_text_pages, This.fpdf_pages_pos, This.fpdf_pages_size, This.fpdf_pages_ref, This.fpdf_pages_max_size
 		ENDIF
 		
 		This.ProgressWindowCreate()
@@ -11472,13 +11761,16 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    IF EMPTY(This.fpdf_form) = .F.
 		        m.loFPDF_FORMS.FORM_OnAfterLoadPage(This.fpdf_pages[m.lnPage], This.fpdf_form)
 		    ENDIF
-		    
+		
 		    This.fpdf_pages_selection[m.lnPage,1] = ""
 		    This.fpdf_pages_selection[m.lnPage,2] = 0
 		    This.fpdf_pages_selection[m.lnPage,3] = 0
 		    
 		    This.fpdf_pages_size[m.lnPage,1] = m.loFPDF.FPDF_GetPageWidth(This.fpdf_pages[m.lnPage])
 		    This.fpdf_pages_size[m.lnPage,2] = m.loFPDF.FPDF_GetPageHeight(This.fpdf_pages[m.lnPage])
+		    
+		    This.fpdf_pages_max_size[1] = MAX(This.fpdf_pages_max_size[1], This.fpdf_pages_size[m.lnPage,1])
+		    This.fpdf_pages_max_size[2] = MAX(This.fpdf_pages_max_size[2], This.fpdf_pages_size[m.lnPage,2])
 		    
 		    LOCAL llPageFormFields
 		    m.llPageFormFields = .F.
@@ -11602,13 +11894,23 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN 0
 		ENDIF
 		
+		LOCAL lnPageRotate
+		m.lnPageRotate = This.Rotation
+		
+		LOCAL lnPagePosX, lnPagePosY, lnPageWidth, lnPageHeight
+		
 		LOCAL lnPage, lnPageFound
 		m.lnPageFound = 0
 		FOR m.lnPage = This.fpdf_page_first_visible TO This.fpdf_page_last_visible
+		    m.lnPagePosX = This.fpdf_pages_pos[m.lnPage,1] - This.ViewPortX
+		    m.lnPagePosY = This.fpdf_pages_pos[m.lnPage,2] - This.ViewPortY
+		    m.lnPageWidth = This.fpdf_pages_pos[m.lnPage,3]
+		    m.lnPageHeight = This.fpdf_pages_pos[m.lnPage,4]
+		
 		    DO CASE
-		    CASE BETWEEN(m.lnCoordX, This.fpdf_pages_pos[m.lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[m.lnPage,1]-This.ViewPortX + This.fpdf_pages_pos[m.lnPage,3]) = .F.
+		    CASE BETWEEN(m.lnCoordX, m.lnPagePosX,  m.lnPagePosX + m.lnPageWidth) = .F.
 		         LOOP
-		    CASE BETWEEN(m.lnCoordY, This.fpdf_pages_pos[m.lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[m.lnPage,2]-This.ViewPortY + This.fpdf_pages_pos[m.lnPage,4]) = .F.
+		    CASE BETWEEN(m.lnCoordY, m.lnPagePosY, m.lnPagePosY + m.lnPageHeight) = .F.
 		         LOOP
 		    OTHERWISE
 		        m.lnPageFound = m.lnPage
@@ -11888,7 +12190,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    m.lcDocName = EVL(JUSTFNAME(This.DocumentFileName), This.Name)
 		
 		    LOCAL lhDocNameHeap, lhDocNameHeapPtr
-		    m.lhDocNameHeap = This.env.API_WIN.HeapCreate(0, LEN(m.lcDocName)+1, 0)
+		    m.lhDocNameHeap = This.env.API_WIN.GetProcessHeap()
 		    m.lhDocNameHeapPtr = 0
 		    IF EMPTY(m.lhDocNameHeap) = .F.
 		        m.lhDocNameHeapPtr = This.env.API_WIN.HeapAlloc(m.lhDocNameHeap, 0, LEN(m.lcDocName)+1)
@@ -12189,8 +12491,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		        This.env.API_WIN.DeleteDC(m.lhPrinterDC)
 		    ENDIF
 		
-		    IF EMPTY(m.lhDocNameHeap) = .F.
-		        This.env.API_WIN.HeapDestroy(m.lhDocNameHeap)
+		    IF EMPTY(m.lhDocNameHeapPtr) = .F.
+		        This.env.API_WIN.HeapFree(m.lhDocNameHeap, 0, m.lhDocNameHeapPtr)
 		    ENDIF
 		
 		    IF EMPTY(This.fpdf_form) = .F.
@@ -12315,6 +12617,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    m.lnDibDataPtr = This.env.API_FPDF.FPDFBitmap_GetBuffer(This.DrawBufBitmap)
 		ENDIF
 		
+		LOCAL lnPageRotate
+		m.lnPageRotate = This.Rotation
+		
 		LOCAL lnFPDF_Page, lnPageX, lnPageY, lnPageWidth, lnPageHeight
 		
 		LOCAL lnPage
@@ -12327,14 +12632,14 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    m.lnPageY = This.fpdf_pages_pos[m.lnPage,2] - This.ViewPortY
 		    m.lnPageWidth = This.fpdf_pages_pos[m.lnPage,3]
 		    m.lnPageHeight = This.fpdf_pages_pos[m.lnPage,4]
-		
+		    
 		    This.env.API_GDIP.GdipFillRectangleI(This.DrawBufGfx, This.PageFillBrush, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight)
 		    
 		    IF EMPTY(This.fpdf_form) = .T.
-		        m.loFPDF.FPDF_RenderPage(This.DrawBufDC, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, 0, 0)
+		        m.loFPDF.FPDF_RenderPage(This.DrawBufDC, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, 0)
 		    ELSE
-		        m.loFPDF.FPDF_RenderPageBitmap(This.DrawBufBitmap, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, 0, 0)
-		        m.loFPDF_FORMS.FPDF_FFLDraw(This.fpdf_form, This.DrawBufBitmap, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, 0, 0)
+		        m.loFPDF.FPDF_RenderPageBitmap(This.DrawBufBitmap, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, 0)
+		        m.loFPDF_FORMS.FPDF_FFLDraw(This.fpdf_form, This.DrawBufBitmap, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, 0)
 		        This.env.API_WIN.StretchDIBits(This.DrawBufDC, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageX, This.Height - m.lnPageY - m.lnPageHeight, m.lnPageWidth, m.lnPageHeight, m.lnDibDataPtr, This.DrawBufBitmapBMI, FF_DIB_RGB_COLORS, FF_SRCCOPY)
 		    ENDIF
 		    
@@ -12356,37 +12661,44 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		LOCAL loFPDF
 		m.loFPDF = This.env.API_FPDF
 		
-		
 		LOCAL lnRectCount
 		m.lnRectCount = LEN(This.SearchState_ResRect)/32
+		
+		LOCAL lnPageRotate
+		m.lnPageRotate = This.Rotation
+		
+		LOCAL lnFPDF_Page, lnPageX, lnPageY, lnPageWidth, lnPageHeight
+		m.lnFPDF_Page = This.fpdf_pages[m.lnPage]
+		m.lnPageX = This.fpdf_pages_pos[m.lnPage,1] - This.ViewPortX
+		m.lnPageY = This.fpdf_pages_pos[m.lnPage,2] - This.ViewPortY
+		m.lnPageWidth = This.fpdf_pages_pos[m.lnPage,3]
+		m.lnPageHeight = This.fpdf_pages_pos[m.lnPage,4]
 		
 		LOCAL lnRect, lcRect
 		FOR m.lnRect = 1 TO m.lnRectCount
 		    
 		    m.lcRect = SUBSTR(This.SearchState_ResRect, 32*(m.lnRect-1) + 1, 32)
 		    
-		    LOCAL lnPageLeft,lnPageTop,lnPageRight,lnPageBottom
-		    m.lnPageLeft = CTOBIN(SUBSTR(m.lcRect,1,8),"B")
-		    m.lnPageTop = CTOBIN(SUBSTR(m.lcRect,9,8),"B")
-		    m.lnPageRight = CTOBIN(SUBSTR(m.lcRect,17,8),"B")
-		    m.lnPageBottom = CTOBIN(SUBSTR(m.lcRect,25,8),"B")
-		    
-		       
+		    LOCAL lnRectLeft,lnRectTop,lnRectRight,lnRectBottom
+		    m.lnRectLeft = CTOBIN(SUBSTR(m.lcRect,1,8),"B")
+		    m.lnRectTop = CTOBIN(SUBSTR(m.lcRect,9,8),"B")
+		    m.lnRectRight = CTOBIN(SUBSTR(m.lcRect,17,8),"B")
+		    m.lnRectBottom = CTOBIN(SUBSTR(m.lcRect,25,8),"B")
+		
 		    LOCAL lnLeft, lnTop, lnRight, lnBottom
 		    STORE 0 TO m.lnLeft, m.lnTop, m.lnRight, m.lnBottom
 		    
-		    IF m.loFPDF.FPDF_PageToDevice(This.FPDF_PAGES[m.lnPage], This.fpdf_pages_pos[m.lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[m.lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[m.lnPage,3], This.fpdf_pages_pos[m.lnPage,4], 0, m.lnPageLeft, m.lnPageTop, @m.lnLeft, @m.lnTop) = 0
+		    IF m.loFPDF.FPDF_PageToDevice(m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, m.lnRectLeft, m.lnRectTop, @m.lnLeft, @m.lnTop) = 0
 		        LOOP
 		    ENDIF
 		    
-		    IF m.loFPDF.FPDF_PageToDevice(This.FPDF_PAGES[m.lnPage], This.fpdf_pages_pos[m.lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[m.lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[m.lnPage,3], This.fpdf_pages_pos[m.lnPage,4], 0, m.lnPageRight, m.lnPageBottom, @m.lnRight, @m.lnBottom) = 0
+		    IF m.loFPDF.FPDF_PageToDevice(m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, m.lnRectRight, m.lnRectBottom, @m.lnRight, @m.lnBottom) = 0
 		        LOOP
 		    ENDIF
-		    
-		    This.env.API_GDIP.GdipFillRectangleI(This.DrawBufGfx, This.SearchBrush, m.lnLeft, m.lnTop, m.lnRight - m.lnLeft, m.lnBottom - m.lnTop)
+		
+		    This.env.API_GDIP.GdipFillRectangleI(This.DrawBufGfx, This.SearchBrush, MIN(m.lnLeft, m.lnRight), MIN(m.lnTop, m.lnBottom), ABS(m.lnRight - m.lnLeft), ABS(m.lnBottom - m.lnTop))
 		    
 		ENDFOR
-		
 		
 	ENDPROC
 
@@ -12399,36 +12711,57 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		LOCAL lnRectCount
 		m.lnRectCount = LEN(This.fpdf_pages_selection[m.lnPage,1])/32
 		
+		LOCAL lnPageRotate
+		m.lnPageRotate = This.Rotation
+		
+		LOCAL lnFPDF_Page, lnPageX, lnPageY, lnPageWidth, lnPageHeight
+		m.lnFPDF_Page = This.fpdf_pages[m.lnPage]
+		m.lnPageX = This.fpdf_pages_pos[m.lnPage,1] - This.ViewPortX
+		m.lnPageY = This.fpdf_pages_pos[m.lnPage,2] - This.ViewPortY
+		m.lnPageWidth = This.fpdf_pages_pos[m.lnPage,3]
+		m.lnPageHeight = This.fpdf_pages_pos[m.lnPage,4]
+		
 		LOCAL lnRect, lcRect
 		FOR m.lnRect = 1 TO m.lnRectCount
 		    
 		    m.lcRect = SUBSTR(This.fpdf_pages_selection[m.lnPage,1], 32*(m.lnRect-1) + 1, 32)
 		    
-		    LOCAL lnPageLeft,lnPageTop,lnPageRight,lnPageBottom
-		    m.lnPageLeft = CTOBIN(SUBSTR(m.lcRect,1,8),"B")
-		    m.lnPageTop = CTOBIN(SUBSTR(m.lcRect,9,8),"B")
-		    m.lnPageRight = CTOBIN(SUBSTR(m.lcRect,17,8),"B")
-		    m.lnPageBottom = CTOBIN(SUBSTR(m.lcRect,25,8),"B")
-		    
-		    
+		    LOCAL lnRectLeft,lnRectTop,lnRectRight,lnRectBottom
+		    m.lnRectLeft = CTOBIN(SUBSTR(m.lcRect,1,8),"B")
+		    m.lnRectTop = CTOBIN(SUBSTR(m.lcRect,9,8),"B")
+		    m.lnRectRight = CTOBIN(SUBSTR(m.lcRect,17,8),"B")
+		    m.lnRectBottom = CTOBIN(SUBSTR(m.lcRect,25,8),"B")
+		
 		    LOCAL lnLeft, lnTop, lnRight, lnBottom
 		    STORE 0 TO m.lnLeft, m.lnTop, m.lnRight, m.lnBottom
 		    
-		    IF m.loFPDF.FPDF_PageToDevice(This.FPDF_PAGES[m.lnPage], This.fpdf_pages_pos[m.lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[m.lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[m.lnPage,3], This.fpdf_pages_pos[m.lnPage,4], 0, m.lnPageLeft, m.lnPageTop, @m.lnLeft, @m.lnTop) = 0
+		    IF m.loFPDF.FPDF_PageToDevice(m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, m.lnRectLeft, m.lnRectTop, @m.lnLeft, @m.lnTop) = 0
 		        LOOP
 		    ENDIF
 		    
-		    IF m.loFPDF.FPDF_PageToDevice(This.FPDF_PAGES[m.lnPage], This.fpdf_pages_pos[m.lnPage,1]-This.ViewPortX, This.fpdf_pages_pos[m.lnPage,2]-This.ViewPortY, This.fpdf_pages_pos[m.lnPage,3], This.fpdf_pages_pos[m.lnPage,4], 0, m.lnPageRight, m.lnPageBottom, @m.lnRight, @m.lnBottom) = 0
+		    IF m.loFPDF.FPDF_PageToDevice(m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, m.lnRectRight, m.lnRectBottom, @m.lnRight, @m.lnBottom) = 0
 		        LOOP
 		    ENDIF
 		
-		    This.env.API_GDIP.GdipFillRectangleI(This.DrawBufGfx, This.SelectionBrush, m.lnLeft, m.lnTop, m.lnRight - m.lnLeft, m.lnBottom - m.lnTop)
+		    This.env.API_GDIP.GdipFillRectangleI(This.DrawBufGfx, This.SelectionBrush, MIN(m.lnLeft, m.lnRight), MIN(m.lnTop, m.lnBottom), ABS(m.lnRight - m.lnLeft), ABS(m.lnBottom - m.lnTop))
+		    
 		ENDFOR
 		
 	ENDPROC
 
+	HIDDEN PROCEDURE rotation_assign
+		LPARAMETERS vNewVal
+		This.Rotation = m.vNewVal
+		IF NOT INLIST(This.Rotation, 0,1,2,3)
+		    ERROR 1469
+		ENDIF
+		This.ViewPortUpdate()
+		This.WndRedraw()
+		
+	ENDPROC
+
 	PROCEDURE savedocument		&& Save document to file
-		LPARAMETERS tcFileName
+		LPARAMETERS tcFileName, toPDFMeta as pdfium_pdfmeta of pdfium-vfp.vcx
 		
 		IF EMPTY(This.fpdf_doc)
 		    RETURN .F.
@@ -12438,7 +12771,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN .F.
 		ENDIF
 		
-		
 		LOCAL lcFileName
 		m.lcFileName = ALLTRIM(EVL(NVL(m.tcFileName,""), ""))
 		
@@ -12446,15 +12778,393 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN .F.
 		ENDIF
 		
-		LOCAL lcErrMsg
-		m.lcErrMsg = SPACE(500)
-		This.env.API_FPDF.VFPDF_SaveDocument(This.fpdf_doc, m.lcFilename, @m.lcErrMsg, LEN(m.lcErrMsg))
+		LOCAL loPDFMeta
+		m.loPDFMeta = m.toPDFMeta
 		
-		IF EMPTY(m.lcErrMsg)=.F.
-		    This.ErrMsg(ALLTRIM(m.lcErrMsg))
+		IF VARTYPE(m.loPDFMeta) != "O"
+		    LOCAL lcErrMsg
+		    m.lcErrMsg = SPACE(500)
+		    This.env.API_FPDF.VFPDF_SaveDocument(This.fpdf_doc, m.lcFilename, @m.lcErrMsg, LEN(m.lcErrMsg))
+		
+		    IF EMPTY(m.lcErrMsg)=.F.
+		        This.ErrMsg(ALLTRIM(m.lcErrMsg))
+		        RETURN .F.
+		    ENDIF
+		    RETURN .T.
+		ENDIF
+		
+		
+		*****************************************************
+		* Save pdf with new meta-data and password
+		*****************************************************
+		IF EMPTY(This.fpdf_form) = .F.
+		    ERROR "Due to current pdfium-vfp limitations PDF containing forms cannot be saved with custom PDF meta-data, even if only user password has been set to encrypt the PDF file"
 		    RETURN .F.
 		ENDIF
 		
+		
+		LOCAL loFPDF, loFPDFC
+		m.loFPDF = This.env.API_FPDF
+		m.loFPDFC = m.loFPDF.CONST
+		
+		#define PWD_PAD 0h28BF4E5E4E758A4164004E56FFFA01082E2E00B6D0683E802F0CA9FE6453697A
+		#define PWD_LEN 32
+		
+		LOCAL lSaveTextmerge
+		m.lSaveTextmerge = SET("Textmerge")
+		
+		LOCAL llRes
+		m.llRes = .F.
+		
+		LOCAL lnFPDF_Doc, lnPDFTemplateHeap, lnPDFTemplatePtr
+		STORE 0 TO m.lnFPDF_Doc, m.lnPDFTemplateHeap, m.lnPDFTemplatePtr
+		
+		TRY
+		    SET TEXTMERGE OFF
+		
+		    m.lnFPDF_Doc = m.loFPDF.FPDF_CreateNewDocument()
+		
+		    IF EMPTY(m.lnFPDF_Doc)
+		        ERROR "FPDF_CreateNewDocument returned empty value"
+		    ENDIF
+		
+		    *******************************************************
+		    LOCAL lcFileID
+		    m.lcFileID = ""
+		    This.Hash_MD5(;
+		        BINTOC(DATETIME() - DATETIME(1970,1,1,0,0,0), "4RS") + ;
+		        TRANSFORM(NVL(m.loPDFMeta.Author, "")) + ;
+		        TRANSFORM(NVL(m.loPDFMeta.Creator,"")) + ;
+		        TRANSFORM(NVL(m.loPDFMeta.Producer,"")) + ;
+		        TRANSFORM(NVL(m.loPDFMeta.Title, "")) + ;
+		        TRANSFORM(NVL(m.loPDFMeta.Subject,"")) + ;
+		        TRANSFORM(NVL(m.loPDFMeta.Keywords,"")) ;
+		        , @m.lcFileID)
+		        
+		
+		    *******************************************************    
+		    LOCAL lcOwnerPassword, lcUserPassword
+		    m.lcUserPassword = STRCONV(EVL(NVL(m.loPDFMeta.UserPassword,""), ""), 9)
+		    m.lcOwnerPassword = EVL(STRCONV(EVL(NVL(m.loPDFMeta.OwnerPassword,""), ""), 9), m.lcUserPassword)
+		
+		    IF LEN(m.lcUserPassword) > PWD_LEN
+		        ERROR TEXTMERGE("User password cannot be more than <<PWD_LEN>> characters")
+		    ENDIF
+		
+		    IF LEN(m.lcOwnerPassword) > PWD_LEN
+		        ERROR TEXTMERGE("Owner password cannot be more than <<PWD_LEN>> characters")
+		    ENDIF
+		
+		    LOCAL llEncrypt
+		    m.llEncrypt = (LEN(m.lcOwnerPassword) = 0 AND LEN(m.lcUserPassword) = 0) = .F.
+		
+		    IF m.llEncrypt
+		        LOCAL lnPermit as Integer
+		        m.lnPermit = EVL(m.loFPDF.FPDF_GetDocPermissions(This.fpdf_doc), 0xFFFFFFFF)
+		        m.lnPermit = BITCLEAR(BITCLEAR(m.lnPermit, 0), 1)
+		        m.lnPermit = ICASE(ISNULL(m.loPDFMeta.Permit_Print), m.lnPermit, m.loPDFMeta.Permit_Print, BITSET(m.lnPermit,2), BITCLEAR(m.lnPermit,2))
+		        m.lnPermit = ICASE(ISNULL(m.loPDFMeta.Permit_Edit_All), m.lnPermit, m.loPDFMeta.Permit_Edit_All, BITSET(m.lnPermit,3), BITCLEAR(m.lnPermit,3))
+		        m.lnPermit = ICASE(ISNULL(m.loPDFMeta.Permit_Copy), m.lnPermit, m.loPDFMeta.Permit_Copy, BITSET(m.lnPermit,4), BITCLEAR(m.lnPermit,4))
+		        m.lnPermit = ICASE(ISNULL(m.loPDFMeta.Permit_Edit), m.lnPermit, m.loPDFMeta.Permit_Edit, BITSET(m.lnPermit,5), BITCLEAR(m.lnPermit,5)) 
+		
+		        m.lcUserPassword = LEFT(m.lcUserPassword + PWD_PAD, PWD_LEN)
+		        m.lcOwnerPassword = LEFT(m.lcOwnerPassword + PWD_PAD, PWD_LEN)
+		
+		
+		        LOCAL lcOwnerPasswordHash, lcOwnerKey
+		        STORE "" TO m.lcOwnerPasswordHash, m.lcOwnerKey
+		        This.Hash_MD5(m.lcOwnerPassword, @m.lcOwnerPasswordHash)
+		        
+		        LOCAL liRepeat
+		        FOR m.liRepeat = 1 TO 50
+		            This.Hash_MD5(m.lcOwnerPasswordHash, @m.lcOwnerPasswordHash)
+		        ENDFOR
+		        
+		        
+		        m.lcOwnerKey = LEFT(m.lcOwnerPasswordHash, PWD_LEN)
+		        This.Encrypt("RC4", m.lcUserPassword, m.lcOwnerKey,  @m.lcOwnerKey)
+		        
+		        LOCAL i
+		        FOR m.i = 1 TO 19
+		            LOCAL j, lcTempKey
+		            m.lcTempKey = ""
+		            FOR m.j = 1 TO LEN(m.lcOwnerPasswordHash)
+		                m.lcTempKey = m.lcTempKey + BINTOC(BITXOR(CTOBIN(SUBSTR(m.lcOwnerPasswordHash, m.j, 1), "1"), m.i), "1")
+		            ENDFOR
+		            
+		            This.Encrypt("RC4", m.lcOwnerKey, m.lcTempKey,  @m.lcOwnerKey)
+		        ENDFOR
+		        
+		
+		        LOCAL lcEncryptionKey
+		        STORE "" TO m.lcEncryptionKey
+		        This.Hash_MD5(;
+		            m.lcUserPassword +;
+		            m.lcOwnerKey + ;
+		            BINTOC(m.lnPermit,"4RS") +;
+		            m.lcFileID, ;
+		            @m.lcEncryptionKey)
+		            
+		        LOCAL liRepeat
+		        FOR m.liRepeat = 1 TO 50
+		            This.Hash_MD5(LEFT(m.lcEncryptionKey, 16), @m.lcEncryptionKey)
+		        ENDFOR
+		        
+		        
+		        LOCAL lcUserHash, lcUserKey
+		        STORE "" TO m.lcUserHash, m.lcUserKey
+		        This.Hash_MD5(;
+		            PWD_PAD + ;
+		            m.lcFileID, ;
+		            @m.lcUserHash)
+		
+		        This.Encrypt("RC4", m.lcUserHash, m.lcEncryptionKey,  @m.lcUserKey)
+		        
+		        LOCAL i
+		        FOR m.i = 1 TO 19
+		            LOCAL j, lcTempKey
+		            m.lcTempKey = ""
+		            FOR m.j = 1 TO LEN(m.lcEncryptionKey)
+		                m.lcTempKey = m.lcTempKey + BINTOC(BITXOR(CTOBIN(SUBSTR(m.lcEncryptionKey, m.j, 1), "1"), m.i), "1")
+		            ENDFOR
+		            
+		            This.Encrypt("RC4", m.lcUserKey, m.lcTempKey,  @m.lcUserKey)
+		        ENDFOR
+		        
+		        m.lcUserKey = PADR(m.lcUserKey, PWD_LEN, CHR(0))
+		
+		        LOCAL lnInfoObjId, lnInfoObjGen, lcInfoObjEncryptionKey
+		        m.lnInfoObjId = 4
+		        m.lnInfoObjGen = 0
+		        m.lcInfoObjEncryptionKey = m.lcEncryptionKey
+		        m.lcInfoObjEncryptionKey = m.lcInfoObjEncryptionKey + CHR(BITAND(m.lnInfoObjId, 0xFF))
+		        m.lcInfoObjEncryptionKey = m.lcInfoObjEncryptionKey + CHR(BITAND(BITRSHIFT(m.lnInfoObjId, 8), 0xFF))
+		        m.lcInfoObjEncryptionKey = m.lcInfoObjEncryptionKey + CHR(BITAND(BITRSHIFT(m.lnInfoObjId, 16), 0xFF))
+		        m.lcInfoObjEncryptionKey = m.lcInfoObjEncryptionKey + CHR(BITAND(m.lnInfoObjGen, 0xFF))
+		        m.lcInfoObjEncryptionKey = m.lcInfoObjEncryptionKey + CHR(BITAND(BITRSHIFT(m.lnInfoObjGen, 8), 0xFF))
+		        
+		        This.Hash_MD5(m.lcInfoObjEncryptionKey, @m.lcInfoObjEncryptionKey)
+		    ENDIF
+		
+		    LOCAL lcPDFInfo, laPDFInfoTags(6), lcPDFInfoTag, liPDFInfoTag, lcPDFInfoTagValue, lcPDFInfoTagValueUTF16
+		    m.lcPDFInfo = ""
+		    m.laPDFInfoTags[1] = "Title"
+		    m.laPDFInfoTags[2] = "Author"
+		    m.laPDFInfoTags[3] = "Subject"
+		    m.laPDFInfoTags[4] = "Keywords"
+		    m.laPDFInfoTags[5] = "Creator"
+		    m.laPDFInfoTags[6] = "Producer"
+		
+		    m.liPDFInfoTag = 1
+		    FOR m.liPDFInfoTag = 1 TO ALEN(m.laPDFInfoTags,1)
+		        m.lcPDFInfoTag = m.laPDFInfoTags[m.liPDFInfoTag]
+		
+		
+		        m.lcPDFInfoTagValue = NULL
+		        m.lcPDFInfoTagValueUTF16 = ""
+		
+		        IF PEMSTATUS(m.loPDFMeta, m.lcPDFInfoTag, 5) = .T.
+		            m.lcPDFInfoTagValue = m.loPDFMeta.&lcPDFInfoTag
+		        ENDIF
+		        
+		        IF VARTYPE(m.lcPDFInfoTagValue) = "C" 
+		            LOCAL i
+		            FOR m.i = 1 TO LEN(m.lcPDFInfoTagValue)
+		                m.lcPDFInfoTagValueUTF16 = m.lcPDFInfoTagValueUTF16 + BINTOC(CTOBIN(STRCONV(SUBSTR(m.lcPDFInfoTagValue,m.i,1),5), "2RS"), "2S")
+		            ENDFOR
+		        ELSE
+		            m.lcPDFInfoTagValue = ""
+		            LOCAL lnPDFInfoTagBufLen
+		            m.lnPDFInfoTagBufLen = m.loFPDF.FPDF_GetMetaText(This.fpdf_doc, m.lcPDFInfoTag, NULL, 0)
+		            IF m.lnPDFInfoTagBufLen > 2
+		                m.lcPDFInfoTagValue = REPLICATE(CHR(0), m.lnPDFInfoTagBufLen)
+		                m.loFPDF.FPDF_GetMetaText(This.fpdf_doc, m.lcPDFInfoTag, @m.lcPDFInfoTagValue, m.lnPDFInfoTagBufLen)
+		                m.lcPDFInfoTagValue = LEFT(m.lcPDFInfoTagValue, MAX(LEN(m.lcPDFInfoTagValue) - 2, 0))
+		            ENDIF
+		            LOCAL i
+		            m.i = 1
+		            DO WHILE m.i <= LEN(m.lcPDFInfoTagValue) 
+		                m.lcPDFInfoTagValueUTF16 = m.lcPDFInfoTagValueUTF16 + BINTOC(CTOBIN(SUBSTR(m.lcPDFInfoTagValue,m.i,2), "2RS"), "2S")
+		                m.i = m.i + 2
+		            ENDDO
+		        ENDIF
+		        
+		        IF EMPTY(m.lcPDFInfoTagValueUTF16)
+		            LOOP
+		        ENDIF
+		        
+		        m.lcPDFInfoTagValueUTF16 = 0hFEFF + m.lcPDFInfoTagValueUTF16
+		        
+		        IF m.llEncrypt
+		            This.Encrypt("RC4", m.lcPDFInfoTagValueUTF16, m.lcInfoObjEncryptionKey,  @m.lcPDFInfoTagValueUTF16)
+		        ENDIF
+		        
+		        m.lcPDFInfo = m.lcPDFInfo + TEXTMERGE("/{m.lcPDFInfoTag} <{STRCONV(m.lcPDFInfoTagValueUTF16, 15)}>", .F., "{", "}")
+		    ENDFOR
+		
+		    LOCAL ldtNow, lcCreationDate, lcModDate
+		    m.ldtNow = DATETIME()
+		    m.lcCreationDate = ""
+		    m.lcModDate = ""
+		
+		    LOCAL lnPDFInfoTagBufLen
+		    m.lnPDFInfoTagBufLen = m.loFPDF.FPDF_GetMetaText(This.fpdf_doc, "CreationDate", NULL, 0)
+		    IF m.lnPDFInfoTagBufLen > 2
+		        m.lcCreationDate = REPLICATE(CHR(0), m.lnPDFInfoTagBufLen)
+		        m.loFPDF.FPDF_GetMetaText(This.fpdf_doc, "CreationDate", @m.lcCreationDate, m.lnPDFInfoTagBufLen)
+		        m.lcCreationDate = LEFT(m.lcCreationDate, MAX(LEN(m.lcCreationDate) - 2, 0))
+		        TRY
+		            m.lcCreationDate = STRCONV(m.lcCreationDate, 6)
+		        CATCH
+		            m.lcCreationDate = ""
+		        ENDTRY
+		    ENDIF
+		    
+		    LOCAL lnPDFInfoTagBufLen
+		    m.lnPDFInfoTagBufLen = m.loFPDF.FPDF_GetMetaText(This.fpdf_doc, "ModDate", NULL, 0)
+		    IF m.lnPDFInfoTagBufLen > 2
+		        m.lcModDate = REPLICATE(CHR(0), m.lnPDFInfoTagBufLen)
+		        m.loFPDF.FPDF_GetMetaText(This.fpdf_doc, "ModDate", @m.lcModDate, m.lnPDFInfoTagBufLen)
+		        m.lcModDate = LEFT(m.lcModDate, MAX(LEN(m.lcModDate) - 2, 0))
+		        TRY
+		            m.lcModDate = STRCONV(m.lcModDate, 6)
+		        CATCH
+		            m.lcModDate = ""
+		        ENDTRY
+		    ENDIF
+		    m.lcCreationDate = EVL(m.lcCreationDate, TEXTMERGE("D:<<TTOC(m.ldtNow,1)>>"))
+		    m.lcModDate = EVL(m.lcModDate, TEXTMERGE("D:<<TTOC(m.ldtNow,1)>>"))
+		
+		    IF m.llEncrypt
+		        This.Encrypt("RC4", m.lcCreationDate, m.lcInfoObjEncryptionKey,  @m.lcCreationDate)
+		        This.Encrypt("RC4", m.lcModDate, m.lcInfoObjEncryptionKey,  @m.lcModDate)
+		    ENDIF
+		    m.lcCreationDate = "<" + STRCONV(m.lcCreationDate,15) + ">"
+		    m.lcModDate = "<" + STRCONV(m.lcModDate,15) + ">"
+		
+		    *******************************************************    
+		    LOCAL loPDFTemplate
+		    m.loPDFTemplate = NEWOBJECT("Collection")
+		    m.loPDFTemplate.Add("%PDF-1.7")
+		    m.loPDFTemplate.Add("1 0 obj<</Pages 2 0 R>>endobj")
+		    m.loPDFTemplate.Add("2 0 obj<</Kids[3 0 R]/Count 1>>endobj")
+		    m.loPDFTemplate.Add("3 0 obj<</Parent 2 0 R>>endobj")
+		    m.loPDFTemplate.Add(TEXTMERGE("4 0 obj<<{ m.lcPDFInfo }/CreationDate { m.lcCreationDate }/ModDate { m.lcModDate }>>endobj", .F., "{", "}"))
+		
+		    IF m.llEncrypt
+		        LOCAL lcPDFEncrypt
+		        m.lcPDFEncrypt = ""
+		        TEXT TO m.lcPDFEncrypt ADDITIVE NOSHOW FLAGS 1 PRETEXT 3
+		        5 0 obj
+		        <<
+		        /Filter /Standard
+		        /V 2
+		        /Length 128
+		        /R 3
+		        /O { "<" + STRCONV(m.lcOwnerKey,15) + ">" }
+		        /U { "<" + STRCONV(m.lcUserKey,15) + ">" }
+		        /P {m.lnPermit}
+		        >> endobj
+		        ENDTEXT
+		        
+		        m.loPDFTemplate.Add(TEXTMERGE(m.lcPDFEncrypt, .F., "{", "}"))
+		    ENDIF
+		
+		    LOCAL lcPDFTemplate
+		    m.lcPDFTemplate = ""
+		
+		    LOCAL lcXRef, m.lnXRefCount
+		    m.lcXRef = "0000000000 65535 f"
+		    m.lnXRefCount = 1
+		
+		    LOCAL lcPDFLine
+		    FOR EACH m.lcPDFLine IN m.loPDFTemplate FOXOBJECT
+		        IF LEFT(m.lcPDFLine,1) != '%'
+		            m.lnXRefCount = m.lnXRefCount + 1
+		            m.lcXRef = m.lcXRef + CHR(13)+CHR(10) + PADL(TRANSFORM(LEN(m.lcPDFTemplate)), 10, '0') + " 00000 n"
+		        ENDIF
+		        m.lcPDFTemplate = m.lcPDFTemplate + m.lcPDFLine + CHR(13)+CHR(10)
+		    ENDFOR
+		
+		    LOCAL lnStartXRef
+		    m.lnStartXRef = LEN(m.lcPDFTemplate)
+		
+		    TEXT TO m.lcPDFTemplate ADDITIVE NOSHOW FLAGS 1 PRETEXT 3
+		    xref
+		    0 { m.lnXRefCount }
+		    { m.lcXREF }
+		    trailer
+		    <<
+		    /Root 1 0 R
+		    /Info 4 0 R
+		    { IIF(m.llEncrypt, "/Encrypt 5 0 R", "") }
+		    /Size { m.lnXRefCount }
+		    /ID { "[<" + STRCONV(m.lcFileID, 15) + "> <" + STRCONV(m.lcFileID, 15) + ">]" }
+		    >>
+		    startxref
+		    { m.lnStartXRef }
+		    %%EOF
+		    ENDTEXT
+		     
+		    m.lcPDFTemplate = TEXTMERGE(m.lcPDFTemplate, .F., "{", "}")
+		
+		    LOCAL lnPDFTemplateSize
+		    m.lnPDFTemplateSize = LEN(m.lcPDFTemplate)
+		    
+		    m.lnPDFTemplateHeap = This.env.API_WIN.GetProcessHeap()
+		    IF EMPTY(m.lnPDFTemplateHeap)
+		        EXIT
+		    ENDIF
+		
+		    m.lnPDFTemplatePtr = This.env.API_WIN.HeapAlloc(m.lnPDFTemplateHeap, 0, m.lnPDFTemplateSize)
+		    IF EMPTY(m.lnPDFTemplatePtr)
+		        EXIT
+		    ENDIF
+		
+		    SYS(2600, m.lnPDFTemplatePtr, m.lnPDFTemplateSize, m.lcPDFTemplate)
+		
+		    m.lnFPDF_Doc = m.loFPDF.FPDF_LoadMemDocument(m.lnPDFTemplatePtr, m.lnPDFTemplateSize, STRCONV(EVL(NVL(m.loPDFMeta.UserPassword,""), ""), 9))
+		
+		    IF EMPTY(m.lnFPDF_Doc)
+		        ERROR "FPDF_LoadMemDocument returned empty value"
+		    ENDIF
+		
+		    m.loFPDF.FPDFPage_Delete(m.lnFPDF_Doc,0)
+		    
+		    IF m.loFPDF.FPDF_ImportPages(m.lnFPDF_Doc, This.fpdf_doc, NULL, 0) = 0
+		        ERROR "FPDF_ImportPages returned FALSE"
+		    ENDIF
+		    
+		    m.loFPDF.FPDF_CopyViewerPreferences(m.lnFPDF_Doc, This.fpdf_doc)
+		    
+		    LOCAL lcErrMsg
+		    m.lcErrMsg = SPACE(500)
+		    This.env.API_FPDF.VFPDF_SaveDocument(m.lnFPDF_Doc, m.lcFilename, @m.lcErrMsg, LEN(m.lcErrMsg))
+		
+		    IF EMPTY(m.lcErrMsg)=.F.
+		        This.ErrMsg(ALLTRIM(m.lcErrMsg))
+		        EXIT
+		    ENDIF
+		
+		    m.llRes = .T.
+		
+		FINALLY
+		    SET TEXTMERGE &lSaveTextmerge
+		
+		    IF EMPTY(m.lnFPDF_Doc) = .F.
+		        m.loFPDF.FPDF_CloseDocument(m.lnFPDF_Doc)
+		        m.lnFPDF_Doc = 0
+		    ENDIF
+		
+		    IF EMPTY(m.lnPDFTemplatePtr)=.F.
+		        This.env.API_WIN.HeapFree(m.lnPDFTemplateHeap, 0, m.lnPDFTemplatePtr)
+		        m.lnPDFTemplatePtr = 0
+		        m.lnPDFTemplateHeap = 0
+		    ENDIF
+		    
+		ENDTRY
+		
+		RETURN m.llRes
 		
 	ENDPROC
 
@@ -12584,6 +13294,13 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		#define SCH_WHITESPACE CHR(0x00)+CHR(0x09) + CHR(0x00)+CHR(0x0A) + CHR(0x00)+CHR(0x0B) + CHR(0x00)+CHR(0x0C) + CHR(0x00)+CHR(0x0D) + CHR(0x00)+CHR(0x20) + CHR(0x00)+CHR(0x85) + CHR(0x00)+CHR(0xA0) + CHR(0x16)+CHR(0x80) + CHR(0x20)+CHR(0x00) + CHR(0x20)+CHR(0x01) + CHR(0x20)+CHR(0x02) + CHR(0x20)+CHR(0x03) + CHR(0x20)+CHR(0x04) + CHR(0x20)+CHR(0x05) + CHR(0x20)+CHR(0x06) + CHR(0x20)+CHR(0x07) + CHR(0x20)+CHR(0x08) + CHR(0x20)+CHR(0x09) + CHR(0x20)+CHR(0x0A) + CHR(0x20)+CHR(0x28) + CHR(0x20)+CHR(0x29) + CHR(0x20)+CHR(0x2F) + CHR(0x20)+CHR(0x5F) + CHR(0x30)+CHR(0x00)
 		#define SCH_PUNCTUATION CHR(0x00)+CHR(0x21) + CHR(0x00)+CHR(0x22) + CHR(0x00)+CHR(0x23) + CHR(0x00)+CHR(0x25) + CHR(0x00)+CHR(0x26) + CHR(0x00)+CHR(0x27) + CHR(0x00)+CHR(0x2A) + CHR(0x00)+CHR(0x2C) + CHR(0x00)+CHR(0x2D) + CHR(0x00)+CHR(0x2E) + CHR(0x00)+CHR(0x2F) + CHR(0x00)+CHR(0x3A) + CHR(0x00)+CHR(0x3B) + CHR(0x00)+CHR(0x3D) + CHR(0x00)+CHR(0x3F) + CHR(0x20)+CHR(0x10) + CHR(0x20)+CHR(0x11) + CHR(0x20)+CHR(0x12) + CHR(0x20)+CHR(0x13) + CHR(0x20)+CHR(0x14) + CHR(0x20)+CHR(0x15) + CHR(0x00)+CHR(0xAB) + CHR(0x00)+CHR(0xBB) + CHR(0x20)+CHR(0x18) + CHR(0x20)+CHR(0x19) + CHR(0x20)+CHR(0x1B) + CHR(0x20)+CHR(0x1C) + CHR(0x20)+CHR(0x1D) + CHR(0x00)+CHR(0x28) + CHR(0x00)+CHR(0x29) + CHR(0x00)+CHR(0x5B) + CHR(0x00)+CHR(0x5C) + CHR(0x00)+CHR(0x5D) + CHR(0x00)+CHR(0x7B) + CHR(0x00)+CHR(0x7D) + CHR(0x20)+CHR(0x1A) + CHR(0x20)+CHR(0x1E)
 		
+		#define LOCALE_USER_DEFAULT       0x0400
+		#define FIND_FROMSTART            0x00400000  && look for value in source, starting at the beginning
+		#define FIND_FROMEND              0x00800000  && look for value in source, starting at the end
+		#define NORM_IGNORECASE           0x00000001  && ignore case
+		#define NORM_IGNORENONSPACE       0x00000002  && ignore nonspacing chars
+		#define NORM_IGNORESYMBOLS        0x00000004  && ignore symbols
+		
 		IF This.fpdf_opened = .F.
 		    RETURN SCH_ERROR
 		ENDIF
@@ -12591,22 +13308,18 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		LOCAL loFPDF
 		m.loFPDF = This.env.API_FPDF
 		
-		LOCAL lcFindWhat, lnDirection, llMatchCase, llMatchWholeWord
+		LOCAL lnPageRotate
+		m.lnPageRotate = This.Rotation
 		
+		LOCAL lcFindWhat, lnDirection, llMatchCase, llMatchWholeWord
 		m.lcFindWhat = CHRTRAN(ALLTRIM(EVL(NVL(m.tcFindWhat,""),"")), CHR(10)+CHR(13)+CHR(9),"")
 		m.lnDirection = EVL(NVL(m.tnDirection,0), SCH_FWD)
 		m.llMatchCase = EMPTY(NVL(m.tlMatchCase,.F.))=.F.
 		m.llMatchWholeWord = EMPTY(NVL(m.tlMatchWholeWord,.F.))=.F.
 		
-		#define LOCALE_USER_DEFAULT       0x0400
-		
-		#define FIND_FROMSTART            0x00400000  && look for value in source, starting at the beginning
-		#define FIND_FROMEND              0x00800000  && look for value in source, starting at the end
-		
-		#define NORM_IGNORECASE           0x00000001  && ignore case
-		#define NORM_IGNORENONSPACE       0x00000002  && ignore nonspacing chars
-		#define NORM_IGNORESYMBOLS        0x00000004  && ignore symbols
-		
+		IF m.lnPageRotate = 2
+		    m.lnDirection = IIF(m.lnDirection = SCH_FWD, SCH_BCK, SCH_FWD)
+		ENDIF
 		
 		LOCAL lnSearchFlags
 		m.lnSearchFlags = 0
@@ -12643,8 +13356,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		IF EMPTY(m.lcFindWhat)
 		    RETURN SCH_NOT_FOUND
 		ENDIF
-		
-		
 		
 		LOCAL lnLocaleId
 		m.lnLocaleId = This.i18n.GetLocaleID()
@@ -12701,7 +13412,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    
 		    DO CASE
 		    CASE EMPTY(m.lnPageTextLen)
-		    
+		
 		    CASE m.lnDirection = SCH_FWD
 		        m.lnPageTextLen = MAX(m.lnPageTextLen - m.lnSearchStartIndex, 0)
 		        m.lcPageText = REPLICATE(CHR(0), m.lnPageTextLen * 2)
@@ -12765,7 +13476,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		                    LOCAL lnLeft, lnTop
 		                    STORE 0 TO m.lnLeft, m.lnTop
 		                    
-		                    IF m.loFPDF.FPDF_PageToDevice(This.FPDF_PAGES[m.lnPageIndex], 0, 0, This.fpdf_pages_pos[m.lnPageIndex,3], This.fpdf_pages_pos[m.lnPageIndex,4], 0, m.lnPageLeft, m.lnPageTop, @m.lnLeft, @m.lnTop) > 0
+		                    IF m.loFPDF.FPDF_PageToDevice(This.FPDF_PAGES[m.lnPageIndex], 0, 0, This.fpdf_pages_pos[m.lnPageIndex,3], This.fpdf_pages_pos[m.lnPageIndex,4], m.lnPageRotate, m.lnPageLeft, m.lnPageTop, @m.lnLeft, @m.lnTop) > 0
 		                        LOCAL lnScrollVert
 		                        m.lnScrollVert = This.fpdf_pages_pos[m.lnPageIndex,2] + m.lnTop
 		                        m.lnScrollVert = m.lnScrollVert - This.ViewPortSizeY * 0.5
@@ -12788,12 +13499,12 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    This.ClosePage(m.lnPageIndex)
 		
 		    IF m.lnDirection = SCH_BCK
-		        m.lnPageIndex = m.lnPageIndex - 1
+		        m.lnPageIndex = m.lnPageIndex + IIF(m.lnPageRotate = 2, 1, -1)
 		        m.lnSearchStartIndex = -1
 		    ELSE
-		        m.lnPageIndex = m.lnPageIndex + 1
+		        m.lnPageIndex = m.lnPageIndex + IIF(m.lnPageRotate = 2, -1, 1)
 		        m.lnSearchStartIndex = 0
-		    ENDIF    
+		    ENDIF
 		ENDDO
 		
 		This.ProgressWindow = .F.
@@ -13251,9 +13962,21 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 	ENDPROC
 
 	HIDDEN PROCEDURE viewportupdate
+		LOCAL lnPageRotate
+		m.lnPageRotate = This.Rotation
+		
 		LOCAL lnPageFirstPrev, lnPageLastPrev
 		m.lnPageFirstPrev = MAX(This.fpdf_page_first_visible, 1)
 		m.lnPageLastPrev = MIN(This.fpdf_page_last_visible, This.fpdf_pagecount)
+		
+		LOCAL lnPageWidthMax, lnPageHeightMax
+		IF INLIST(m.lnPageRotate, 1, 3)
+		    m.lnPageWidthMax = INT(EVL(This.fpdf_pages_max_size[2], 0) * This.env.GetScreenDPIX() / This.env.GetPDFDPI())
+		    m.lnPageHeightMax = INT(EVL(This.fpdf_pages_max_size[1], 0) * This.env.GetScreenDPIY() / This.env.GetPDFDPI())
+		ELSE
+		    m.lnPageWidthMax = INT(EVL(This.fpdf_pages_max_size[1], 0) * This.env.GetScreenDPIX() / This.env.GetPDFDPI())
+		    m.lnPageHeightMax = INT(EVL(This.fpdf_pages_max_size[2], 0) * This.env.GetScreenDPIY() / This.env.GetPDFDPI())
+		ENDIF
 		
 		LOCAL lnVewPortUpdateStep
 		m.lnVewPortUpdateStep = 1
@@ -13290,7 +14013,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    STORE 0 TO m.lnPageX, m.lnPageY
 		
 		    LOCAL lnPageWidthUnscaled, lnPageHeightUnscaled
-		    LOCAL lnPageWidthUnscaledFirst
 		    LOCAL lnPageWidth, lnPageHeight
 		
 		
@@ -13301,18 +14023,34 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		        
 		        m.lnPageWidthUnscaled = This.GetPageSize(m.lnPage,3)
 		        m.lnPageHeightUnscaled = This.GetPageSize(m.lnPage,4)
-		        
-		        IF m.lnPage = 1
-		            m.lnPageWidthUnscaledFirst = m.lnPageWidthUnscaled
+		        IF INLIST(m.lnPageRotate, 1, 3)
+		            m.lnPageWidthUnscaled = This.GetPageSize(m.lnPage,4)
+		            m.lnPageHeightUnscaled =  This.GetPageSize(m.lnPage,3)
+		        ELSE
+		            m.lnPageWidthUnscaled = This.GetPageSize(m.lnPage,3)
+		            m.lnPageHeightUnscaled = This.GetPageSize(m.lnPage,4)
 		        ENDIF
-		
+		        
 		        m.lnPageWidth = m.lnPageWidthUnscaled
 		        m.lnPageHeight = m.lnPageHeightUnscaled
 		
-		        IF This.FitWidth
-		            m.lnPageWidth = This.ViewPortSizeX * m.lnPageWidthUnscaled / EVL(m.lnPageWidthUnscaledFirst, EVL(m.lnPageWidthUnscaled, 1))
-		            m.lnPageHeight = INT(m.lnPageHeight * m.lnPageWidth / EVL(m.lnPageWidthUnscaled, EVL(m.lnPageWidth, 1)))
-		        ENDIF
+		        DO CASE
+		        CASE This.FitWidth AND This.FitHeight
+		            IF m.lnPageWidthUnscaled > m.lnPageHeightUnscaled
+		                m.lnPageWidth = This.ViewPortSizeX * m.lnPageWidthUnscaled / EVL(m.lnPageWidthMax, EVL(m.lnPageWidthUnscaled, 1))
+		                m.lnPageHeight = INT(m.lnPageHeight * m.lnPageWidth / EVL(m.lnPageWidthUnscaled, 1))
+		            ELSE
+		                m.lnPageHeight = This.ViewPortSizeY * m.lnPageHeightUnscaled / EVL(m.lnPageHeightMax, EVL(m.lnPageHeightUnscaled, 1))
+		                m.lnPageWidth = INT(m.lnPageWidth * m.lnPageHeight / EVL(m.lnPageHeightUnscaled, 1))
+		            ENDIF
+		        CASE This.FitWidth
+		            m.lnPageWidth = This.ViewPortSizeX * m.lnPageWidthUnscaled / EVL(m.lnPageWidthMax, EVL(m.lnPageWidthUnscaled, 1))
+		            m.lnPageHeight = INT(m.lnPageHeight * m.lnPageWidth / EVL(m.lnPageWidthUnscaled, 1))
+		        CASE This.FitHeight
+		            m.lnPageHeight = This.ViewPortSizeY * m.lnPageHeightUnscaled / EVL(m.lnPageHeightMax, EVL(m.lnPageHeightUnscaled, 1))
+		            m.lnPageWidth = INT(m.lnPageWidth * m.lnPageHeight / EVL(m.lnPageHeightUnscaled, 1))
+		        ENDCASE
+		        
 		        
 		        m.lnPageWidth = m.lnPageWidth * This.scale
 		        m.lnPageHeight = m.lnPageHeight * This.scale    
@@ -13325,7 +14063,6 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		        
 		        This.fpdf_pages_pos[m.lnPage,1] = m.lnPageX
 		        This.fpdf_pages_pos[m.lnPage,2] = m.lnPageY
-		
 		        This.fpdf_pages_pos[m.lnPage,3] = m.lnPageWidth
 		        This.fpdf_pages_pos[m.lnPage,4] = m.lnPageHeight
 		       

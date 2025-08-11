@@ -44,11 +44,15 @@ DEFINE CLASS sample AS form
 	*< OBJECTDATA: ObjPath="Pageframe1.Page1.Pageframe2.Page1.Container1.Pdfiumviewer" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="Pageframe1.Page1.Pageframe2.Page2.Pdfiumviewer" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="Pageframe1.Page2.Pdfiumviewer" UniqueID="" Timestamp="" />
-	*< OBJECTDATA: ObjPath="cmdFit" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdFitWidth" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdPrint" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdSaveAs" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdOpenPdf" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdOpenPdfSample_forms" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdRotateCCW" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="Command3" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdFitHeight" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdSaveAsEncrypt" UniqueID="" Timestamp="" />
 
 	*<DefinedPropArrayMethod>
 		*m: closepdf
@@ -63,15 +67,15 @@ DEFINE CLASS sample AS form
 		Caption = "Sample Pdfium Viewer"
 		Desktop = .F.
 		DoCreate = .T.
-		Height = 741
+		Height = 789
 		Left = 0
 		MinWidth = 1235
-		Name = "SAMPLE"
+		Name = "sample"
 		ScrollBars = 2
 		ShowWindow = 0
 		Top = 0
 		Visible = .T.
-		Width = 1280
+		Width = 1295
 		WindowType = 0
 	*</PropValue>
 
@@ -116,12 +120,12 @@ DEFINE CLASS sample AS form
 		BoundTo = .F., ;
 		DisplayCount = 30, ;
 		Height = 24, ;
-		Left = 726, ;
+		Left = 736, ;
 		Name = "cmbControls", ;
 		RowSource = "", ;
 		RowSourceType = 0, ;
 		Style = 2, ;
-		TabIndex = 15, ;
+		TabIndex = 19, ;
 		Top = 12, ;
 		Value = , ;
 		Width = 420
@@ -158,22 +162,34 @@ DEFINE CLASS sample AS form
 		Anchor = 32, ;
 		Caption = "Enable/Disable", ;
 		Height = 29, ;
-		Left = 726, ;
+		Left = 736, ;
 		Name = "cmdEnable", ;
-		TabIndex = 17, ;
+		TabIndex = 21, ;
 		Top = 65, ;
 		Width = 420, ;
 		WordWrap = .F.
 		*< END OBJECT: BaseClass="commandbutton" />
 
-	ADD OBJECT 'cmdFit' AS commandbutton WITH ;
+	ADD OBJECT 'cmdFitHeight' AS commandbutton WITH ;
+		Anchor = 0, ;
+		Caption = "Fit height / not fit height", ;
+		Height = 27, ;
+		Left = 144, ;
+		Name = "cmdFitHeight", ;
+		TabIndex = 16, ;
+		Top = 108, ;
+		Width = 115, ;
+		WordWrap = .F.
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'cmdFitWidth' AS commandbutton WITH ;
 		Anchor = 0, ;
 		Caption = "Fit width / not fit width", ;
 		Height = 27, ;
-		Left = 592, ;
-		Name = "cmdFit", ;
-		TabIndex = 14, ;
-		Top = 76, ;
+		Left = 12, ;
+		Name = "cmdFitWidth", ;
+		TabIndex = 15, ;
+		Top = 108, ;
 		Width = 115, ;
 		WordWrap = .F.
 		*< END OBJECT: BaseClass="commandbutton" />
@@ -242,13 +258,27 @@ DEFINE CLASS sample AS form
 		Anchor = 9, ;
 		Caption = "Report Sample", ;
 		Height = 85, ;
-		Left = 1200, ;
+		Left = 1210, ;
 		Name = "cmdReport", ;
 		Picture = images\wwrite.ico, ;
-		TabIndex = 19, ;
+		TabIndex = 23, ;
 		Top = 12, ;
 		Width = 73, ;
 		WordWrap = .T.
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'cmdRotateCCW' AS commandbutton WITH ;
+		Anchor = 0, ;
+		Caption = "", ;
+		Height = 28, ;
+		Left = 276, ;
+		Name = "cmdRotateCCW", ;
+		Picture = images\rotate_left.png, ;
+		PicturePosition = 2, ;
+		TabIndex = 17, ;
+		Top = 108, ;
+		Width = 37, ;
+		WordWrap = .F.
 		*< END OBJECT: BaseClass="commandbutton" />
 
 	ADD OBJECT 'cmdSaveAs' AS commandbutton WITH ;
@@ -260,6 +290,18 @@ DEFINE CLASS sample AS form
 		TabIndex = 13, ;
 		Top = 76, ;
 		Width = 60, ;
+		WordWrap = .F.
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'cmdSaveAsEncrypt' AS commandbutton WITH ;
+		Anchor = 0, ;
+		Caption = "Save as and Encrypt", ;
+		Height = 27, ;
+		Left = 593, ;
+		Name = "cmdSaveAsEncrypt", ;
+		TabIndex = 14, ;
+		Top = 76, ;
+		Width = 122, ;
 		WordWrap = .F.
 		*< END OBJECT: BaseClass="commandbutton" />
 
@@ -279,22 +321,36 @@ DEFINE CLASS sample AS form
 		Anchor = 32, ;
 		Caption = "Show/Hide", ;
 		Height = 27, ;
-		Left = 726, ;
+		Left = 736, ;
 		Name = "cmdShow", ;
-		TabIndex = 16, ;
+		TabIndex = 20, ;
 		Top = 38, ;
 		Width = 420, ;
+		WordWrap = .F.
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'Command3' AS commandbutton WITH ;
+		Anchor = 0, ;
+		Caption = "", ;
+		Height = 28, ;
+		Left = 317, ;
+		Name = "Command3", ;
+		Picture = images\rotate_right.png, ;
+		PicturePosition = 2, ;
+		TabIndex = 18, ;
+		Top = 108, ;
+		Width = 37, ;
 		WordWrap = .F.
 		*< END OBJECT: BaseClass="commandbutton" />
 
 	ADD OBJECT 'Pageframe1' AS pageframe WITH ;
 		Anchor = 225, ;
 		ErasePage = .T., ;
-		Height = 624, ;
-		Left = 723, ;
+		Height = 672, ;
+		Left = 733, ;
 		Name = "Pageframe1", ;
 		PageCount = 2, ;
-		TabIndex = 20, ;
+		TabIndex = 24, ;
 		Top = 108, ;
 		Width = 550, ;
 		Page1.Caption = "Page1", ;
@@ -435,15 +491,15 @@ DEFINE CLASS sample AS form
 		Anchor = 195, ;
 		Enabled = .T., ;
 		fitwidth = .T., ;
-		Height = 624, ;
+		Height = 636, ;
 		Left = 12, ;
 		Name = "PdfiumViewer", ;
 		scrollbars = 3, ;
-		TabIndex = 18, ;
+		TabIndex = 22, ;
 		TabStop = .T., ;
-		Top = 108, ;
+		Top = 144, ;
 		Visible = .T., ;
-		Width = 696, ;
+		Width = 708, ;
 		cmdFocus.Name = "cmdFocus", ;
 		env.API_FPDF.CONST.Name = "CONST", ;
 		env.API_FPDF.Name = "API_FPDF", ;
@@ -467,7 +523,7 @@ DEFINE CLASS sample AS form
 		Name = "shpSearch", ;
 		SpecialEffect = 0, ;
 		Top = 69, ;
-		Width = 695
+		Width = 708
 		*< END OBJECT: BaseClass="shape" />
 
 	ADD OBJECT 'txtSearch' AS textbox WITH ;
@@ -767,13 +823,28 @@ DEFINE CLASS sample AS form
 		
 	ENDPROC
 
-	PROCEDURE cmdFit.Click
+	PROCEDURE cmdFitHeight.Click
+		Thisform.pdfiumviewer.FitHeight = NOT Thisform.pdfiumviewer.FitHeight
+		This.Refresh()
+		
+	ENDPROC
+
+	PROCEDURE cmdFitHeight.Refresh
+		IF Thisform.pdfiumviewer.FitHeight = .T.
+		    This.Caption = "Disable Fit Height"
+		ELSE
+		    This.Caption = "Fit Height"
+		ENDIF
+		
+	ENDPROC
+
+	PROCEDURE cmdFitWidth.Click
 		Thisform.pdfiumviewer.FitWidth = NOT Thisform.pdfiumviewer.FitWidth
 		This.Refresh()
 		
 	ENDPROC
 
-	PROCEDURE cmdFit.Refresh
+	PROCEDURE cmdFitWidth.Refresh
 		IF Thisform.pdfiumviewer.FitWidth = .T.
 		    This.Caption = "Disable Fit Width"
 		ELSE
@@ -826,6 +897,8 @@ DEFINE CLASS sample AS form
 		
 		Thisform.Pdfium_env.PrivateFonts.Remove(-1) 
 		Thisform.Pdfium_env.PrivateFonts.Add(FULLPATH("Fonts\KurintoSansSC-Rg.ttf"), "Kurinto Sans SC") && Adding private (non system) font 
+		Thisform.Pdfium_env.PrivateFonts.Add(FULLPATH("Fonts\LibreBarcode39-Regular.ttf"), "Libre Barcode 39") && Adding private (non system) font 
+		
 		
 		
 		SELECT curReport1
@@ -920,6 +993,11 @@ DEFINE CLASS sample AS form
 		
 	ENDPROC
 
+	PROCEDURE cmdRotateCCW.Click
+		Thisform.pdfiumviewer.Rotation = MOD(Thisform.pdfiumviewer.Rotation - 1, 4)
+		
+	ENDPROC
+
 	PROCEDURE cmdSaveAs.Click
 		LOCAL lcFilename
 		lcFilename = PUTFILE("", "", "pdf")
@@ -930,6 +1008,39 @@ DEFINE CLASS sample AS form
 		
 		Thisform.pdfiumviewer.SaveDocument(lcFileName)
 		
+		
+	ENDPROC
+
+	PROCEDURE cmdSaveAsEncrypt.Click
+		LOCAL lcFilename
+		lcFilename = PUTFILE("", "", "pdf")
+		
+		IF EMPTY(lcFilename)
+		    RETURN
+		ENDIF
+		
+		LOCAL loPDFMeta
+		m.loPDFMeta = NEWOBJECT("pdfium_pdfmeta", "..\Release\pdfium-vfp.vcx")
+		* PDF metadata setup sample, setting up metadata is not mandatory 
+		* If properties value is NULL then the meta-data tag of the original document will not be changed
+		* m.loPDFMeta.Author = "Me"
+		* m.loPDFMeta.Creator = "Pdfium-vfp sample app"
+		m.loPDFMeta.Keywords = "My custom keywords for PDF"
+		* m.loPDFMeta.Subject = "sample"
+		* m.loPDFMeta.Title = "Sample"
+		
+		* PDF password protection, input any owner password and user password for testing
+		* m.loPDFMeta.OwnerPassword = "" && Owner Password protects permissions of the doc. 
+		m.loPDFMeta.UserPassword = EVL(NVL(INPUTBOX("Enter password", "PDF Encryption", ""), ""), "") && This password user inputs when open pdf file
+		
+		* PDF reader permissions 
+		* If properties value is NULL then the permission flag of the original document will not be changed
+		* m.loPDFMeta.Permit_Print = .T. && Allow to print document
+		* m.loPDFMeta.Permit_Edit_All = .T. && Allow to edit contents other than annotations and forms
+		* m.loPDFMeta.Permit_Copy = .T. && Allow copy contents of the document
+		* m.loPDFMeta.Permit_Edit = .T. && Allow to make annotations and fill forms
+		
+		Thisform.pdfiumviewer.SaveDocument(lcFileName, m.loPDFMeta)
 		
 	ENDPROC
 
@@ -951,6 +1062,11 @@ DEFINE CLASS sample AS form
 
 	PROCEDURE cmdShow.Refresh
 		Thisform.RefreshVisible(This)
+	ENDPROC
+
+	PROCEDURE Command3.Click
+		Thisform.pdfiumviewer.Rotation = MOD(Thisform.pdfiumviewer.Rotation + 1, 4)
+		
 	ENDPROC
 
 	PROCEDURE Pageframe1.Page1.Pageframe2.Page1.Container1.Pdfiumviewer.Init

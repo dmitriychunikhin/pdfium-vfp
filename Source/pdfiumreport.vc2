@@ -2070,7 +2070,7 @@ DEFINE CLASS pdfiumreport_renderer_docx AS pdfiumreport_renderer_base OF "pdfium
 		*!*            EXIT
 		*!*        ENDIF
 		
-		*!*        m.lhHeap = This.env.API_WIN.HeapCreate(0, m.lnFontDataSize, 0)
+		*!*        m.lhHeap = This.env.API_WIN.GetProcessHeap()
 		*!*        IF EMPTY(m.lhHeap)
 		*!*            EXIT
 		*!*        ENDIF
@@ -2098,11 +2098,6 @@ DEFINE CLASS pdfiumreport_renderer_docx AS pdfiumreport_renderer_base OF "pdfium
 		*!*        IF EMPTY(m.lnFontDataPtr)=.F.
 		*!*            This.env.API_WIN.HeapFree(m.lhHeap, 0, m.lnFontDataPtr)
 		*!*            m.lnFontDataPtr = 0 
-		*!*        ENDIF
-		
-		*!*        IF EMPTY(m.lhHeap)=.F.
-		*!*            This.env.API_WIN.HeapDestroy(m.lhHeap)
-		*!*            m.lhHeap = 0 
 		*!*        ENDIF
 		
 		*!*    ENDTRY
@@ -3485,11 +3480,7 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfiumr
 		    This.env.API_WIN.HeapFree(This.PDFTemplateHeap, 0, This.PDFTemplatePtr)
 		    This.PDFTemplatePtr = 0 
 		ENDIF
-		
-		IF EMPTY(This.PDFTemplateHeap)=.F.
-		    This.env.API_WIN.HeapDestroy(This.PDFTemplateHeap)
-		    This.PDFTemplateHeap = 0 
-		ENDIF
+		This.PDFTemplateHeap = 0 
 		
 	ENDPROC
 
@@ -3539,10 +3530,9 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfiumr
 		
 		
 		    *******************************************************    
-		
 		    LOCAL lcOwnerPassword, lcUserPassword
-		    m.lcUserPassword = NVL(m.loPDFMeta.UserPassword,"")
-		    m.lcOwnerPassword = EVL(NVL(m.loPDFMeta.OwnerPassword,""), m.lcUserPassword)
+		    m.lcUserPassword = STRCONV(EVL(NVL(m.loPDFMeta.UserPassword,""), ""), 9)
+		    m.lcOwnerPassword = EVL(STRCONV(EVL(NVL(m.loPDFMeta.OwnerPassword,""), ""), 9), m.lcUserPassword)
 		
 		    IF LEN(m.lcUserPassword) > PWD_LEN
 		        ERROR TEXTMERGE("User password cannot be more than <<PWD_LEN>> characters")
@@ -3558,10 +3548,10 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfiumr
 		    IF m.llEncrypt
 		        LOCAL lnPermit as Integer
 		        m.lnPermit = BITCLEAR(BITCLEAR(0xFFFFFFFF,0),1)
-		        m.lnPermit = IIF(m.loPDFMeta.Permit_Print, m.lnPermit, BITCLEAR(m.lnPermit,2))
-		        m.lnPermit = IIF(m.loPDFMeta.Permit_Edit_All, m.lnPermit, BITCLEAR(m.lnPermit,3))
-		        m.lnPermit = IIF(m.loPDFMeta.Permit_Copy, m.lnPermit, BITCLEAR(m.lnPermit,4))
-		        m.lnPermit = IIF(m.loPDFMeta.Permit_Edit, m.lnPermit, BITCLEAR(m.lnPermit,5)) 
+		        m.lnPermit = IIF(NVL(m.loPDFMeta.Permit_Print, .T.), m.lnPermit, BITCLEAR(m.lnPermit,2))
+		        m.lnPermit = IIF(NVL(m.loPDFMeta.Permit_Edit_All, .T.), m.lnPermit, BITCLEAR(m.lnPermit,3))
+		        m.lnPermit = IIF(NVL(m.loPDFMeta.Permit_Copy, .T.), m.lnPermit, BITCLEAR(m.lnPermit,4))
+		        m.lnPermit = IIF(NVL(m.loPDFMeta.Permit_Edit, .T.), m.lnPermit, BITCLEAR(m.lnPermit,5)) 
 		
 		        m.lcUserPassword = LEFT(m.lcUserPassword + PWD_PAD, PWD_LEN)
 		        m.lcOwnerPassword = LEFT(m.lcOwnerPassword + PWD_PAD, PWD_LEN)
@@ -3660,7 +3650,7 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfiumr
 		            LOOP
 		        ENDIF
 		        
-		        m.lcPDFInfoTagValue = m.loPDFMeta.&lcPDFInfoTag
+		        m.lcPDFInfoTagValue = NVL(m.loPDFMeta.&lcPDFInfoTag, "")
 		        
 		        IF EMPTY(m.lcPDFInfoTagValue) = .T.
 		            LOOP
@@ -3763,7 +3753,7 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfiumr
 		    m.lnPDFTemplateSize = LEN(m.lcPDFTemplate)
 		    
 		
-		    This.PDFTemplateHeap = This.env.API_WIN.HeapCreate(0, m.lnPDFTemplateSize, 0)
+		    This.PDFTemplateHeap = This.env.API_WIN.GetProcessHeap()
 		    IF EMPTY(This.PDFTemplateHeap)
 		        EXIT
 		    ENDIF
@@ -3776,7 +3766,7 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfiumr
 		    SYS(2600, This.PDFTemplatePtr, m.lnPDFTemplateSize, m.lcPDFTemplate)
 		
 		
-		    This.fpdf_doc = m.loFPDF.FPDF_LoadMemDocument(This.PDFTemplatePtr, m.lnPDFTemplateSize, NVL(m.loPDFMeta.UserPassword,"")) 
+		    This.fpdf_doc = m.loFPDF.FPDF_LoadMemDocument(This.PDFTemplatePtr, m.lnPDFTemplateSize, STRCONV(EVL(NVL(m.loPDFMeta.UserPassword,""), ""), 9))
 		
 		    IF EMPTY(This.fpdf_doc)
 		        ERROR "FPDF_LoadMemDocument returned empty value"
@@ -3790,16 +3780,10 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfiumr
 		
 		    IF EMPTY(This.PDFTemplatePtr)=.F. AND EMPTY(This.fpdf_doc)
 		        This.env.API_WIN.HeapFree(This.PDFTemplateHeap, 0, This.PDFTemplatePtr)
-		        This.PDFTemplatePtr = 0 
+		        This.PDFTemplatePtr = 0
+		        This.PDFTemplateHeap = 0
 		    ENDIF
-		
-		    IF EMPTY(This.PDFTemplateHeap)=.F. AND EMPTY(This.fpdf_doc)
-		        This.env.API_WIN.HeapDestroy(This.PDFTemplateHeap)
-		        This.PDFTemplateHeap = 0 
-		    ENDIF
-		
 		ENDTRY
-		
 		
 	ENDPROC
 
@@ -3976,7 +3960,7 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfiumr
 		    m.lcFontData = FILETOSTR(m.loRepObj.Font.FontFileName)
 		    m.lnFontDataSize = LEN(m.lcFontData)
 		
-		    m.lhHeap = This.env.API_WIN.HeapCreate(0, m.lnFontDataSize, 0)
+		    m.lhHeap = This.env.API_WIN.GetProcessHeap()
 		    IF EMPTY(m.lhHeap)
 		        EXIT
 		    ENDIF
@@ -4007,12 +3991,9 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfiumr
 		        This.env.API_WIN.HeapFree(m.lhHeap, 0, m.lnFontDataPtr)
 		        m.lnFontDataPtr = 0 
 		    ENDIF
-		    
-		    IF EMPTY(m.lhHeap)=.F.
-		        This.env.API_WIN.HeapDestroy(m.lhHeap)
-		        m.lhHeap = 0 
-		    ENDIF
-		    
+		
+		    m.lhHeap = 0 
+		   
 		ENDTRY
 		
 		
@@ -4071,7 +4052,7 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfiumr
 		    ENDIF
 		
 		
-		    m.lhHashHeap = m.loWin.HeapCreate(0, m.lnSizeObj, 0)
+		    m.lhHashHeap = m.loWin.GetProcessHeap()
 		    IF EMPTY(m.lhHashHeap)
 		        EXIT
 		    ENDIF
@@ -4108,17 +4089,10 @@ DEFINE CLASS pdfiumreport_renderer_pdf AS pdfiumreport_renderer_base OF "pdfiumr
 		        m.lnAlg = 0
 		    ENDIF
 		
-		
 		    IF EMPTY(m.lnHashObjPtr)=.F.
 		        m.loWin.HeapFree(m.lhHashHeap, 0, m.lnHashObjPtr)
 		        m.lnHashObjPtr = 0 
 		    ENDIF
-		    
-		    IF EMPTY(m.lhHashHeap)=.F.
-		        This.env.API_WIN.HeapDestroy(m.lhHashHeap)
-		        m.lhHashHeap = 0 
-		    ENDIF
-		
 		ENDTRY
 		
 		IF m.llRes = .F.

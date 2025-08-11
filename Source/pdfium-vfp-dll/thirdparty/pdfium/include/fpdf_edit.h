@@ -187,6 +187,24 @@ FPDF_EXPORT void FPDF_CALLCONV FPDFPage_SetRotation(FPDF_PAGE page, int rotate);
 FPDF_EXPORT void FPDF_CALLCONV
 FPDFPage_InsertObject(FPDF_PAGE page, FPDF_PAGEOBJECT page_object);
 
+// Insert |page_object| into |page| at the specified |index|.
+//
+//   page        - handle to a page
+//   page_object - handle to a page object as previously obtained by
+//                 FPDFPageObj_CreateNew{Path|Rect}() or
+//                 FPDFPageObj_New{Text|Image}Obj(). Ownership of the object
+//                 is transferred back to PDFium.
+//   index       - the index position to insert the object at. If index equals
+//                 the current object count, the object will be appended to the
+//                 end. If index is greater than the object count, the function
+//                 will fail and return false.
+//
+// Returns true if successful.
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
+FPDFPage_InsertObjectAtIndex(FPDF_PAGE page,
+                             FPDF_PAGEOBJECT page_object,
+                             size_t index);
+
 // Experimental API.
 // Remove |page_object| from |page|.
 //
@@ -259,6 +277,22 @@ FPDFPageObj_HasTransparency(FPDF_PAGEOBJECT page_object);
 // Returns one of the FPDF_PAGEOBJ_* values on success, FPDF_PAGEOBJ_UNKNOWN on
 // error.
 FPDF_EXPORT int FPDF_CALLCONV FPDFPageObj_GetType(FPDF_PAGEOBJECT page_object);
+
+// Experimental API.
+// Gets active state for |page_object| within page.
+//
+//   page_object - handle to a page object.
+//   active      - pointer to variable that will receive if the page object is
+//                 active. This is a required parameter. Not filled if FALSE
+//                 is returned.
+//
+// For page objects where |active| is filled with FALSE, the |page_object| is
+// treated as if it wasn't in the document even though it is still held
+// internally.
+//
+// Returns TRUE if the operation succeeded, FALSE if it failed.
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
+FPDFPageObj_GetIsActive(FPDF_PAGEOBJECT page_object, FPDF_BOOL* active);
 
 // Experimental API.
 // Sets if |page_object| is active within page.
@@ -825,6 +859,31 @@ FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
 FPDFImageObj_GetImagePixelSize(FPDF_PAGEOBJECT image_object,
                                unsigned int* width,
                                unsigned int* height);
+
+// Experimental API.
+// Get ICC profile decoded data of |image_object|. If the |image_object| is not
+// an image object or if it does not have an image, then the return value will
+// be false. It also returns false if the |image_object| has no ICC profile.
+// |buffer| is only modified if ICC profile exists and |buflen| is longer than
+// the length of the ICC profile decoded data.
+//
+//   image_object - handle to an image object; must not be NULL.
+//   page         - handle to the page containing |image_object|; must not be
+//                  NULL. Required for retrieving the image's colorspace.
+//   buffer       - Buffer to receive ICC profile data; may be NULL if querying
+//                  required size via |out_buflen|.
+//   buflen       - Length of the buffer in bytes. Ignored if |buffer| is NULL.
+//   out_buflen   - Pointer to receive the ICC profile data size in bytes; must
+//                  not be NULL. Will be set if this API returns true.
+//
+// Returns true if |out_buflen| is not null and an ICC profile exists for the
+// given |image_object|.
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
+FPDFImageObj_GetIccProfileDataDecoded(FPDF_PAGEOBJECT image_object,
+                                      FPDF_PAGE page,
+                                      uint8_t* buffer,
+                                      size_t buflen,
+                                      size_t* out_buflen);
 
 // Create a new path object at an initial position.
 //
@@ -1575,6 +1634,21 @@ FPDFFormObj_CountObjects(FPDF_PAGEOBJECT form_object);
 // Returns the handle to the page object, or NULL on error.
 FPDF_EXPORT FPDF_PAGEOBJECT FPDF_CALLCONV
 FPDFFormObj_GetObject(FPDF_PAGEOBJECT form_object, unsigned long index);
+
+// Experimental API.
+//
+// Remove |page_object| from |form_object|.
+//
+//   form_object - handle to a form object.
+//   page_object - handle to a page object to be removed from the form.
+//
+// Returns TRUE on success.
+//
+// Ownership of the removed |page_object| is transferred to the caller.
+// Call FPDFPageObj_Destroy() on the removed page_object to free it.
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
+FPDFFormObj_RemoveObject(FPDF_PAGEOBJECT form_object,
+                         FPDF_PAGEOBJECT page_object);
 
 #ifdef __cplusplus
 }  // extern "C"

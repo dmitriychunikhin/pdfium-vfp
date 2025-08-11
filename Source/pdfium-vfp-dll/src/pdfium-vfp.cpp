@@ -57,6 +57,8 @@ BOOL PDFIUM_VFP_CALL VFPDF_SaveDocument(FPDF_DOCUMENT document, LPCSTR filepath,
         return FALSE;
     }
 
+    SetEndOfFile(hFile);
+
     FPDF_FILEWRITE_EXT fileWriter;
     fileWriter.version = 1;
     fileWriter.WriteBlock = WriteBlockCallback;

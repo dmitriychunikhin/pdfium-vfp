@@ -1,3 +1,10 @@
+1.37
+  - Issue #37 "password protect a existing pdf file".
+  - Added FitHeight property to PdfiumViewer 
+  - Added Rotation property to PdfiumViewer 
+
+    **Usage samples of this new features can be found in "Basic usage of PdfiumViewer" section of README.md or in sample project**
+
 1.36
   - Reduced size of the print spool file when printing PDFs with form fields
   - Added Print Area selection to the Print Setup dialog with options: Whole Page and Printable Area
