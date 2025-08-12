@@ -1,3 +1,26 @@
+1.37
+  - 修复了 Issue #37 “为现有 PDF 文件添加密码保护”。
+  - PdfiumViewer 新增 FitHeight 属性。
+  - PdfiumViewer 新增 Rotation 属性。
+
+    **这些新功能的使用示例可在 README.md 的“PdfiumViewer 基本用法”章节或示例项目中找到。**
+
+1.36
+  - 优化打印带表单域的 PDF 时生成的打印假脱机文件大小。
+  - 在打印设置对话框中新增打印区域选择，可选“整页”和“可打印区域”。
+
+1.35
+  - 修复了 Issue #35：打印时未包含 PDF 表单域。
+
+1.34
+  - 修复了 1.33 版引入的 bug：PdfiumViewer::SearchText 在首次匹配后错误地返回搜索结束状态。
+
+1.33
+  - 在 PdfiumViewer 的 OpenPDF、PrintDocument、SearchText 方法中实现了带取消支持的进度指示器。
+
+1.32
+  - 内存消耗优化：当 PDF 页面不再用于视口渲染、搜索、文本选择等时自动释放页面内存。
+
 1.31
   - PdfiumReport 渲染性能提升高达 30%。
   - 在 PdfiumReport 中实现了带取消支持的进度指示器。
