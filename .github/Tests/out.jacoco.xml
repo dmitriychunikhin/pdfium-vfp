@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.0//EN" "report.dtd">
     <report name="report">
-        <sessioninfo id="_7920EDTOA" start="1754894525219" dump="1754894546000"/>         
+        <sessioninfo id="_7DO19L0XV" start="1769116508137" dump="1769116545000"/>         
         <package name="PDFIUM-VFP/SOURCE/PDFIUM-VFP.VCX">             
             <class name="pdfium_password_input">                     
                 <counter type="METHOD" missed="0" covered="0"/>
@@ -678,7 +678,7 @@
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
                 <method name="BEGINPAINT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
+                    <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
                 <method name="BITBLT" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
@@ -729,7 +729,7 @@
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
                 <method name="ENDPAINT" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
+                    <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
                 <method name="ENUMFORMS" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
@@ -875,7 +875,7 @@
                 <method name="UUIDCREATE" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <counter type="METHOD" missed="27" covered="50"/>
+                <counter type="METHOD" missed="29" covered="48"/>
                 </class>
                              
             <class name="pdfium_env">                     
@@ -1439,7 +1439,7 @@
                 <counter type="METHOD" missed="7" covered="2"/>
                 </class>
                              
-            <counter type="METHOD" missed="199" covered="253"/>
+            <counter type="METHOD" missed="201" covered="251"/>
         </package>         
-        <counter type="METHOD" missed="199" covered="253"/>
+        <counter type="METHOD" missed="201" covered="251"/>
     </report>

@@ -12608,14 +12608,15 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		#define FF_DIB_RGB_COLORS   0
 		#define FF_SRCCOPY 0x00CC0020
 		
-		IF EMPTY(This.fpdf_form) = .F.
+		* bugfix: Graphical PDF loading renders incorrectly if zoom is less than 100% #50
+		*IF EMPTY(This.fpdf_form) = .F.
 		    IF EMPTY(This.DrawBufBitmap)
 		        RETURN
 		    ENDIF
 		    m.loFPDF.FPDFBitmap_FillRect(This.DrawBufBitmap, 0, 0, This.Width, This.Height, 0xFFFFFFFF)
 		    LOCAL lnDibDataPtr
 		    m.lnDibDataPtr = This.env.API_FPDF.FPDFBitmap_GetBuffer(This.DrawBufBitmap)
-		ENDIF
+		*ENDIF
 		
 		LOCAL lnPageRotate
 		m.lnPageRotate = This.Rotation
@@ -12635,13 +12636,14 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    
 		    This.env.API_GDIP.GdipFillRectangleI(This.DrawBufGfx, This.PageFillBrush, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight)
 		    
-		    IF EMPTY(This.fpdf_form) = .T.
-		        m.loFPDF.FPDF_RenderPage(This.DrawBufDC, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, 0)
-		    ELSE
+		    * bugfix: Graphical PDF loading renders incorrectly if zoom is less than 100% #50
+		    *IF EMPTY(This.fpdf_form) = .T.
+		    *    m.loFPDF.FPDF_RenderPage(This.DrawBufDC, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, 0)
+		    *ELSE
 		        m.loFPDF.FPDF_RenderPageBitmap(This.DrawBufBitmap, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, 0)
 		        m.loFPDF_FORMS.FPDF_FFLDraw(This.fpdf_form, This.DrawBufBitmap, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, 0)
 		        This.env.API_WIN.StretchDIBits(This.DrawBufDC, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageX, This.Height - m.lnPageY - m.lnPageHeight, m.lnPageWidth, m.lnPageHeight, m.lnDibDataPtr, This.DrawBufBitmapBMI, FF_DIB_RGB_COLORS, FF_SRCCOPY)
-		    ENDIF
+		    *ENDIF
 		    
 		    This.RenderSearch(m.lnPage)
 		    This.RenderSelection(m.lnPage)

@@ -1,3 +1,6 @@
+1.38
+  - Fixed Issue #50 "Graphical PDF loading renders incorrectly if zoom is less than 100%".
+
 1.37
   - Issue #37 "password protect a existing pdf file".
   - Added FitHeight property to PdfiumViewer 
