@@ -9949,9 +9949,11 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*m: fitheight_assign
 		*m: fitwidth_assign
 		*m: getcurrentpage		&& Current page number. First page has number = 1
+		*m: getdocumentfilename
 		*m: getformfield		&& Accepts PDF form field name in UTF-16LE or 1-based field index,  returns object or .F. if field doesn't exist
 		*m: getformfieldscount		&& Returns number of fields in PDF form
 		*m: getpagecount		&& Returns page count
+		*m: getpagemaxsize
 		*m: getpagesize		&& Returns page dimensions (see comment in source code)
 		*m: getpagetext		&& Accepts page 1-based index. Returns text data of the page in UTF-16LE encoding
 		*m: hash_md5
@@ -10213,6 +10215,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 			<memberdata name="fpdf_pages_max_size" type="property" display="fpdf_pages_max_size"/>
 			<memberdata name="encrypt" type="method" display="Encrypt"/>
 			<memberdata name="hash_md5" type="method" display="Hash_MD5"/>
+			<memberdata name="getdocumentfilename" type="method" display="GetDocumentFileName"/>
+			<memberdata name="getpagemaxsize" type="method" display="GetPageMaxSize"/>
 		</VFPData>
 		_printenv = .F.
 	*</PropValue>
@@ -10669,6 +10673,10 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		RETURN This.fpdf_page_first_visible
 	ENDPROC
 
+	PROCEDURE getdocumentfilename
+		RETURN EVL(NVL(This.DocumentFileName, ""), "")
+	ENDPROC
+
 	PROCEDURE getformfield		&& Accepts PDF form field name in UTF-16LE or 1-based field index,  returns object or .F. if field doesn't exist
 		LPARAMETERS tcFieldNameOrIndex as String
 		
@@ -10839,6 +10847,50 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 
 	PROCEDURE getpagecount		&& Returns page count
 		RETURN This.fpdf_pagecount
+		
+	ENDPROC
+
+	PROCEDURE getpagemaxsize
+		LPARAMETERS tnPosition
+		
+		*tnPosition: 1 - width in pdf units  (1/72 on inch)
+		*tnPosition: 2 - height in pdf units  (1/72 on inch)
+		*tnPosition: 3 - width in pixels
+		*tnPosition: 4 - height in pixels
+		*tnPosition: 5 - width / height relation
+		
+		IF This.fpdf_opened = .F.
+		    RETURN 0
+		ENDIF
+		
+		LOCAL lnPdfPageWidth, lnPdfPageHeight
+		m.lnPdfPageWidth = This.fpdf_pages_max_size[1]
+		m.lnPdfPageHeight = This.fpdf_pages_max_size[2]
+		
+		LOCAL lnPageWidth, lnPageHeight
+		m.lnPageWidth = INT(m.lnPdfPageWidth * This.env.GetScreenDPIX() / This.env.GetPDFDPI())
+		m.lnPageHeight = INT(m.lnPdfPageHeight * This.env.GetScreenDPIY() / This.env.GetPDFDPI())
+		
+		DO CASE
+		
+		CASE m.tnPosition = 1
+		    RETURN m.lnPdfPageWidth
+		
+		CASE m.tnPosition = 2
+		    RETURN m.lnPdfPageHeight
+		
+		CASE m.tnPosition = 3
+		    RETURN m.lnPageWidth
+		    
+		CASE m.tnPosition = 4
+		    RETURN m.lnPageHeight
+		
+		CASE m.tnPosition = 5
+		    RETURN IIF(EMPTY(m.lnPdfPageHeight), 0, m.lnPdfPageWidth / m.lnPdfPageHeight)
+		
+		ENDCASE
+		
+		RETURN 0
 		
 	ENDPROC
 
@@ -13195,7 +13247,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 	ENDPROC
 
-	HIDDEN PROCEDURE scrollhorz
+	PROCEDURE scrollhorz
 		LPARAMETERS tnScroll, tlPage, tlRelative
 		
 		IF This.fpdf_opened = .F.
@@ -13226,7 +13278,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 	ENDPROC
 
-	HIDDEN PROCEDURE scrollvert
+	PROCEDURE scrollvert
 		LPARAMETERS tnScroll, tlPage, tlRelative
 		
 		IF This.fpdf_opened = .F.
@@ -13963,7 +14015,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 	ENDPROC
 
-	HIDDEN PROCEDURE viewportupdate
+	PROCEDURE viewportupdate
 		LOCAL lnPageRotate
 		m.lnPageRotate = This.Rotation
 		

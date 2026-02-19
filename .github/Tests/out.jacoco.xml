@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.0//EN" "report.dtd">
     <report name="report">
-        <sessioninfo id="_7DO19L0XV" start="1769116508137" dump="1769116545000"/>         
+        <sessioninfo id="_7EG10JT4Z" start="1771520550637" dump="1771520577000"/>         
         <package name="PDFIUM-VFP/SOURCE/PDFIUM-VFP.VCX">             
             <class name="pdfium_password_input">                     
                 <counter type="METHOD" missed="0" covered="0"/>
@@ -1279,6 +1279,9 @@
                 <method name="GETCURRENTPAGE" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
+                <method name="GETDOCUMENTFILENAME" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
                 <method name="GETFORMFIELD" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
@@ -1286,6 +1289,9 @@
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
                 <method name="GETPAGECOUNT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="GETPAGEMAXSIZE" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
                 <method name="GETPAGESIZE" desc="">
@@ -1405,7 +1411,7 @@
                 <method name="WNDSHOW" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <counter type="METHOD" missed="23" covered="31"/>
+                <counter type="METHOD" missed="25" covered="31"/>
                 </class>
                              
             <class name="pdfium_i18n">                     
@@ -1439,7 +1445,7 @@
                 <counter type="METHOD" missed="7" covered="2"/>
                 </class>
                              
-            <counter type="METHOD" missed="201" covered="251"/>
+            <counter type="METHOD" missed="203" covered="251"/>
         </package>         
-        <counter type="METHOD" missed="201" covered="251"/>
+        <counter type="METHOD" missed="203" covered="251"/>
     </report>

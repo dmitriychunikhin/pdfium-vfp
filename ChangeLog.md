@@ -1,3 +1,36 @@
+1.39
+  - Issue #52, added public properties in PdfiumViewer:
+      
+      - ScrollHorz: scrolls viewport horizontally
+          
+          params:
+
+            tnScroll: number of units to scroll (pixels or "pages"), Page = viewport width,
+            tlPage: .T. - scroll "by pages", .F. - scroll "by pixels"
+            tlRelative: .T. - scroll relative to current viewport left offset, .F. - scroll to specific position from 0 offset
+      
+      - ScrollVert: scrolls viewport vertically
+          params:
+
+            tnScroll: number of units to scroll (pixels or "pages"), Page = viewport height,
+            tlPage: .T. - scroll "by pages", .F. - scroll "by pixels"
+            tlRelative: .T. - scroll relative to current viewport to offset, .F. - scroll to specific position from 0 offset
+
+      - ViewportUpdate: repaints viewport
+
+      - GetDocumentFileName: returns filename of currently opened pdf
+
+      - GetPageMaxSize: returns the maximum width and height of all pages in the document.
+
+          params:
+
+            tnPosition: 1 - width in pdf units  (1/72 on inch)
+                        2 - height in pdf units  (1/72 on inch)
+                        3 - width in pixels
+                        4 - height in pixels
+                        5 - width / height relation
+
+
 1.38
   - Fixed Issue #50 "Graphical PDF loading renders incorrectly if zoom is less than 100%".
 
