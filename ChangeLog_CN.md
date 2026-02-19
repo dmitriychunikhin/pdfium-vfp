@@ -1,3 +1,39 @@
+1.39
+  - Issue #52，PdfiumViewer 新增公共属性：
+      
+      - ScrollHorz：水平滚动 viewport
+          
+          参数：
+
+            tnScroll：滚动的单位数量（像素或“页”），Page = viewport 宽度
+            tlPage：.T. - 按页滚动，.F. - 按像素滚动
+            tlRelative：.T. - 相对于当前 viewport 左侧偏移量滚动，.F. - 从0偏移量滚动到指定位置
+      
+      - ScrollVert：垂直滚动viewport
+          参数：
+
+            tnScroll：滚动的单位数量（像素或“页”），Page = viewport 高度
+            tlPage：.T. - 按页滚动，.F. - 按像素滚动
+            tlRelative：.T. - 相对于当前 viewport 顶部偏移量滚动，.F. - 从0偏移量滚动到指定位置
+
+      - ViewportUpdate：重绘 viewport
+
+      - GetDocumentFileName：返回当前打开的 PDF 文件名
+
+      - GetPageMaxSize：返回文档中所有页面的最大宽度和高度。
+
+          参数：
+
+            tnPosition：1 - PDF 单位宽度（1/72 英寸）
+                        2 - PDF 单位高度（1/72 英寸）
+                        3 - 像素宽度
+                        4 - 像素高度
+                        5 - 宽高比
+
+
+1.38
+  - 修复 Issue #50 “缩放小于 100% 时图形 PDF 加载渲染不正确”。
+
 1.37
   - 修复了 Issue #37 “为现有 PDF 文件添加密码保护”。
   - PdfiumViewer 新增 FitHeight 属性。
@@ -19,7 +55,7 @@
   - 在 PdfiumViewer 的 OpenPDF、PrintDocument、SearchText 方法中实现了带取消支持的进度指示器。
 
 1.32
-  - 内存消耗优化：当 PDF 页面不再用于视口渲染、搜索、文本选择等时自动释放页面内存。
+  - 内存消耗优化：当 PDF 页面不再用于viewport渲染、搜索、文本选择等时自动释放页面内存。
 
 1.31
   - PdfiumReport 渲染性能提升高达 30%。
