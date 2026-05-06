@@ -1,3 +1,13 @@
+1.40
+  - Issue #51 "PDF not showing"
+    
+    Changed a pointer to the window procedure in pdfiumviewer window class registration
+    ```
+     - BINTOC(This.env.API_WIN.GetWindowLong(Application.HWnd, GWL_WNDPROC),"4RS")
+     
+     + BINTOC(This.env.API_WIN.GetWindowLong(m.lhWndParent, GWL_WNDPROC),"4RS")
+    ```
+
 1.39
   - Issue #52, added public properties in PdfiumViewer:
       

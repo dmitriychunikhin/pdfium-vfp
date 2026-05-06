@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.0//EN" "report.dtd">
     <report name="report">
-        <sessioninfo id="_7EG10JT4Z" start="1771520550637" dump="1771520577000"/>         
+        <sessioninfo id="_7GK0VWTL1" start="1778079156779" dump="1778079181000"/>         
         <package name="PDFIUM-VFP/SOURCE/PDFIUM-VFP.VCX">             
             <class name="pdfium_password_input">                     
                 <counter type="METHOD" missed="0" covered="0"/>
@@ -96,13 +96,6 @@
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
                 <counter type="METHOD" missed="0" covered="1"/>
-                </class>
-                             
-            <class name="pdfiumviewer_cmdfocus">                     
-                <method name="THIS_ACCESS" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <counter type="METHOD" missed="1" covered="0"/>
                 </class>
                              
             <class name="pdfium_api_gdip">                     
@@ -371,7 +364,7 @@
                              
             <class name="pdfium_uistate">                     
                 <method name="GETEFFECTIVELYENABLED" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
+                    <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
                 <method name="GETEFFECTIVELYVISIBLE" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
@@ -418,7 +411,7 @@
                 <method name="_ONVISIBLE" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
-                <counter type="METHOD" missed="11" covered="5"/>
+                <counter type="METHOD" missed="12" covered="4"/>
                 </class>
                              
             <class name="pdfium_api_fpdf_const">                     
@@ -678,7 +671,7 @@
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
                 <method name="BEGINPAINT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
+                    <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
                 <method name="BITBLT" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
@@ -729,7 +722,7 @@
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
                 <method name="ENDPAINT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
+                    <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
                 <method name="ENUMFORMS" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
@@ -875,7 +868,7 @@
                 <method name="UUIDCREATE" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <counter type="METHOD" missed="29" covered="48"/>
+                <counter type="METHOD" missed="27" covered="50"/>
                 </class>
                              
             <class name="pdfium_env">                     
@@ -1242,6 +1235,13 @@
                 <counter type="METHOD" missed="34" covered="52"/>
                 </class>
                              
+            <class name="pdfiumviewer_cmdfocus">                     
+                <method name="THIS_ACCESS" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <counter type="METHOD" missed="1" covered="0"/>
+                </class>
+                             
             <class name="pdfiumviewer">                     
                 <method name="AFTERVIEWPORTUPDATE" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
@@ -1445,7 +1445,7 @@
                 <counter type="METHOD" missed="7" covered="2"/>
                 </class>
                              
-            <counter type="METHOD" missed="203" covered="251"/>
+            <counter type="METHOD" missed="202" covered="252"/>
         </package>         
-        <counter type="METHOD" missed="203" covered="251"/>
+        <counter type="METHOD" missed="202" covered="252"/>
     </report>

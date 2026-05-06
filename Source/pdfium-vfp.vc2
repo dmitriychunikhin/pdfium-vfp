@@ -14307,7 +14307,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    m.lcWndClassEx = ;
 		        BINTOC(WNDCLASSEX_SIZE, "4RS")+; &&cbSize
 		        BINTOC(CS_PARENTDC,"4RS")+; &&style
-		        BINTOC(This.env.API_WIN.GetWindowLong(Application.HWnd, GWL_WNDPROC),"4RS")+; &&lpfnWndProc
+		        BINTOC(This.env.API_WIN.GetWindowLong(m.lhWndParent, GWL_WNDPROC),"4RS")+; &&lpfnWndProc
 		        BINTOC(0,"4RS")+; &&cbClsExtra
 		        BINTOC(0,"4RS")+; &&cbWndExtra
 		        BINTOC(m.lhInstance,"4RS")+; &&hInstance
