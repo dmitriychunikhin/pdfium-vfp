@@ -1,20 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.0//EN" "report.dtd">
     <report name="report">
-        <sessioninfo id="_7GK0VWTL1" start="1778079156779" dump="1778079181000"/>         
+        <sessioninfo id="_7HJ0U98D6" start="1781100378705" dump="1781100406000"/>         
         <package name="PDFIUM-VFP/SOURCE/PDFIUM-VFP.VCX">             
             <class name="pdfium_password_input">                     
                 <counter type="METHOD" missed="0" covered="0"/>
-                </class>
-                             
-            <class name="pdfium_printer_selection">                     
-                <method name="CANCEL" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="SETUP" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <counter type="METHOD" missed="2" covered="0"/>
                 </class>
                              
             <class name="pdfium_api_gdip_const">                     
@@ -364,7 +354,7 @@
                              
             <class name="pdfium_uistate">                     
                 <method name="GETEFFECTIVELYENABLED" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
+                    <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
                 <method name="GETEFFECTIVELYVISIBLE" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
@@ -411,7 +401,7 @@
                 <method name="_ONVISIBLE" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
-                <counter type="METHOD" missed="12" covered="4"/>
+                <counter type="METHOD" missed="11" covered="5"/>
                 </class>
                              
             <class name="pdfium_api_fpdf_const">                     
@@ -618,22 +608,6 @@
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
                 <counter type="METHOD" missed="10" covered="14"/>
-                </class>
-                             
-            <class name="pdfium_print_settings">                     
-                <method name="CANCEL" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="PAPERSIZEREQUERY" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="REFRESHSTATE" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <method name="SETUP" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
-                </method>                 
-                <counter type="METHOD" missed="4" covered="0"/>
                 </class>
                              
             <class name="pdfium_api_win">                     
@@ -1414,6 +1388,32 @@
                 <counter type="METHOD" missed="25" covered="31"/>
                 </class>
                              
+            <class name="pdfium_print_settings">                     
+                <method name="CANCEL" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="PAPERSIZEREQUERY" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="REFRESHSTATE" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="SETUP" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <counter type="METHOD" missed="4" covered="0"/>
+                </class>
+                             
+            <class name="pdfium_printer_selection">                     
+                <method name="CANCEL" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="SETUP" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <counter type="METHOD" missed="2" covered="0"/>
+                </class>
+                             
             <class name="pdfium_i18n">                     
                 <method name="GETLOCALEID" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
@@ -1439,13 +1439,19 @@
                 <method name="TEXT_FR" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
+                <method name="TEXT_PT_BR" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
+                <method name="TEXT_PT_PT" desc="">
+                    <counter type="METHOD" missed="1" covered="0"/>
+                </method>                 
                 <method name="TEXT_RU" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <counter type="METHOD" missed="7" covered="2"/>
+                <counter type="METHOD" missed="9" covered="2"/>
                 </class>
                              
-            <counter type="METHOD" missed="202" covered="252"/>
+            <counter type="METHOD" missed="203" covered="253"/>
         </package>         
-        <counter type="METHOD" missed="202" covered="252"/>
+        <counter type="METHOD" missed="203" covered="253"/>
     </report>

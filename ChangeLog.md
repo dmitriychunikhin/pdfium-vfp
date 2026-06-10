@@ -1,3 +1,15 @@
+1.41
+  - Issue #55 "cmbPrinters visibilty"
+    
+    Changed the visibility of cmbPrinters drop-down lists in pdfium_printer_selection and pdfium_print_settings from Protected to Public.
+    Since the library sets them as Protected objects, it's impossible to adjust them for high-DPI monitors.
+
+  - Issue #56 "PT localization"
+
+    Added Portuguese LCID 1046 - Brazil and 2070 - Portugal as an available languages in the library's UI.
+    Made by [Antonio Lopes](https://github.com/atlopes)
+
+
 1.40
   - Issue #51 "PDF not showing"
     
