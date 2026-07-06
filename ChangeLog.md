@@ -1,3 +1,20 @@
+1.42
+  - Issue #57 "rendering pdf annotations (text comments/sticky notes)
+
+      Added __PdfiumViewer.render_flags.annot__ property: Boolean. Set if annotations are to be rendered.
+
+      Usage:
+      ```foxpro
+      Thisform.PdfiumViewer.render_flags.annot = .T.
+      ```
+
+  - Added __PdfiumViewer.render_flags.grayscale__ property: Boolean. Grayscale output during rendering on form and during printing.
+
+      Usage:
+      ```foxpro
+      Thisform.PdfiumViewer.render_flags.grayscale = .T.
+      ```
+
 1.41
   - Issue #55 "cmbPrinters visibilty"
     

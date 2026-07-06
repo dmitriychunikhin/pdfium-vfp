@@ -98,7 +98,7 @@ Open sample.pjx project from `pdfium-vfp/Sample` folder or just run Sample/sampl
 
 
 ## Known issues
-* PdfiumViewer doesn't support page bookmarks, annotations and active hyperlinks
+* PdfiumViewer doesn't support page bookmarks and active hyperlinks
 * Fallback font in report previewer is Helvetica with no chance to change it
 * Report previewer can deal with ttf/ttc fonts only, non ttf font (bitmap fonts) and symbol fonts are rendered as images
 * Interface language always is your system language 
@@ -135,6 +135,20 @@ Thisform.PdfiumViewer.PrintDocument()
 ```
 
 7) Save document to the file
+
+<br>
+
+**Enable Annotations rendering**
+```foxpro
+    Thisform.PdfiumViewer.render_flags.annot = .T.
+    Thisform.PdfiumViewer.Refresh() && force annotations rendering immediately
+```
+
+**Setting Grayscale rendering flag**
+```foxpro
+    Thisform.PdfiumViewer.render_flags.grayscale = .T.
+    Thisform.PdfiumViewer.Refresh() && force grayscale rendering immediately
+```
 
 **Saving without changing original document password protection state and meta-data tags values**
 ```foxpro

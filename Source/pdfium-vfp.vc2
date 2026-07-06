@@ -1606,6 +1606,7 @@ DEFINE CLASS pdfium_api_fpdf_annot AS pdfium_api_fpdf_base OF "pdfium-vfp.vcx"
 		*m: fpdfannot_getoptioncount
 		*m: fpdfannot_getoptionlabel
 		*m: fpdfannot_getstringvalue
+		*m: fpdfannot_hasattachmentpoints
 		*m: fpdfannot_ischecked
 		*m: fpdfannot_isoptionselected
 		*m: fpdfannot_setstringvalue
@@ -1635,6 +1636,7 @@ DEFINE CLASS pdfium_api_fpdf_annot AS pdfium_api_fpdf_base OF "pdfium-vfp.vcx"
 			<memberdata name="fpdfannot_getformcontrolcount" type="method" display="FPDFAnnot_GetFormControlCount"/>
 			<memberdata name="fpdfannot_getformfieldexportvalue" type="method" display="FPDFAnnot_GetFormFieldExportValue"/>
 			<memberdata name="fpdfannot_getformfieldflags" type="method" display="FPDFAnnot_GetFormFieldFlags"/>
+			<memberdata name="fpdfannot_hasattachmentpoints" type="method" display="FPDFAnnot_HasAttachmentPoints"/>
 		</VFPData>
 		CONST.Name = "CONST"
 	*</PropValue>
@@ -1809,6 +1811,22 @@ DEFINE CLASS pdfium_api_fpdf_annot AS pdfium_api_fpdf_base OF "pdfium-vfp.vcx"
 		    SET CONSOLE OFF
 		    DECLARE LONG FPDFAnnot_GetStringValue IN (This.pdfium_dll_path) AS FPDF_FPDFAnnot_GetStringValue LONG annot, STRING key, STRING @buffer, LONG buflen
 		    m.lvRes = FPDF_FPDFAnnot_GetStringValue(m.annot, m.key, @m.buffer, m.buflen)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
+	PROCEDURE fpdfannot_hasattachmentpoints
+		LPARAMETERS annot as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFAnnot_HasAttachmentPoints(m.annot)
+		CATCH
+		    SET CONSOLE OFF
+		    DECLARE LONG FPDFAnnot_HasAttachmentPoints IN (This.pdfium_dll_path) AS FPDFAnnot_HasAttachmentPoints LONG annot
+		    m.lvRes = FPDFAnnot_HasAttachmentPoints(m.annot)
 		ENDTRY
 		
 		RETURN m.lvRes
@@ -1990,6 +2008,8 @@ DEFINE CLASS pdfium_api_fpdf_const AS custom 		&& Pdfium API constants
 		*m: fpdf_formflag_noexport
 		*m: fpdf_formflag_readonly
 		*m: fpdf_formflag_required
+		*m: fpdf_grayscale
+		*m: fpdf_lcd_text
 		*m: fpdf_pageobj_form
 		*m: fpdf_pageobj_image
 		*m: fpdf_pageobj_path
@@ -2052,6 +2072,8 @@ DEFINE CLASS pdfium_api_fpdf_const AS custom 		&& Pdfium API constants
 			<memberdata name="fpdf_formflag_readonly" type="method" display="FPDF_FORMFLAG_READONLY"/>
 			<memberdata name="fpdf_formflag_required" type="method" display="FPDF_FORMFLAG_REQUIRED"/>
 			<memberdata name="fpdf_annot" type="method" display="FPDF_ANNOT"/>
+			<memberdata name="fpdf_lcd_text" type="method" display="FPDF_LCD_TEXT"/>
+			<memberdata name="fpdf_grayscale" type="method" display="FPDF_GRAYSCALE"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -2197,6 +2219,15 @@ DEFINE CLASS pdfium_api_fpdf_const AS custom 		&& Pdfium API constants
 
 	PROCEDURE fpdf_formflag_required
 		RETURN 2
+	ENDPROC
+
+	PROCEDURE fpdf_grayscale
+		RETURN 0x08
+	ENDPROC
+
+	PROCEDURE fpdf_lcd_text
+		RETURN 0x02
+		
 	ENDPROC
 
 	PROCEDURE fpdf_pageobj_form
@@ -9671,6 +9702,29 @@ DEFINE CLASS pdfium_progress_window AS form
 
 ENDDEFINE
 
+DEFINE CLASS pdfium_render_flags AS custom 		&& PDF metadata (author,creator etc) + encryption (by password) + permission (read, edit, print etc)
+ 	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
+
+	*<DefinedPropArrayMethod>
+		*p: annot		&& Boolean. Set if annotations are to be rendered.
+		*p: grayscale		&& Boolean. Grayscale output.
+		*p: _memberdata		&& XML Metadata for customizable properties
+	*</DefinedPropArrayMethod>
+
+	HIDDEN AddObject,AddProperty,BaseClass,CloneObject,Comment,ControlCount,Controls,Error,Height,HelpContextID,NewObject,Objects,ParentClass,Parent,Picture,ReadExpression,ReadMethod,RemoveObject,ResetToDefault,SaveAsClass,ShowWhatsThis,Tag,WhatsThisHelpID,Width,WriteExpression,WriteMethod
+	*<PropValue>
+		annot = .F.
+		grayscale = .F.
+		Height = 27
+		Name = "pdfium_render_flags"
+		Width = 27
+		_memberdata = <VFPData>
+
+		</VFPData>
+	*</PropValue>
+
+ENDDEFINE
+
 DEFINE CLASS pdfium_textbox AS textbox 		&& Pdfium-vfp Textbox. Library consumer shouldn't use this class directly
  	*< CLASSDATA: Baseclass="textbox" Timestamp="" Scale="Pixels" Uniqueid="" />
 
@@ -10290,6 +10344,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*m: renderpages
 		*m: rendersearch
 		*m: renderselection
+		*m: render_flags_access
+		*m: render_flags_assign
 		*m: rotation_assign
 		*m: savedocument		&& Save document to file
 		*m: scale_assign
@@ -10334,6 +10390,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*p: printenv		&& Print configuration state (pdfium_print_env object); Read-Only
 		*p: progresscancelled
 		*p: progresswindow
+		*p: render_flags
 		*p: rotation		&& Page orientation: 0 (normal), 1 (rotated 90 degrees clockwise), 2 (rotated 180 degrees), 3 (rotated 90 degrees counter-clockwise)
 		*p: scale
 		*p: scrollbars		&& Specifies the type of scroll bars that an EditBox control, Form object, or Grid control has. 0 - None (Default); 1 - Horizontal; 2 - Vertical; 3 - Both vertical and horizontal
@@ -10367,9 +10424,10 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		*a: fpdf_text_pages[1,0]
 		*p: _memberdata		&& XML Metadata for customizable properties
 		*p: _printenv
+		*p: _render_flags
 	*</DefinedPropArrayMethod>
 
-	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,documentfilename,drawbufbitmapbmi,drawbufbitmap,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,formfields,fpdf_doc,fpdf_form,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_max_size,fpdf_pages_pos,fpdf_pages_ref,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Objects,pagefillbrush,Picture,progresscancelled,progresswindow,ReadExpression,ReadMethod,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,ShowWhatsThis,SpecialEffect,Style,tplclickbegin,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,wndviewport,WriteExpression,WriteMethod,ZOrder,_printenv
+	HIDDEN ActiveControl,AddProperty,backcolorbrush,BackStyle,BorderColor,BorderWidth,Click,CloneObject,ColorSource,ControlCount,Controls,dblclickbegin,DblClick,documentfilename,drawbufbitmapbmi,drawbufbitmap,drawbufdc,drawbufdib,drawbufgfx,Draw,Error,ForeColor,formfields,fpdf_doc,fpdf_form,fpdf_opened,fpdf_pagecount,fpdf_pages,fpdf_pages_max_size,fpdf_pages_pos,fpdf_pages_ref,fpdf_pages_selection,fpdf_pages_size,fpdf_page_first_visible,fpdf_page_last_visible,fpdf_text_pages,GotFocus,HelpContextID,isfocused,LostFocus,MiddleClick,MouseDown,MouseEnter,MouseIcon,MouseLeave,MouseMove,MousePointer,MouseUp,MouseWheel,Objects,pagefillbrush,Picture,progresscancelled,progresswindow,ReadExpression,ReadMethod,RightClick,SaveAsClass,searchbrush,searchstate_dir,searchstate_findwhat,searchstate_rescount,searchstate_resindex,searchstate_respage,searchstate_resrect,selectionbrush,selectioncharindexprev,selectioncharindexstart,ShowWhatsThis,SpecialEffect,Style,tplclickbegin,viewportmaxx,viewportmaxy,viewportsizex,viewportsizey,viewportx,viewporty,WhatsThisHelpID,wndclassname,wnddc,wndhandle,wndviewport,WriteExpression,WriteMethod,ZOrder,_printenv,_render_flags
 	*<PropValue>
 		allowformedit = .T.
 		backcolorbrush = .F.
@@ -10397,6 +10455,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		printenv = .F.
 		progresscancelled = .F.
 		progresswindow = .F.
+		render_flags = .F.
 		rotation = 0
 		scale = 1
 		scrollbars = 0
@@ -10537,6 +10596,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 			<memberdata name="getpagemaxsize" type="method" display="GetPageMaxSize"/>
 		</VFPData>
 		_printenv = .F.
+		_render_flags = .F.
 	*</PropValue>
 
 	ADD OBJECT 'cmdFocus' AS pdfiumviewer_cmdfocus WITH ;
@@ -10801,7 +10861,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		This._PrintEnv = .F.
 		This.FormFields = .F.
 		This.ProgressWindow = .F.
-		
+		This._render_flags = .F.
 	ENDPROC
 
 	HIDDEN PROCEDURE drawbufcreate
@@ -11384,6 +11444,8 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 	PROCEDURE Init
 		LPARAMETERS toEnv as pdfium_env of pdfium-vfp
 		
+		This._render_flags = NEWOBJECT("pdfium_render_flags", This.ClassLibrary)
+		
 		This.FormFields = NEWOBJECT("Collection")
 		
 		This.env.Setup(m.toEnv)
@@ -11935,9 +11997,11 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		        EXIT
 		    ENDIF
 		
-		    IF m.nButton = 1 AND This.AllowFormEdit AND EMPTY(This.fpdf_form) = .F.
-		        IF m.loFPDF_FORMS.FORM_OnMouseMove(This.fpdf_form, m.lnFPDF_Page, m.nShift + IIF(m.nButton=1, 64,0), m.lnPageX, m.lnPageY) > 0
-		            This.Redraw()
+		    IF EMPTY(This.fpdf_form) = .F.
+		        LOCAL lnOnMouseMoveRes
+		        m.lnOnMouseMoveRes = m.loFPDF_FORMS.FORM_OnMouseMove(This.fpdf_form, m.lnFPDF_Page, m.nShift + IIF(m.nButton=1, 64,0), m.lnPageX, m.lnPageY)
+		        This.Redraw()
+		        IF m.lnOnMouseMoveRes > 0 AND m.nButton = 1 AND This.AllowFormEdit 
 		            EXIT
 		        ENDIF
 		    ENDIF
@@ -12121,8 +12185,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		LOCAL llProgressWindow
 		m.llProgressWindow = (VARTYPE(This.ProgressWindow) = "O")
 		
-		LOCAL llDocFormFields
+		LOCAL llDocFormFields, llDocInteractiveAnnots
 		m.llDocFormFields = .F.
+		m.llDocInteractiveAnnots = .F.
 		
 		LOCAL lnPage
 		FOR m.lnPage = 1 TO This.FPDF_PageCount
@@ -12142,8 +12207,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    This.fpdf_pages_max_size[1] = MAX(This.fpdf_pages_max_size[1], This.fpdf_pages_size[m.lnPage,1])
 		    This.fpdf_pages_max_size[2] = MAX(This.fpdf_pages_max_size[2], This.fpdf_pages_size[m.lnPage,2])
 		    
-		    LOCAL llPageFormFields
+		    LOCAL llPageFormFields, llPageInteractiveAnnot
 		    m.llPageFormFields = .F.
+		    m.llPageInteractiveAnnot = .F.
 		    IF EMPTY(This.fpdf_form) = .F.
 		        LOCAL lnAnnotCnt, lnAnnot, lnAnnotHandle
 		        m.lnAnnotCnt = This.env.API_FPDF_ANNOT.FPDFPage_GetAnnotCount(This.fpdf_pages[m.lnPage])
@@ -12151,6 +12217,10 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		            m.lnAnnotHandle = This.env.API_FPDF_ANNOT.FPDFPage_GetAnnot(This.fpdf_pages[m.lnPage], m.lnAnnot - 1)
 		            IF EMPTY(m.lnAnnotHandle)
 		                LOOP
+		            ENDIF
+		            
+		            IF m.llDocInteractiveAnnots = .F. AND This.env.API_FPDF_ANNOT.FPDFAnnot_HasAttachmentPoints(m.lnAnnotHandle) = 1
+		                m.llDocInteractiveAnnots = .T.
 		            ENDIF
 		            
 		            TRY
@@ -12238,7 +12308,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN .F.
 		ENDIF
 		
-		IF m.llDocFormFields = .F. AND EMPTY(This.fpdf_form) = .F.
+		IF m.llDocFormFields = .F. AND m.llDocInteractiveAnnots = .F. AND EMPTY(This.fpdf_form) = .F.
 		    m.loFPDF_FORMS.VFPDFDOC_ExitFormFillEnvironment(This.fpdf_form)
 		    This.fpdf_form = 0
 		ENDIF
@@ -12586,6 +12656,13 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    LOCAL lnOrientation
 		    m.lnOrientation = 0
 		    
+		    LOCAL lnPrintRenderFlags
+		    m.lnPrintRenderFlags = ;
+		                        m.loFPDF.CONST.FPDF_PRINTING() + ;
+		                        IIF(not EMPTY(NVL(This.render_flags.annot, .F.)), m.loFPDF.CONST.FPDF_ANNOT(), 0) +;
+		                        IIF(not EMPTY(NVL(This.render_flags.grayscale, .F.)), m.loFPDF.CONST.FPDF_GRAYSCALE(), 0) 
+		    
+		    
 		    LOCAL lnPaperSize, lnPaperSizePrev
 		    m.lnPaperSize = 0
 		    m.lnPaperSizePrev = 0
@@ -12785,7 +12862,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		                    m.lnPrintWidth, ;
 		                    m.lnPrintHeight, ;
 		                    m.lnPrintRotate, ;
-		                    m.loFPDF.CONST.FPDF_PRINTING())
+		                    m.lnPrintRenderFlags)
 		
 		                IF EMPTY(This.fpdf_form) = .F.
 		                    LOCAL lnPageBitmap
@@ -12951,6 +13028,11 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 	ENDPROC
 
+	PROCEDURE Refresh
+		This.Redraw()
+		
+	ENDPROC
+
 	HIDDEN PROCEDURE removeformfieldhighlight
 		IF EMPTY(This.fpdf_form) = .F.
 		    This.env.API_FPDF_FORMS.FPDF_RemoveFormFieldHighlight(This.fpdf_form)
@@ -12971,9 +13053,10 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    RETURN
 		ENDIF
 		
-		LOCAL loFPDF, loFPDF_FORMS
+		LOCAL loFPDF, loFPDF_FORMS, loFPDFC
 		m.loFPDF = This.env.API_FPDF
 		m.loFPDF_FORMS = This.env.API_FPDF_FORMS
+		m.loFPDFC = This.env.API_FPDF.CONST
 		
 		#define FF_DIB_RGB_COLORS   0
 		#define FF_SRCCOPY 0x00CC0020
@@ -12988,8 +13071,14 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    m.lnDibDataPtr = This.env.API_FPDF.FPDFBitmap_GetBuffer(This.DrawBufBitmap)
 		*ENDIF
 		
-		LOCAL lnPageRotate
+		LOCAL lnPageRotate, lnPageRenderFlags, lnFormRenderFlags
 		m.lnPageRotate = This.Rotation
+		m.lnPageRenderFlags = ;
+		                    IIF(not EMPTY(NVL(This.render_flags.annot, .F.)), m.loFPDFC.FPDF_ANNOT(), 0) +;
+		                    IIF(not EMPTY(NVL(This.render_flags.grayscale, .F.)), m.loFPDFC.FPDF_GRAYSCALE(), 0) 
+		
+		m.lnFormRenderFlags = ;
+		                    IIF(not EMPTY(NVL(This.render_flags.annot, .F.)), m.loFPDFC.FPDF_ANNOT(), 0)
 		
 		LOCAL lnFPDF_Page, lnPageX, lnPageY, lnPageWidth, lnPageHeight
 		
@@ -13008,10 +13097,10 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    
 		    * bugfix: Graphical PDF loading renders incorrectly if zoom is less than 100% #50
 		    *IF EMPTY(This.fpdf_form) = .T.
-		    *    m.loFPDF.FPDF_RenderPage(This.DrawBufDC, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, 0)
+		    *    m.loFPDF.FPDF_RenderPage(This.DrawBufDC, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, m.lnPageRenderFlags)
 		    *ELSE
-		        m.loFPDF.FPDF_RenderPageBitmap(This.DrawBufBitmap, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, 0)
-		        m.loFPDF_FORMS.FPDF_FFLDraw(This.fpdf_form, This.DrawBufBitmap, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, 0)
+		        m.loFPDF.FPDF_RenderPageBitmap(This.DrawBufBitmap, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, m.lnPageRenderFlags)
+		        m.loFPDF_FORMS.FPDF_FFLDraw(This.fpdf_form, This.DrawBufBitmap, m.lnFPDF_Page, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageRotate, m.lnFormRenderFlags)
 		        This.env.API_WIN.StretchDIBits(This.DrawBufDC, m.lnPageX, m.lnPageY, m.lnPageWidth, m.lnPageHeight, m.lnPageX, This.Height - m.lnPageY - m.lnPageHeight, m.lnPageWidth, m.lnPageHeight, m.lnDibDataPtr, This.DrawBufBitmapBMI, FF_DIB_RGB_COLORS, FF_SRCCOPY)
 		    *ENDIF
 		    
@@ -13118,6 +13207,18 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    This.env.API_GDIP.GdipFillRectangleI(This.DrawBufGfx, This.SelectionBrush, MIN(m.lnLeft, m.lnRight), MIN(m.lnTop, m.lnBottom), ABS(m.lnRight - m.lnLeft), ABS(m.lnBottom - m.lnTop))
 		    
 		ENDFOR
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE render_flags_access
+		RETURN This._render_flags
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE render_flags_assign
+		LPARAMETERS vNewVal
+		
+		ERROR 1740, TEXTMERGE("<<This.Class>>.render_flags")
 		
 	ENDPROC
 
