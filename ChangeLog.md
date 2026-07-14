@@ -1,3 +1,8 @@
+1.43
+  - Issue #57 "rendering pdf annotations (text comments/sticky notes)
+    
+    Added a hint display for popup annotations on mouse hover
+
 1.42
   - Issue #57 "rendering pdf annotations (text comments/sticky notes)
 

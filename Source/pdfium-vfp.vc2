@@ -1606,6 +1606,7 @@ DEFINE CLASS pdfium_api_fpdf_annot AS pdfium_api_fpdf_base OF "pdfium-vfp.vcx"
 		*m: fpdfannot_getoptioncount
 		*m: fpdfannot_getoptionlabel
 		*m: fpdfannot_getstringvalue
+		*m: fpdfannot_getsubtype
 		*m: fpdfannot_hasattachmentpoints
 		*m: fpdfannot_ischecked
 		*m: fpdfannot_isoptionselected
@@ -1637,6 +1638,7 @@ DEFINE CLASS pdfium_api_fpdf_annot AS pdfium_api_fpdf_base OF "pdfium-vfp.vcx"
 			<memberdata name="fpdfannot_getformfieldexportvalue" type="method" display="FPDFAnnot_GetFormFieldExportValue"/>
 			<memberdata name="fpdfannot_getformfieldflags" type="method" display="FPDFAnnot_GetFormFieldFlags"/>
 			<memberdata name="fpdfannot_hasattachmentpoints" type="method" display="FPDFAnnot_HasAttachmentPoints"/>
+			<memberdata name="fpdfannot_getsubtype" type="method" display="FPDFAnnot_GetSubtype"/>
 		</VFPData>
 		CONST.Name = "CONST"
 	*</PropValue>
@@ -1817,6 +1819,22 @@ DEFINE CLASS pdfium_api_fpdf_annot AS pdfium_api_fpdf_base OF "pdfium-vfp.vcx"
 		
 	ENDPROC
 
+	PROCEDURE fpdfannot_getsubtype
+		LPARAMETERS annot as Long
+		
+		LOCAL m.lvRes
+		TRY
+		    m.lvRes = FPDFAnnot_GetSubtype(m.annot)
+		CATCH
+		    SET CONSOLE OFF
+		    DECLARE LONG FPDFAnnot_GetSubtype IN (This.pdfium_dll_path) AS FPDFAnnot_GetSubtype LONG annot
+		    m.lvRes = FPDFAnnot_GetSubtype(m.annot)
+		ENDTRY
+		
+		RETURN m.lvRes
+		
+	ENDPROC
+
 	PROCEDURE fpdfannot_hasattachmentpoints
 		LPARAMETERS annot as Long
 		
@@ -1983,6 +2001,35 @@ DEFINE CLASS pdfium_api_fpdf_const AS custom 		&& Pdfium API constants
 		*m: fpdfbitmap_gray
 		*m: fpdfbitmap_unknown
 		*m: fpdf_annot
+		*m: fpdf_annot_caret
+		*m: fpdf_annot_circle
+		*m: fpdf_annot_fileattachment
+		*m: fpdf_annot_freetext
+		*m: fpdf_annot_highlight
+		*m: fpdf_annot_ink
+		*m: fpdf_annot_line
+		*m: fpdf_annot_link
+		*m: fpdf_annot_movie
+		*m: fpdf_annot_polygon
+		*m: fpdf_annot_polyline
+		*m: fpdf_annot_popup
+		*m: fpdf_annot_printermark
+		*m: fpdf_annot_redact
+		*m: fpdf_annot_richmedia
+		*m: fpdf_annot_screen
+		*m: fpdf_annot_sound
+		*m: fpdf_annot_square
+		*m: fpdf_annot_squiggly
+		*m: fpdf_annot_stamp
+		*m: fpdf_annot_strikeout
+		*m: fpdf_annot_text
+		*m: fpdf_annot_threed
+		*m: fpdf_annot_trapnet
+		*m: fpdf_annot_underline
+		*m: fpdf_annot_unknown
+		*m: fpdf_annot_watermark
+		*m: fpdf_annot_widget
+		*m: fpdf_annot_xfawidget
 		*m: fpdf_err_file
 		*m: fpdf_err_format
 		*m: fpdf_err_page
@@ -2074,6 +2121,7 @@ DEFINE CLASS pdfium_api_fpdf_const AS custom 		&& Pdfium API constants
 			<memberdata name="fpdf_annot" type="method" display="FPDF_ANNOT"/>
 			<memberdata name="fpdf_lcd_text" type="method" display="FPDF_LCD_TEXT"/>
 			<memberdata name="fpdf_grayscale" type="method" display="FPDF_GRAYSCALE"/>
+			<memberdata name="fpdf_annot_unknown" type="method" display="FPDF_ANNOT_UNKNOWN"/>
 		</VFPData>
 	*</PropValue>
 	
@@ -2105,6 +2153,122 @@ DEFINE CLASS pdfium_api_fpdf_const AS custom 		&& Pdfium API constants
 	PROCEDURE fpdf_annot
 		RETURN 0x01
 		
+	ENDPROC
+
+	PROCEDURE fpdf_annot_caret
+		RETURN 14
+	ENDPROC
+
+	PROCEDURE fpdf_annot_circle
+		RETURN 6
+	ENDPROC
+
+	PROCEDURE fpdf_annot_fileattachment
+		RETURN 17
+	ENDPROC
+
+	PROCEDURE fpdf_annot_freetext
+		RETURN 3
+	ENDPROC
+
+	PROCEDURE fpdf_annot_highlight
+		RETURN 9
+	ENDPROC
+
+	PROCEDURE fpdf_annot_ink
+		RETURN 15
+	ENDPROC
+
+	PROCEDURE fpdf_annot_line
+		RETURN 4
+	ENDPROC
+
+	PROCEDURE fpdf_annot_link
+		RETURN 2
+	ENDPROC
+
+	PROCEDURE fpdf_annot_movie
+		RETURN 19
+	ENDPROC
+
+	PROCEDURE fpdf_annot_polygon
+		RETURN 7
+	ENDPROC
+
+	PROCEDURE fpdf_annot_polyline
+		RETURN 8
+	ENDPROC
+
+	PROCEDURE fpdf_annot_popup
+		RETURN 16
+	ENDPROC
+
+	PROCEDURE fpdf_annot_printermark
+		RETURN 22
+	ENDPROC
+
+	PROCEDURE fpdf_annot_redact
+		RETURN 28
+	ENDPROC
+
+	PROCEDURE fpdf_annot_richmedia
+		RETURN 26
+	ENDPROC
+
+	PROCEDURE fpdf_annot_screen
+		RETURN 21
+	ENDPROC
+
+	PROCEDURE fpdf_annot_sound
+		RETURN 18
+	ENDPROC
+
+	PROCEDURE fpdf_annot_square
+		RETURN 5
+	ENDPROC
+
+	PROCEDURE fpdf_annot_squiggly
+		RETURN 11
+	ENDPROC
+
+	PROCEDURE fpdf_annot_stamp
+		RETURN 13
+	ENDPROC
+
+	PROCEDURE fpdf_annot_strikeout
+		RETURN 12
+	ENDPROC
+
+	PROCEDURE fpdf_annot_text
+		RETURN 1
+	ENDPROC
+
+	PROCEDURE fpdf_annot_threed
+		RETURN 25
+	ENDPROC
+
+	PROCEDURE fpdf_annot_trapnet
+		RETURN 23
+	ENDPROC
+
+	PROCEDURE fpdf_annot_underline
+		RETURN 10
+	ENDPROC
+
+	PROCEDURE fpdf_annot_unknown
+		RETURN 0
+	ENDPROC
+
+	PROCEDURE fpdf_annot_watermark
+		RETURN 24
+	ENDPROC
+
+	PROCEDURE fpdf_annot_widget
+		RETURN 20
+	ENDPROC
+
+	PROCEDURE fpdf_annot_xfawidget
+		RETURN 27
 	ENDPROC
 
 	PROCEDURE fpdf_err_file
@@ -12000,7 +12164,9 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    IF EMPTY(This.fpdf_form) = .F.
 		        LOCAL lnOnMouseMoveRes
 		        m.lnOnMouseMoveRes = m.loFPDF_FORMS.FORM_OnMouseMove(This.fpdf_form, m.lnFPDF_Page, m.nShift + IIF(m.nButton=1, 64,0), m.lnPageX, m.lnPageY)
-		        This.Redraw()
+		        IF m.lnOnMouseMoveRes > 0
+		            This.Redraw()
+		        ENDIF
 		        IF m.lnOnMouseMoveRes > 0 AND m.nButton = 1 AND This.AllowFormEdit 
 		            EXIT
 		        ENDIF
@@ -12114,9 +12280,14 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		
 		This.ClosePDF()
 		
-		LOCAL loFPDF, loFPDF_FORMS
+		LOCAL loFPDF, loFPDF_FORMS, loFPDF_ANNOT, loFPDF_ANNOT_CONST
 		m.loFPDF = This.env.API_FPDF
 		m.loFPDF_FORMS = This.env.API_FPDF_FORMS
+		m.loFPDF_ANNOT = This.env.API_FPDF_ANNOT
+		m.loFPDF_ANNOT_CONST = m.loFPDF_ANNOT.CONST
+		
+		LOCAL lhFPDF_ANNOT_POPUP
+		lhFPDF_ANNOT_POPUP = m.loFPDF_ANNOT_CONST.FPDF_ANNOT_POPUP()
 		
 		
 		LOCAL lcFilename
@@ -12212,23 +12383,27 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		    m.llPageInteractiveAnnot = .F.
 		    IF EMPTY(This.fpdf_form) = .F.
 		        LOCAL lnAnnotCnt, lnAnnot, lnAnnotHandle
-		        m.lnAnnotCnt = This.env.API_FPDF_ANNOT.FPDFPage_GetAnnotCount(This.fpdf_pages[m.lnPage])
+		        m.lnAnnotCnt = m.loFPDF_ANNOT.FPDFPage_GetAnnotCount(This.fpdf_pages[m.lnPage])
 		        FOR m.lnAnnot = 1 TO m.lnAnnotCnt
-		            m.lnAnnotHandle = This.env.API_FPDF_ANNOT.FPDFPage_GetAnnot(This.fpdf_pages[m.lnPage], m.lnAnnot - 1)
+		            m.lnAnnotHandle = m.loFPDF_ANNOT.FPDFPage_GetAnnot(This.fpdf_pages[m.lnPage], m.lnAnnot - 1)
 		            IF EMPTY(m.lnAnnotHandle)
 		                LOOP
 		            ENDIF
 		            
-		            IF m.llDocInteractiveAnnots = .F. AND This.env.API_FPDF_ANNOT.FPDFAnnot_HasAttachmentPoints(m.lnAnnotHandle) = 1
+		            IF m.llDocInteractiveAnnots = .F. AND m.loFPDF_ANNOT.FPDFAnnot_HasAttachmentPoints(m.lnAnnotHandle) = 1
+		                m.llDocInteractiveAnnots = .T.
+		            ENDIF
+		
+		            IF m.llDocInteractiveAnnots = .F. AND INLIST(m.loFPDF_ANNOT.FPDFAnnot_GetSubtype(m.lnAnnotHandle), lhFPDF_ANNOT_POPUP)
 		                m.llDocInteractiveAnnots = .T.
 		            ENDIF
 		            
 		            TRY
 		                LOCAL lcBuffer, lnBuflen
-		                m.lnBuflen = This.env.API_FPDF_ANNOT.FPDFAnnot_GetFormFieldName(This.fpdf_form, m.lnAnnotHandle, "", 0)
+		                m.lnBuflen = m.loFPDF_ANNOT.FPDFAnnot_GetFormFieldName(This.fpdf_form, m.lnAnnotHandle, "", 0)
 		                IF m.lnBuflen > 2
 		                    m.lcBuffer = REPLICATE(CHR(0), m.lnBuflen)
-		                    m.lnBuflen = This.env.API_FPDF_ANNOT.FPDFAnnot_GetFormFieldName(This.fpdf_form, m.lnAnnotHandle, @m.lcBuffer, m.lnBuflen)
+		                    m.lnBuflen = m.loFPDF_ANNOT.FPDFAnnot_GetFormFieldName(This.fpdf_form, m.lnAnnotHandle, @m.lcBuffer, m.lnBuflen)
 		                    m.lcBuffer = LEFT(m.lcBuffer, MAX(m.lnBuflen - 2, 0))
 		                    IF EMPTY(m.lcBuffer) = .F.
 		                        LOCAL lcFormFieldName
@@ -12271,10 +12446,10 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		                        m.loFormField.GroupItems[m.loFormField.GroupItemsCount] = m.loGroupItem
 		                        
 		                        LOCAL lcBuffer, lnBuflen
-		                        m.lnBuflen = This.env.API_FPDF_ANNOT.FPDFAnnot_GetFormFieldExportValue(This.fpdf_form, m.lnAnnotHandle, "", 0)
+		                        m.lnBuflen = m.loFPDF_ANNOT.FPDFAnnot_GetFormFieldExportValue(This.fpdf_form, m.lnAnnotHandle, "", 0)
 		                        IF m.lnBuflen > 2
 		                            m.lcBuffer = REPLICATE(CHR(0), m.lnBuflen)
-		                            m.lnBuflen = This.env.API_FPDF_ANNOT.FPDFAnnot_GetFormFieldExportValue(This.fpdf_form, m.lnAnnotHandle, @m.lcBuffer, m.lnBuflen)
+		                            m.lnBuflen = m.loFPDF_ANNOT.FPDFAnnot_GetFormFieldExportValue(This.fpdf_form, m.lnAnnotHandle, @m.lcBuffer, m.lnBuflen)
 		                            m.lcBuffer = LEFT(m.lcBuffer, MAX(m.lnBuflen - 2, 0))
 		                        ELSE
 		                            m.lcBuffer = ""
@@ -12283,7 +12458,7 @@ DEFINE CLASS pdfiumviewer AS control 		&& PDF viewer control.
 		                    ENDIF
 		                ENDIF
 		            FINALLY
-		                This.env.API_FPDF_ANNOT.FPDFPage_CloseAnnot(m.lnAnnotHandle)
+		                m.loFPDF_ANNOT.FPDFPage_CloseAnnot(m.lnAnnotHandle)
 		            ENDTRY
 		        ENDFOR
 		    ENDIF
