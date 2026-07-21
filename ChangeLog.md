@@ -1,3 +1,8 @@
+1.44
+  -Issue #58 Error in PDFiumReportViewer.Init
+
+   Removed report previwer form height adjustment code, that is useless because this form is maximized.
+
 1.43
   - Issue #57 "rendering pdf annotations (text comments/sticky notes)
     

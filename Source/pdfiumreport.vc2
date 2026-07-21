@@ -5925,48 +5925,6 @@ DEFINE CLASS pdfiumreportviewer AS form 		&& Report preview for PdfiumReport. Li
 		This.MinWidth = This.Width
 		This.MinHeight = 300
 		
-		
-		LOCAL loTopLevelForm
-		IF TYPE("Application.ActiveForm") = "O"
-		    m.loTopLevelForm = Application.ActiveForm
-		ELSE
-		    m.loTopLevelForm = _SCREEN    
-		ENDIF
-		
-		IF m.loTopLevelForm.ShowWindow <> 2
-		    m.loTopLevelForm = _SCREEN
-		ENDIF
-		
-		
-		IF m.loTopLevelForm = _SCREEN
-		    LOCAL lnTop, lnBottom
-		    m.lnTop = 0
-		    m.lnBottom = m.loTopLevelForm.Height
-		
-		
-		    LOCAL i, loForm
-		    FOR m.i = 1 TO m.loTopLevelForm.FormCount
-		        m.loForm = m.loTopLevelForm.Forms[m.i]
-		        
-		        IF m.loForm = Thisform
-		            LOOP
-		        ENDIF
-		
-		        IF m.loForm.DockPosition = 0
-		            m.lnTop = MAX(m.lnTop, m.loForm.Top + m.loForm.Height)
-		        ENDIF
-		
-		        IF m.loForm.DockPosition = 3
-		            m.lnBottom = MIN(m.lnBottom, m.loForm.Height - laDockState[m.i,6].Top)
-		        ENDIF
-		        
-		    ENDFOR
-		
-		    This.Width = MAX(MIN(m.loTopLevelForm.Height, m.loTopLevelForm.Width) - SYSMETRIC(3) , This.MinWidth) 
-		    This.Height = MAX(MAX(m.lnBottom - m.lnTop, This.Height) - SYSMETRIC(4), This.MinHeight)
-		
-		ENDIF
-		
 		This.WindowState = 2
 		This.TitleBar = 0
 		This.BorderStyle = 0
