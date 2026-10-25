@@ -50,9 +50,11 @@ DEFINE CLASS sample AS form
 	*< OBJECTDATA: ObjPath="cmdOpenPdf" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdOpenPdfSample_forms" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdRotateCCW" UniqueID="" Timestamp="" />
-	*< OBJECTDATA: ObjPath="Command3" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdRotateCW" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdFitHeight" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdSaveAsEncrypt" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="chkRenderFlags_Grayscale" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="chkRenderFlags_Annot" UniqueID="" Timestamp="" />
 
 	*<DefinedPropArrayMethod>
 		*m: closepdf
@@ -78,6 +80,30 @@ DEFINE CLASS sample AS form
 		Width = 1295
 		WindowType = 0
 	*</PropValue>
+
+	ADD OBJECT 'chkRenderFlags_Annot' AS checkbox WITH ;
+		Alignment = 0, ;
+		BackStyle = 0, ;
+		Caption = "Annotations", ;
+		Height = 17, ;
+		Left = 380, ;
+		Name = "chkRenderFlags_Annot", ;
+		TabIndex = 19, ;
+		Top = 114, ;
+		Width = 85
+		*< END OBJECT: BaseClass="checkbox" />
+
+	ADD OBJECT 'chkRenderFlags_Grayscale' AS checkbox WITH ;
+		Alignment = 0, ;
+		BackStyle = 0, ;
+		Caption = "Render Grayscale", ;
+		Height = 17, ;
+		Left = 474, ;
+		Name = "chkRenderFlags_Grayscale", ;
+		TabIndex = 20, ;
+		Top = 114, ;
+		Width = 121
+		*< END OBJECT: BaseClass="checkbox" />
 
 	ADD OBJECT 'chkSearchBackward' AS checkbox WITH ;
 		Alignment = 0, ;
@@ -125,7 +151,7 @@ DEFINE CLASS sample AS form
 		RowSource = "", ;
 		RowSourceType = 0, ;
 		Style = 2, ;
-		TabIndex = 19, ;
+		TabIndex = 21, ;
 		Top = 12, ;
 		Value = , ;
 		Width = 420
@@ -164,7 +190,7 @@ DEFINE CLASS sample AS form
 		Height = 29, ;
 		Left = 736, ;
 		Name = "cmdEnable", ;
-		TabIndex = 21, ;
+		TabIndex = 23, ;
 		Top = 65, ;
 		Width = 420, ;
 		WordWrap = .F.
@@ -261,7 +287,7 @@ DEFINE CLASS sample AS form
 		Left = 1210, ;
 		Name = "cmdReport", ;
 		Picture = images\wwrite.ico, ;
-		TabIndex = 23, ;
+		TabIndex = 25, ;
 		Top = 12, ;
 		Width = 73, ;
 		WordWrap = .T.
@@ -276,6 +302,20 @@ DEFINE CLASS sample AS form
 		Picture = images\rotate_left.png, ;
 		PicturePosition = 2, ;
 		TabIndex = 17, ;
+		Top = 108, ;
+		Width = 37, ;
+		WordWrap = .F.
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'cmdRotateCW' AS commandbutton WITH ;
+		Anchor = 0, ;
+		Caption = "", ;
+		Height = 28, ;
+		Left = 317, ;
+		Name = "cmdRotateCW", ;
+		Picture = images\rotate_right.png, ;
+		PicturePosition = 2, ;
+		TabIndex = 18, ;
 		Top = 108, ;
 		Width = 37, ;
 		WordWrap = .F.
@@ -323,23 +363,9 @@ DEFINE CLASS sample AS form
 		Height = 27, ;
 		Left = 736, ;
 		Name = "cmdShow", ;
-		TabIndex = 20, ;
+		TabIndex = 22, ;
 		Top = 38, ;
 		Width = 420, ;
-		WordWrap = .F.
-		*< END OBJECT: BaseClass="commandbutton" />
-
-	ADD OBJECT 'Command3' AS commandbutton WITH ;
-		Anchor = 0, ;
-		Caption = "", ;
-		Height = 28, ;
-		Left = 317, ;
-		Name = "Command3", ;
-		Picture = images\rotate_right.png, ;
-		PicturePosition = 2, ;
-		TabIndex = 18, ;
-		Top = 108, ;
-		Width = 37, ;
 		WordWrap = .F.
 		*< END OBJECT: BaseClass="commandbutton" />
 
@@ -350,7 +376,7 @@ DEFINE CLASS sample AS form
 		Left = 733, ;
 		Name = "Pageframe1", ;
 		PageCount = 2, ;
-		TabIndex = 24, ;
+		TabIndex = 26, ;
 		Top = 108, ;
 		Width = 550, ;
 		Page1.Caption = "Page1", ;
@@ -495,7 +521,7 @@ DEFINE CLASS sample AS form
 		Left = 12, ;
 		Name = "PdfiumViewer", ;
 		scrollbars = 3, ;
-		TabIndex = 22, ;
+		TabIndex = 24, ;
 		TabStop = .T., ;
 		Top = 144, ;
 		Visible = .T., ;
@@ -582,7 +608,8 @@ DEFINE CLASS sample AS form
 		
 		
 		
-		
+		This.chkRenderFlags_Annot.ControlSource = "Thisform.PdfiumViewer.render_flags.annot"
+		This.chkRenderFlags_Grayscale.ControlSource = "Thisform.PdfiumViewer.render_flags.grayscale"
 		
 	ENDPROC
 
@@ -798,6 +825,18 @@ DEFINE CLASS sample AS form
 		
 	ENDPROC
 
+	PROCEDURE chkRenderFlags_Annot.InteractiveChange
+		Thisform.PdfiumViewer.render_flags.annot = not Thisform.PdfiumViewer.render_flags.annot
+		Thisform.PdfiumViewer.Refresh()
+		
+	ENDPROC
+
+	PROCEDURE chkRenderFlags_Grayscale.InteractiveChange
+		Thisform.PdfiumViewer.render_flags.grayscale = not Thisform.PdfiumViewer.render_flags.grayscale
+		Thisform.PdfiumViewer.Refresh()
+		
+	ENDPROC
+
 	PROCEDURE cmbControls.InteractiveChange
 		Thisform.Refresh()
 		
@@ -998,6 +1037,11 @@ DEFINE CLASS sample AS form
 		
 	ENDPROC
 
+	PROCEDURE cmdRotateCW.Click
+		Thisform.pdfiumviewer.Rotation = MOD(Thisform.pdfiumviewer.Rotation + 1, 4)
+		
+	ENDPROC
+
 	PROCEDURE cmdSaveAs.Click
 		LOCAL lcFilename
 		lcFilename = PUTFILE("", "", "pdf")
@@ -1062,11 +1106,6 @@ DEFINE CLASS sample AS form
 
 	PROCEDURE cmdShow.Refresh
 		Thisform.RefreshVisible(This)
-	ENDPROC
-
-	PROCEDURE Command3.Click
-		Thisform.pdfiumviewer.Rotation = MOD(Thisform.pdfiumviewer.Rotation + 1, 4)
-		
 	ENDPROC
 
 	PROCEDURE Pageframe1.Page1.Pageframe2.Page1.Container1.Pdfiumviewer.Init

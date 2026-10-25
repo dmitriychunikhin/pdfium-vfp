@@ -1056,7 +1056,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		        This.RepObjDynamicsCursor = This.env.GetUniqueTempCursorName()
 		    ENDIF
 		
-		    CREATE CURSOR (This.RepObjDynamicsCursor) (Name c(100), Execute c(10), ExecWhen M, Script M, FName c(100), FSize c(10), FStyle c(10), Width c(10), Height c(10), penrgb c(10), pena c(5), fillrgb c(10), filla c(5))
+		    CREATE CURSOR (This.RepObjDynamicsCursor) (Name c(100), Execute c(50), ExecWhen M, Script M, FName c(100), FSize c(50), FStyle c(50), Width c(50), Height c(50), penrgb c(10), pena c(5), fillrgb c(10), filla c(5))
 		
 		
 		    LOCAL lcAliasCursor    
@@ -1084,9 +1084,12 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		        SELECT (m.lSaveArea)
 		
 		        DO CASE
-		        CASE ALLTRIM(m.loDS.Name) == "Microsoft.VFP.Reporting.Builder.Rotate"
+		        CASE LOWER(ALLTRIM(m.loDS.Name)) == LOWER("Microsoft.VFP.Reporting.Builder.Rotate")
 		            m.loRepObj.Rotate = CAST(m.loDS.Execute AS I)
-		            
+		
+		        CASE LOWER(ALLTRIM(m.loDS.Name)) == LOWER("Microsoft.VFP.Reporting.Builder.AdvancedProperty") AND LOWER(ALLTRIM(m.loDS.ExecWhen)) == LOWER("UNICODE")
+		            m.loRepObj.Is_Unicode = (LOWER(ALLTRIM(m.loDS.Execute)) == "1")
+		
 		        CASE EMPTY(m.loDS.ExecWhen)
 		
 		        CASE EVALUATE(m.loDS.ExecWhen) = .F.
@@ -1503,7 +1506,8 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		        RectCurvature i, ;
 		        ContinuationType i,;
 		        PictureScale i, ;
-		        Rotate i ;
+		        Rotate i, ;
+		        Is_Unicode l ;
 		    )
 		    
 		    SELECT (m.lSaveArea)
@@ -1599,6 +1603,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		
 		m.loRepObj.Rotate = 0
 		
+		m.loRepObj.Is_Unicode = .F.
 		
 		
 		*************************************************
@@ -1606,6 +1611,23 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		*************************************************
 		This.Process_FrxDynamics(m.loRepObj, m.loFrx.Style)
 		*************************************************
+		
+		IF m.loRepObj.Is_Unicode AND EMPTY(m.loRepObj.Text) = .F.
+		    LOCAL ARRAY laTextLinesBase64(1)
+		    LOCAL lnTextLinesBase64, liTextLinesBase64, lcTextLinesBase64
+		    lnTextLinesBase64 = ALINES(laTextLinesBase64, m.loRepObj.Text, 1, CHR(13))
+		    m.loRepObj.Text = ""
+		    FOR liTextLinesBase64 = 1 TO m.lnTextLinesBase64
+		        lcTextLinesBase64 = LTRIM(ALLTRIM(laTextLinesBase64[m.liTextLinesBase64],1,CHR(0)) + CHR(0), 1, CHR(0))
+		        lcTextLinesBase64 = STRTRAN(m.lcTextLinesBase64, CHR(10)+CHR(0), "")
+		        lcTextLinesBase64 = LTRIM(ALLTRIM(STRCONV(STRCONV(m.lcTextLinesBase64,10),14),1,CHR(0)) + CHR(0), 1, CHR(0))
+		        lcTextLinesBase64 = STRTRAN(STRTRAN(m.lcTextLinesBase64, CHR(13)+CHR(0)+CHR(10)+CHR(0), CHR(13)+CHR(0)), CHR(13)+CHR(0), CHR(13)+CHR(0)+CHR(10)+CHR(0))
+		        m.loRepObj.Text = m.loRepObj.Text + m.lcTextLinesBase64
+		        IF liTextLinesBase64 < m.lnTextLinesBase64
+		            m.loRepObj.Text = m.loRepObj.Text + CHR(13)+CHR(0)+CHR(10)+CHR(0)
+		        ENDIF
+		    ENDFOR
+		ENDIF
 		
 		
 		*************************************************
@@ -1639,6 +1661,7 @@ DEFINE CLASS pdfiumreport AS reportlistener 		&& Report listener with integrated
 		    m.loRepObj.SizeHeight = m.loRepObj.SizeHeight - m.loRepObj.PenSize
 		
 		ENDCASE
+		
 		
 		
 		m.loRepObj.ObjID = RECCOUNT(This.RepObjCursor) + 1
@@ -2698,16 +2721,18 @@ DEFINE CLASS pdfiumreport_renderer_docx AS pdfiumreport_renderer_base OF "pdfium
 		
 		DO CASE
 		CASE m.loRepObj.Align = m.loFRXC.ALIGN_RIGHT()
-		    m.lnLeft = m.lnLeft - INT(m.lnWidthAdd * m.lnEmuCoef)
+		    m.lnLeft = m.lnLeft - INT(m.lnWidthAdd * COS(-m.loRepObj.Rotate * PI() / 180) * m.lnEmuCoef)
+		    m.lnTop = m.lnTop + INT(m.lnWidthAdd * SIN(-m.loRepObj.Rotate * PI() / 180) * m.lnEmuCoef)
 		
 		CASE m.loRepObj.Align = m.loFRXC.ALIGN_CENTER()
-		    m.lnLeft = m.lnLeft - INT(m.lnWidthAdd * 0.5 * m.lnEmuCoef)
+		    m.lnLeft = m.lnLeft - INT(m.lnWidthAdd * 0.5 * COS(-m.loRepObj.Rotate * PI() / 180) * m.lnEmuCoef)
+		    m.lnTop = m.lnTop + INT(m.lnWidthAdd * 0.5 * SIN(-m.loRepObj.Rotate * PI() / 180) * m.lnEmuCoef)
 		
 		ENDCASE
 		
 		
-		m.lnLeft = m.lnLeft + INT((m.lnWidth * 0.5) * COS(-m.loRepObj.Rotate * PI() / 180) + (m.lnHeight * 0.5) * SIN(-m.loRepObj.Rotate * PI() / 180) - m.lnWidth * 0.5)
-		m.lnTop = m.lnTop + INT(-(m.lnWidth * 0.5) * SIN(-m.loRepObj.Rotate * PI() / 180) + (m.lnHeight * 0.5) * COS(-m.loRepObj.Rotate * PI() / 180) - m.lnHeight * 0.5)
+		m.lnLeft = m.lnLeft + INT((m.lnWidth * 0.5) * COS(-m.loRepObj.Rotate * PI() / 180) + (m.lnHeight * 0.5) * SIN(-m.loRepObj.Rotate * PI() / 180) - (m.lnWidth * 0.5))
+		m.lnTop = m.lnTop + INT(-(m.lnWidth * 0.5) * SIN(-m.loRepObj.Rotate * PI() / 180) + (m.lnHeight * 0.5) * COS(-m.loRepObj.Rotate * PI() / 180) - (m.lnHeight * 0.5))
 		
 		LOCAL lnLineSpacing
 		m.lnLineSpacing = ROUND(m.loRepObj.Font.LineHeight * ICASE(m.loRepObj.LineSpacing = 1, 1.5, m.loRepObj.LineSpacing = 2, 2, 1) * m.lnDpiCoef,2)
@@ -4966,6 +4991,7 @@ DEFINE CLASS pdfiumreport_repobj AS custom 		&& Input object for Render  method 
 		*p: fontstrikeout
 		*p: fontsubset
 		*p: fontunderline		&& Specifies if the text is underlined.
+		*p: is_unicode
 		*p: linespacing		&& Spacing between lines of text: 0 - normal, 1 - normal * 1.5, 2 - double spacing
 		*p: linetype		&& Line object type: 1 - horizontal, 2 - vertical
 		*p: objid
@@ -5018,6 +5044,7 @@ DEFINE CLASS pdfiumreport_repobj AS custom 		&& Input object for Render  method 
 		fontsubset = .F.
 		fontunderline = .F.
 		Height = 27
+		is_unicode = .F.
 		linespacing = 0
 		linetype = 0
 		Name = "pdfiumreport_repobj"
@@ -5097,6 +5124,7 @@ DEFINE CLASS pdfiumreport_repobj AS custom 		&& Input object for Render  method 
 			<memberdata name="fontsubset" type="property" display="FontSubset"/>
 			<memberdata name="objid" type="property" display="ObjID"/>
 			<memberdata name="api_frx" type="property" display="API_FRX"/>
+			<memberdata name="is_unicode" type="property" display="Is_Unicode"/>
 		</VFPData>
 	*</PropValue>
 	

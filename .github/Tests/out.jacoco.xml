@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.0//EN" "report.dtd">
     <report name="report">
-        <sessioninfo id="_7IH0PORPD" start="1784030301376" dump="1784030329000"/>         
+        <sessioninfo id="_7LC12WI2J" start="1792951706551" dump="1792951728000"/>         
         <package name="PDFIUM-VFP/SOURCE/PDFIUM-VFP.VCX">             
             <class name="pdfium_password_input">                     
                 <counter type="METHOD" missed="0" covered="0"/>
@@ -296,7 +296,7 @@
                              
             <class name="pdfium_uistate">                     
                 <method name="GETEFFECTIVELYENABLED" desc="">
-                    <counter type="METHOD" missed="0" covered="1"/>
+                    <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
                 <method name="GETEFFECTIVELYVISIBLE" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
@@ -343,7 +343,7 @@
                 <method name="_ONVISIBLE" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
-                <counter type="METHOD" missed="11" covered="5"/>
+                <counter type="METHOD" missed="12" covered="4"/>
                 </class>
                              
             <class name="pdfium_api_fpdf_forms">                     
@@ -1277,7 +1277,7 @@
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
                 <method name="BEGINPAINT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
+                    <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
                 <method name="BITBLT" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
@@ -1328,7 +1328,7 @@
                     <counter type="METHOD" missed="1" covered="0"/>
                 </method>                 
                 <method name="ENDPAINT" desc="">
-                    <counter type="METHOD" missed="1" covered="0"/>
+                    <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
                 <method name="ENUMFORMS" desc="">
                     <counter type="METHOD" missed="1" covered="0"/>
@@ -1474,7 +1474,7 @@
                 <method name="UUIDCREATE" desc="">
                     <counter type="METHOD" missed="0" covered="1"/>
                 </method>                 
-                <counter type="METHOD" missed="29" covered="48"/>
+                <counter type="METHOD" missed="27" covered="50"/>
                 </class>
                              
             <class name="pdfium_env">                     
@@ -1560,7 +1560,7 @@
                 <counter type="METHOD" missed="9" covered="2"/>
                 </class>
                              
-            <counter type="METHOD" missed="235" covered="256"/>
+            <counter type="METHOD" missed="234" covered="257"/>
         </package>         
-        <counter type="METHOD" missed="235" covered="256"/>
+        <counter type="METHOD" missed="234" covered="257"/>
     </report>

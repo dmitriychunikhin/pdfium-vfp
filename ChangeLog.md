@@ -1,3 +1,8 @@
+1.45
+  - In PdfiumReport added simple unicode support in text fields. Read README.md "PdfiumReport UNICODE support" section for details
+
+  - In PdfiumReport docx exporter fixed text field positioning with rotation != 0
+  
 1.44
   -Issue #58 Error in PDFiumReportViewer.Init
 

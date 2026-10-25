@@ -29,6 +29,7 @@ pdfium-vfp is a open source PDF viewer control and ReportOutput + ReportPreview 
 * [Basic usage of PdfiumReport](#basic-usage-of-pdfiumreport)
 * [PdfiumReport.app and private fonts](#pdfiumreportapp-and-private-fonts)
 * [PdfiumReport PDF metadata and password protection](#pdfiumreport-pdf-metadata-and-password-protection)
+* [PdfiumReport UNICODE support](#pdfiumreport-unicode-support)
 * [Filling PDF forms programmatically](#filling-pdf-forms-programmatically)
 * [Binaries](#binaries)
 * [VFP environment effects](#vfp-environment-effects)
@@ -352,6 +353,16 @@ loPdfiumReport.SaveAs_PDFMeta.Permit_Edit = .T. && Allow to make annotations and
 **********************************************************************************************
 
 ```
+
+## PdfiumReport UNICODE support
+
+  - In frx report convert field expression in UTF-16 LE e.g. with strconv(...,5) and then convert UTF-16 in BASE64 with strconv(...,13)
+  - In frx report field open Advanced tab and add boolean (Yes or No) property with name UNICODE (property name is case insensitive) and value Yes
+
+  Sample is provided in Sample/report1.frx
+
+<img alt="Sample screen shot" src="Sample/screenshots/pdfiumreport-unicode-support01.png" />
+
 
 ## Filling PDF forms programmatically
 PdfiumViewer gives a read-write access to form fields values, and read-only access to other field's properties like name, options and etc, adding new fields is not allowed.
